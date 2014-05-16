@@ -74,6 +74,7 @@ void BSTreeInit(BinSearchTree *self) {
 
     self->insert = BSTreeInsert;
     self->delete = BSTreeDelete;
+    self->search = BSTreeSearch;
 
     self->maximum = BSTreeMaximum;
     self->minimum = BSTreeMinimum;
@@ -284,6 +285,30 @@ void BSTreeDelete(BinSearchTree *self, TreeNode *pNode) {
     return;
 }
 
+
+/*
+ * BSTreeSearch(): Check whethere the tree has the designated item.
+ */
+bool BSTreeSearch(BinSearchTree *self, void *pItem) {
+    int      rc;    
+    TreeNode *curr;
+
+    curr = self->pRoot;
+    while(curr != NULL) {
+        rc = self->compare(pItem, curr->pItem);
+        
+        if (rc == 0) 
+            return true;
+        else {
+            if (rc > 0)
+                curr = curr->pRight;
+            else
+                curr = curr->pLeft;
+        }
+    }
+
+    return false;
+}
 
 /*===========================================================================*
  *               Implementation for internal functions                       *

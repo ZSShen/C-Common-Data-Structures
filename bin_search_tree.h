@@ -27,14 +27,15 @@ typedef struct _TreeNode {
 typedef struct _BinSearchTree {
     TreeNode    *pRoot;
         
-    int       (*compare) (const void*, const void*);
-    void      (*destroy) (void*);
-    void      (*insert) (struct _BinSearchTree*, TreeNode*);
-    void      (*delete) (struct _BinSearchTree*, TreeNode*);
-    TreeNode* (*maximum) (struct _BinSearchTree*);
-    TreeNode* (*minimum) (struct _BinSearchTree*);
-    TreeNode* (*successor) (struct _BinSearchTree*, TreeNode*);  
-    TreeNode* (*predecessor) (struct _BinSearchTree*, TreeNode*);
+    int       (*compare)    (const void*, const void*);
+    void      (*destroy)    (void*);
+    void      (*insert)     (struct _BinSearchTree*, TreeNode*);
+    void      (*delete)     (struct _BinSearchTree*, TreeNode*);
+    bool      (*search)     (struct _BinSearchTree*, void*);
+    TreeNode* (*maximum)    (struct _BinSearchTree*);
+    TreeNode* (*minimum)    (struct _BinSearchTree*);
+    TreeNode* (*successor)  (struct _BinSearchTree*, TreeNode*);  
+    TreeNode* (*predecessor)(struct _BinSearchTree*, TreeNode*);
 } BinSearchTree;
 
 
@@ -62,6 +63,18 @@ void BSTreeInsert(BinSearchTree *self, TreeNode *pNode);
  * @param pNode         The pointer to the node which is to be deleted from the tree.
  */
 void BSTreeDelete(BinSearchTree *self, TreeNode *pNode);
+
+
+/**
+ * This function checks whethere the tree has the designated item.
+ *
+ * @param self          The pointer to the BinSearchTree structure.
+ * @param pItem         The pointer to the item which is to be checked.
+ *
+ * @return              true : The item exists.
+ *                      false: The item does not exist.
+ */
+bool BSTreeSearch(BinSearchTree *self, void *pItem);
 
 
 /**
