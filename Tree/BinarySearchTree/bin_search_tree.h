@@ -12,9 +12,12 @@
                                         BSTreeInit(p);     
 
 /* Wrapper for binary search tree structure initialization. */
-#define BinSearchTree_deinit(p)     BSTreeDeinit(p); \
-                                    free(p); \
-                                    p = NULL;
+#define BinSearchTree_deinit(p)     if (p != NULL) { \
+                                        BSTreeDeinit(p); \
+                                        free(p); \
+                                        p = NULL; \
+                                    }
+
 
 typedef struct _TreeNode {
     void    *pItem;
