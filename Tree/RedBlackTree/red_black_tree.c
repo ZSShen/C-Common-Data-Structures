@@ -163,7 +163,7 @@ void RBTreeNodeDestroy(void *pItem) {
 /*
  * RBTreeMinimum(): Locate the node containing the minimum key of the tree.
  */
-RedBlackNode* BSTreeMinimum(RedBlackTree *self) {
+RedBlackNode* RBTreeMinimum(RedBlackTree *self) {
     RedBlackNode *tge;
 
     tge = _RBTreeMinimal(self->pRoot);
@@ -458,7 +458,7 @@ RedBlacknode* _RBTreePredecessor(RedBlackTree *self, RedBlackNode *curr) {
     if (curr != self->pNull) {
         /* Case 1: The maximal node of the non-empty left subtree. */
         if (curr->pLeft != self->pNull)
-            curr = _BSTreeMaximal(curr->pLeft);
+            curr = _RBTreeMaximal(curr->pLeft);
         
         /* Case 2: The ancestor which considers the designated node as the minimal node of 
            its right subtree. */
