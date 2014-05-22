@@ -57,7 +57,7 @@ void _RBTreeInsertFixup(RedBlackTree *self, RedBlackNode *curr);
  * @return          Non-Sentinel: The pointer to the target node.
  *                  Sentinel    : The subtree is empty.
  */
-RedBlackNode* _RBTreeMinimal(RedBlackNode *curr);
+RedBlackNode* _RBTreeMinimal(RedBlackTree *self, RedBlackNode *curr);
 
 
 /**
@@ -69,7 +69,7 @@ RedBlackNode* _RBTreeMinimal(RedBlackNode *curr);
  * @return          Non-Sentinel: The pointer to the target node.
  *                  Sentinel    : The subtree is empty.
  */
-ReeBlackNode* _BSTreeMaximal(RedBlackNode *curr);
+RedBlackNode* _RBTreeMaximal(RedBlackTree *self, RedBlackNode *curr);
 
 
 /**
@@ -80,7 +80,7 @@ ReeBlackNode* _BSTreeMaximal(RedBlackNode *curr);
  * @return          Non-Sentinel: The pointer to the target node.
  *                  Sentinel    : The size of the tree is less than two.
  */
-RedBlackNode* _RBTreeSuccessor(RedBlackNode *curr);
+RedBlackNode* _RBTreeSuccessor(RedBlackTree *self, RedBlackNode *curr);
 
 
 /**
@@ -91,7 +91,7 @@ RedBlackNode* _RBTreeSuccessor(RedBlackNode *curr);
  * @return          Non-Sentinel: The pointer to the target node.
  *                  Sentinel    : The size of the tree is less than two.
  */
-RedBlackNode* _RBTreePredecessor(RedBlackNode *curr);
+RedBlackNode* _RBTreePredecessor(RedBlackTree *self, RedBlackNode *curr);
 
 
 /*===========================================================================*
@@ -166,7 +166,7 @@ void RBTreeNodeDestroy(void *pItem) {
 RedBlackNode* RBTreeMinimum(RedBlackTree *self) {
     RedBlackNode *tge;
 
-    tge = _RBTreeMinimal(self->pRoot);
+    tge = _RBTreeMinimal(self, self->pRoot);
     if (tge == self->pNull)
         tge = NULL;
     
@@ -180,7 +180,7 @@ RedBlackNode* RBTreeMinimum(RedBlackTree *self) {
 RedBlackNode* RBTreeMaximum(RedBlackTree *self) {
     RedBlackNode *tge;
     
-    tge = _RBTreeMaximal(self->pRoot);
+    tge = _RBTreeMaximal(self, self->pRoot);
     if (tge == self->pNull)
         tge = NULL;
     
@@ -194,7 +194,7 @@ RedBlackNode* RBTreeMaximum(RedBlackTree *self) {
 RedBlackNode* RBTreeSuccessor(RedBlackTree *self, RedBlackNode *pCurNode) {
     RedBlackNode *tge;
     
-    tge = _RBTreeSuccessor(pCurNode);
+    tge = _RBTreeSuccessor(self, pCurNode);
     if (tge == self->pNull)
         tge = NULL;
     
@@ -206,9 +206,9 @@ RedBlackNode* RBTreeSuccessor(RedBlackTree *self, RedBlackNode *pCurNode) {
  * BSTreePredecessor(): Locate the predecessor of the designated node.
  */
 RedBlackNode* RBTreePredecessor(RedBlackTree *self, RedBlackNode *pCurNode) {
-    RedBlacknode *tge;
+    RedBlackNode *tge;
     
-    tge = _RBTreePredecessor(pCurNode);
+    tge = _RBTreePredecessor(self, pCurNode);
     if (tge == self->pNull)
         tge = NULL;
     
@@ -453,12 +453,12 @@ RedBlackNode* _RBTreeMaximal(RedBlackTree *self, RedBlackNode *curr) {
 }
 
 
-RedBlacknode* _RBTreePredecessor(RedBlackTree *self, RedBlackNode *curr) {
+RedBlackNode* _RBTreePredecessor(RedBlackTree *self, RedBlackNode *curr) {
 
     if (curr != self->pNull) {
         /* Case 1: The maximal node of the non-empty left subtree. */
         if (curr->pLeft != self->pNull)
-            curr = _RBTreeMaximal(curr->pLeft);
+            curr = _RBTreeMaximal(self, curr->pLeft);
         
         /* Case 2: The ancestor which considers the designated node as the minimal node of 
            its right subtree. */
@@ -478,7 +478,7 @@ RedBlackNode* _RBTreeSuccessor(RedBlackTree *self, RedBlackNode *curr) {
     if (curr != self->pNull) {
         /* Case 1: The minimal node of the non-empty right subtree. */
         if (curr->pRight != self->pNull)
-            curr = _RBTreeMinimal(curr->pRight);
+            curr = _RBTreeMinimal(self, curr->pRight);
     
         /* Case 2: The ancestor which considers the designated node as the maximal node of
            its left subtree. */

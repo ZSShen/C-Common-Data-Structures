@@ -63,6 +63,49 @@ RedBlackNode* RBTreeInsert(RedBlackTree *self, void *pItem);
 
 
 /**
+ * This function locates the node containing the maximum key of the tree.
+ *
+ * @param self          The pointer to the RedBlackTree structure.
+ *
+ * @return              Non-NULL: The pointer to the node containing maximum key.
+ *                      NULL    : The tree is empty.
+ */
+RedBlackNode* RBTreeMaximum(RedBlackTree *self);
+
+
+/**
+ * This function locates the node containing the minimum key of the tree.
+ *
+ * @param self          The pointer to the RedBlackTree structure.
+ *
+ * @return              Non-NULL: The pointer to the node containing minimum key.
+ *                      NULL    : The tree is empty.
+ */
+RedBlackNode* RBTreeMinimum(RedBlackTree *self);
+
+
+/**
+ * This function locates the successor of the designated node.
+ *
+ * @param self          The pointer to the RedBlackTree structure.
+ *
+ * @return              Non-NULL: The pointer to the successor.
+ *                      NULL    : There is no successor of the designated node.
+ */
+RedBlackNode* RBTreeSuccessor(RedBlackTree *self, RedBlackNode *pCurNode);
+
+
+/**
+ * This function locates the predecessor of the designated node.
+ *
+ * @param self          The pointer to the RedBlackTree structure.
+ *
+ * @return              Non-Null: The pointer to the predecessor.
+ *                      NULL    : There is no predecessor of the designated node.
+ */
+RedBlackNode* RBTreePredecessor(RedBlackTree *self, RedBlackNode *pCurNode);
+
+/**
  * The default function for node item comparison.
  *
  * @param pSrc          The pointer to the source item.
