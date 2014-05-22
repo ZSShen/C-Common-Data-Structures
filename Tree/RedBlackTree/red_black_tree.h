@@ -63,6 +63,15 @@ RedBlackNode* RBTreeInsert(RedBlackTree *self, void *pItem);
 
 
 /**
+ * This function deletes the specified red black node from the tree and adjusts the tree structure.
+ *
+ * @param self          The pointer to the RedBlackTree structure.
+ * @param pNode         The pointer to the node which is to be deleted from the tree.
+ */
+void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode);
+
+
+/**
  * This function locates the node containing the maximum key of the tree.
  *
  * @param self          The pointer to the RedBlackTree structure.

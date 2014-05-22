@@ -189,7 +189,7 @@ RedBlackNode* RBTreeMaximum(RedBlackTree *self) {
 
 
 /*
- * BSTreeSuccessor(): Locate the successor of the designated node.
+ * RBTreeSuccessor(): Locate the successor of the designated node.
  */
 RedBlackNode* RBTreeSuccessor(RedBlackTree *self, RedBlackNode *pCurNode) {
     RedBlackNode *tge;
@@ -203,7 +203,7 @@ RedBlackNode* RBTreeSuccessor(RedBlackTree *self, RedBlackNode *pCurNode) {
 
 
 /*
- * BSTreePredecessor(): Locate the predecessor of the designated node.
+ * RBTreePredecessor(): Locate the predecessor of the designated node.
  */
 RedBlackNode* RBTreePredecessor(RedBlackTree *self, RedBlackNode *pCurNode) {
     RedBlackNode *tge;
@@ -217,7 +217,7 @@ RedBlackNode* RBTreePredecessor(RedBlackTree *self, RedBlackNode *pCurNode) {
 
 
 /**
- * BSTreeInsert(): Insert the new red black node to the appropriate location of the tree.
+ * RBTreeInsert(): Insert the new red black node to the appropriate location of the tree.
  * Note: Tree structure adjustment is necessary to maintain the attributes of red black tree.
  */
 RedBlackNode* RBTreeInsert(RedBlackTree *self, void *pItem) {
@@ -290,6 +290,62 @@ RedBlackNode* RBTreeInsert(RedBlackTree *self, void *pItem) {
     _RBTreeInsertFixup(self, new);
 
     return new;
+}
+
+
+/**
+ * RBTreeDelete(): Delete the specified red black node from the tree and adjust the tree structure.
+ * Note: Tree structure adjustment is necessary to maintain the attributes of red black tree.
+ */
+void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode) {
+    bool            bColor;
+    RedBlackNode    *child, *succ;
+    
+    /* The specified node has no child. */
+    if ((pNode->pLeft == self->pNull) && (pNode->pRight == self->pNull)) {
+        if (pNode->pParent != self->pNull) {        
+            if (pNode == pNode->pParent->pLeft)
+                pNode->pParent->pLeft = self->pNull;
+            else
+                pNode->pParent->pRight = self->pNull;
+        } else
+            self->pRoot = self->pNull;
+        
+        bColor = pNode->bColor;
+        child = self->pNull;
+        self->destroy(pNode->pItem);
+        free(pNode);
+    } else {
+        /* The specified node has two children. */
+        if ((pNode->pLeft != self->pNull) && (pNode->pRight != self->pNull)) {
+           
+                
+
+        } else {
+            child = pNode->pLeft;
+            if (child == self->pNull)
+                child = pNode->pRight;
+
+            child->pParent = pNode->pParent;
+
+            if (pNode->pParent != self->pNull) {
+                if (pNode == pNode->pParent->pLeft)
+                    pNode->pParent->pLeft = child;
+                else
+                    pNode->pParent->pRight = child;
+            } else
+                self->pRoot = child;
+            
+            bColor = pNode->pColor;
+            self->destroy(pNode->pItem);
+            free(pNode);
+        }
+    }
+
+    /* Maintain the attributes of red black tree. */
+
+
+    return;
 }
 
 
