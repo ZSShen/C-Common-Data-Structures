@@ -40,12 +40,21 @@ void _RBTreeRightRotate(RedBlackTree *self, RedBlackNode *curr);
 
 
 /**
- * This function adjusts the tree structure to maintain the red black attributes.
+ * This function is called after node insertion to adjust the tree structure to maintain the red black attributes.
  *
  * @param self      The pointer to the RedBlackTree structure.
  * @param curr      The pointer to the node which is the origin for cascading adjustments.
  */
 void _RBTreeInsertFixup(RedBlackTree *self, RedBlackNode *curr);
+
+
+/**
+ * This function is called after node deletion to adjust the tree structure to maintain the red black attributes.
+ *
+ * @param self      The pointer to the RedBlackTree structure.
+ * @param curr      The pointer to the node which is the origin for cascading adjustments.
+ */
+void _RBTreeDeleteFixup(RedBlackTree *self, RedBlackNode *curr);
 
 
 /**
@@ -115,6 +124,7 @@ void RBTreeInit(RedBlackTree *self) {
     self->destroy = RBTreeNodeDestroy;
 
     self->insert = RBTreeInsert;
+    self->delete = RBTreeDelete;
 
     self->maximum = RBTreeMaximum;
     self->minimum = RBTreeMinimum;
@@ -313,15 +323,32 @@ void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode) {
         
         bColor = pNode->bColor;
         child = self->pNull;
+        child->pParent = pNode->pParent;        
         self->destroy(pNode->pItem);
         free(pNode);
     } else {
         /* The specified node has two children. */
         if ((pNode->pLeft != self->pNull) && (pNode->pRight != self->pNull)) {
-           
-                
+            succ = _RBTreeSuccessor(self, pNode);
+        
+            child = succ->pLeft;
+            if (child == self->pNull)
+                child = succ->pRight;
 
-        } else {
+            child->pParent = succ->pParent;
+
+            if (succ == succ->pParent->pLeft)
+                succ->pParent->pLeft = child;
+            else
+                succ->pParent->pRight = child;
+
+            bColor = succ->bColor;
+            self->destroy(pNode->pItem);
+            pNode->pItem = succ->pItem;
+            free(succ);
+        } 
+        /* The specified node has one child. */
+        else {
             child = pNode->pLeft;
             if (child == self->pNull)
                 child = pNode->pRight;
@@ -336,14 +363,15 @@ void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode) {
             } else
                 self->pRoot = child;
             
-            bColor = pNode->pColor;
+            bColor = pNode->bColor;
             self->destroy(pNode->pItem);
             free(pNode);
         }
     }
 
     /* Maintain the attributes of red black tree. */
-
+    if (bColor == NODE_COLOR_BLACK)
+        _RBTreeDeleteFixup(self, child);
 
     return;
 }
@@ -479,6 +507,79 @@ void _RBTreeInsertFixup(RedBlackTree *self, RedBlackNode *curr) {
     }
 
     self->pRoot->bColor = NODE_COLOR_BLACK;
+    return;
+}
+
+
+void _RBTreeDeleteFixup(RedBlackTree *self, RedBlackNode *curr) {
+    RedBlackNode *brother;
+
+    while ((curr != self->pRoot) && (curr->bColor == NODE_COLOR_BLACK)) {
+        /* "curr" is its parent's left child. */        
+        if (curr == curr->pParent->pLeft) {    
+            brother = curr->pParent->pRight;
+            
+            /* Case 1: The color of brother node is red. */
+            if (brother->bColor == NODE_COLOR_RED) {
+                brother->bColor = NODE_COLOR_BLACK;
+                curr->pParent->bColor = NODE_COLOR_RED;
+                _RBTreeLeftRotate(self, curr->pParent);
+                brother = curr->pParent->pRight;
+            }
+            /* Case 2: The color of brother node is black, and both of its children are also black. */
+            if ((brother->pLeft->bColor == NODE_COLOR_BLACK) && (brother->pRight->bColor == NODE_COLOR_BLACK)) {
+                brother->bColor = NODE_COLOR_RED;
+                curr = curr->pParent;
+            } else {
+                /* Case 3: The color of brother node is black. Its left child is red, and its right child is black. */
+                if (brother->pRight->bColor == NODE_COLOR_BLACK) {                
+                    brother->pLeft->bColor = NODE_COLOR_BLACK;
+                    brother->bColor = NODE_COLOR_RED;
+                    _RBTreeRightRotate(self, brother);            
+                    brother = curr->pParent->pRight;
+                }
+                /* Case 4: The color of brother node is black, and its right child is red. */
+                brother->bColor = curr->pParent->bColor;
+                curr->pParent->bColor = NODE_COLOR_BLACK;
+                brother->pRight->bColor = NODE_COLOR_BLACK;
+                _RBTreeLeftRotate(self, curr->pParent);
+                curr = self->pRoot;
+            }           
+        }
+        /* "curr" is its parent's right child. */
+        else {
+            brother = curr->pParent->pLeft;
+            
+            /* Case 1: The color of brother node is red. */
+            if (brother->bColor == NODE_COLOR_RED) {
+                brother->bColor = NODE_COLOR_RED;
+                curr->pParent->bColor = NODE_COLOR_RED;
+                _RBTreeRightRotate(self, curr->pParent);
+                brother = curr->pParent->pLeft;
+            }
+            /* Case 2: The color of brother node is black, and both of its children are also black. */
+            if ((brother->pLeft->bColor == NODE_COLOR_BLACK) && (brother->pRight->bColor == NODE_COLOR_BLACK)) {
+                brother->bColor = NODE_COLOR_BLACK;
+                curr = curr->pParent;
+            } else {
+                /* Case 3: The color of brother node is black. Its right child is red, and its left child is black. */
+                if (brother->pLeft->bColor == NODE_COLOR_BLACK) {                
+                    brother->pRight->bColor = NODE_COLOR_BLACK;
+                    brother->bColor = NODE_COLOR_RED;
+                    _RBTreeLeftRotate(self, brother);            
+                    brother = curr->pParent->pLeft;
+                }
+                /* Case 4: The color of brother node is black, and its right child is red. */
+                brother->bColor = curr->pParent->bColor;
+                curr->pParent->bColor = NODE_COLOR_BLACK;
+                brother->pLeft->bColor = NODE_COLOR_BLACK;
+                _RBTreeRightRotate(self, curr->pParent);
+                curr = self->pRoot;
+            }         
+        }
+    }
+
+    curr->bColor = NODE_COLOR_BLACK;
     return;
 }
 
