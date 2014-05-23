@@ -265,6 +265,7 @@ RedBlackNode* RBTreeInsert(RedBlackTree *self, void *pItem) {
             new->pLeft = curr->pLeft;
             new->pRight = curr->pRight;
             new->pParent = curr->pParent;
+            new->bColor = curr->bColor;
 
             if (curr->pLeft != self->pNull)
                 curr->pLeft->pParent = new;
@@ -370,8 +371,10 @@ void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode) {
     }
 
     /* Maintain the attributes of red black tree. */
+        
     if (bColor == NODE_COLOR_BLACK)
         _RBTreeDeleteFixup(self, child);
+    
 
     return;
 }
@@ -433,7 +436,7 @@ void _RBTreeRightRotate(RedBlackTree *self, RedBlackNode *curr) {
        and the right child should point to "curr" if it is not dummy node. */
     curr->pLeft = child->pRight;
     if (child->pRight != self->pNull)
-        child->pRight->pParent = child;
+        child->pRight->pParent = curr;
 
     /* Let "curr"'s original left child point to "curr"'s parent,
        and "curr"'s parent should point to the original left child if it is not dummy node. */
@@ -491,7 +494,6 @@ void _RBTreeInsertFixup(RedBlackTree *self, RedBlackNode *curr) {
                 uncle->bColor = NODE_COLOR_BLACK;
                 curr->pParent->pParent->bColor = NODE_COLOR_RED;
                 curr = curr->pParent->pParent;
-
             } else {
                 /* Case 2: The color of uncle node is black, and "curr" is its parent's left child. */
                 if (curr == curr->pParent->pLeft) {
@@ -552,14 +554,14 @@ void _RBTreeDeleteFixup(RedBlackTree *self, RedBlackNode *curr) {
             
             /* Case 1: The color of brother node is red. */
             if (brother->bColor == NODE_COLOR_RED) {
-                brother->bColor = NODE_COLOR_RED;
+                brother->bColor = NODE_COLOR_BLACK;
                 curr->pParent->bColor = NODE_COLOR_RED;
                 _RBTreeRightRotate(self, curr->pParent);
                 brother = curr->pParent->pLeft;
             }
             /* Case 2: The color of brother node is black, and both of its children are also black. */
             if ((brother->pLeft->bColor == NODE_COLOR_BLACK) && (brother->pRight->bColor == NODE_COLOR_BLACK)) {
-                brother->bColor = NODE_COLOR_BLACK;
+                brother->bColor = NODE_COLOR_RED;
                 curr = curr->pParent;
             } else {
                 /* Case 3: The color of brother node is black. Its right child is red, and its left child is black. */

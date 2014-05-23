@@ -72,6 +72,18 @@ void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode);
 
 
 /**
+ * This function checks whethere the tree has the designated item.
+ *
+ * @param self          The pointer to the RedBlackTree structure.
+ * @param pItem         The pointer to the item which is to be checked.
+ *
+ * @return              true : The item exists.
+ *                      false: The item does not exist.
+ */
+bool RBTreeSearch(RedBlackTree *self, void *pItem);
+
+
+/**
  * This function locates the node containing the maximum key of the tree.
  *
  * @param self          The pointer to the RedBlackTree structure.
