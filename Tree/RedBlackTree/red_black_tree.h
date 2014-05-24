@@ -58,6 +58,9 @@ void RBTreeDeinit(RedBlackTree *self);
  *
  * @param self          The pointer to the RedBlackTree structure.
  * @param pItem         The pointer to the item which is to be inserted to the tree.
+ *
+ * @return              Non-NULL: The pointer to the successfully inserted node containing requested item.
+ *                      NULL    : Fail to insert the requested item due to unsuccessful memory allocation. 
  */
 RedBlackNode* RBTreeInsert(RedBlackTree *self, void *pItem);
 
