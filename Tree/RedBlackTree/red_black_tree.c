@@ -125,6 +125,7 @@ void RBTreeInit(RedBlackTree *self) {
 
     self->insert = RBTreeInsert;
     self->delete = RBTreeDelete;
+    self->search = RBTreeSearch;
 
     self->maximum = RBTreeMaximum;
     self->minimum = RBTreeMinimum;
@@ -375,8 +376,31 @@ void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode) {
     if (bColor == NODE_COLOR_BLACK)
         _RBTreeDeleteFixup(self, child);
     
-
     return;
+}
+
+
+/*
+ * RBTreeSearch(): Check whethere the tree has the designated item.
+ */
+bool RBTreeSearch(RedBlackTree *self, void *pItem) {
+    int             rc;
+    RedBlackNode    *curr;    
+    
+    curr = self->pRoot;
+    while (curr != self->pNull) {
+        rc = self->compare(pItem, curr->pItem);
+        if (rc == 0)
+            return true;
+        else {
+            if (rc > 0)
+                curr = curr->pRight;
+            else
+                curr = curr->pLeft;
+        }    
+    }
+
+    return false;
 }
 
 
