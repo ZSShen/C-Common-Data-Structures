@@ -112,16 +112,19 @@ void test_insert(SinglyLinkedList *pList) {
 void test_reverse(SinglyLinkedList *pList) {
     
     pList->reverse(pList);
+    pList->reverse(pList);    
     return;
 }
 
 
 void test_delete(SinglyLinkedList *pList) {
-    int i;
+    int     i;
+    Data    *pData;
 
     /* Test pop operation. */
     for (i = 0 ; i < SIZE_DATA / 2; i++) {
-        pList->pop(pList, i);
+        pData = pList->pop(pList, i);
+        free(pData);    
     }
     
     return;
