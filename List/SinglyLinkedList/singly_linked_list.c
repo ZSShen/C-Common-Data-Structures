@@ -13,10 +13,11 @@ void SLListInit(SinglyLinkedList *self) {
 
     self->append = SLListAppend;
     self->insert = SLListInsert;
-    self->concate = SLListConcate;
     self->remove = SLListRemove;
-    self->reverse = SLListReverse;
     self->pop = SLListPop;
+
+    self->reverse = SLListReverse;
+    self->search = SLListSearch;
 
     return;
 }
@@ -122,23 +123,6 @@ SinglyLinkedNode* SLListInsert(SinglyLinkedList *self, int idx, void *pItem) {
 }
 
 
-/**
- * SLListConcate(): Concate the designated list to the tail of "this" list.
- */
-void SLListConcate(SinglyLinkedList *self, SinglyLinkedList *pSrc) {
-    SinglyLinkedNode *curr;
-
-    self->pTail->pNext = pSrc->pHead;        
-    curr = pSrc->pHead;
-    while (curr != NULL) {
-        self->iSize++;
-        curr = curr->pNext;        
-    }
-
-    return;
-}
-
-
 /*
  * SLListRemove(): Remove the first item with the key equal to the designated item from the list,
  * and return it.
@@ -204,6 +188,26 @@ void* SLListPop(SinglyLinkedList *self, int idx) {
     }
 
     return pReturn;
+}
+
+
+/**
+ * SLListSearch(): Check whethere the list has the designated item.
+ */
+bool SLListSearch(SinglyLinkedList *self, void *pItem) {
+    int rc;    
+    SinglyLinkedNode *curr;
+
+    curr = self->pHead;
+    while (curr != NULL) {
+        rc = self->compare(pItem, curr->pItem);
+        if (rc == 0)
+            return true;     
+        else
+            curr = curr->pNext;
+    }    
+    
+    return false;
 }
 
 

@@ -32,10 +32,10 @@ typedef struct _SinglyLinkedList {
     void              (*destroy) (void*);
     SinglyLinkedNode* (*append)  (struct _SinglyLinkedList*, void*);
     SinglyLinkedNode* (*insert)  (struct _SinglyLinkedList*, int, void*);
-    void              (*concate) (struct _SinglyLinkedList*, struct _SinglyLinkedList*);
     void*             (*remove)  (struct _SinglyLinkedList*, void*);
     void              (*reverse) (struct _SinglyLinkedList*); 
     void*             (*pop)     (struct _SinglyLinkedList*, int);
+    bool              (*search)
 } SinglyLinkedList;
 
 
@@ -74,15 +74,6 @@ SinglyLinkedNode* SLListInsert(SinglyLinkedList *self, int idx, void *pItem);
 
 
 /**
- * This function concates the designated list to the tail of "this" list.
- *
- * @param self          The pointer to the SinglyLinkedList structure.
- * @param pSrc          The pointer to the designated SinglyLinkedList structure.
- */
-void SLListConcate(SinglyLinkedList *self, SinglyLinkedList *pSrc);
-
-
-/**
  * This function removes the first item with the key equal to the designated item from the list,
  * and returns it.
  *
@@ -114,6 +105,18 @@ void SLListReverse(SinglyLinkedList *self);
  *                      NULL    : Fail to remove the item due to the illegally designated position.
  */
 void* SLListPop(SinglyLinkedList *self, int idx);
+
+
+/**
+ * This function checks whethere the list has the designated item.
+ *
+ * @param self          The pointer to the SinglyLinkedList structure.
+ * @param pItem         The pointer to the item which is to be checked.
+ *
+ * @return              true : The item exists.
+ *                      false: The item does not exist.
+ */
+bool SLListSearch(SinglyLinkedList *self, void *pItem);
 
 
 /**
