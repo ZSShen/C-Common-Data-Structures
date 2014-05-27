@@ -7,6 +7,27 @@
 #include "red_black_tree.h"
 
 
+/* Wrapper for OrderedMap initialization. */
+#define OrderedMap_init(p)      p = NULL; \
+                                p = (OrderedMap*)malloc(sizeof(OrderedMap)); \
+                                if (p != NULL) { \
+                                    bool check; \
+                                    check = OrderedMapInit(p); \
+                                    if (check == false) { \
+                                        free(p); \
+                                        p = NULL; \
+                                    } \
+                                }
+
+
+/* Wrapper for OrderedMap deinitialization. */
+#define OrderedMap_deinit(p)    if (p != NULL) { \
+                                    OrderedMapDeinit(p); \
+                                    free(p); \
+                                    p = NULL; \
+                                }
+
+
 typedef struct _KeyValePair {
     void *pKey;
     void *pValue;
@@ -25,10 +46,22 @@ typedef struct _OrderedMap {
 } OrderedMap;
 
 
+bool OrderedMapInit(OrderedMap *self);
+
+
+void OrderedMapDeinit(OrderedMap *self);
+
+
 bool OrderedMapPut(OrderedMap *self, KeyValuePair *pPair);
 
 
 KeyValuePair* OrderedMapGet(OrderedMap *self, void *pKey);
+
+
+bool OrderedMapRemove(OrderedMap *self, void* pKey);
+
+
+bool OrderedMapHaskey(OrderedMap *self, void* pKey);
 
 
 /**
@@ -41,7 +74,7 @@ KeyValuePair* OrderedMapGet(OrderedMap *self, void *pKey);
  *                       0: The source key equals to the target key with certain ordering criteria.
  *                      -1: The source key goes before the target key with certain ordering criteria.
  */
-int OrderedMapKeyCompare(const void *pSrc, const void *pTge);
+int OrderedMapPairCompare(const void *pSrc, const void *pTge);
 
 
 /**
