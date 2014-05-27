@@ -16,5 +16,9 @@ run:
 run_debug:
 	valgrind --leak-check=yes --track-origins=yes ./test_program
 
+build_static_lib:
+	gcc -c red_black_tree.c
+	ar rcs librbtree.a red_black_tree.o
+
 clean:
 	rm test_program.o red_black_tree.o test_program
