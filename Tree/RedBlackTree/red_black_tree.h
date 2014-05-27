@@ -35,7 +35,7 @@ typedef struct _RedBlackTree {
     void            (*destroy)    (void*);
     RedBlackNode*   (*insert)     (struct _RedBlackTree*, void*);
     void            (*delete)     (struct _RedBlackTree*, RedBlackNode*);
-    bool            (*search)     (struct _RedBlackTree*, void*);
+    RedBlackNode*   (*search)     (struct _RedBlackTree*, void*);
     RedBlackNode*   (*maximum)    (struct _RedBlackTree*);
     RedBlackNode*   (*minimum)    (struct _RedBlackTree*);
     RedBlackNode*   (*successor)  (struct _RedBlackTree*, RedBlackNode*);  
@@ -83,7 +83,7 @@ void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode);
  * @return              true : The item exists.
  *                      false: The item does not exist.
  */
-bool RBTreeSearch(RedBlackTree *self, void *pItem);
+RedBlackNode* RBTreeSearch(RedBlackTree *self, void *pItem);
 
 
 /**

@@ -383,7 +383,7 @@ void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode) {
 /*
  * RBTreeSearch(): Check whethere the tree has the designated item.
  */
-bool RBTreeSearch(RedBlackTree *self, void *pItem) {
+RedBlackNode* RBTreeSearch(RedBlackTree *self, void *pItem) {
     int             rc;
     RedBlackNode    *curr;    
     
@@ -391,7 +391,7 @@ bool RBTreeSearch(RedBlackTree *self, void *pItem) {
     while (curr != self->pNull) {
         rc = self->compare(pItem, curr->pItem);
         if (rc == 0)
-            return true;
+            return curr;
         else {
             if (rc > 0)
                 curr = curr->pRight;
@@ -400,7 +400,7 @@ bool RBTreeSearch(RedBlackTree *self, void *pItem) {
         }    
     }
 
-    return false;
+    return NULL;
 }
 
 
