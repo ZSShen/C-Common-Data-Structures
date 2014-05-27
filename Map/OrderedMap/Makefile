@@ -7,7 +7,7 @@ debug: test_program.o ordered_map.o
 test_program.o: test_program.c ordered_map.h
 	gcc -c test_program.c
 
-ordered_map.o: ordered_map.c ordered_map.h
+ordered_map.o: ordered_map.c ordered_map.h red_black_tree.h
 	gcc -static -L. -lrbtree -c ordered_map.c
 
 run:

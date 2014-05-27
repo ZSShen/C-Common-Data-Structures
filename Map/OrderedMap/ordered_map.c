@@ -3,16 +3,16 @@
 
 bool OrderedMapInit(OrderedMap *self) {
     
-    self->pTree = (RedBlackTree*)malloc(sizeof(RedBlackTree));
-    if (self->pTree == NULL)
-        return false;
-
+    /* Let the pointers of ordered map point to the corresponding functions. */
     self->compare = OrderedMapPairCompare;
     self->destroy = OrderedMapPairDestroy;
 
     self->put = OrderedMapPut;
-    self->get = OrderedMapGet;    
-    
+    self->get = OrderedMapGet;
+
+    /* Initialize the red black tree. */    
+    RedBlackTree_init(self->pTree);    
+
     return true;
 }
 
@@ -20,7 +20,7 @@ bool OrderedMapInit(OrderedMap *self) {
 void OrderedMapDeinit(OrderedMap *self) {
 
     if (self->pTree != NULL) {
-        free(self->pTree);
+        RedBlackTree_deinit(self->pTree);
     }
 
     return;
