@@ -9,9 +9,14 @@ bool OrderedMapInit(OrderedMap *self) {
 
     self->put = OrderedMapPut;
     self->get = OrderedMapGet;
+    self->remove = OrderedMapRemove;
 
     /* Initialize the red black tree. */    
-    RedBlackTree_init(self->pTree);    
+    RedBlackTree_init(self->pTree);
+
+    /* Replace the comparion and item deallocation strategies. */    
+    self->pTree->compare = self->compare;
+    self->pTree->destroy = self->destroy;
 
     return true;
 }
@@ -55,9 +60,8 @@ void OrderedMapPairDestroy(void *pPair) {
 }
 
 
-
 bool OrderedMapPut(OrderedMap *self, KeyValuePair *pPair) {
-    RedBlackTree *pTree;
+    RedBlackTree *pTree;    
     RedBlackNode *pNode;
     
     pTree = self->pTree;
@@ -70,9 +74,9 @@ bool OrderedMapPut(OrderedMap *self, KeyValuePair *pPair) {
 
 
 KeyValuePair* OrderedMapGet(OrderedMap *self, void *pKey) {
-    RedBlackTree *pTree;
+    RedBlackTree *pTree;    
     RedBlackNode *pNode;
-    KeyValuePair pair;
+    KeyValuePair  pair;
 
     /* Create a query key-value pair. */
     pair.pKey = pKey;
@@ -84,4 +88,22 @@ KeyValuePair* OrderedMapGet(OrderedMap *self, void *pKey) {
         return pNode->pItem;
     else 
         return NULL;
+}
+
+
+bool OrderedMapRemove(OrderedMap *self, void *pKey) {
+    RedBlackTree *pTree;
+    RedBlackNode *pNode;
+    KeyValuePair pair;    
+
+    /* Create a query key-value pair. */
+    pair.pKey = pKey;
+    pair.pValue = NULL;
+
+    pTree = self->pTree;
+    pNode = pTree->search(pTree, &pair);
+    if (pNode != NULL) {
+        pTree->delete(pTree, pNode);
+    } else
+        return false;
 }

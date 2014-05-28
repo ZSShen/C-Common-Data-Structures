@@ -42,7 +42,6 @@ typedef struct _OrderedMap {
     bool          (*put)      (struct _OrderedMap*, KeyValuePair*);
     KeyValuePair* (*get)      (struct _OrderedMap*, void*);
     bool          (*remove)   (struct _OrderedMap*, void*);
-    bool          (*haskey)   (struct _OrderedMap*, void*);
 } OrderedMap;
 
 
@@ -59,9 +58,6 @@ KeyValuePair* OrderedMapGet(OrderedMap *self, void *pKey);
 
 
 bool OrderedMapRemove(OrderedMap *self, void* pKey);
-
-
-bool OrderedMapHaskey(OrderedMap *self, void* pKey);
 
 
 /**
