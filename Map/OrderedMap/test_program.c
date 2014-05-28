@@ -47,13 +47,13 @@ int main() {
     OrderedMap_init(pMap);
 
     /* Assign the customized comparison and destroy strategies of key-value pair. */
-    pMap->set_compare(PairCompare);
-    pMap->set_destroy(PairCompare);
+    pMap->set_compare(pMap, PairCompare);
+    pMap->set_destroy(pMap, PairDestroy);
     
     /* Test the main features of ordered map. */    
-    //test_put(pMap);
-    //test_get(pMap);
-    //test_remove(pMap);
+    test_put(pMap);
+    test_get(pMap);
+    test_remove(pMap);
 
     /* Free the ordered map. */
     OrderedMap_deinit(pMap);
@@ -122,10 +122,14 @@ void test_put(OrderedMap *pMap) {
 
 void test_get(OrderedMap *pMap) {
     int          i;
+    Key          refKey;
     KeyValuePair *pPair;
 
     for (i = 0 ; i < SIZE_DATA ; i++) {
-        pPair = pMap->get(pMap, (void*)i);
+        refKey.key_major = (void*)i;
+        refKey.key_minor = NULL;
+        pPair = pMap->get(pMap, &refKey);
+        //printf("%d\n", (int)((Key*)pPair->pKey)->key_major);
     }
 
     return;
@@ -133,16 +137,13 @@ void test_get(OrderedMap *pMap) {
 
 
 void test_remove(OrderedMap *pMap) {
-    int  i;
-    Key *pKey;
+    int i;
+    Key refKey;
 
     for (i = 0 ; i < SIZE_DATA ; i++) {
-        pKey = (Key*)malloc(sizeof(Key));
-        if (pKey != NULL) {        
-            pKey->key_major = (void*)i;
-            pKey->key_minor = NULL;            
-            pMap->remove(pMap, pKey);
-        }
+        refKey.key_major = (void*)i;
+        refKey.key_minor = NULL;    
+        pMap->remove(pMap, &refKey);
     }
 
     return;

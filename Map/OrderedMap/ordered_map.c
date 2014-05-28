@@ -3,6 +3,8 @@
 
 bool OrderedMapInit(OrderedMap *self) {
     
+    self->ulSize = 0;
+
     /* Let the pointers of ordered map point to the corresponding functions. */
     self->compare = OrderedMapPairCompare;
     self->destroy = OrderedMapPairDestroy;
@@ -10,6 +12,10 @@ bool OrderedMapInit(OrderedMap *self) {
     self->put = OrderedMapPut;
     self->get = OrderedMapGet;
     self->remove = OrderedMapRemove;
+    self->size = OrderedMapSize;
+
+    self->set_compare = OrderedMapSetCompare;
+    self->set_destroy = OrderedMapSetDestroy;
 
     /* Initialize the red black tree. */    
     RedBlackTree_init(self->pTree);
@@ -66,9 +72,10 @@ bool OrderedMapPut(OrderedMap *self, KeyValuePair *pPair) {
     
     pTree = self->pTree;
     pNode = pTree->insert(pTree, pPair);
-    if (pNode != NULL)        
+    if (pNode != NULL) {       
+        self->ulSize++;
         return true;
-    else
+    } else
         return false;
 }
 
@@ -104,6 +111,27 @@ bool OrderedMapRemove(OrderedMap *self, void *pKey) {
     pNode = pTree->search(pTree, &pair);
     if (pNode != NULL) {
         pTree->delete(pTree, pNode);
+        self->ulSize--;
     } else
         return false;
+}
+
+
+unsigned long OrderedMapSize(OrderedMap *self) {
+
+    return self->ulSize;
+}
+
+
+void OrderedMapSetCompare(OrderedMap *self, int (*pFunc) (const void*, const void*)) {
+
+    ((RedBlackTree*)self->pTree)->compare = pFunc;
+    return;
+}
+
+
+void OrderedMapSetDestroy(OrderedMap *self, void (*pFunc) (void*)) {
+
+    ((RedBlackTree*)self->pTree)->destroy = pFunc;
+    return;
 }

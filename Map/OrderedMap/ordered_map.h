@@ -35,6 +35,7 @@ typedef struct _KeyValePair {
 
 
 typedef struct _OrderedMap {
+    unsigned long   ulSize;
     RedBlackTree    *pTree;
 
     int           (*compare)  (const void*, const void*);
@@ -42,9 +43,10 @@ typedef struct _OrderedMap {
     bool          (*put)      (struct _OrderedMap*, KeyValuePair*);
     KeyValuePair* (*get)      (struct _OrderedMap*, void*);
     bool          (*remove)   (struct _OrderedMap*, void*);
+    unsigned long (*size)     (struct _OrderedMap*);
 
-    void          (*set_compare) (int (*) (const void*, const void*));
-    void          (*set_destroy) (int (*) (const void*, const void*));    
+    void          (*set_compare) (struct _OrderedMap*, int (*) (const void*, const void*));
+    void          (*set_destroy) (struct _OrderedMap*, void (*) (void*));    
 } OrderedMap;
 
 
@@ -60,7 +62,16 @@ bool OrderedMapPut(OrderedMap *self, KeyValuePair *pPair);
 KeyValuePair* OrderedMapGet(OrderedMap *self, void *pKey);
 
 
-bool OrderedMapRemove(OrderedMap *self, void* pKey);
+bool OrderedMapRemove(OrderedMap *self, void *pKey);
+
+
+unsigned long OrderedMapSize(OrderedMap *self);
+
+
+void OrderedMapSetCompare(OrderedMap *self, int (*pFunc)(const void*, const void*));
+
+
+void OrderedMapSetDestroy(OrderedMap *self, void (*pFunc)(void*));
 
 
 /**
