@@ -1,8 +1,8 @@
 main: test_program.o ordered_map.o
-	gcc -o test_program test_program.o ordered_map.o
+	gcc -o test_program test_program.o ordered_map.o -L. -lrbtree
 
 debug: test_program.o ordered_map.o
-	gcc -g -o test_program test_program.o ordered_map.o
+	gcc -g -o test_program test_program.o ordered_map.o -L. -lrbtree
 
 test_program.o: test_program.c ordered_map.h
 	gcc -c test_program.c
