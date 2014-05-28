@@ -42,6 +42,9 @@ typedef struct _OrderedMap {
     bool          (*put)      (struct _OrderedMap*, KeyValuePair*);
     KeyValuePair* (*get)      (struct _OrderedMap*, void*);
     bool          (*remove)   (struct _OrderedMap*, void*);
+
+    void          (*set_compare) (int (*) (const void*, const void*));
+    void          (*set_destroy) (int (*) (const void*, const void*));    
 } OrderedMap;
 
 
