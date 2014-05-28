@@ -30,7 +30,7 @@ int main() {
     srand(time(NULL));
 
     /* Create the red black tree. */
-    pTree = RedBlackTree_init(pTree);
+    RedBlackTree_init(pTree);
 
     /* Customize the node item comparison and destroy functions .*/
     pTree->compare = data_compare;

@@ -8,7 +8,7 @@
 
 /* Wrapper for red black tree structure initialization. */
 #define RedBlackTree_init(p)        p = NULL; \
-                                    p = malloc(sizeof(RedBlackTree)); \
+                                    p = (RedBlackTree*)malloc(sizeof(RedBlackTree)); \
                                     if (p != NULL) \
                                         RBTreeInit(p);     
 
