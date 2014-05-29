@@ -1,14 +1,23 @@
 #include "ordered_map.h"
 
+/*===========================================================================*
+ *                  Simulation for private variables                         *
+ *===========================================================================*/
 static unsigned long ulSize;
+static int  (*pCompare) (const void*, const void*);
+static void (*pDestroy) (void*);
 
+
+/*===========================================================================*
+ *                Implementation for external functions                      *
+ *===========================================================================*/
 bool OrderedMapInit(OrderedMap *self) {
     
     ulSize = 0;
 
-    /* Let the pointers of ordered map point to the corresponding functions. */
-    self->compare = OrderedMapPairCompare;
-    self->destroy = OrderedMapPairDestroy;
+    /* Let the function pointers point to the corresponding functions. */
+    pCompare = OrderedMapPairCompare;
+    pDestroy = OrderedMapPairDestroy;
 
     self->put = OrderedMapPut;
     self->get = OrderedMapGet;
@@ -22,8 +31,8 @@ bool OrderedMapInit(OrderedMap *self) {
     RedBlackTree_init(self->pTree);
 
     /* Replace the comparion and item deallocation strategies. */    
-    self->pTree->compare = self->compare;
-    self->pTree->destroy = self->destroy;
+    self->pTree->compare = pCompare;
+    self->pTree->destroy = pDestroy;
 
     return true;
 }

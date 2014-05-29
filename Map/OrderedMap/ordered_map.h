@@ -37,8 +37,6 @@ typedef struct _KeyValePair {
 typedef struct _OrderedMap {
     RedBlackTree    *pTree;
 
-    int           (*compare)  (const void*, const void*);
-    void          (*destroy)  (void*);
     bool          (*put)      (struct _OrderedMap*, KeyValuePair*);
     KeyValuePair* (*get)      (struct _OrderedMap*, void*);
     bool          (*remove)   (struct _OrderedMap*, void*);
