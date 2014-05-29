@@ -1,11 +1,13 @@
+#include "red_black_tree.h"
 #include "ordered_map.h"
 
 /*===========================================================================*
  *                  Simulation for private variables                         *
  *===========================================================================*/
-static unsigned long ulSize;
-static int  (*pCompare) (const void*, const void*);
-static void (*pDestroy) (void*);
+static unsigned long    _ulSize;
+static RedBlackTree    *_pTree;
+static int  (*_pCompare) (const void*, const void*);
+static void (*_pDestroy) (void*);
 
 
 /*===========================================================================*
@@ -37,11 +39,11 @@ void _OrderedMapPairDestroy(void *pPair);
  *===========================================================================*/
 bool OrderedMapInit(OrderedMap *self) {
     
-    ulSize = 0;
+    _ulSize = 0;
 
     /* Let the function pointers point to the corresponding functions. */
-    pCompare = _OrderedMapPairCompare;
-    pDestroy = _OrderedMapPairDestroy;
+    _pCompare = _OrderedMapPairCompare;
+    _pDestroy = _OrderedMapPairDestroy;
 
     self->put = OrderedMapPut;
     self->get = OrderedMapGet;
@@ -52,11 +54,11 @@ bool OrderedMapInit(OrderedMap *self) {
     self->set_destroy = OrderedMapSetDestroy;
 
     /* Initialize the red black tree. */    
-    RedBlackTree_init(self->pTree);
+    RedBlackTree_init(_pTree);
 
     /* Replace the comparion and item deallocation strategies. */    
-    self->pTree->compare = pCompare;
-    self->pTree->destroy = pDestroy;
+    _pTree->compare = _pCompare;
+    _pTree->destroy = _pDestroy;
 
     return true;
 }
@@ -64,8 +66,8 @@ bool OrderedMapInit(OrderedMap *self) {
 
 void OrderedMapDeinit(OrderedMap *self) {
 
-    if (self->pTree != NULL) {
-        RedBlackTree_deinit(self->pTree);
+    if (_pTree != NULL) {
+        RedBlackTree_deinit(_pTree);
     }
 
     return;
@@ -73,13 +75,11 @@ void OrderedMapDeinit(OrderedMap *self) {
 
 
 bool OrderedMapPut(OrderedMap *self, KeyValuePair *pPair) {
-    RedBlackTree *pTree;    
     RedBlackNode *pNode;
     
-    pTree = self->pTree;
-    pNode = pTree->insert(pTree, pPair);
+    pNode = _pTree->insert(_pTree, pPair);
     if (pNode != NULL) {       
-        ulSize++;
+        _ulSize++;
         return true;
     } else
         return false;
@@ -87,7 +87,6 @@ bool OrderedMapPut(OrderedMap *self, KeyValuePair *pPair) {
 
 
 KeyValuePair* OrderedMapGet(OrderedMap *self, void *pKey) {
-    RedBlackTree *pTree;    
     RedBlackNode *pNode;
     KeyValuePair  pair;
 
@@ -95,8 +94,7 @@ KeyValuePair* OrderedMapGet(OrderedMap *self, void *pKey) {
     pair.pKey = pKey;
     pair.pValue = NULL;
 
-    pTree = self->pTree;
-    pNode = pTree->search(pTree, &pair);
+    pNode = _pTree->search(_pTree, &pair);
     if (pNode != NULL)
         return pNode->pItem;
     else 
@@ -105,7 +103,6 @@ KeyValuePair* OrderedMapGet(OrderedMap *self, void *pKey) {
 
 
 bool OrderedMapRemove(OrderedMap *self, void *pKey) {
-    RedBlackTree *pTree;
     RedBlackNode *pNode;
     KeyValuePair pair;    
 
@@ -113,11 +110,10 @@ bool OrderedMapRemove(OrderedMap *self, void *pKey) {
     pair.pKey = pKey;
     pair.pValue = NULL;
 
-    pTree = self->pTree;
-    pNode = pTree->search(pTree, &pair);
+    pNode = _pTree->search(_pTree, &pair);
     if (pNode != NULL) {
-        pTree->delete(pTree, pNode);
-        ulSize--;
+        _pTree->delete(_pTree, pNode);
+        _ulSize--;
     } else
         return false;
 }
@@ -125,20 +121,20 @@ bool OrderedMapRemove(OrderedMap *self, void *pKey) {
 
 unsigned long OrderedMapSize(OrderedMap *self) {
 
-    return ulSize;
+    return _ulSize;
 }
 
 
 void OrderedMapSetCompare(OrderedMap *self, int (*pFunc) (const void*, const void*)) {
 
-    ((RedBlackTree*)self->pTree)->compare = pFunc;
+    ((RedBlackTree*)_pTree)->compare = pFunc;
     return;
 }
 
 
 void OrderedMapSetDestroy(OrderedMap *self, void (*pFunc) (void*)) {
 
-    ((RedBlackTree*)self->pTree)->destroy = pFunc;
+    ((RedBlackTree*)_pTree)->destroy = pFunc;
     return;
 }
 

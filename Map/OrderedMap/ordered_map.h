@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "red_black_tree.h"
 
 
 /* Wrapper for OrderedMap initialization. */
@@ -35,7 +34,6 @@ typedef struct _KeyValePair {
 
 
 typedef struct _OrderedMap {
-    RedBlackTree    *pTree;
 
     bool          (*put)      (struct _OrderedMap*, KeyValuePair*);
     KeyValuePair* (*get)      (struct _OrderedMap*, void*);
