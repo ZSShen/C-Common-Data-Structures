@@ -71,25 +71,4 @@ void OrderedMapSetCompare(OrderedMap *self, int (*pFunc)(const void*, const void
 void OrderedMapSetDestroy(OrderedMap *self, void (*pFunc)(void*));
 
 
-/**
- * The default function for key comparison.
- *
- * @param pSrc          The pointer to the source key.
- * @param pDst          The pointer to the target key.
- *
- * @return               1: The source key goes after the target key with certain ordering criteria.
- *                       0: The source key equals to the target key with certain ordering criteria.
- *                      -1: The source key goes before the target key with certain ordering criteria.
- */
-int OrderedMapPairCompare(const void *pSrc, const void *pTge);
-
-
-/**
- * The default function for item deallocation.
- * 
- * @param pItem         The pointer to the item which is to be deallocated.
- */
-void OrderedMapPairDestroy(void *pPair);
-
-
 #endif

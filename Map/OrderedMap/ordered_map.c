@@ -9,6 +9,30 @@ static void (*pDestroy) (void*);
 
 
 /*===========================================================================*
+ *                  Definition for internal functions                        *
+ *===========================================================================*/
+/**
+ * The default function for key-value pair comparison.
+ *
+ * @param pSrc          The pointer to the source pair.
+ * @param pDst          The pointer to the target pair.
+ *
+ * @return               1: The source pair goes after the target one with certain ordering criteria.
+ *                       0: The source pair equals to the target one with certain ordering criteria.
+ *                      -1: The source pair goes before the target one with certain ordering criteria.
+ */
+int _OrderedMapPairCompare(const void *pSrc, const void *pTge);
+
+
+/**
+ * The default function for key-value pair deallocation.
+ * 
+ * @param pPair         The pointer to the pair which is to be deallocated.
+ */
+void _OrderedMapPairDestroy(void *pPair);
+
+
+/*===========================================================================*
  *                Implementation for external functions                      *
  *===========================================================================*/
 bool OrderedMapInit(OrderedMap *self) {
@@ -16,8 +40,8 @@ bool OrderedMapInit(OrderedMap *self) {
     ulSize = 0;
 
     /* Let the function pointers point to the corresponding functions. */
-    pCompare = OrderedMapPairCompare;
-    pDestroy = OrderedMapPairDestroy;
+    pCompare = _OrderedMapPairCompare;
+    pDestroy = _OrderedMapPairDestroy;
 
     self->put = OrderedMapPut;
     self->get = OrderedMapGet;
@@ -44,34 +68,6 @@ void OrderedMapDeinit(OrderedMap *self) {
         RedBlackTree_deinit(self->pTree);
     }
 
-    return;
-}
-
-
-/**
- * OrderedMapPairCompare(): The default strategy for key-value pair comparison.
- * Note: It considers the pKey member of the pair as primitive data.
- */
-int OrderedMapPairCompare(const void *pSrc, const void *pTge) {
-    
-    if (((KeyValuePair*)pSrc)->pKey == ((KeyValuePair*)pTge)->pKey)
-        return 0;
-    else {
-        if (((KeyValuePair*)pSrc)->pKey > ((KeyValuePair*)pTge)->pKey)
-            return 1;
-        else
-            return -1;
-    }
-}
-
-
-/**
- * RBTreeNodeDestroy(): The default strategy for key-value pair deallocation.
- * Note: It considers the pKey and pValue members as primitive data and frees the pair directory.
- */
-void OrderedMapPairDestroy(void *pPair) {
-
-    free(pPair);
     return;
 }
 
@@ -143,5 +139,36 @@ void OrderedMapSetCompare(OrderedMap *self, int (*pFunc) (const void*, const voi
 void OrderedMapSetDestroy(OrderedMap *self, void (*pFunc) (void*)) {
 
     ((RedBlackTree*)self->pTree)->destroy = pFunc;
+    return;
+}
+
+
+/*===========================================================================*
+ *                Implementation for internal functions                      *
+ *===========================================================================*/
+/**
+ * _OrderedMapPairCompare(): The default strategy for key-value pair comparison.
+ * Note: It considers the pKey member of the pair as primitive data.
+ */
+int _OrderedMapPairCompare(const void *pSrc, const void *pTge) {
+    
+    if (((KeyValuePair*)pSrc)->pKey == ((KeyValuePair*)pTge)->pKey)
+        return 0;
+    else {
+        if (((KeyValuePair*)pSrc)->pKey > ((KeyValuePair*)pTge)->pKey)
+            return 1;
+        else
+            return -1;
+    }
+}
+
+
+/**
+ * _OrderedMapPairDestroy(): The default strategy for key-value pair deallocation.
+ * Note: It considers the pKey and pValue members as primitive data and deallocates the pair directory.
+ */
+void _OrderedMapPairDestroy(void *pPair) {
+
+    free(pPair);
     return;
 }
