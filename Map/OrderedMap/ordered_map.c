@@ -1,9 +1,10 @@
 #include "ordered_map.h"
 
+static unsigned long ulSize;
 
 bool OrderedMapInit(OrderedMap *self) {
     
-    self->ulSize = 0;
+    ulSize = 0;
 
     /* Let the pointers of ordered map point to the corresponding functions. */
     self->compare = OrderedMapPairCompare;
@@ -73,7 +74,7 @@ bool OrderedMapPut(OrderedMap *self, KeyValuePair *pPair) {
     pTree = self->pTree;
     pNode = pTree->insert(pTree, pPair);
     if (pNode != NULL) {       
-        self->ulSize++;
+        ulSize++;
         return true;
     } else
         return false;
@@ -111,7 +112,7 @@ bool OrderedMapRemove(OrderedMap *self, void *pKey) {
     pNode = pTree->search(pTree, &pair);
     if (pNode != NULL) {
         pTree->delete(pTree, pNode);
-        self->ulSize--;
+        ulSize--;
     } else
         return false;
 }
@@ -119,7 +120,7 @@ bool OrderedMapRemove(OrderedMap *self, void *pKey) {
 
 unsigned long OrderedMapSize(OrderedMap *self) {
 
-    return self->ulSize;
+    return ulSize;
 }
 
 

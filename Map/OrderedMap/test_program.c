@@ -144,6 +144,7 @@ void test_remove(OrderedMap *pMap) {
         refKey.key_major = (void*)i;
         refKey.key_minor = NULL;    
         pMap->remove(pMap, &refKey);
+        //printf("%lu\n", pMap->size(pMap));
     }
 
     return;

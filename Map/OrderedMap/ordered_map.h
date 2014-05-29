@@ -35,7 +35,6 @@ typedef struct _KeyValePair {
 
 
 typedef struct _OrderedMap {
-    unsigned long   ulSize;
     RedBlackTree    *pTree;
 
     int           (*compare)  (const void*, const void*);
