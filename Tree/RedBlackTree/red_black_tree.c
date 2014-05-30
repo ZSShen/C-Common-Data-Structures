@@ -1,6 +1,14 @@
 #include "red_black_tree.h"
 
 /*===========================================================================*
+ *                  Simulation for private variables                         *
+ *===========================================================================*/
+static unsigned long ulSize;
+static int  (*_pCompare) (const void*, const void*);
+static void (*_pDestroy) (void*);
+
+
+/*===========================================================================*
  *                  Definition for internal functions                        *
  *===========================================================================*/
 #define NODE_COLOR_RED      0
@@ -103,11 +111,34 @@ RedBlackNode* _RBTreeSuccessor(RedBlackTree *self, RedBlackNode *curr);
 RedBlackNode* _RBTreePredecessor(RedBlackTree *self, RedBlackNode *curr);
 
 
+/**
+ * This function is the default comparison strategy for the items of a pair of red black nodes.
+ * 
+ * @param pSrc      The pointer to the source item.
+ * @param pTge      The pointer to the target item.
+ *
+ * @return          1 : The source item goes after the target one with certain ordering criteria.
+ *                  0 : The source item equals to the target one with certain ordering criteria.
+ *                  -1: The source item goes before the target one with certain ordering criteria.
+ */
+int _RBTreeItemCompare(const void *pSrc, const void *pTge);
+    
+
+/**
+ * This function is the default deallocation strategy for an item.
+ * 
+ * @param pItem    The pointer to the item which is to be deallocated.
+ */
+void _RBTreeItemDestroy(void *pItem);
+
+
 /*===========================================================================*
  *               Implementation for exported functions                       *
  *===========================================================================*/
 void RBTreeInit(RedBlackTree *self) {
-    
+
+    ulSize = 0;    
+
     /* Create a dummy node representing the "NULL" pointer of the red black tree. */
     self->pNull = (RedBlackNode*)malloc(sizeof(RedBlackNode));
     self->pNull->bColor = NODE_COLOR_BLACK;
@@ -120,53 +151,29 @@ void RBTreeInit(RedBlackTree *self) {
     self->pRoot = self->pNull;
 
     /* Let the function pointers pointing to the appropriate functions. */
-    self->compare = RBTreeNodeCompare;
-    self->destroy = RBTreeNodeDestroy;
+    _pCompare = _RBTreeItemCompare;
+    _pDestroy = _RBTreeItemDestroy;
 
     self->insert = RBTreeInsert;
     self->delete = RBTreeDelete;
     self->search = RBTreeSearch;
+    self->size = RBTreeSize;
 
     self->maximum = RBTreeMaximum;
     self->minimum = RBTreeMinimum;
     self->successor = RBTreeSuccessor;
     self->predecessor = RBTreePredecessor;
     
+    self->set_compare = RBTreeSetCompare;
+    self->set_destroy = RBTreeSetDestroy;
     return;
 }
 
 
 void RBTreeDeinit(RedBlackTree *self) {
 
-    _RBTreeDeinit(self->pNull, self->pRoot, self->destroy);
+    _RBTreeDeinit(self->pNull, self->pRoot, _pDestroy);
     free(self->pNull);
-    return;
-}
-
-
-/**
- * RBTreeNodeCompare(): The default comparison strategy for red black node comparison.
- * Note: It considers source and target items as primitive data and compares their values directly.
- */
-int RBTreeNodeCompare(const void *pSrc, const void *pTge) {
-    
-    if ((size_t)pSrc == (size_t)pTge)
-        return 0;
-    else {
-        if ((size_t)pSrc > (size_t)pTge)
-            return 1;
-        else
-            return -1;    
-    }
-}
-
-
-/**
- * RBTreeNodeDestroy(): The default strategy for item deallocation.
- * Note: By default, the item is a primitive data, and thus no further operations are required.
- */
-void RBTreeNodeDestroy(void *pItem) {
-
     return;
 }
 
@@ -251,7 +258,7 @@ RedBlackNode* RBTreeInsert(RedBlackTree *self, void *pItem) {
     parent = self->pNull;
     while (curr != self->pNull) {
         parent = curr;        
-        rc = self->compare(pItem, curr->pItem);
+        rc = _pCompare(pItem, curr->pItem);
 
         if (rc == 1) {
             curr = curr->pRight;
@@ -282,7 +289,7 @@ RedBlackNode* RBTreeInsert(RedBlackTree *self, void *pItem) {
             } else
                 self->pRoot = new;
 
-            self->destroy(curr->pItem);
+            _pDestroy(curr->pItem);
             free(curr);
             return new;
         }
@@ -298,6 +305,9 @@ RedBlackNode* RBTreeInsert(RedBlackTree *self, void *pItem) {
     } else
         self->pRoot = new;
 
+    /* Increase the size of the tree. */
+    ulSize++;
+    
     /* Maintain the attributes of red black tree. */
     _RBTreeInsertFixup(self, new);
 
@@ -326,7 +336,7 @@ void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode) {
         bColor = pNode->bColor;
         child = self->pNull;
         child->pParent = pNode->pParent;        
-        self->destroy(pNode->pItem);
+        _pDestroy(pNode->pItem);
         free(pNode);
     } else {
         /* The specified node has two children. */
@@ -345,7 +355,7 @@ void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode) {
                 succ->pParent->pRight = child;
 
             bColor = succ->bColor;
-            self->destroy(pNode->pItem);
+            _pDestroy(pNode->pItem);
             pNode->pItem = succ->pItem;
             free(succ);
         } 
@@ -366,13 +376,15 @@ void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode) {
                 self->pRoot = child;
             
             bColor = pNode->bColor;
-            self->destroy(pNode->pItem);
+            _pDestroy(pNode->pItem);
             free(pNode);
         }
     }
 
+    /* Decrease the size of the tree. */
+    ulSize--;
+
     /* Maintain the attributes of red black tree. */
-        
     if (bColor == NODE_COLOR_BLACK)
         _RBTreeDeleteFixup(self, child);
     
@@ -389,7 +401,7 @@ RedBlackNode* RBTreeSearch(RedBlackTree *self, void *pItem) {
     
     curr = self->pRoot;
     while (curr != self->pNull) {
-        rc = self->compare(pItem, curr->pItem);
+        rc = _pCompare(pItem, curr->pItem);
         if (rc == 0)
             return curr;
         else {
@@ -401,6 +413,34 @@ RedBlackNode* RBTreeSearch(RedBlackTree *self, void *pItem) {
     }
 
     return NULL;
+}
+
+
+/* 
+ * RBTreeSize(): Return the size of the tree.
+ */
+unsigned long RBTreeSize(RedBlackTree *self) {
+    
+    return ulSize;
+}
+
+
+/*
+ * RBTreeSetCompare(): Set the item comparison strategy with the one defined by user.
+ */
+void RBTreeSetCompare(RedBlackTree *self, int (*pFunc)(const void*, const void*)) {
+
+    _pCompare = pFunc;
+    return;
+}
+
+/*
+ * RBTreeSetDestroy(): Set the item destroy strategy with the one defined by user.
+ */
+void RBTreeSetDestroy(RedBlackTree *self, void (*pFunc)(void*)) {
+
+    _pDestroy = pFunc;
+    return;
 }
 
 
@@ -674,3 +714,32 @@ RedBlackNode* _RBTreeSuccessor(RedBlackTree *self, RedBlackNode *curr) {
 
     return curr;
 }
+
+
+
+/**
+ * _RBTreeItemCompare(): The default comparison strategy for the items of a pair of red black nodes.
+ * Note: It considers source and target items as primitive data and compares their values directly.
+ */
+int _RBTreeItemCompare(const void *pSrc, const void *pTge) {
+    
+    if ((size_t)pSrc == (size_t)pTge)
+        return 0;
+    else {
+        if ((size_t)pSrc > (size_t)pTge)
+            return 1;
+        else
+            return -1;    
+    }
+}
+
+
+/**
+ * _RBTreeItemDestroy(): The default deallcation strategy for an item.
+ * Note: By default, the item is a primitive data, and thus no further operations are required.
+ */
+void _RBTreeItemDestroy(void *pItem) {
+
+    return;
+}
+

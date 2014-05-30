@@ -33,8 +33,8 @@ int main() {
     RedBlackTree_init(pTree);
 
     /* Customize the node item comparison and destroy functions .*/
-    pTree->compare = data_compare;
-    pTree->destroy = data_destroy;
+    pTree->set_compare(pTree, data_compare);
+    pTree->set_destroy(pTree, data_destroy);    
 
     /* Test red black tree utilities. */
     test_insert(pTree);
@@ -103,6 +103,7 @@ void test_delete(RedBlackTree *pTree) {
             break;
         
         pTree->delete(pTree, pNode);
+        //printf("%lu\n", pTree->size(pTree));
         turn++;    
     }
 
