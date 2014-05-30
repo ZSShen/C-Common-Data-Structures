@@ -93,7 +93,7 @@ RedBlackNode* RBTreeSearch(RedBlackTree *self, void *pItem);
  * 
  * @param self          The pointer to the RedBlackTree structure.
  * 
- * @return              unsigned long: The size.
+ * @return              The size.
  */
 unsigned long RBTreeSize(RedBlackTree *self);
 
