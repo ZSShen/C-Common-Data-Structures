@@ -35,7 +35,7 @@ void _OrderedMapPairDestroy(void *pPair);
 
 
 /*===========================================================================*
- *                Implementation for external functions                      *
+ *                Implementation for exported functions                      *
  *===========================================================================*/
 bool OrderedMapInit(OrderedMap *self) {
     
@@ -56,9 +56,9 @@ bool OrderedMapInit(OrderedMap *self) {
     /* Initialize the red black tree. */    
     RedBlackTree_init(_pTree);
 
-    /* Replace the comparion and item deallocation strategies. */    
-    _pTree->compare = _pCompare;
-    _pTree->destroy = _pDestroy;
+    /* Replace the item comparion and deallocation strategies. */    
+    _pTree->set_compare(_pTree, _pCompare);
+    _pTree->set_destroy(_pTree, _pDestroy);
 
     return true;
 }
@@ -127,14 +127,14 @@ unsigned long OrderedMapSize(OrderedMap *self) {
 
 void OrderedMapSetCompare(OrderedMap *self, int (*pFunc) (const void*, const void*)) {
 
-    ((RedBlackTree*)_pTree)->compare = pFunc;
+    _pTree->set_compare(_pTree, pFunc);
     return;
 }
 
 
 void OrderedMapSetDestroy(OrderedMap *self, void (*pFunc) (void*)) {
 
-    ((RedBlackTree*)_pTree)->destroy = pFunc;
+    _pTree->set_destroy(_pTree, pFunc);
     return;
 }
 

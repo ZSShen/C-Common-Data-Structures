@@ -8,7 +8,7 @@
 
 /* Wrapper for red black tree structure initialization. */
 #define RedBlackTree_init(p)        p = NULL; \
-                                    p = malloc(sizeof(RedBlackTree)); \
+                                    p = (RedBlackTree*)malloc(sizeof(RedBlackTree)); \
                                     if (p != NULL) \
                                         RBTreeInit(p);     
 
@@ -31,15 +31,17 @@ typedef struct _RedBlackNode {
 typedef struct _RedBlackTree {
     RedBlackNode    *pRoot, *pNull;
 
-    int             (*compare)    (const void*, const void*);
-    void            (*destroy)    (void*);
     RedBlackNode*   (*insert)     (struct _RedBlackTree*, void*);
     void            (*delete)     (struct _RedBlackTree*, RedBlackNode*);
+    unsigned long   (*size)       (struct _RedBlackTree*);
     RedBlackNode*   (*search)     (struct _RedBlackTree*, void*);
     RedBlackNode*   (*maximum)    (struct _RedBlackTree*);
     RedBlackNode*   (*minimum)    (struct _RedBlackTree*);
     RedBlackNode*   (*successor)  (struct _RedBlackTree*, RedBlackNode*);  
     RedBlackNode*   (*predecessor)(struct _RedBlackTree*, RedBlackNode*);
+
+    void            (*set_compare)(struct _RedBlackTree*, int (*)(const void*, const void*));
+    void            (*set_destroy)(struct _RedBlackTree*, void (*)(void*));
 } RedBlackTree;
 
 
@@ -87,6 +89,16 @@ RedBlackNode* RBTreeSearch(RedBlackTree *self, void *pItem);
 
 
 /**
+ * This function returns the size of the tree.
+ * 
+ * @param self          The pointer to the RedBlackTree structure.
+ * 
+ * @return              unsigned long: The size.
+ */
+unsigned long RBTreeSize(RedBlackTree *self);
+
+
+/**
  * This function locates the node containing the maximum key of the tree.
  *
  * @param self          The pointer to the RedBlackTree structure.
@@ -129,25 +141,22 @@ RedBlackNode* RBTreeSuccessor(RedBlackTree *self, RedBlackNode *pCurNode);
  */
 RedBlackNode* RBTreePredecessor(RedBlackTree *self, RedBlackNode *pCurNode);
 
-/**
- * The default function for node item comparison.
+
+/*
+ * This function sets the item comparison strategy with the one defined by user.
  *
- * @param pSrc          The pointer to the source item.
- * @param pDst          The pointer to the target item.
- *
- * @return               1: The key contained by source item is larger than the target one.
- *                       0: The key contained by source item is equal to the target one.
- *                      -1: The key contained by source item is less than the target one.
+ * @param self          The pointer to the RedBlackTree structure.
+ * @param pFunc         The pointer to the customized function.
  */
-int RBTreeNodeCompare(const void *pSrc, const void *pTge);
+void RBTreeSetCompare(RedBlackTree *self, int (*pFunc)(const void*, const void*));
 
 
-/**
- * The default function for item deallocation.
- * 
- * @param pItem         The pointer to the item which is to be deallocated.
+/*
+ * This function sets the item destroy strategy with the one defined by user.
+ * @param self          The pointer to the RedBlackTree structure.
+ * @param pFunc         The pointer to the customized function.
  */
-void RBTreeNodeDestroy(void *pItem);
+void RBTreeSetDestroy(RedBlackTree *self, void (*pFunc)(void*));
 
 #endif
 

@@ -51,6 +51,16 @@ bool OrderedMapInit(OrderedMap *self);
 void OrderedMapDeinit(OrderedMap *self);
 
 
+/**
+ * This function inserts a key-value pair into OrderedMap structure. 
+ *
+ * @param self      The pointer to the OrderedMap structure.
+ * @param pPair     The pointer to the key-value pair which is to be inserted.
+ * 
+ * @return          true : The pair is inserted successfully.
+ *                  false: The pair cannot be inserted due to unenough memory space.
+ *                         
+ */
 bool OrderedMapPut(OrderedMap *self, KeyValuePair *pPair);
 
 
