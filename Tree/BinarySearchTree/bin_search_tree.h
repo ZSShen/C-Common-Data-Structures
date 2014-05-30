@@ -30,15 +30,19 @@ typedef struct _TreeNode {
 typedef struct _BinSearchTree {
     TreeNode    *pRoot;
         
-    int       (*compare)    (const void*, const void*);
-    void      (*destroy)    (void*);
-    void      (*insert)     (struct _BinSearchTree*, TreeNode*);
-    void      (*delete)     (struct _BinSearchTree*, TreeNode*);
-    bool      (*search)     (struct _BinSearchTree*, void*);
-    TreeNode* (*maximum)    (struct _BinSearchTree*);
-    TreeNode* (*minimum)    (struct _BinSearchTree*);
-    TreeNode* (*successor)  (struct _BinSearchTree*, TreeNode*);  
-    TreeNode* (*predecessor)(struct _BinSearchTree*, TreeNode*);
+    int           (*compare)    (const void*, const void*);
+    void          (*destroy)    (void*);
+    void          (*insert)     (struct _BinSearchTree*, TreeNode*);
+    void          (*delete)     (struct _BinSearchTree*, TreeNode*);
+    unsigned long (*size)       (struct _BinSearchTree*);     
+    bool          (*search)     (struct _BinSearchTree*, void*);
+    TreeNode*     (*maximum)    (struct _BinSearchTree*);
+    TreeNode*     (*minimum)    (struct _BinSearchTree*);
+    TreeNode*     (*successor)  (struct _BinSearchTree*, TreeNode*);  
+    TreeNode*     (*predecessor)(struct _BinSearchTree*, TreeNode*);
+
+    void          (*set_compare)(struct _BinSearchTree*, int (*)(const void*, const void*));
+    void          (*set_destroy)(struct _BinSearchTree*, void (*) (void*))
 } BinSearchTree;
 
 
@@ -66,6 +70,15 @@ void BSTreeInsert(BinSearchTree *self, TreeNode *pNode);
  * @param pNode         The pointer to the node which is to be deleted from the tree.
  */
 void BSTreeDelete(BinSearchTree *self, TreeNode *pNode);
+
+
+/**
+ * This function returns the size of the tree.
+ *
+ * @param self          The pointer to the BinSearchTree structure.
+ * @return              The size;
+ */
+unsigned long BSTreeSize(BinSearchTree *self);
 
 
 /**
@@ -125,23 +138,19 @@ TreeNode* BSTreePredecessor(BinSearchTree *self, TreeNode *pCurNode);
 
 
 /**
- * The default function for node item comparison.
+ * This function sets the item comparison strategy with the one defined by user.
  *
- * @param pSrc          The pointer to the source item.
- * @param pDst          The pointer to the target item.
- *
- * @return               1: The key contained by source item is larger than the target one.
- *                       0: The key contained by source item is equal to the target one.
- *                      -1: The key contained by source item is less than the target one.
+ * @param self          The pointer to the BinSearchTree structure.
+ * @param pFunc         The pointer to the customized function.
  */
-int BSTreeNodeCompare(const void *pSrc, const void *pTge);
+void BSTreeSetCompare(BinSearchTree *self, int (*pFunc)(const void*, const void*));
 
 
 /**
- * The default function for item deallocation.
- * 
- * @param pItem         The pointer to the item which is to be deallocated.
+ * This function sets the item deallocation strategy with the one defined by user.
+ * @param self          The pointer to the BinSearchTree structure.
+ * @param pFunc         The pointer to the customized function.
  */
-void BSTreeNodeDestroy(void *pItem);
+void BSTreeSetDestroy(BinSearchTree *self, void (*pFunc)(void*));
 
 #endif

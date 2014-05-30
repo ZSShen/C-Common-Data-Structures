@@ -1,6 +1,14 @@
 #include "bin_search_tree.h"
 
 /*===========================================================================*
+ *                  Simulation for private variables                         *
+ *===========================================================================*/
+static unsigned long _ulSize;
+static int (*_pCompare)(const void*, const void*);
+static void (*_pDestroy)(void*);
+
+
+/*===========================================================================*
  *                  Definition for internal functions                        *
  *===========================================================================*/
 #define DIRECTION_LEFT      0
@@ -62,19 +70,43 @@ TreeNode* _BSTreeSuccessor(TreeNode *curr);
 TreeNode* _BSTreePredecessor(TreeNode *curr);
 
 
+/**
+ * This function is the default comparison strategy for the items of a pair of tree nodes.
+ *
+ * @param pSrc          The pointer to the source item.
+ * @param pDst          The pointer to the target item.
+ *
+ * @return          1 : The source item goes after the target one with certain ordering criteria.
+ *                  0 : The source item equals to the target one with certain ordering criteria.
+ *                  -1: The source item goes before the target one with certain ordering criteria.
+ */
+int _BSTreeItemCompare(const void *pSrc, const void *pTge);
+
+
+/**
+ * This function is the default deallcation strategy for an item.
+ * 
+ * @param pItem         The pointer to the item which is to be deallocated.
+ */
+void _BSTreeItemDestroy(void *pItem);
+
+
 /*===========================================================================*
  *               Implementation for exported functions                       *
  *===========================================================================*/
 void BSTreeInit(BinSearchTree *self) {
     
     self->pRoot = NULL;
+    _ulSize = 0;
 
-    self->compare = BSTreeNodeCompare;
-    self->destroy = BSTreeNodeDestroy;
+    /* Let the function pointers point to the corresponding functions */
+    _pCompare = _BSTreeItemCompare;
+    _pDestroy = _BSTreeItemDestroy;    
 
     self->insert = BSTreeInsert;
     self->delete = BSTreeDelete;
     self->search = BSTreeSearch;
+    self->size = BSTreeSearch;
 
     self->maximum = BSTreeMaximum;
     self->minimum = BSTreeMinimum;
@@ -87,33 +119,7 @@ void BSTreeInit(BinSearchTree *self) {
 
 void BSTreeDeinit(BinSearchTree *self) {
 
-    _BSTreeDeinit(self->pRoot, self->destroy);
-    return;
-}
-
-
-/**
- * BSTreeNodeCompare(): The default comparison strategy for tree node comparison.
- * Note: It considers source and target items as primitive data and compares their values directly.
- */
-int BSTreeNodeCompare(const void *pSrc, const void *pTge) {
-    
-    if ((size_t)pSrc == (size_t)pTge)
-        return 0;
-    else {
-        if ((size_t)pSrc > (size_t)pTge)
-            return 1;
-        else
-            return -1;    
-    }
-}
-
-/**
- * BSTreeNodeDestroy(): The default strategy for item deallocation.
- * Note: By default, the item is a primitive data, and thus no further operations are required.
- */
-void BSTreeNodeDestroy(void *pItem) {
-
+    _BSTreeDeinit(self->pRoot, _pDestroy);
     return;
 }
 
@@ -169,7 +175,7 @@ void BSTreeInsert(BinSearchTree *self, TreeNode *pNode) {
     curr = self->pRoot;
     while (curr != NULL) {
         parent = curr;    
-        rc = self->compare(pNode->pItem, curr->pItem);
+        rc = _pCompare(pNode->pItem, curr->pItem);
 
         if (rc == 1) {
             curr = curr->pRight;
@@ -200,11 +206,14 @@ void BSTreeInsert(BinSearchTree *self, TreeNode *pNode) {
             } else
                 self->pRoot = pNode;
 
-            self->destroy(curr->pItem);
+            _pDestroy(curr->pItem);
             free(curr);            
             return;             
         }
     }
+
+    /* Increase the size. */
+    _ulSize++;
 
     /* Arrive at the appropriate location. */
     pNode->pParent = parent;
@@ -237,7 +246,7 @@ void BSTreeDelete(BinSearchTree *self, TreeNode *pNode) {
             } else
                 self->pRoot = NULL;
             
-            self->destroy(pNode->pItem);
+            _pDestroy(pNode->pItem);
             free(pNode);                    
         } else {
             /* The specified node has two children. */
@@ -256,7 +265,7 @@ void BSTreeDelete(BinSearchTree *self, TreeNode *pNode) {
                 else
                     succ->pParent->pRight = child;
 
-                self->destroy(pNode->pItem);
+                _pDestroy(pNode->pItem);
                 pNode->pItem = succ->pItem;
                 free(succ);
             } 
@@ -276,10 +285,13 @@ void BSTreeDelete(BinSearchTree *self, TreeNode *pNode) {
                 } else
                     self->pRoot = child;
                 
-                self->destroy(pNode->pItem);
+                _pDestroy(pNode->pItem);
                 free(pNode); 
             }        
         } 
+
+        /* Decrease the size. */
+        _ulSize--;
     }
 
     return;
@@ -295,7 +307,7 @@ bool BSTreeSearch(BinSearchTree *self, void *pItem) {
 
     curr = self->pRoot;
     while(curr != NULL) {
-        rc = self->compare(pItem, curr->pItem);
+        rc = _pCompare(pItem, curr->pItem);
         
         if (rc == 0) 
             return true;
@@ -309,6 +321,36 @@ bool BSTreeSearch(BinSearchTree *self, void *pItem) {
 
     return false;
 }
+
+
+/*
+ * BSTreeSize(): Return the size of the tree.
+ */
+unsigned long BSTreeSize(BinSearchTree *self) {
+
+    return _ulSize;
+}
+
+
+/**
+ * BSTreeSetCompare(): Set the item comparison strategy with the one defined by user.
+ */
+void BSTreeSetCompare(BinSearchTree *self, int (*pFunc)(const void*, const void*)) {
+    
+    _pCompare = pFunc;
+    return;
+}
+
+
+/**
+ * BSTreeSetDestroy(): Set the item deallocation strategy with the one defined by user.
+ */
+void BSTreeSetDestroy(BinSearchTree *self, void (*pFunc)(void*)) {
+
+    _pDestroy = pFunc;
+    return;
+}
+
 
 /*===========================================================================*
  *               Implementation for internal functions                       *
@@ -390,3 +432,30 @@ TreeNode* _BSTreePredecessor(TreeNode *curr) {
 
     return curr;
 }
+
+
+/**
+ * _BSTreeItemCompare(): The default comparison strategy for the items of a pair of nodes.
+ * Note: It considers source and target items as primitive data and compares their values directly.
+ */
+int _BSTreeItemCompare(const void *pSrc, const void *pTge) {
+    
+    if ((size_t)pSrc == (size_t)pTge)
+        return 0;
+    else {
+        if ((size_t)pSrc > (size_t)pTge)
+            return 1;
+        else
+            return -1;    
+    }
+}
+
+/**
+ * _BSTreeItemDestroy(): The default deallocation strategy for an item.
+ * Note: By default, the item is a primitive data, and thus no further operations are required.
+ */
+void _BSTreeItemDestroy(void *pItem) {
+
+    return;
+}
+
