@@ -106,12 +106,15 @@ void BSTreeInit(BinSearchTree *self) {
     self->insert = BSTreeInsert;
     self->delete = BSTreeDelete;
     self->search = BSTreeSearch;
-    self->size = BSTreeSearch;
+    self->size = BSTreeSize;
 
     self->maximum = BSTreeMaximum;
     self->minimum = BSTreeMinimum;
     self->successor = BSTreeSuccessor;
     self->predecessor = BSTreePredecessor;
+
+    self->set_compare = BSTreeSetCompare;
+    self->set_destroy = BSTreeSetDestroy;    
 
     return;
 }
@@ -163,19 +166,25 @@ TreeNode* BSTreePredecessor(BinSearchTree *self, TreeNode *pCurNode) {
 /**
  * BSTreeInsert(): Insert the new node to the appropriate location of the tree.
  */
-void BSTreeInsert(BinSearchTree *self, TreeNode *pNode) {
+TreeNode* BSTreeInsert(BinSearchTree *self, void *pItem) {
     int         rc;
     bool        direction;    
-    TreeNode    *curr, *parent;
+    TreeNode    *new, *curr, *parent;
     
-    if (pNode == NULL)
-        return;    
+    new = (TreeNode*)malloc(sizeof(TreeNode));
+    if (new == NULL)
+        return new;
+
+    new->pItem = pItem;
+    new->pParent = NULL;
+    new->pLeft = NULL;
+    new->pRight = NULL;
 
     parent = NULL;
     curr = self->pRoot;
     while (curr != NULL) {
         parent = curr;    
-        rc = _pCompare(pNode->pItem, curr->pItem);
+        rc = _pCompare(pItem, curr->pItem);
 
         if (rc == 1) {
             curr = curr->pRight;
@@ -188,27 +197,27 @@ void BSTreeInsert(BinSearchTree *self, TreeNode *pNode) {
     
         /* The conflict occurs. The new node will replace the existing one. */
         else {
-            pNode->pLeft = curr->pLeft;
-            pNode->pRight = curr->pRight;
-            pNode->pParent = curr->pParent;
+            new->pLeft = curr->pLeft;
+            new->pRight = curr->pRight;
+            new->pParent = curr->pParent;
             
             if (curr->pLeft != NULL)
-                curr->pLeft->pParent = pNode;
+                curr->pLeft->pParent = new;
             
             if (curr->pRight != NULL)            
-                curr->pRight->pParent = pNode;
+                curr->pRight->pParent = new;
             
             if (curr->pParent != NULL) {
                 if (curr == curr->pParent->pLeft)
-                    curr->pParent->pLeft = pNode;
+                    curr->pParent->pLeft = new;
                 else
-                    curr->pParent->pRight = pNode;            
+                    curr->pParent->pRight = new;            
             } else
-                self->pRoot = pNode;
+                self->pRoot = new;
 
             _pDestroy(curr->pItem);
             free(curr);            
-            return;             
+            return new;             
         }
     }
 
@@ -216,16 +225,16 @@ void BSTreeInsert(BinSearchTree *self, TreeNode *pNode) {
     _ulSize++;
 
     /* Arrive at the appropriate location. */
-    pNode->pParent = parent;
+    new->pParent = parent;
     if (parent != NULL) {
         if (direction == DIRECTION_LEFT)
-            parent->pLeft = pNode;
+            parent->pLeft = new;
         else
-            parent->pRight = pNode;            
+            parent->pRight = new;            
     } else
-        self->pRoot = pNode;
+        self->pRoot = new;
 
-    return;
+    return new;
 }
 
 

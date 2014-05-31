@@ -1,4 +1,4 @@
-#include "red_black_tree.h"
+#include "bin_search_tree.h"
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -11,26 +11,26 @@ typedef struct _Data {
 } Data;
 
 
-/* Define the node item comparison function for red black tree. */
+/* Define the node item comparison function for binary search tree. */
 int data_compare(const void *pSrc, const void *pTge);
 
-/* Define the node item delete function for red black tree. */
+/* Define the node item delete function for binary search tree. */
 void data_destroy(void *pItem);
 
 /* Test function for insertion-related utilites. */
-void test_insert(RedBlackTree *pTree);
+void test_insert(BinSearchTree *pTree);
 
 /* Test function for deletion-related utilities. */
-void test_delete(RedBlackTree *pTree);
+void test_delete(BinSearchTree *pTree);
 
 int main() {
-    RedBlackTree *pTree;
+    BinSearchTree *pTree;
 
     /* Initialize the random seed. */
     srand(time(NULL));
 
     /* Create the red black tree. */
-    RedBlackTree_init(pTree);
+    BinSearchTree_init(pTree);
 
     /* Customize the node item comparison and destroy functions .*/
     pTree->set_compare(pTree, data_compare);
@@ -41,7 +41,7 @@ int main() {
     test_delete(pTree);
 
     /* Free the red black tree. */
-    RedBlackTree_deinit(pTree);
+    BinSearchTree_deinit(pTree);
 
     return 0;
 }
@@ -67,13 +67,13 @@ void data_destroy(void *pItem) {
 }
 
 
-void test_insert(RedBlackTree *pTree) {
+void test_insert(BinSearchTree *pTree) {
     int             i;
     unsigned long   key;
     Data            *pData;
 
     for (i = 0 ; i < SIZE_DATA ; i++) {
-        key = rand();
+        key = rand() % SIZE_DATA;
         
         pData = (Data*)malloc(sizeof(Data));
         if (pData != NULL) {
@@ -88,9 +88,9 @@ void test_insert(RedBlackTree *pTree) {
 }
 
 
-void test_delete(RedBlackTree *pTree) {
-    int          turn;    
-    RedBlackNode *pNode;
+void test_delete(BinSearchTree *pTree) {
+    int       turn;    
+    TreeNode *pNode;
 
     turn = 1;
     while (true) {
@@ -103,7 +103,7 @@ void test_delete(RedBlackTree *pTree) {
             break;
         
         pTree->delete(pTree, pNode);
-        //printf("%lu\n", pTree->size(pTree));
+        printf("%lu\n", pTree->size(pTree));
         turn++;    
     }
 

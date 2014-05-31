@@ -5,13 +5,13 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-/* Wrapper for binary search tree structure initialization. */
+/* Wrapper for binary search tree initialization. */
 #define BinSearchTree_init(p)       p = NULL; \
                                     p = malloc(sizeof(BinSearchTree)); \
                                     if (p != NULL) \
                                         BSTreeInit(p);     
 
-/* Wrapper for binary search tree structure initialization. */
+/* Wrapper for binary search tree initialization. */
 #define BinSearchTree_deinit(p)     if (p != NULL) { \
                                         BSTreeDeinit(p); \
                                         free(p); \
@@ -32,7 +32,7 @@ typedef struct _BinSearchTree {
         
     int           (*compare)    (const void*, const void*);
     void          (*destroy)    (void*);
-    void          (*insert)     (struct _BinSearchTree*, TreeNode*);
+    TreeNode*     (*insert)     (struct _BinSearchTree*, void*);
     void          (*delete)     (struct _BinSearchTree*, TreeNode*);
     unsigned long (*size)       (struct _BinSearchTree*);     
     bool          (*search)     (struct _BinSearchTree*, void*);
@@ -42,7 +42,7 @@ typedef struct _BinSearchTree {
     TreeNode*     (*predecessor)(struct _BinSearchTree*, TreeNode*);
 
     void          (*set_compare)(struct _BinSearchTree*, int (*)(const void*, const void*));
-    void          (*set_destroy)(struct _BinSearchTree*, void (*) (void*))
+    void          (*set_destroy)(struct _BinSearchTree*, void (*) (void*));
 } BinSearchTree;
 
 
@@ -58,9 +58,12 @@ void BSTreeDeinit(BinSearchTree *self);
  * This function inserts the new node to the appropriate location of the tree.
  *
  * @param self          The pointer to the BinSearchTree structure.
- * @param pNode         The pointer to the node which is to be inserted to the tree.
+ * @param pItem         The pointer to the item which is to be inserted to the tree.
+ *
+ * @return              Non-NULL: The pointer to the successfully inserted node containing the requested item.
+ *                      NULL    : Fail to insert the requested item due to unsuccessful memory allocation. 
  */
-void BSTreeInsert(BinSearchTree *self, TreeNode *pNode);
+TreeNode* BSTreeInsert(BinSearchTree *self, void *pItem);
 
 
 /**
