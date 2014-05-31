@@ -18,7 +18,7 @@ run_debug:
 
 build_static_lib:
 	gcc -c bin_search_tree.c
-	ar rcs librbtree.a bin_search_tree.o
+	ar rcs libbstree.a bin_search_tree.o
 
 clean:
 	rm test_program.o bin_search_tree.o test_program
