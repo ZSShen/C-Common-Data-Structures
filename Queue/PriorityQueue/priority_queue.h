@@ -54,6 +54,9 @@ void* PQueuePop(PriorityQueue *self);
 void* PQueueTop(PriorityQueue *self);
 
 
+unsigned long PQueueSize(PriorityQueue *self);
+
+
 void PQueueSetCompare(PriorityQueue *self, int (*pFunc)(const void*, const void*));
 
 
