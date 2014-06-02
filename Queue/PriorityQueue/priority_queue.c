@@ -23,9 +23,25 @@ static void (*_pDestroy) (void*);
 /*===========================================================================*
  *                  Definition for internal functions                        *
  *===========================================================================*/
+
+/**
+ * This function is the default comparison strategy for a pair of items.
+ * 
+ * @param pSrc      The pointer to the source item.
+ * @param pTge      The pointer to the target item.
+ *
+ * @return          1 : The source item goes after the target one with certain ordering criteria.
+ *                  0 : The source item equals to the target one with certain ordering criteria.
+ *                  -1: The source item goes before the target one with certain ordering criteria.
+ */
 int _PQueueItemCompare(const void *pSrc, const void *pTge);
 
 
+/**
+ * This function is the default deallocation strategy for an item.
+ * 
+ * @param pItem    The pointer to the item which is to be deallocated.
+ */
 void _PQueueItemDestroy(void *pItem);
 
 
@@ -188,7 +204,7 @@ void PQueueSetDestroy(PriorityQueue *self, void (*pFunc)(void*)) {
  *===========================================================================*/
 /**
  * _PQueueItemCompare(): The default comparison strategy for a pair of items.
- * Note: It considers source and target items as primitive data and compares their values directly.
+ * Note: It considers source and target items as primitive data and gives the higher priority to the one with larger value.
  */
 int _PQueueItemCompare(const void *pSrc, const void *pTge) {
     

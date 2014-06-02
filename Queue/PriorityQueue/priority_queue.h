@@ -45,21 +45,62 @@ bool PQueueInit(PriorityQueue *self);
 void PQueueDeinit(PriorityQueue *self);
 
 
+/**
+ * This function insertes an item to the appropriate position of the queue.
+ *
+ * @param self      The pointer to the PriorityQueue structure.
+ * @param pItem     The pointer to the item which is to be inserted to the queue.
+ *
+ * @return          true : The item is inserted successfully.
+ *                  false: The item cannot be inserted due to insufficient memory space.
+ */
 bool PQueuePush(PriorityQueue *self, void *pItem);
 
-
+/**
+ * This function retrieves and deletes the top item from the queue.
+ * @param self      The pointer to the PriorityQueue structure.
+ * 
+ * @return          Non-NULL: The pointer to the top item.
+ *                  NULL    : The queue is empty, and thus nothing is returned.
+ */
 void* PQueuePop(PriorityQueue *self);
 
 
+/**
+ * This function retrieves and deletes the top item from the queue.
+ * @param self      The pointer to the PriorityQueue structure.
+ * 
+ * @return          Non-NULL: The pointer to the top item.
+ *                  NULL    : The queue is empty, and thus nothing is returned.
+ */
 void* PQueueTop(PriorityQueue *self);
 
 
+/**
+ * This function returns the size of the queue.
+ *
+ * @param self      The pointer to the PriorityQueue structure.
+ *
+ * @return          The size;
+ */
 unsigned long PQueueSize(PriorityQueue *self);
 
 
+/**
+ * This function sets the item comparison strategy with the one defined by user.
+ *
+ * @param self          The pointer to the PriorityQueue structure.
+ * @param pFunc         The pointer to the customized function.
+ */
 void PQueueSetCompare(PriorityQueue *self, int (*pFunc)(const void*, const void*));
 
 
+/**
+ * This function sets the item deallocation strategy with the one defined by user.
+ *
+ * @param self          The pointer to the PriorityQueue structure.
+ * @param pFunc         The pointer to the customized function.
+ */
 void PQueueSetDestroy(PriorityQueue *self, void (*pFunc)(void*));
 
 #endif
