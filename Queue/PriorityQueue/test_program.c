@@ -61,7 +61,7 @@ int main() {
     PriorityQueue_deinit(pQueue);
 
     //-----------------------------------------------
-    // Test for maximum priority queue.
+    // Test for minimum priority queue.
 
     PriorityQueue_init(pQueue);
 

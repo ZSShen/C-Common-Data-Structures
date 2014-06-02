@@ -16,5 +16,9 @@ run:
 run_debug:
 	valgrind --leak-check=yes --track-origins=yes ./test_program
 
+build_static_lib:
+	gcc -L. -ldarray -c priority_queue.c
+	ar rcs libpqueue.a priority_queue.o
+
 clean:
 	rm test_program.o priority_queue.o test_program

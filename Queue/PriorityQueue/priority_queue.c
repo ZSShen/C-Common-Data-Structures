@@ -86,6 +86,9 @@ void PQueueDeinit(PriorityQueue *self) {
 }
 
 
+/**
+ * PQueuePush(): Insert an item to the appropriate position of the queue.
+ */
 bool PQueuePush(PriorityQueue *self, void *pItem) {
     int             rc;    
     bool            status;    
@@ -124,6 +127,9 @@ bool PQueuePush(PriorityQueue *self, void *pItem) {
 }
 
 
+/**
+ * PQueuePop(): Retrieve and delete the top item from the queue.
+ */
 void* PQueuePop(PriorityQueue *self) {
     unsigned long   ulCapacity, idxCurr, idxLeft, idxRight, idxLarge;
     void            *pItemRet, *pItemTail, *pItemCurr, *pItemLeft, *pItemRight, *pItemLarge;
@@ -173,18 +179,27 @@ void* PQueuePop(PriorityQueue *self) {
 }
 
 
+/**
+ * PQueueTop(): Retrieve the top item from the queue.
+ */
 void* PQueueTop(PriorityQueue *self) {
 
     return _pArray->get(_pArray, INDEX_ROOT - 1);
 }
 
 
+/**
+ * PQueueSize(): Return the size of the queue.
+ */
 unsigned long PQueueSize(PriorityQueue *self) {
 
     return _ulSize;
 }
 
 
+/**
+ * PQueueSetCompare(): Set the item comparison strategy with the one defined by user.
+ */
 void PQueueSetCompare(PriorityQueue *self, int (*pFunc)(const void*, const void*)) {
 
     _pCompare = pFunc;
@@ -192,6 +207,9 @@ void PQueueSetCompare(PriorityQueue *self, int (*pFunc)(const void*, const void*
 }
 
 
+/**
+ * PQueueSetDestroy(): Set the item deallocation strategy with the one defined by user.
+ */
 void PQueueSetDestroy(PriorityQueue *self, void (*pFunc)(void*)) {
     
     _pDestroy = pFunc;
@@ -204,7 +222,8 @@ void PQueueSetDestroy(PriorityQueue *self, void (*pFunc)(void*)) {
  *===========================================================================*/
 /**
  * _PQueueItemCompare(): The default comparison strategy for a pair of items.
- * Note: It considers source and target items as primitive data and gives the higher priority to the one with larger value.
+ * Note: It considers source and target items as primitive data and 
+ *       gives the higher priority to the one with larger value.
  */
 int _PQueueItemCompare(const void *pSrc, const void *pTge) {
     
