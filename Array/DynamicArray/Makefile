@@ -18,7 +18,7 @@ run_debug:
 
 build_static_lib:
 	gcc -c dynamic_array.c
-	ar rcs libda.a dynamic_array.o
+	ar rcs libdarray.a dynamic_array.o
 
 clean:
 	rm test_program.o dynamic_array.o test_program

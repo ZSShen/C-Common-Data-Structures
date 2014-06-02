@@ -71,7 +71,7 @@ bool DArrayResize(DynamicArray *self, double udTimes) {
     if (ulNewCapacity <= 0)
         return false;
 
-    new = realloc(self->array, ulNewCapacity);
+    new = realloc(self->array, ulNewCapacity * sizeof(void*));
     if (new == NULL)
         return false;
 
