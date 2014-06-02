@@ -46,7 +46,7 @@ void PQueueDeinit(PriorityQueue *self);
 
 
 /**
- * This function insertes an item to the appropriate position of the queue.
+ * This function inserts an item to the appropriate position of the queue.
  *
  * @param self      The pointer to the PriorityQueue structure.
  * @param pItem     The pointer to the item which is to be inserted to the queue.
@@ -55,6 +55,7 @@ void PQueueDeinit(PriorityQueue *self);
  *                  false: The item cannot be inserted due to insufficient memory space.
  */
 bool PQueuePush(PriorityQueue *self, void *pItem);
+
 
 /**
  * This function retrieves and deletes the top item from the queue.
@@ -67,7 +68,7 @@ void* PQueuePop(PriorityQueue *self);
 
 
 /**
- * This function retrieves and deletes the top item from the queue.
+ * This function retrieves the top item from the queue.
  * @param self      The pointer to the PriorityQueue structure.
  * 
  * @return          Non-NULL: The pointer to the top item.

@@ -25,7 +25,7 @@ static void (*_pDestroy) (void*);
  *===========================================================================*/
 
 /**
- * This function is the default comparison strategy for a pair of items.
+ * This function is the default comparison strategy for a pair of queue items.
  * 
  * @param pSrc      The pointer to the source item.
  * @param pTge      The pointer to the target item.
@@ -38,7 +38,7 @@ int _PQueueItemCompare(const void *pSrc, const void *pTge);
 
 
 /**
- * This function is the default deallocation strategy for an item.
+ * This function is the default deallocation strategy for a queue item.
  * 
  * @param pItem    The pointer to the item which is to be deallocated.
  */
@@ -95,7 +95,7 @@ bool PQueuePush(PriorityQueue *self, void *pItem) {
     unsigned long   ulCapacity, idxCurr, idxParent;
     void            *pItemCurr, *pItemParent;
 
-    /* Expand the capacity of the internal array if necessary. */
+    /* Expand the capacity of the queue if necessary. */
     ulCapacity = _pArray->capacity(_pArray);
     if ((_ulSize + 1) == ulCapacity) {
         status = _pArray->resize(_pArray, TIMES_EXPAND_CAPACITY);
@@ -103,11 +103,11 @@ bool PQueuePush(PriorityQueue *self, void *pItem) {
             return false;    
     }
 
-    /* Insert the item to the tail of the array. */
+    /* Insert the item to the rear of the queue. */
     _pArray->put(_pArray, pItem, _ulSize);
     _ulSize++;
 
-    /* Maintain the priority attributes. */
+    /* Maintain the attributes of priority queue. */
     idxCurr = _ulSize;
     while (idxCurr > 1) {
         idxParent = Parent(idxCurr);
@@ -138,7 +138,7 @@ void* PQueuePop(PriorityQueue *self) {
     if (_ulSize == 0)
         return NULL;
 
-    /* Shrink the capacity of the internal array if necessary. */
+    /* Shrink the capacity of the queue if necessary. */
     ulCapacity = _pArray->capacity(_pArray);
     if ((_ulSize + 1) < (ulCapacity * TIMES_SHRINK_CAPACITY))
         _pArray->resize(_pArray, TIMES_SHRINK_CAPACITY);
@@ -149,7 +149,7 @@ void* PQueuePop(PriorityQueue *self) {
     _pArray->put(_pArray, pItemTail, INDEX_ROOT - 1);
     _ulSize--;
 
-    /* Maintain the priority attributes. */
+    /* Maintain the attributes of priority queue. */
     idxCurr = INDEX_ROOT;
     do {        
         idxLeft = Left(idxCurr);
@@ -221,7 +221,7 @@ void PQueueSetDestroy(PriorityQueue *self, void (*pFunc)(void*)) {
  *                Implementation for internal functions                      *
  *===========================================================================*/
 /**
- * _PQueueItemCompare(): The default comparison strategy for a pair of items.
+ * _PQueueItemCompare(): The default comparison strategy for a pair of queue items.
  * Note: It considers source and target items as primitive data and 
  *       gives the higher priority to the one with larger value.
  */
