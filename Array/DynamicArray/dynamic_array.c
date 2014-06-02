@@ -34,7 +34,7 @@ void DArrayDeinit(DynamicArray *self) {
 
 
 /**
- * DArrayPut(): Insert an item to the designated position.
+ * DArrayPut(): Insert an item to the designated index of the array.
  */
 bool DArrayPut(DynamicArray *self, void *pItem, unsigned long ulIndex) {
 
@@ -48,7 +48,7 @@ bool DArrayPut(DynamicArray *self, void *pItem, unsigned long ulIndex) {
 
 
 /**
- * DArrayGet(): Retrieve an item from the designated position.
+ * DArrayGet(): Retrieve an item from the designated index of the array.
  */
 void* DArrayGet(DynamicArray *self, unsigned long ulIndex) {
 
