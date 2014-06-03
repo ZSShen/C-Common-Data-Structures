@@ -110,7 +110,7 @@ unsigned long RBTreeSize(RedBlackTree *self);
  *
  * @param self          The pointer to the RedBlackTree structure.
  *
- * @return              Non-NULL: The pointer to the node containing the maximum order.
+ * @return              Non-NULL: The pointer to the node with maximum order.
  *                      NULL    : The tree is empty.
  */
 RedBlackNode* RBTreeMaximum(RedBlackTree *self);
@@ -121,7 +121,7 @@ RedBlackNode* RBTreeMaximum(RedBlackTree *self);
  *
  * @param self          The pointer to the RedBlackTree structure.
  *
- * @return              Non-NULL: The pointer to the node containing the minimum order.
+ * @return              Non-NULL: The pointer to the node with minimum order.
  *                      NULL    : The tree is empty.
  */
 RedBlackNode* RBTreeMinimum(RedBlackTree *self);
