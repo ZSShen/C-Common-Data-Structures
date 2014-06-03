@@ -2,14 +2,14 @@
 #define _RED_BLACK_TREE_H_
 
 #include <stdlib.h>
-#include <stdio.h>c
+#include <stdio.h>
 #include <stdbool.h>
 
 
 /* Wrapper for RedBlackTree initialization. */
 #define RedBlackTree_init(p)        p = NULL; \
                                     p = (RedBlackTree*)malloc(sizeof(RedBlackTree)); \
-                                    if (p != NULL) {\
+                                    if (p != NULL) { \
                                         bool check; \
                                         check = RBTreeInit(p); \
                                         if (check == false) { \

@@ -183,7 +183,7 @@ void RBTreeDeinit(RedBlackTree *self) {
 
 
 /*
- * RBTreeMinimum(): Locate the node containing the minimum key of the tree.
+ * RBTreeMinimum(): Return the node with minimum order of the tree.
  */
 RedBlackNode* RBTreeMinimum(RedBlackTree *self) {
     RedBlackNode *tge;
@@ -197,7 +197,7 @@ RedBlackNode* RBTreeMinimum(RedBlackTree *self) {
 
 
 /*
- * RBTreeMaximum(): Locate the node containing the maximum key of the tree.
+ * RBTreeMaximum(): Return the node with maximum order of the tree.
  */
 RedBlackNode* RBTreeMaximum(RedBlackTree *self) {
     RedBlackNode *tge;
@@ -211,7 +211,7 @@ RedBlackNode* RBTreeMaximum(RedBlackTree *self) {
 
 
 /*
- * RBTreeSuccessor(): Locate the successor of the designated node.
+ * RBTreeSuccessor(): Return the successor of the designated node.
  */
 RedBlackNode* RBTreeSuccessor(RedBlackTree *self, RedBlackNode *pCurNode) {
     RedBlackNode *tge;
@@ -225,7 +225,7 @@ RedBlackNode* RBTreeSuccessor(RedBlackTree *self, RedBlackNode *pCurNode) {
 
 
 /*
- * RBTreePredecessor(): Locate the predecessor of the designated node.
+ * RBTreePredecessor(): Return the predecessor of the designated node.
  */
 RedBlackNode* RBTreePredecessor(RedBlackTree *self, RedBlackNode *pCurNode) {
     RedBlackNode *tge;
@@ -239,7 +239,7 @@ RedBlackNode* RBTreePredecessor(RedBlackTree *self, RedBlackNode *pCurNode) {
 
 
 /**
- * RBTreeInsert(): Insert the new red black node to the appropriate location of the tree.
+ * RBTreeInsert(): Insert a new node storing the requested item to the appropriate position of the tree.
  * Note: Tree structure adjustment is necessary to maintain the attributes of red black tree.
  */
 RedBlackNode* RBTreeInsert(RedBlackTree *self, void *pItem) {
@@ -320,7 +320,7 @@ RedBlackNode* RBTreeInsert(RedBlackTree *self, void *pItem) {
 
 
 /**
- * RBTreeDelete(): Delete the specified red black node from the tree and adjust the tree structure.
+ * RBTreeDelete(): Delete the specified node from the tree and adjust the tree structure.
  * Note: Tree structure adjustment is necessary to maintain the attributes of red black tree.
  */
 void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode) {
@@ -397,7 +397,7 @@ void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode) {
 
 
 /*
- * RBTreeSearch(): Check whethere the tree has the designated item.
+ * RBTreeSearch(): Check whethere the tree has the specified item.
  */
 RedBlackNode* RBTreeSearch(RedBlackTree *self, void *pItem) {
     int             rc;
