@@ -22,14 +22,14 @@ static void (*_pDestroy) (void*);
  *
  * @param pNull     The pointer to the dummy node.
  * @param curr      The pointer to the node currently traversed.
- * @param func      The pointer to the function which describes the memory deallocation strategy.
+ * @param func      The pointer to the function which describes the node item deallocation strategy.
  */
 void _RBTreeDeinit(RedBlackNode *pNull, RedBlackNode *curr, void (*func) (void*));
 
 
 /**
- * This function makes the left rotation for the designated node "curr".
- * After rotation, "curr" will be the left child of its original right child.
+ * This function makes the left rotation for the designated node.
+ * After rotation, the node will be the left child of its original right child.
  *
  * @param self      The pointer to the RedBlackTree structure.
  * @param curr      The pointer to the node which is to be rotated.
@@ -38,8 +38,8 @@ void _RBTreeLeftRotate(RedBlackTree *self, RedBlackNode *curr);
 
 
 /**
- * This function makes the right rotation for the designated node "curr".
- * After rotation, "curr" will be the right child of its original left child.
+ * This function makes the right rotation for the designated node.
+ * After rotation, the node will be the right child of its original left child.
  *
  * @param self      The pointer to the RedBlackTree structure.
  * @param curr      The pointer to the node which is to be rotated.
@@ -48,7 +48,7 @@ void _RBTreeRightRotate(RedBlackTree *self, RedBlackNode *curr);
 
 
 /**
- * This function is called after node insertion to adjust the tree structure to maintain the red black attributes.
+ * This function is called after node insertion to maintain the attributes of red black tree.
  *
  * @param self      The pointer to the RedBlackTree structure.
  * @param curr      The pointer to the node which is the origin for cascading adjustments.
@@ -57,7 +57,7 @@ void _RBTreeInsertFixup(RedBlackTree *self, RedBlackNode *curr);
 
 
 /**
- * This function is called after node deletion to adjust the tree structure to maintain the red black attributes.
+ * This function is called after node deletion to maintain the attributes of red black tree.
  *
  * @param self      The pointer to the RedBlackTree structure.
  * @param curr      The pointer to the node which is the origin for cascading adjustments.
@@ -66,10 +66,10 @@ void _RBTreeDeleteFixup(RedBlackTree *self, RedBlackNode *curr);
 
 
 /**
- * This function locates the node containing minimal key within the subtree rooted by the
+ * This function returns the node with minimal order within the subtree rooted by the
  * specified node.
  *
- * @param curr      The pointer to the root node for minimal key traversal.
+ * @param curr      The pointer to the root node of a specific subtree.
  *
  * @return          Non-Sentinel: The pointer to the target node.
  *                  Sentinel    : The subtree is empty.
@@ -78,10 +78,10 @@ RedBlackNode* _RBTreeMinimal(RedBlackTree *self, RedBlackNode *curr);
 
 
 /**
- * This function locates the node containing maximal key within the subtree rooted by the
+ * This function returns the node with maximal key within the subtree rooted by the
  * specified node.
  *
- * @param curr      The pointer to the root node for maximal key traversal.
+ * @param curr      The pointer to the root node of a specific subtree.
  *
  * @return          Non-Sentinel: The pointer to the target node.
  *                  Sentinel    : The subtree is empty.
@@ -90,23 +90,23 @@ RedBlackNode* _RBTreeMaximal(RedBlackTree *self, RedBlackNode *curr);
 
 
 /**
- * This function locates the successor of the specified node.
+ * This function returns the successor of the specified node.
  *
  * @param curr      The pointer to the node for successor search.
  *
  * @return          Non-Sentinel: The pointer to the target node.
- *                  Sentinel    : The size of the tree is less than two.
+ *                  Sentinel    : The size of the tree is less than two, and thus no node is returned.
  */
 RedBlackNode* _RBTreeSuccessor(RedBlackTree *self, RedBlackNode *curr);
 
 
 /**
- * This function locates the predecessor of the specified node.
+ * This function returns the predecessor of the specified node.
  *
  * @param curr      The pointer to the node for predecessor search.
  *
  * @return          Non-Sentinel: The pointer to the target node.
- *                  Sentinel    : The size of the tree is less than two.
+ *                  Sentinel    : The size of the tree is less than two, and thus no node is returned.
  */
 RedBlackNode* _RBTreePredecessor(RedBlackTree *self, RedBlackNode *curr);
 
@@ -125,7 +125,7 @@ int _RBTreeItemCompare(const void *pSrc, const void *pTge);
     
 
 /**
- * This function is the default deallocation strategy for an item.
+ * This function is the default deallocation strategy for a node item.
  * 
  * @param pItem    The pointer to the item which is to be deallocated.
  */
@@ -135,12 +135,15 @@ void _RBTreeItemDestroy(void *pItem);
 /*===========================================================================*
  *               Implementation for exported functions                       *
  *===========================================================================*/
-void RBTreeInit(RedBlackTree *self) {
+bool RBTreeInit(RedBlackTree *self) {
 
     ulSize = 0;    
 
     /* Create a dummy node representing the "NULL" pointer of the red black tree. */
     self->pNull = (RedBlackNode*)malloc(sizeof(RedBlackNode));
+    if (self->pNull == NULL)    
+        return false;
+
     self->pNull->bColor = NODE_COLOR_BLACK;
     self->pNull->pItem = NULL;
     self->pNull->pParent = self->pNull;
@@ -166,7 +169,8 @@ void RBTreeInit(RedBlackTree *self) {
     
     self->set_compare = RBTreeSetCompare;
     self->set_destroy = RBTreeSetDestroy;
-    return;
+    
+    return true;
 }
 
 
