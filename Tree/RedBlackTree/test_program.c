@@ -32,17 +32,19 @@ int main() {
     /* Create the red black tree. */
     RedBlackTree_init(pTree);
 
-    /* Customize the node item comparison and destroy functions .*/
-    pTree->set_compare(pTree, data_compare);
-    pTree->set_destroy(pTree, data_destroy);    
+    if (pTree != NULL) {
+        /* Customize the node item comparison and destroy functions .*/
+        pTree->set_compare(pTree, data_compare);
+        pTree->set_destroy(pTree, data_destroy);    
 
-    /* Test red black tree utilities. */
-    test_insert(pTree);
-    test_delete(pTree);
+        /* Test red black tree utilities. */
+        test_insert(pTree);
+        test_delete(pTree);
 
-    /* Free the red black tree. */
-    RedBlackTree_deinit(pTree);
-
+        /* Free the red black tree. */
+        RedBlackTree_deinit(pTree);
+    }
+    
     return 0;
 }
 
