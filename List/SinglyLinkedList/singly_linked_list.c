@@ -1,6 +1,40 @@
 #include "singly_linked_list.h"
 
+/*===========================================================================*
+ *                  Simulation for private variables                         *
+ *===========================================================================*/
+static unsigned long _ulSize;
+static int (*_pCompare)(const void*, const void*);
+static void (*_pDestroy)(void*);
 
+
+/*===========================================================================*
+ *                  Definition for internal functions                        *
+ *===========================================================================*/
+/**
+ * The default comparison strategy for the items of a pair of list nodes.
+ *
+ * @param pSrc          The pointer to the source item.
+ * @param pDst          The pointer to the target item.
+ *
+ * @return              1 : The source item goes after the target one with certain ordering criteria.
+ *                      0 : The source item equals the target one with certain ordering criteria.
+ *                     -1 : The source item goes before the target one with certain ordering criteria.
+ */
+int _SLListCompare(const void *pSrc, const void *pTge);
+
+
+/**
+ * The default deallocation strategy for a node item.
+ * 
+ * @param pItem         The pointer to the item which is to be deallocated.
+ */
+void _SLListDestroy(void *pItem);
+
+
+/*===========================================================================*
+ *                Implementation for exported functions                      *
+ *===========================================================================*/
 void SLListInit(SinglyLinkedList *self) {
 
     self->pHead = NULL;
@@ -39,33 +73,6 @@ void SLListDeinit(SinglyLinkedList *self) {
 
 
 /**
- * SLListCompare(): The default strategy for node comparison.
- * Note: It considers source and target items as primitive data and compares their values directly.
- */
-int SLListCompare(const void *pSrc, const void *pTge) {
-    
-    if ((size_t)pSrc == (size_t)pTge)
-        return 0;
-    else {
-        if ((size_t)pSrc > (size_t)pTge)
-            return 1;
-        else
-            return -1;    
-    }
-}
-
-
-/**
- * SLListDestroy(): The default strategy for item deallocation.
- * Note: By default, the item is a primitive data, and thus no further operations are required.
- */
-void SLListDestroy(void *pItem) {
-
-    return;
-}
-
-
-/**
  * SLListAppend(): Append an item to the tail of the list.
  */
 SinglyLinkedNode* SLListAppend(SinglyLinkedList *self, void *pItem) {
@@ -93,7 +100,7 @@ SinglyLinkedNode* SLListAppend(SinglyLinkedList *self, void *pItem) {
 /**
  * SLListInsert(): Insert an item to the designated position of the list.
  */
-SinglyLinkedNode* SLListInsert(SinglyLinkedList *self, int idx, void *pItem) {
+SinglyLinkedNode* SLListInsert(SinglyLinkedList *self, unsigned long idx, void *pItem) {
     int i;    
     SinglyLinkedNode *pred, *new, *succ;
     
@@ -162,7 +169,7 @@ void* SLListRemove(SinglyLinkedList *self, void *pItem) {
 /**
  * SLListPop(): Remove the item from the designated position of the list and returns it.
  */
-void* SLListPop(SinglyLinkedList *self, int idx) {
+void* SLListPop(SinglyLinkedList *self, unsigned long idx) {
     int     i;    
     void    *pReturn; 
     SinglyLinkedNode *pred, *curr, *succ;
@@ -228,3 +235,33 @@ void SLListReverse(SinglyLinkedList *self) {
 
     return;
 }
+
+
+/*===========================================================================*
+ *                Implementation for internal functions                      *
+ *===========================================================================*/
+/**
+ * _SLListCompare(): It considers source and target items as primitive data and 
+ *                   gives the larger order to the one with larger value.
+ */
+int _SLListCompare(const void *pSrc, const void *pTge) {
+    
+    if ((size_t)pSrc == (size_t)pTge)
+        return 0;
+    else {
+        if ((size_t)pSrc > (size_t)pTge)
+            return 1;
+        else
+            return -1;    
+    }
+}
+
+
+/**
+ * SLListDestroy(): By default, the item is a primitive data, and thus no further operations are required.
+ */
+void _SLListDestroy(void *pItem) {
+
+    return;
+}
+

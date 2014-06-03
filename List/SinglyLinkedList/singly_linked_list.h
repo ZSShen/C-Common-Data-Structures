@@ -5,13 +5,13 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-/* Wrapper for singly linked list initialization. */
+/* Wrapper for SinglyLinkedList initialization. */
 #define SinglyLinkedList_init(p)    p = NULL; \
-                                    p = malloc(sizeof(SinglyLinkedList)); \
+                                    p = (SinglyLinkedList*)malloc(sizeof(SinglyLinkedList)); \
                                     if (p != NULL) \
                                         SLListInit(p);
 
-/* Wrapper for singly linked list deinitialization. */
+/* Wrapper for SinglyLinkedList deinitialization. */
 #define SinglyLinkedList_deinit(p)  if (p != NULL) { \
                                         SLListDeinit(p); \
                                         free(p); \
@@ -31,58 +31,58 @@ typedef struct _SinglyLinkedList {
     int               (*compare) (const void*, const void*);
     void              (*destroy) (void*);
     SinglyLinkedNode* (*append)  (struct _SinglyLinkedList*, void*);
-    SinglyLinkedNode* (*insert)  (struct _SinglyLinkedList*, int, void*);
+    SinglyLinkedNode* (*insert)  (struct _SinglyLinkedList*, unsigned long, void*);
     void*             (*remove)  (struct _SinglyLinkedList*, void*);
     void              (*reverse) (struct _SinglyLinkedList*); 
-    void*             (*pop)     (struct _SinglyLinkedList*, int);
-    bool              (*search)
+    void*             (*pop)     (struct _SinglyLinkedList*, unsigned long);
+    bool              (*search)  (struct _SinglyLinkedList*, void*);
 } SinglyLinkedList;
 
 
-/* Constructor for singly linked list. */
+/* Constructor for SinglyLinkedList structure. */
 void SLListInit(SinglyLinkedList*);
 
 
-/* Destructor for singly linked list. */
+/* Destructor for SinglyLinkedList structure. */
 void SLListDeinit(SinglyLinkedList*);
 
 
 /**
- * This function appends an item to the tail of the list.
+ * This function appends a node storing the requested item to the tail of the list.
  *
  * @param self          The pointer to the SinglyLinkedList structure.
  * @param pItem         The pointer to the item which is to be appended to the list.
  *
- * @return              Non-NULL: The pointer to the successfully inserted node containing the requested item.
- *                      NULL    : Fail to insert the requested item due to unsuccessful memory allocation
+ * @return              Non-NULL: The pointer to the successfully inserted node.
+ *                      NULL    : The node cannot be inserted due to insufficient memory space.
  */
 SinglyLinkedNode* SLListAppend(SinglyLinkedList *self, void *pItem);
 
 
 /**
- * This function inserts an item to the designated position of the list.
+ * This function inserts a node storing the requested item to the designated index of the list.
  *
  * @param self          The pointer to the SinglyLinkedList structure.
- * @param idx           The designated position.
+ * @param ulIndex       The designated index.
  * @param pItem         The pointer to the item which is to be inserted to the list.
  *
- * @return              Non-NULL: The pointer to the successfully inserted node containing the requested item.
- *                      NULL    : Fail to insert the requested item due to unsuccessful memory allocation or
- *                                the illegally designated position.
+ * @return              Non-NULL: The pointer to the successfully inserted node.
+ *                      NULL    : The node cannot be inserted due to insufficient memory space or
+ *                                illegally designated index.
  */
-SinglyLinkedNode* SLListInsert(SinglyLinkedList *self, int idx, void *pItem);
+SinglyLinkedNode* SLListInsert(SinglyLinkedList *self, unsigned long ulIndex, void *pItem);
 
 
 /**
- * This function removes the first item with the key equal to the designated item from the list,
- * and returns it.
+ * This function returns the first item with the logical order equal to the designated item from the list,
+ * and removes it.
  *
  * @param self          The pointer to the SinglyLinkedList structure.
  * @param pSrc          The pointer to the designated item.
  *
- * @return              Non-NULL: The pointer to the removed item.
- *                      NULL    : There is no item having the same key with the designated item, and thus the
- *                                remove operation fails.
+ * @return              Non-NULL: The pointer to the returned item.
+ *                      NULL    : There is no item having the same logical order with the designated one, and thus
+ *                                nothing is returned.
  */
 void* SLListRemove(SinglyLinkedList *self, void *pItem);
 
@@ -96,15 +96,15 @@ void SLListReverse(SinglyLinkedList *self);
 
 
 /**
- * This function removes the item from the designated position of the list and returns it.
+ * This function returns the item from the designated index of the list and removes it.
  *
  * @param self          The pointer to the SinglyLinkedList structure.
- * @param idx           The designated position.
+ * @param ulIndex       The designated index.
  *
- * @return              Non-NULL: The pointer to the removed item.
- *                      NULL    : Fail to remove the item due to the illegally designated position.
+ * @return              Non-NULL: The pointer to the returned item.
+ *                      NULL    : No item can be returned due to illegally designated index.
  */
-void* SLListPop(SinglyLinkedList *self, int idx);
+void* SLListPop(SinglyLinkedList *self, unsigned long idx);
 
 
 /**
@@ -117,26 +117,5 @@ void* SLListPop(SinglyLinkedList *self, int idx);
  *                      false: The item does not exist.
  */
 bool SLListSearch(SinglyLinkedList *self, void *pItem);
-
-
-/**
- * The default function for node item comparison.
- *
- * @param pSrc          The pointer to the source item.
- * @param pDst          The pointer to the target item.
- *
- * @return               1: The key contained by source item is larger than the target one.
- *                       0: The key contained by source item is equal to the target one.
- *                      -1: The key contained by source item is less than the target one.
- */
-int SLListCompare(const void *pSrc, const void *pTge);
-
-
-/**
- * The default function for item deallocation.
- * 
- * @param pItem         The pointer to the item which is to be deallocated.
- */
-void SLListDestroy(void *pItem);
 
 #endif
