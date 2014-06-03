@@ -11,10 +11,10 @@ typedef struct _Data {
 } Data;
 
 
-/* Define the node item comparison function for binary search tree. */
+/* Define the node item comparison strategy for BinSearchTree. */
 int data_compare(const void *pSrc, const void *pTge);
 
-/* Define the node item delete function for binary search tree. */
+/* Define the node item deallocation strategy for BinSearchTree. */
 void data_destroy(void *pItem);
 
 /* Test function for insertion-related utilites. */
@@ -32,16 +32,18 @@ int main() {
     /* Create the red black tree. */
     BinSearchTree_init(pTree);
 
-    /* Customize the node item comparison and destroy functions .*/
-    pTree->set_compare(pTree, data_compare);
-    pTree->set_destroy(pTree, data_destroy);    
+    if (pTree != NULL) {
+        /* Customize the node item comparison and destroy functions .*/
+        pTree->set_compare(pTree, data_compare);
+        pTree->set_destroy(pTree, data_destroy);    
 
-    /* Test red black tree utilities. */
-    test_insert(pTree);
-    test_delete(pTree);
+        /* Test red black tree utilities. */
+        test_insert(pTree);
+        test_delete(pTree);
 
-    /* Free the red black tree. */
-    BinSearchTree_deinit(pTree);
+        /* Free the red black tree. */
+        BinSearchTree_deinit(pTree);
+    }
 
     return 0;
 }
@@ -103,7 +105,7 @@ void test_delete(BinSearchTree *pTree) {
             break;
         
         pTree->delete(pTree, pNode);
-        printf("%lu\n", pTree->size(pTree));
+        //printf("%lu\n", pTree->size(pTree));
         turn++;    
     }
 
