@@ -5,13 +5,13 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-/* Wrapper for binary search tree initialization. */
+/* Wrapper for BinSearchTree initialization. */
 #define BinSearchTree_init(p)       p = NULL; \
-                                    p = malloc(sizeof(BinSearchTree)); \
+                                    p = (BinSearchTree*)malloc(sizeof(BinSearchTree)); \
                                     if (p != NULL) \
                                         BSTreeInit(p);     
 
-/* Wrapper for binary search tree initialization. */
+/* Wrapper for BinSearchTree deinitialization. */
 #define BinSearchTree_deinit(p)     if (p != NULL) { \
                                         BSTreeDeinit(p); \
                                         free(p); \
@@ -30,8 +30,6 @@ typedef struct _TreeNode {
 typedef struct _BinSearchTree {
     TreeNode    *pRoot;
         
-    int           (*compare)    (const void*, const void*);
-    void          (*destroy)    (void*);
     TreeNode*     (*insert)     (struct _BinSearchTree*, void*);
     void          (*delete)     (struct _BinSearchTree*, TreeNode*);
     unsigned long (*size)       (struct _BinSearchTree*);     
@@ -46,22 +44,22 @@ typedef struct _BinSearchTree {
 } BinSearchTree;
 
 
-/* Constructor for binary search tree structure. */
+/* Constructor for BinSearchTree structure. */
 void BSTreeInit(BinSearchTree *self);
 
 
-/* Destructor for binary search tree structure. */
+/* Destructor for BinSearchTree structure. */
 void BSTreeDeinit(BinSearchTree *self);
 
 
 /**
- * This function inserts the new node to the appropriate location of the tree.
+ * This function inserts a new node storing the requested item to the appropriate position of the tree.
  *
  * @param self          The pointer to the BinSearchTree structure.
  * @param pItem         The pointer to the item which is to be inserted to the tree.
  *
- * @return              Non-NULL: The pointer to the successfully inserted node containing the requested item.
- *                      NULL    : Fail to insert the requested item due to unsuccessful memory allocation. 
+ * @return              Non-NULL: The pointer to the successfully inserted node.
+ *                      NULL    : The node cannot be inserted due to insufficient memory space. 
  */
 TreeNode* BSTreeInsert(BinSearchTree *self, void *pItem);
 
@@ -79,13 +77,14 @@ void BSTreeDelete(BinSearchTree *self, TreeNode *pNode);
  * This function returns the size of the tree.
  *
  * @param self          The pointer to the BinSearchTree structure.
+ *
  * @return              The size;
  */
 unsigned long BSTreeSize(BinSearchTree *self);
 
 
 /**
- * This function checks whethere the tree has the designated item.
+ * This function checks whethere the tree has the specified item.
  *
  * @param self          The pointer to the BinSearchTree structure.
  * @param pItem         The pointer to the item which is to be checked.
@@ -97,45 +96,45 @@ bool BSTreeSearch(BinSearchTree *self, void *pItem);
 
 
 /**
- * This function locates the node containing the maximum key of the tree.
+ * This function returns the node with maximum order of the tree.
  *
  * @param self          The pointer to the BinSearchTree structure.
  *
- * @return              Non-NULL: The pointer to the node containing maximum key.
+ * @return              Non-NULL: The pointer to the node with maximum order.
  *                      NULL    : The tree is empty.
  */
 TreeNode* BSTreeMaximum(BinSearchTree *self);
 
 
 /**
- * This function locates the node containing the minimum key of the tree.
+ * This function returns the node with minimum order of the tree.
  *
  * @param self          The pointer to the BinSearchTree structure.
  *
- * @return              Non-NULL: The pointer to the node containing minimum key.
+ * @return              Non-NULL: The pointer to the node with minimum order.
  *                      NULL    : The tree is empty.
  */
 TreeNode* BSTreeMinimum(BinSearchTree *self);
 
 
 /**
- * This function locates the successor of the designated node.
+ * This function returns the successor of the designated node.
  *
  * @param self          The pointer to the BinSearchTree structure.
  *
  * @return              Non-NULL: The pointer to the successor.
- *                      NULL    : There is no successor of the designated node.
+ *                      NULL    : There is no successor for the designated node.
  */
 TreeNode* BSTreeSuccessor(BinSearchTree *self, TreeNode *pCurNode);
 
 
 /**
- * This function locates the predecessor of the designated node.
+ * This function returns the predecessor of the designated node.
  *
  * @param self          The pointer to the BinSearchTree structure.
  *
- * @return              Non-Null: The pointer to the successor.
- *                      NULL    : There is no predecessor of the designated node.
+ * @return              Non-Null: The pointer to the predecessor.
+ *                      NULL    : There is no predecessor for the designated node.
  */
 TreeNode* BSTreePredecessor(BinSearchTree *self, TreeNode *pCurNode);
 
@@ -151,6 +150,7 @@ void BSTreeSetCompare(BinSearchTree *self, int (*pFunc)(const void*, const void*
 
 /**
  * This function sets the item deallocation strategy with the one defined by user.
+ *
  * @param self          The pointer to the BinSearchTree structure.
  * @param pFunc         The pointer to the customized function.
  */

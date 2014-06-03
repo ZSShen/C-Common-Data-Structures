@@ -19,16 +19,16 @@ static void (*_pDestroy)(void*);
  * This function traverses all the nodes and releases the allocated memory space.
  *
  * @param curr      The pointer to the node currently traversed.
- * @param func      The pointer to the function which describes the memory deallocation strategy.
+ * @param func      The pointer to the function which describes the node item deallocation strategy.
  */
 void _BSTreeDeinit(TreeNode *curr, void (*func) (void*));
 
 
 /**
- * This function locates the node containing minimal key within the subtree rooted by the
+ * This function returns the node with minimal order within the subtree rooted by the
  * specified node.
  *
- * @param curr      The pointer to the root node for minimal key traversal.
+ * @param curr      The pointer to the root node of a specific subtree.
  *
  * @return          Non-NULL: The pointer to the target node.
  *                  NULL    : The subtree is empty.
@@ -37,10 +37,10 @@ TreeNode* _BSTreeMinimal(TreeNode *curr);
 
 
 /**
- * This function locates the node containing maximal key within the subtree rooted by the
+ * This function returns the node with maximal order within the subtree rooted by the
  * specified node.
  *
- * @param curr      The pointer to the root node for maximal key traversal.
+ * @param curr      The pointer to the root node of a specific subtree.
  *
  * @return          Non-NULL: The pointer to the target node.
  *                  NULL    : The subtree is empty.
@@ -49,23 +49,23 @@ TreeNode* _BSTreeMaximal(TreeNode *curr);
 
 
 /**
- * This function locates the successor of the specified node.
+ * This function returns the successor of the designated node.
  *
  * @param curr      The pointer to the node for successor search.
  *
  * @return          Non-NULL: The pointer to the target node.
- *                  NULL    : The size of the tree is less than two.
+ *                  NULL    : There is no successor for the designated node.
  */
 TreeNode* _BSTreeSuccessor(TreeNode *curr);
 
 
 /**
- * This function locates the predecessor of the specified node.
+ * This function returns the predecessor of the designated node.
  *
  * @param curr      The pointer to the node for predecessor search.
  *
  * @return          Non-NULL: The pointer to the target node.
- *                  NULL    : The size of the tree is less than two.
+ *                  NULL    : There is no predecessor for the designated node.
  */
 TreeNode* _BSTreePredecessor(TreeNode *curr);
 
@@ -128,7 +128,7 @@ void BSTreeDeinit(BinSearchTree *self) {
 
 
 /*
- * BSTreeMinimum(): Locate the node containing the minimum key of the tree.
+ * BSTreeMinimum(): Return the node with minimum order of the tree.
  */
 TreeNode* BSTreeMinimum(BinSearchTree *self) {
 
@@ -137,7 +137,7 @@ TreeNode* BSTreeMinimum(BinSearchTree *self) {
 
 
 /*
- * BSTreeMaximum(): Locate the node containing the maximum key of the tree.
+ * BSTreeMaximum(): Return the node with maximum order of the tree.
  */
 TreeNode* BSTreeMaximum(BinSearchTree *self) {
 
@@ -146,7 +146,7 @@ TreeNode* BSTreeMaximum(BinSearchTree *self) {
 
 
 /*
- * BSTreeSuccessor(): Locate the successor of the designated node.
+ * BSTreeSuccessor(): Return the successor of the designated node.
  */
 TreeNode* BSTreeSuccessor(BinSearchTree *self, TreeNode *pCurNode) {
 
@@ -155,7 +155,7 @@ TreeNode* BSTreeSuccessor(BinSearchTree *self, TreeNode *pCurNode) {
 
 
 /*
- * BSTreePredecessor(): Locate the predecessor of the designated node.
+ * BSTreePredecessor(): Return the predecessor of the designated node.
  */
 TreeNode* BSTreePredecessor(BinSearchTree *self, TreeNode *pCurNode) {
 
@@ -164,7 +164,7 @@ TreeNode* BSTreePredecessor(BinSearchTree *self, TreeNode *pCurNode) {
 
 
 /**
- * BSTreeInsert(): Insert the new node to the appropriate location of the tree.
+ * BSTreeInsert(): Insert a new node storing the requested item to the appropriate position of the tree.
  */
 TreeNode* BSTreeInsert(BinSearchTree *self, void *pItem) {
     int         rc;
@@ -308,7 +308,7 @@ void BSTreeDelete(BinSearchTree *self, TreeNode *pNode) {
 
 
 /*
- * BSTreeSearch(): Check whethere the tree has the designated item.
+ * BSTreeSearch(): Check whethere the tree has the specified item.
  */
 bool BSTreeSearch(BinSearchTree *self, void *pItem) {
     int      rc;    
@@ -444,8 +444,9 @@ TreeNode* _BSTreePredecessor(TreeNode *curr) {
 
 
 /**
- * _BSTreeItemCompare(): The default comparison strategy for the items of a pair of nodes.
- * Note: It considers source and target items as primitive data and compares their values directly.
+ * _BSTreeItemCompare(): The default comparison strategy for the items of a pair of tree nodes.
+ * Note: It considers source and target items as primitive data and 
+ *       gives the larger order to the one with larger value.
  */
 int _BSTreeItemCompare(const void *pSrc, const void *pTge) {
     
@@ -460,7 +461,7 @@ int _BSTreeItemCompare(const void *pSrc, const void *pTge) {
 }
 
 /**
- * _BSTreeItemDestroy(): The default deallocation strategy for an item.
+ * _BSTreeItemDestroy(): The default deallocation strategy for a node item.
  * Note: By default, the item is a primitive data, and thus no further operations are required.
  */
 void _BSTreeItemDestroy(void *pItem) {
