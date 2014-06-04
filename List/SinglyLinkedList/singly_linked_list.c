@@ -37,21 +37,25 @@ void _SLListDestroy(void *pItem);
  *===========================================================================*/
 void SLListInit(SinglyLinkedList *self) {
 
+    _ulSize = 0;
     self->pHead = NULL;
     self->pTail = NULL;
-    self->iSize = 0;
 
     /* Let the function pointers pointing to the appropriate functions. */
-    self->compare = SLListCompare;
-    self->destroy = SLListDestroy;
+    _pCompare = _SLListCompare;
+    _pDestroy = _SLListDestroy;
 
     self->append = SLListAppend;
     self->insert = SLListInsert;
     self->remove = SLListRemove;
     self->pop = SLListPop;
 
-    self->reverse = SLListReverse;
+    self->size = SLListSize;
     self->search = SLListSearch;
+    self->reverse = SLListReverse;
+
+    self->set_compare = SLListSetCompare;
+    self->set_destroy = SLListSetDestroy;
 
     return;
 }
@@ -63,7 +67,7 @@ void SLListDeinit(SinglyLinkedList *self) {
     /* Release the memory allocated by SinglyLinkedList structure.*/
     while (self->pHead != NULL) {
         next = self->pHead->pNext;
-        self->destroy(self->pHead->pItem);
+        _pDestroy(self->pHead->pItem);
         free(self->pHead);        
         self->pHead = next;
     } 
@@ -73,12 +77,12 @@ void SLListDeinit(SinglyLinkedList *self) {
 
 
 /**
- * SLListAppend(): Append an item to the tail of the list.
+ * SLListAppend(): Append a node storing the requested item to the tail of the list.
  */
 SinglyLinkedNode* SLListAppend(SinglyLinkedList *self, void *pItem) {
     SinglyLinkedNode *new;    
 
-    new = malloc(sizeof(SinglyLinkedNode));    
+    new = (SinglyLinkedNode*)malloc(sizeof(SinglyLinkedNode));    
     if (new != NULL) {
         new->pItem = pItem;
         new->pNext = NULL;    
@@ -90,7 +94,7 @@ SinglyLinkedNode* SLListAppend(SinglyLinkedList *self, void *pItem) {
             self->pTail->pNext = new;
             self->pTail = new;            
         }
-        self->iSize++;
+        _ulSize++;
     }
 
     return new;
@@ -98,22 +102,22 @@ SinglyLinkedNode* SLListAppend(SinglyLinkedList *self, void *pItem) {
 
 
 /**
- * SLListInsert(): Insert an item to the designated position of the list.
+ * SLListInsert(): Insert a node storing the requested item to the designated index of the list.
  */
-SinglyLinkedNode* SLListInsert(SinglyLinkedList *self, unsigned long idx, void *pItem) {
-    int i;    
+SinglyLinkedNode* SLListInsert(SinglyLinkedList *self, unsigned long ulIndex, void *pItem) {
+    unsigned long    i;    
     SinglyLinkedNode *pred, *new, *succ;
     
     new = NULL;
-    if (idx <= self->iSize) {
+    if (ulIndex < _ulSize) {
         pred = NULL;
         succ = self->pHead;
-        for (i = 0 ; i < idx ; i++) {
+        for (i = 0 ; i < ulIndex ; i++) {
             pred = succ;
             succ = succ->pNext;
         }
 
-        new = malloc(sizeof(SinglyLinkedNode));
+        new = (SinglyLinkedNode*)malloc(sizeof(SinglyLinkedNode));
         if (new != NULL) {        
             new->pItem = pItem;
             new->pNext = succ;
@@ -122,7 +126,7 @@ SinglyLinkedNode* SLListInsert(SinglyLinkedList *self, unsigned long idx, void *
                 pred->pNext = new;
             else
                 self->pHead = new;
-            self->iSize++;   
+            _ulSize++;   
         }
     }
 
@@ -130,9 +134,9 @@ SinglyLinkedNode* SLListInsert(SinglyLinkedList *self, unsigned long idx, void *
 }
 
 
-/*
- * SLListRemove(): Remove the first item with the key equal to the designated item from the list,
- * and return it.
+/**
+ * SLListRemove(): Return the first item with the logical order equal to the designated item from the list,
+ *                 and remove it.
  */
 void* SLListRemove(SinglyLinkedList *self, void *pItem) {
     int     rc;
@@ -143,7 +147,7 @@ void* SLListRemove(SinglyLinkedList *self, void *pItem) {
     pred = NULL;    
     curr = self->pHead;
     while (curr != NULL) {
-        rc = self->compare(pItem, curr->pItem);        
+        rc = _pCompare(pItem, curr->pItem);        
         
         if (rc == 0) {
             pReturn = curr->pItem;
@@ -155,7 +159,7 @@ void* SLListRemove(SinglyLinkedList *self, void *pItem) {
             else
                 self->pHead = succ;
 
-            self->iSize--;
+            _ulSize--;
             break;
         }
         pred = curr;
@@ -167,18 +171,18 @@ void* SLListRemove(SinglyLinkedList *self, void *pItem) {
 
 
 /**
- * SLListPop(): Remove the item from the designated position of the list and returns it.
+ * SLListPop(): Return the item from the designated index of the list and remove it.
  */
-void* SLListPop(SinglyLinkedList *self, unsigned long idx) {
-    int     i;    
-    void    *pReturn; 
+void* SLListPop(SinglyLinkedList *self, unsigned long ulIndex) {
+    unsigned long   i;    
+    void            *pReturn; 
     SinglyLinkedNode *pred, *curr, *succ;
 
     pReturn = NULL;
-    if (idx < self->iSize) {
+    if (ulIndex < _ulSize) {
         pred = NULL;
         curr = self->pHead;
-        for (i = 0 ; i < idx ; i++) {
+        for (i = 0 ; i < ulIndex ; i++) {
             pred = curr;
             curr = curr->pNext;        
         }
@@ -191,10 +195,19 @@ void* SLListPop(SinglyLinkedList *self, unsigned long idx) {
             pred->pNext = succ;
         else
             self->pHead = succ;
-        self->iSize--;
+        _ulSize--;
     }
 
     return pReturn;
+}
+
+
+/**
+ * SLListSize(): Return the size of the list.
+ */
+unsigned long SLListSize(SinglyLinkedList *self) {
+
+    return _ulSize;
 }
 
 
@@ -207,7 +220,7 @@ bool SLListSearch(SinglyLinkedList *self, void *pItem) {
 
     curr = self->pHead;
     while (curr != NULL) {
-        rc = self->compare(pItem, curr->pItem);
+        rc = _pCompare(pItem, curr->pItem);
         if (rc == 0)
             return true;     
         else
@@ -236,6 +249,25 @@ void SLListReverse(SinglyLinkedList *self) {
     return;
 }
 
+
+/**
+ * SLListSetCompare(): Set the item comparison strategy with the one defined by user.
+ */
+void SLListSetCompare(SinglyLinkedList *self, int (*pFunc)(const void*, const void*)) {
+
+    _pCompare = pFunc;
+    return;
+}
+
+
+/**
+ * SLListSetDestroy(): Set the item deallocation strategy with the one defined by user.
+ */
+void SLListSetDestroy(SinglyLinkedList *self, void (*pFunc)(void*)) {
+
+    _pDestroy = pFunc;
+    return;
+}
 
 /*===========================================================================*
  *                Implementation for internal functions                      *

@@ -25,17 +25,18 @@ typedef struct _SinglyLinkedNode {
 
 
 typedef struct _SinglyLinkedList {
-    int              iSize;
-    SinglyLinkedNode *pHead, *pTail;
+    SinglyLinkedNode  *pHead, *pTail;
     
-    int               (*compare) (const void*, const void*);
-    void              (*destroy) (void*);
     SinglyLinkedNode* (*append)  (struct _SinglyLinkedList*, void*);
     SinglyLinkedNode* (*insert)  (struct _SinglyLinkedList*, unsigned long, void*);
     void*             (*remove)  (struct _SinglyLinkedList*, void*);
-    void              (*reverse) (struct _SinglyLinkedList*); 
     void*             (*pop)     (struct _SinglyLinkedList*, unsigned long);
+    unsigned long     (*size)    (struct _SinglyLinkedList*);
     bool              (*search)  (struct _SinglyLinkedList*, void*);
+    void              (*reverse) (struct _SinglyLinkedList*);
+
+    void              (*set_compare) (struct _SinglyLinkedList*, int (*)(const void*, const void*));
+    void              (*set_destroy) (struct _SinglyLinkedList*, void (*)(void*));
 } SinglyLinkedList;
 
 
@@ -88,14 +89,6 @@ void* SLListRemove(SinglyLinkedList *self, void *pItem);
 
 
 /**
- * This function reverses the list in place.
- *
- * @param self          The pointer to the SinglyLinkedList structure.
- */
-void SLListReverse(SinglyLinkedList *self);
-
-
-/**
  * This function returns the item from the designated index of the list and removes it.
  *
  * @param self          The pointer to the SinglyLinkedList structure.
@@ -108,6 +101,16 @@ void* SLListPop(SinglyLinkedList *self, unsigned long idx);
 
 
 /**
+ * This function returns the size of the list.
+ * 
+ * @param self          The pointer to the SinglyLinkedList structure.
+ *
+ * @return              The size.
+ */
+unsigned long SLListSize(SinglyLinkedList *self);
+
+
+/**
  * This function checks whethere the list has the designated item.
  *
  * @param self          The pointer to the SinglyLinkedList structure.
@@ -117,5 +120,31 @@ void* SLListPop(SinglyLinkedList *self, unsigned long idx);
  *                      false: The item does not exist.
  */
 bool SLListSearch(SinglyLinkedList *self, void *pItem);
+
+
+/**
+ * This function reverses the list in place.
+ *
+ * @param self          The pointer to the SinglyLinkedList structure.
+ */
+void SLListReverse(SinglyLinkedList *self);
+
+
+/**
+ * This function sets the item comparison strategy with the one defined by user.
+ *
+ * @param self          The pointer to the SinglyLinkedList structure.
+ * @param pFunc         The pointer to the customized function.
+ */
+void SLListSetCompare(SinglyLinkedList *self, int (*pFunc)(const void*, const void*));
+
+
+/**
+ * This function sets the item deallocation strategy with the one defined by user.
+ *
+ * @param self          The pointer to the SinglyLinkedList structure.
+ * @param pFunc         The pointer to the customized function.
+ */
+void SLListSetDestroy(SinglyLinkedList *self, void (*pFunc)(void*));
 
 #endif
