@@ -55,6 +55,8 @@ bool OrderedMapInit(OrderedMap *self) {
 
     /* Initialize the red black tree. */    
     RedBlackTree_init(_pTree);
+    if (_pTree == NULL)
+        return false;
 
     /* Replace the item comparion and deallocation strategies. */    
     _pTree->set_compare(_pTree, _pCompare);
