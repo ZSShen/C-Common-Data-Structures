@@ -74,6 +74,9 @@ void OrderedMapDeinit(OrderedMap *self) {
 }
 
 
+/**
+ * OrderedMapPut(): Insert a key-value pair into the appropriate position of the map.
+ */
 bool OrderedMapPut(OrderedMap *self, KeyValuePair *pPair) {
     RedBlackNode *pNode;
     
@@ -86,6 +89,9 @@ bool OrderedMapPut(OrderedMap *self, KeyValuePair *pPair) {
 }
 
 
+/**
+ * OrderedMapGet(): Search and return a key-value pair using the specified key.
+ */
 KeyValuePair* OrderedMapGet(OrderedMap *self, void *pKey) {
     RedBlackNode *pNode;
     KeyValuePair  pair;
@@ -102,6 +108,9 @@ KeyValuePair* OrderedMapGet(OrderedMap *self, void *pKey) {
 }
 
 
+/**
+ * OrderedMapRemove(): Remove the key-value pair with the key equal to the specified one.
+ */
 bool OrderedMapRemove(OrderedMap *self, void *pKey) {
     RedBlackNode *pNode;
     KeyValuePair pair;    
@@ -119,12 +128,18 @@ bool OrderedMapRemove(OrderedMap *self, void *pKey) {
 }
 
 
+/**
+ * OrderedMapSize(): Return the size of the map.
+ */
 unsigned long OrderedMapSize(OrderedMap *self) {
 
     return _ulSize;
 }
 
 
+/**
+ * OrderedMapSetCompare(): Set the key-value pair comparison strategy with the one defined by user.
+ */
 void OrderedMapSetCompare(OrderedMap *self, int (*pFunc) (const void*, const void*)) {
 
     _pTree->set_compare(_pTree, pFunc);
@@ -132,6 +147,9 @@ void OrderedMapSetCompare(OrderedMap *self, int (*pFunc) (const void*, const voi
 }
 
 
+/**
+ * OrderedMapSetDestroy(): Set the key-value pair deallocation strategy with the one defined by user.
+ */
 void OrderedMapSetDestroy(OrderedMap *self, void (*pFunc) (void*)) {
 
     _pTree->set_destroy(_pTree, pFunc);
@@ -143,8 +161,8 @@ void OrderedMapSetDestroy(OrderedMap *self, void (*pFunc) (void*)) {
  *                Implementation for internal functions                      *
  *===========================================================================*/
 /**
- * _OrderedMapPairCompare(): The default strategy for key-value pair comparison.
- * Note: It considers the pKey member of the pair as primitive data.
+ * _OrderedMapPairCompare(): It considers the pKey members of the pairs as primitive data and 
+ *                           gives the larger order to the pair with larger pKey value.
  */
 int _OrderedMapPairCompare(const void *pSrc, const void *pTge) {
     
@@ -160,8 +178,7 @@ int _OrderedMapPairCompare(const void *pSrc, const void *pTge) {
 
 
 /**
- * _OrderedMapPairDestroy(): The default strategy for key-value pair deallocation.
- * Note: It considers the pKey and pValue members as primitive data and deallocates the pair directory.
+ * _OrderedMapPairDestroy(): It considers the pKey and pValue members as primitive data and deallocates the pair directory.
  */
 void _OrderedMapPairDestroy(void *pPair) {
 
