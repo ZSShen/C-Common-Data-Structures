@@ -46,17 +46,19 @@ int main() {
     /* Create the ordered map. */
     OrderedMap_init(pMap);
 
-    /* Assign the customized comparison and destroy strategies of key-value pair. */
-    pMap->set_compare(pMap, PairCompare);
-    pMap->set_destroy(pMap, PairDestroy);
-    
-    /* Test the main features of ordered map. */    
-    test_put(pMap);
-    test_get(pMap);
-    test_remove(pMap);
+    if (pMap != NULL) {
+        /* Assign the customized comparison and destroy strategies of key-value pair. */
+        pMap->set_compare(pMap, PairCompare);
+        pMap->set_destroy(pMap, PairDestroy);
+        
+        /* Test the main features of ordered map. */    
+        test_put(pMap);
+        test_get(pMap);
+        test_remove(pMap);
 
-    /* Free the ordered map. */
-    OrderedMap_deinit(pMap);
+        /* Free the ordered map. */
+        OrderedMap_deinit(pMap);
+    }
 
     return 0;
 }
