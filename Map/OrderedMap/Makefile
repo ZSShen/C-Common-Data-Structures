@@ -16,5 +16,9 @@ run:
 run_debug:
 	valgrind --leak-check=yes --track-origins=yes ./test_program
 
+build_static_library:
+	gcc -static -L .lrbtree -c ordered_map.c
+	ar rcs libomap.a ordered_map.o
+
 clean:
 	rm test_program.o ordered_map.o test_program
