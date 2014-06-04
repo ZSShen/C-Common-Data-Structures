@@ -16,5 +16,9 @@ run:
 run_debug:
 	valgrind --leak-check=yes --track-origins=yes ./test_program
 
+build_static_lib:
+	gcc -c singly_linked_list.c
+	ar rcs libsllist.a singly_linked_list.o
+
 clean:
 	rm test_program.o singly_linked_list.o test_program
