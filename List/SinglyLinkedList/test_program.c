@@ -40,17 +40,19 @@ int main() {
     /* Create the singly linked list. */
     SinglyLinkedList_init(pList);
 
-    /* Customize the node item comparison and destroy functions .*/
-    pList->compare = data_compare;
-    pList->destroy = data_destroy;
+    if (pList != NULL) {
+        /* Customize the node item comparison and destroy functions .*/
+        pList->set_compare(pList, data_compare);
+        pList->set_destroy(pList, data_destroy);
 
-    /* Test singly linked list utilities. */
-    test_insert(pList);    
-    test_reverse(pList);
-    test_delete(pList);
+        /* Test singly linked list utilities. */
+        test_insert(pList);    
+        test_reverse(pList);
+        test_delete(pList);
 
-    /* Free the singly linked list. */
-    SinglyLinkedList_deinit(pList);
+        /* Free the singly linked list. */
+        SinglyLinkedList_deinit(pList);
+    }
 
     return 0;
 }
