@@ -20,5 +20,9 @@ build_static_lib:
 	gcc -L. -ldarray -c binary_heap.c
 	ar rcs libpqueue.a binary_heap.o
 
+build_dynamic_lib:
+	gcc -L. -ldarray -c binary_heap.c
+	gcc binary_heap.o -fPIC -shared -o libbinary_heap.so
+
 clean:
 	rm test_program.o binary_heap.o test_program
