@@ -68,6 +68,7 @@ bool BinaryHeapInit(BinaryHeap *self) {
     /* Let the function pointers point to the corresponding functions. */
     self->insert = BinaryHeapInsert;
     self->delete = BinaryHeapDelete;
+    self->top = BinaryHeapTop;
     self->change = BinaryHeapChange;
     self->size = BinaryHeapSize;
     
@@ -186,6 +187,18 @@ void* BinaryHeapDelete(BinaryHeap *self) {
     } while (true);
 
     return pItemRet;
+}
+
+
+/**
+ * BinaryHeapTop(): Return the item stored in the top of the heap.
+ */
+void* BinaryHeapTop(BinaryHeap *self) {
+
+    if (_ulSize == 0)
+        return NULL;
+    
+    return _pArray->get(_pArray, INDEX_ROOT - 1);    
 }
 
 

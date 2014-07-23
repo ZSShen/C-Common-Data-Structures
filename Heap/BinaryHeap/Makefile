@@ -25,4 +25,4 @@ build_dynamic_lib:
 	gcc binary_heap.o -fPIC -shared -o libbinary_heap.so
 
 clean:
-	rm test_program.o binary_heap.o test_program
+	rm test_program.o binary_heap.o test_program libbinary_heap.so

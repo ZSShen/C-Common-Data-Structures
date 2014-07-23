@@ -30,6 +30,7 @@
 typedef struct _BinaryHeap {
     bool          (*insert)   (struct _BinaryHeap*, void*);
     void*         (*delete)   (struct _BinaryHeap*);
+    void*         (*top)      (struct _BinaryHeap*);
     bool          (*change)   (struct _BinaryHeap*, int, void*);
     unsigned long (*size)     (struct _BinaryHeap*);
 
@@ -66,6 +67,17 @@ bool BinaryHeapInsert(BinaryHeap *self, void *pItem);
  *                  NULL    : The heap is empty, and thus nothing is returned.
  */
 void* BinaryHeapDelete(BinaryHeap *self);
+
+
+/**
+ * This function returns the item stored in the top of the heap.
+ *
+ * @param self      The pointer to the BinaryHeap structure.
+ *
+ * @return          Non-NULL: The pointer to the returned item.
+ *                  NULL    : The heap is empty, and thus nothing is returned.
+ */
+void* BinaryHeapTop(BinaryHeap *self);
 
 
 /**
