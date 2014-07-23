@@ -80,7 +80,7 @@ void* BinaryHeapDelete(BinaryHeap *self);
  *                  false: 1. The designated item cannot be found.
  *                         2. The data updating violate the heap property.
  */
-bool BinaryHeapChange(BinaryHeap *self, void *pSrc, void *pTge);
+bool BinaryHeapChange(BinaryHeap *self, int idx, void *pTge);
 
 
 /**

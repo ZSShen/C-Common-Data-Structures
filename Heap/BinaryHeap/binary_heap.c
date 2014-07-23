@@ -15,7 +15,7 @@
 /*===========================================================================*
  *                  Simulation for private variables                         *
  *===========================================================================*/
-static DynamicArray    *_Parray;
+static DynamicArray    *_pArray;
 static unsigned long   _ulSize;
 static int  (*_pCompare) (const void*, const void*);
 static void (*_pDestroy) (void*);
@@ -275,7 +275,7 @@ void _BinaryHeapItemDestroy(void *pItem) {
  */
 void _BinaryHeapItemUpdate(const void *pTge, const void *pRef) {
 
-    *pTge = *pRef;
+    *(size_t*)pTge = *(size_t*)pRef;
     return;
 }
 
