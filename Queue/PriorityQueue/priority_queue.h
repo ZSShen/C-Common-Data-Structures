@@ -3,14 +3,17 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdbool.h>
+#include <dlfcn.h>
+#include "heap.h"
 
 
 /* Wrapper for PriorityQueue initialization. */
-#define PriorityQueue_init(p)       p = (PriorityQueue*)malloc(sizeof(PriorityQueue)); \
+#define PriorityQueue_init(p, q)    p = (PriorityQueue*)malloc(sizeof(PriorityQueue)); \
                                     if (p != NULL) { \
                                         bool check; \
-                                        check = PQueueInit(p); \
+                                        check = PQueueInit(p, q); \
                                         if (check == false) { \
                                             free(p); \
                                             p = NULL; \
@@ -27,18 +30,18 @@
 
 
 typedef struct _PriorityQueue {
-
     bool            (*push)        (struct _PriorityQueue*, void*);
     void*           (*pop)         (struct _PriorityQueue*);
     void*           (*top)         (struct _PriorityQueue*);
     unsigned long   (*size)        (struct _PriorityQueue*);
+
     void            (*set_compare) (struct _PriorityQueue*, int (*)(const void*, const void*));
     void            (*set_destroy) (struct _PriorityQueue*, void (*)(void*));
 } PriorityQueue;
 
 
 /* Constructor for PriorityQueue structure. */
-bool PQueueInit(PriorityQueue *self);
+bool PQueueInit(PriorityQueue *self, const char *cszNameLib);
 
 
 /* Destructor for PriorityQueue structure. */

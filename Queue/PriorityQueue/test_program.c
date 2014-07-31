@@ -47,29 +47,33 @@ int main() {
     // Test for maximum priority queue.
 
     /* Create the maximum PriorityQueue structure. */
-    PriorityQueue_init(pQueue);
+    PriorityQueue_init(pQueue, "binary_heap");
 
     /* Customize the item comparison and deallocation strategies. */
+    /*    
     pQueue->set_compare(pQueue, ItemCompareMax);
     pQueue->set_destroy(pQueue, ItemDestroy);
-
+    */
     /* Test the main features of PriorityQueue. */    
+    /*
     test_push(pQueue);    
     test_pop(pQueue);
-
+    */
     /* Free the PriorityQueue structure. */
     PriorityQueue_deinit(pQueue);
 
     //-----------------------------------------------
     // Test for minimum priority queue.
 
-    PriorityQueue_init(pQueue);
+    PriorityQueue_init(pQueue, "binary_heap");
 
+    /*
     pQueue->set_compare(pQueue, ItemCompareMin);
     pQueue->set_destroy(pQueue, ItemDestroy);
 
     test_push(pQueue);
     test_pop(pQueue);
+    */
 
     PriorityQueue_deinit(pQueue);
 
