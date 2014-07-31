@@ -292,3 +292,71 @@ void _BinaryHeapItemUpdate(const void *pTge, const void *pRef) {
     return;
 }
 
+
+#ifdef BUILD_PLUGIN
+/*===========================================================================*
+ *                The interface implementation of plugin                     *
+ *===========================================================================*/    
+static BinaryHeap *pHeap;
+
+
+bool init() {
+    
+    BinaryHeap_init(pHeap);
+    return (pHeap != NULL)? true : false;
+}
+
+
+void deinit() {
+    
+    BinaryHeap_deinit(pHeap);
+    return;
+}
+
+
+bool insert(void *pItem) {
+    bool rc;
+
+    rc = pHeap->insert(pHeap, pItem);
+    return rc;    
+}
+
+
+void* delete() {
+    void *pItemRet;
+    
+    pItemRet = pHeap->delete(pHeap);
+    return pItemRet;
+}
+
+
+void* top() {
+    void *pItemRet;
+
+    pItemRet = pHeap->top(pHeap);
+    return pItemRet;
+}
+
+
+unsigned long size() {
+    unsigned long ulSize;
+
+    ulSize = pHeap->size(pHeap);
+    return ulSize;
+}
+
+
+void set_compare(int(*pFunc)(const void*, const void*)) {
+
+    pHeap->set_compare(pHeap, pFunc);
+    return;
+}
+
+
+void set_destroy(void(*pFunc)(void*)) {
+
+    pHeap->set_destroy(pHeap, pFunc);
+    return;
+}
+#endif
+

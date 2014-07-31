@@ -129,4 +129,26 @@ void BinaryHeapSetDestroy(BinaryHeap *self, void (*pFunc)(void*));
  */
 void BinaryHeapSetUpdate(BinaryHeap *self, void (*pFunc)(const void*, const void*));
 
+
+/*===========================================================================*
+ *                 The interface definition of plugin                        *
+ *===========================================================================*/
+#ifdef BUILD_PLUGIN
+bool init();
+
+void deinit();
+
+bool insert(void*);
+
+void* delete();
+
+void* top();
+
+unsigned long size();
+
+void set_compare(int(*)(const void*, const void*));
+
+void set_destroy(void(*)(void*));
+#endif
+
 #endif
