@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 
-#define SIZE_DATA 10000
+#define SIZE_DATA 100
 
 typedef struct _Key {
     short key_major;
@@ -50,15 +50,13 @@ int main() {
     PriorityQueue_init(pQueue, "binary_heap");
 
     /* Customize the item comparison and deallocation strategies. */
-    /*    
     pQueue->set_compare(pQueue, ItemCompareMax);
     pQueue->set_destroy(pQueue, ItemDestroy);
-    */
+    
     /* Test the main features of PriorityQueue. */    
-    /*
     test_push(pQueue);    
     test_pop(pQueue);
-    */
+    
     /* Free the PriorityQueue structure. */
     PriorityQueue_deinit(pQueue);
 
@@ -67,13 +65,11 @@ int main() {
 
     PriorityQueue_init(pQueue, "binary_heap");
 
-    /*
     pQueue->set_compare(pQueue, ItemCompareMin);
     pQueue->set_destroy(pQueue, ItemDestroy);
 
     test_push(pQueue);
     test_pop(pQueue);
-    */
 
     PriorityQueue_deinit(pQueue);
 
@@ -150,7 +146,7 @@ void test_pop(PriorityQueue *pQueue) {
 
     for (i = 0 ; i < SIZE_DATA / 2; i++) {
         pData = (Data*)pQueue->pop(pQueue);
-        //printf("%d\n", pData->pKey->key_major);
+        printf("%d\n", pData->pKey->key_major);
         ItemDestroy(pData);
     }
 
