@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 
-#define SIZE_DATA 100
+#define SIZE_DATA 1000
 
 typedef struct _Key {
     short key_major;
@@ -146,7 +146,7 @@ void test_pop(PriorityQueue *pQueue) {
 
     for (i = 0 ; i < SIZE_DATA / 2; i++) {
         pData = (Data*)pQueue->pop(pQueue);
-        printf("%d\n", pData->pKey->key_major);
+        //printf("%d\n", pData->pKey->key_major);
         ItemDestroy(pData);
     }
 

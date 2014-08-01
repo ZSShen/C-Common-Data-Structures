@@ -259,15 +259,12 @@ void BinaryHeapSetUpdate(BinaryHeap *self, void (*pFunc)(const void*, const void
  *       the item with larger integer value.
  */
 int _BinaryHeapItemCompare(const void *pSrc, const void *pTge) {
+    size_t nSrc, nTge;    
     
-    if ((size_t)pSrc == (size_t)pTge)
-        return 0;
-    else {
-        if ((size_t)pSrc > (size_t)pTge)
-            return 1;
-        else
-            return -1;
-    }
+    nSrc = (size_t)pSrc;
+    nTge = (size_t)pTge;
+    
+    return nSrc - nTge;
 }
 
 
