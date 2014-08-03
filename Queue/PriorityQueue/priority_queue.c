@@ -1,4 +1,3 @@
-#include "dynamic_array.h"
 #include "priority_queue.h"
 
 #define BUF_SIZE_MID    (256)

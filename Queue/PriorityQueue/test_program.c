@@ -2,8 +2,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <getopt.h>
 
-#define SIZE_DATA 1000
+
+#define SIZE_DATA           1000
+#define BUF_SIZE_SMALL      64
+#define OPT_IMPLEMENT       'i'
+#define OPT_LONG_IMPLEMENT  "implement"
+
 
 typedef struct _Key {
     short key_major;
@@ -15,6 +21,10 @@ typedef struct _Data {
     Key  *pKey;
     char *pValue;
 } Data;
+
+
+/* Print the help message to use this program. */
+void print_usage();
 
 
 /* Define the item comparison strategy for maximum PriorityQueue. */
@@ -37,8 +47,43 @@ void test_push(PriorityQueue *pQueue);
 void test_pop(PriorityQueue *pQueue);
 
 
-int main() {
+int main(int argc, char **argv) {
+    int idxOpt, rc;
+    char opt;
+    char *cszStructure;
     PriorityQueue *pQueue;
+    char szOrder[BUF_SIZE_SMALL];    
+
+    /* Determine the implementation structure for priority queue. */
+    static struct option Options[] = {
+        {OPT_LONG_IMPLEMENT, required_argument, 0, OPT_IMPLEMENT},
+    };
+    memset(szOrder, 0, sizeof(char) * BUF_SIZE_SMALL);
+    sprintf(szOrder, "%c:", OPT_IMPLEMENT);
+
+    rc = 0;
+    idxOpt = 0;
+    cszStructure = NULL;
+    while ((opt = getopt_long(argc, argv, szOrder, Options, &idxOpt)) != -1) {
+        switch (opt) {
+            case OPT_IMPLEMENT: {
+                cszStructure = optarg;
+                break;
+            }
+            default: {
+                print_usage();
+                rc = -1;
+                goto EXIT;
+            }
+        }
+    }
+
+    if (cszStructure == NULL) {
+        print_usage();
+        rc = -1;
+        goto EXIT;
+    }
+
 
     /* Initialize the random seed. */
     srand(time(NULL));
@@ -47,7 +92,7 @@ int main() {
     // Test for maximum priority queue.
 
     /* Create the maximum PriorityQueue structure. */
-    PriorityQueue_init(pQueue, "binary_heap");
+    PriorityQueue_init(pQueue, cszStructure);
 
     /* Customize the item comparison and deallocation strategies. */
     pQueue->set_compare(pQueue, ItemCompareMax);
@@ -73,7 +118,15 @@ int main() {
 
     PriorityQueue_deinit(pQueue);
 
+EXIT:
     return 0;
+}
+
+
+void print_usage() {
+    const char *cszMsg = "Usage\n";
+    printf("%s", cszMsg);
+    return;
 }
 
 

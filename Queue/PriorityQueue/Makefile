@@ -11,10 +11,10 @@ priority_queue.o: priority_queue.c priority_queue.h heap.h
 	gcc -L. -ldl -c priority_queue.c
 
 run:
-	./test_program
+	./test_program -i $(STRUCTURE)
 
 run_debug:
-	valgrind --leak-check=yes --track-origins=yes ./test_program
+	valgrind --leak-check=yes --track-origins=yes ./test_program -i $(STRUCTURE)
 
 build_static_lib:
 	gcc -L. -ldarray -c priority_queue.c
