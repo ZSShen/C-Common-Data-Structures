@@ -8,7 +8,9 @@
 #define SIZE_DATA           1000
 #define BUF_SIZE_SMALL      64
 #define OPT_IMPLEMENT       'i'
+#define OPT_HELP            'h'
 #define OPT_LONG_IMPLEMENT  "implement"
+#define OPT_LONG_HELP       "help"
 
 
 typedef struct _Key {
@@ -54,12 +56,13 @@ int main(int argc, char **argv) {
     PriorityQueue *pQueue;
     char szOrder[BUF_SIZE_SMALL];    
 
-    /* Determine the implementation structure for priority queue. */
+    /* Determine the implementation for priority queue. */
     static struct option Options[] = {
+        {OPT_LONG_HELP,      no_argument, 0, OPT_HELP},
         {OPT_LONG_IMPLEMENT, required_argument, 0, OPT_IMPLEMENT},
     };
     memset(szOrder, 0, sizeof(char) * BUF_SIZE_SMALL);
-    sprintf(szOrder, "%c:", OPT_IMPLEMENT);
+    sprintf(szOrder, "%c%c:", OPT_HELP, OPT_IMPLEMENT);
 
     rc = 0;
     idxOpt = 0;
@@ -69,6 +72,11 @@ int main(int argc, char **argv) {
             case OPT_IMPLEMENT: {
                 cszStructure = optarg;
                 break;
+            }
+            case OPT_HELP: {            
+                print_usage(); 
+                rc = -1;            
+                goto EXIT;
             }
             default: {
                 print_usage();
@@ -88,11 +96,15 @@ int main(int argc, char **argv) {
     /* Initialize the random seed. */
     srand(time(NULL));
 
-    //-----------------------------------------------
-    // Test for maximum priority queue.
-
+    /*-----------------------------------------------*/
+    /*      Test for maximum priority queue.         */
+    /*-----------------------------------------------*/
     /* Create the maximum PriorityQueue structure. */
     PriorityQueue_init(pQueue, cszStructure);
+    if (pQueue == NULL) {
+        rc = -1;
+        goto EXIT;
+    }
 
     /* Customize the item comparison and deallocation strategies. */
     pQueue->set_compare(pQueue, ItemCompareMax);
@@ -105,10 +117,14 @@ int main(int argc, char **argv) {
     /* Free the PriorityQueue structure. */
     PriorityQueue_deinit(pQueue);
 
-    //-----------------------------------------------
-    // Test for minimum priority queue.
-
-    PriorityQueue_init(pQueue, "binary_heap");
+    /*-----------------------------------------------*/
+    /*      Test for minimum priority queue.         */
+    /*-----------------------------------------------*/
+    PriorityQueue_init(pQueue, cszStructure);
+    if (pQueue == NULL) {
+        rc = -1;
+        goto EXIT;
+    }
 
     pQueue->set_compare(pQueue, ItemCompareMin);
     pQueue->set_destroy(pQueue, ItemDestroy);
@@ -119,12 +135,20 @@ int main(int argc, char **argv) {
     PriorityQueue_deinit(pQueue);
 
 EXIT:
-    return 0;
+    return rc;
 }
 
 
 void print_usage() {
-    const char *cszMsg = "Usage\n";
+    
+    const char *cszMsg = "Usage: test_program --implement data_structure.\n"
+                         "       test_program -i          data_structure.\n\n"
+                         "       data_structure: The implementation for priority queue.\n"
+                         "                       1. binary heap\n"
+                         "                       2. binomial heap\n"
+                         "-------------------------------------------------------------\n"
+                         "Example: test_program --implement binary_heap\n"
+                         "         test_program -i          binary_heap\n\n";
     printf("%s", cszMsg);
     return;
 }
