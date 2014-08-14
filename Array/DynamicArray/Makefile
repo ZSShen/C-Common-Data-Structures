@@ -17,7 +17,7 @@ run_debug:
 	valgrind --leak-check=yes --track-origins=yes ./test_program
 
 build_static_lib:
-	gcc -c dynamic_array.c
+	gcc -fPIC -c dynamic_array.c
 	ar rcs libdarray.a dynamic_array.o
 
 clean:
