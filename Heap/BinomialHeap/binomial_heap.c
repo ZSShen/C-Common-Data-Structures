@@ -5,7 +5,8 @@
  *===========================================================================*/
 static unsigned long _ulSize;
 HeapNode *_pRootList;
-
+static int  (*_pCompare) (const void*, const void*);
+static void (*_pDestroy) (void*);
 
 /*===========================================================================*
  *                  Definition for internal functions                        *
@@ -59,7 +60,7 @@ void _BinomialHeapLink(HeapNode *pChild, HeapNode *pParent);
  * @return              true : The operations are completed successfully.
  *                      false: Exception occurs due to insufficient memory.
  */
-bool _BinomialHeapMerge(HeapNode *pListSrc, HeapNode *pListTge);
+HeapNode* _BinomialHeapMerge(HeapNode *pListSrc, HeapNode *pListTge);
 
 
 /**
@@ -71,7 +72,7 @@ bool _BinomialHeapMerge(HeapNode *pListSrc, HeapNode *pListTge);
  * @return              true : The operations are completed successfully.
  *                      false: Exception occurs due to insufficient memory.
  */
-bool _BinomialHeapUnion(HeapNode *pListSrc, HeapNode *pListTge);
+void _BinomialHeapUnion(HeapNode *pListSrc, HeapNode *pListTge);
 
 
 /*===========================================================================*
@@ -198,13 +199,94 @@ void _BinomialHeapLink(HeapNode *pChild, HeapNode *pParent) {
  * _BinomialHeapMerge(): The operation to merge two binomial heaps into a single root list with 
  * root nodes sorted by increasing degree.
  */
-bool _BinomialHeapMerge(HeapNode *pListSrc, HeapNode *pListTge);
+HeapNode* _BinomialHeapMerge(HeapNode *pListSrc, HeapNode *pListTge) {
+    unsigned long ulDegSrc, ulDegTge;
+    HeapNode *pHead, *pSiblingSrc, *pSiblingTge;
+
+    /* Select the new head for the merged root list. */
+    ulDegSrc = ulDegTge = -1;
+    if (pListSrc != NULL) {
+        ulDegSrc = pListSrc->ulDegree;
+    }
+    if (pListTge != NULL) {
+        ulDegTge = pListTge->ulDegree;
+    }
+
+    if ((ulDegSrc != -1) && (ulDegTge == -1)) {
+        pHead = pListSrc;
+    } else if((ulDegSrc == -1) && (ulDegTge != -1)) {
+        pHead = pListTge;
+    } else {
+        if (ulDegSrc <= ulDegTge) {
+            pHead = pListSrc;
+        } else {
+            pHead = pListTge;
+        }
+        
+        /* Merge two lists by examining the orders of root nodes. */
+        while ((pListSrc != NULL) && (pListTge != NULL)) {
+            if (pListSrc->ulDegree <= pListTge->ulDegree) {
+                pSiblingSrc = pListSrc->pSibling;
+                pListSrc->pSibling = pListTge;
+                pListSrc = pSiblingSrc;                
+            } else {
+                pSiblingTge = pListTge->pSibling;
+                pListTge->pSibling = pListSrc;
+                pListTge = pSiblingTge;
+            }
+        }            
+    }
+
+    return pHead;
+}
 
 
 /**
  * _BinomialHeapUnion(): The operation to unite two binomial heaps with proper maintenance operations.
  */
-bool _BinomialHeapUnion(HeapNode *pListSrc, HeapNode *pListTge);
+void _BinomialHeapUnion(HeapNode *pListSrc, HeapNode *pListTge) {
+    int rc;
+    HeapNode *pPred, *pCurr, *pSucc;
+
+    /* Merge two lists into a unique one. */
+    _pRootList = _BinomialHeapMerge(pListSrc, pListTge);
+
+    /* Adjust the heap structure by sliding through the merged root list. */
+    pPred = NULL;
+    pCurr = _pRootList;
+    pSucc = pCurr->pSibling;
+
+    while (pSucc != NULL) {
+        /* Case 1 */
+        if (pCurr->ulDegree != pSucc->ulDegree) {
+            pPred = pCurr;
+            pCurr = pSucc;
+        } /* Case 2 */
+          else if ((pSucc->pSibling != NULL) && (pSucc->pSibling->ulDegree == pCurr->ulDegree)) {
+            pPred = pCurr;
+            pCurr = pSucc;
+        } else {
+            rc = _pCompare(pCurr->pItem, pSucc->pItem);
+            /* Case 3 */            
+            if (rc > 0) {
+                pCurr->pSibling = pSucc->pSibling;
+                _BinomialLink(pSucc, pCurr);
+            } /* Case 4 */
+              else {
+                if (pPred == NULL) {
+                    _pRootList = pSucc;
+                } else {
+                    pPred->pSibling = pSucc;
+                }
+                _BinomialLink(pCurr, pSucc);
+            }
+            pCurr = pSucc;
+        }
+        pSucc = pCurr->pSibling;
+    }
+
+    return;
+}
 
 
 /*===========================================================================*
