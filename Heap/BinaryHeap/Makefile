@@ -16,12 +16,8 @@ run:
 run_debug:
 	valgrind --leak-check=yes --track-origins=yes ./test_program
 
-build_static_lib:
-	gcc -L. -ldarray -c binary_heap.c
-	ar rcs libpqueue.a binary_heap.o
-
 build_dynamic_lib:
-	gcc -L. -ldarray -DBUILD_PLUGIN -c binary_heap.c
+	gcc -L. -ldarray -DBUILD_PLUGIN -fPIC -c binary_heap.c
 	gcc binary_heap.o -L. -ldarray -fPIC -shared -o libbinary_heap.so
 
 clean:
