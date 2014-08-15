@@ -80,8 +80,15 @@ void _BinomialHeapUnion(HeapNode *pListSrc, HeapNode *pListTge);
  *===========================================================================*/
 void BinomialHeapInit(BinomialHeap *self) {
 
+    _ulSize = 0;
     _pRootList = NULL;
-    
+    _pCompare = _BinomialHeapItemCompare;
+    _pDestroy = _BinomialHeapItemDestroy;    
+
+    self->insert = BinomialHeapInsert;
+    self->set_compare = BinomialHeapSetCompare;
+    self->set_destroy = BinomialHeapSetDestroy;
+
     return;
 }
 
@@ -95,7 +102,24 @@ void BinomialHeapDeinit(BinomialHeap *self) {
 /**
  * BinomialHeapInsert(): Insert an item to the appropriate position of the heap. 
  */
-bool BinomialHeapInsert(BinomialHeap *self, void *pItem);
+bool BinomialHeapInsert(BinomialHeap *self, void *pItem) {
+    HeapNode *pNewHead;
+
+    pNewHead = (HeapNode*)malloc(sizeof(HeapNode));
+    if (pNewHead == NULL)
+        return false;    
+    pNewHead->pItem = pItem;
+    pNewHead->ulDegree = 0;
+    pNewHead->pParent = NULL;
+    pNewHead->pChild = NULL;
+    pNewHead->pSibling = NULL;
+
+    /* Apply union operation to move the newly created node to the proper position. */
+    _BinomialHeapUnion(_pRootList, pNewHead);
+    _ulSize++;
+
+    return false;
+}
 
 
 /**
@@ -120,19 +144,30 @@ bool BinomialHeapChange(BinomialHeap *self, int idx, void *pTge);
 /**
  * BinomialHeapSize(): Return the size of the heap.
  */
-unsigned long BinomialHeapSize(BinomialHeap *self);
+unsigned long BinomialHeapSize(BinomialHeap *self) {
+
+    return _ulSize;
+}
 
 
 /**
  * BinomialHeapSetCompare(): Set the user-defined item comparison strategy for the heap.
  */
-void BinomialHeapSetCompare(BinomialHeap *self, int (*pFunc)(const void*, const void*));
+void BinomialHeapSetCompare(BinomialHeap *self, int (*pFunc)(const void*, const void*)) {
+
+    _pCompare = pFunc;
+    return;
+}
 
 
 /**
  * BinomialHeapSetDestroy(): Set the user-defined item deallocation strategy for the heap.
  */
-void BinomialHeapSetDestroy(BinomialHeap *self, void (*pFunc)(void*));
+void BinomialHeapSetDestroy(BinomialHeap *self, void (*pFunc)(void*)) {
+
+    _pDestroy = pFunc;
+    return;
+}
 
 
 /**
@@ -214,8 +249,10 @@ HeapNode* _BinomialHeapMerge(HeapNode *pListSrc, HeapNode *pListTge) {
 
     if ((ulDegSrc != -1) && (ulDegTge == -1)) {
         pHead = pListSrc;
-    } else if((ulDegSrc == -1) && (ulDegTge != -1)) {
+    } else if ((ulDegSrc == -1) && (ulDegTge != -1)) {
         pHead = pListTge;
+    } else if ((ulDegSrc == -1) && (ulDegTge == -1)) {
+        pHead = NULL;
     } else {
         if (ulDegSrc <= ulDegTge) {
             pHead = pListSrc;
@@ -223,7 +260,7 @@ HeapNode* _BinomialHeapMerge(HeapNode *pListSrc, HeapNode *pListTge) {
             pHead = pListTge;
         }
         
-        /* Merge two lists by examining the orders of root nodes. */
+        /* Merge two lists by examining the degrees of root nodes. */
         while ((pListSrc != NULL) && (pListTge != NULL)) {
             if (pListSrc->ulDegree <= pListTge->ulDegree) {
                 pSiblingSrc = pListSrc->pSibling;
@@ -250,6 +287,9 @@ void _BinomialHeapUnion(HeapNode *pListSrc, HeapNode *pListTge) {
 
     /* Merge two lists into a unique one. */
     _pRootList = _BinomialHeapMerge(pListSrc, pListTge);
+    if (_pRootList == NULL) {
+        return;
+    }
 
     /* Adjust the heap structure by sliding through the merged root list. */
     pPred = NULL;
@@ -257,22 +297,26 @@ void _BinomialHeapUnion(HeapNode *pListSrc, HeapNode *pListTge) {
     pSucc = pCurr->pSibling;
 
     while (pSucc != NULL) {
-        /* Case 1 */
+        /* Case 1: degree[curr] != degree[succ] */
         if (pCurr->ulDegree != pSucc->ulDegree) {
             pPred = pCurr;
             pCurr = pSucc;
-        } /* Case 2 */
-          else if ((pSucc->pSibling != NULL) && (pSucc->pSibling->ulDegree == pCurr->ulDegree)) {
+        } 
+        /* Case 2: degree[curr] == degree[succ] == degree[succ->sibling] */
+        else if ((pSucc->pSibling != NULL) && (pSucc->pSibling->ulDegree == pCurr->ulDegree)) {
             pPred = pCurr;
             pCurr = pSucc;
         } else {
+            /* Case 3 & 4: degree[curr] == degree[succ] != degree[succ->sibling]. */
             rc = _pCompare(pCurr->pItem, pSucc->pItem);
-            /* Case 3 */            
+
+            /* Case 3: order(curr) > order(succ) */            
             if (rc > 0) {
                 pCurr->pSibling = pSucc->pSibling;
                 _BinomialLink(pSucc, pCurr);
-            } /* Case 4 */
-              else {
+            } 
+            /* Case 4: order(curr) <= order(succ) */
+            else {
                 if (pPred == NULL) {
                     _pRootList = pSucc;
                 } else {
