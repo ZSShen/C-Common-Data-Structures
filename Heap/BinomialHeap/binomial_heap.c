@@ -1,5 +1,6 @@
 #include "binomial_heap.h"
 
+
 /*===========================================================================*
  *                  Simulation for private variables                         *
  *===========================================================================*/
@@ -7,6 +8,7 @@ static unsigned long _ulSize;
 HeapNode *_pRootList;
 static int  (*_pCompare) (const void*, const void*);
 static void (*_pDestroy) (void*);
+
 
 /*===========================================================================*
  *                  Definition for internal functions                        *
@@ -86,6 +88,10 @@ void BinomialHeapInit(BinomialHeap *self) {
     _pDestroy = _BinomialHeapItemDestroy;    
 
     self->insert = BinomialHeapInsert;
+    self->delete = BinomialHeapDelete;
+    self->top = BinomialHeapTop;
+    self->size = BinomialHeapSize;
+    
     self->set_compare = BinomialHeapSetCompare;
     self->set_destroy = BinomialHeapSetDestroy;
 
@@ -94,6 +100,12 @@ void BinomialHeapInit(BinomialHeap *self) {
 
 
 void BinomialHeapDeinit(BinomialHeap *self) {
+    void *pItem;
+
+    while (_ulSize > 0) {
+        pItem = BinomialHeapDelete(self);
+        _pDestroy(pItem);
+    }
 
     return;
 }
@@ -114,7 +126,7 @@ bool BinomialHeapInsert(BinomialHeap *self, void *pItem) {
     pNewHead->pChild = NULL;
     pNewHead->pSibling = NULL;
 
-    /* Apply union operation to move the newly created node to the proper position. */
+    /* Apply union operation to put the newly created node to the proper position. */
     _BinomialHeapUnion(_pRootList, pNewHead);
     _ulSize++;
 
@@ -125,13 +137,94 @@ bool BinomialHeapInsert(BinomialHeap *self, void *pItem) {
 /**
  * BinomailHeapDelete(): Delete the root node of the heap and returns the item storing at that node correspondingly.
  */
-void* BinomialHeapDelete(BinomialHeap *self);
+void* BinomialHeapDelete(BinomialHeap *self) {
+    int  rc;
+    void *pRet;
+    HeapNode *pred, *curr, *succ, *pCand, *pPredCand, *pNewHead;
+
+    /* Selecte the node from root list with the maximum order. */
+    if (_pRootList == NULL) {
+        return NULL;
+    }    
+
+    if (_pRootList->pSibling == NULL) {
+        pPredCand = pCand = _pRootList;
+        _pRootList = NULL;
+    } else {
+        pCand = _pRootList;
+        pPredCand = NULL;
+        curr = _pRootList->pSibling;
+        pred = NULL;
+        while (curr != NULL) {
+            rc = _pCompare(curr->pItem, pCand->pItem);
+            if (rc > 0) {
+                pPredCand = pred;
+                pCand = curr;
+            }
+            pred = curr;
+            curr = curr->pSibling;
+        }
+    }
+
+    /* Remove the selected node from the root list. */
+    if (pPredCand == NULL) {
+        _pRootList = pCand->pSibling;
+    } else {
+        pPredCand->pSibling = pCand->pSibling;
+    }
+
+    /* Reverse the direction for the children list of the selected node. */
+    curr = pCand->pChild;
+    pred = NULL;
+    while (curr != NULL) {
+        curr->pParent = NULL;
+        succ = curr->pSibling;
+        curr->pSibling = pred;
+        pred = curr;
+        curr = succ;
+        curr = curr->pSibling;
+    }
+
+    /* Consider the children list as a temporary root list. */
+    pNewHead = pred;
+
+    /* Record the item stored in the selected node and delete the node respectively. */
+    pRet = pCand->pItem;
+    free(pCand);
+    _ulSize--;
+
+    /* Merge two root lists and determine the new list head. */
+    _BinomialHeapUnion(_pRootList, pNewHead);
+
+    return pRet;
+}
 
 
 /**
  * BinomialHeapTop(): Return the item stored in the top of the heap.
  */
-void* BinomialHeapTop(BinomialHeap *self);
+void* BinomialHeapTop(BinomialHeap *self) {
+    int  rc;
+    void *pRet;
+    HeapNode *curr, *pCand;
+
+    if (_pRootList == NULL) {
+        return NULL;
+    }    
+
+    pCand = _pRootList;
+    curr = _pRootList->pSibling;
+    while (curr != NULL) {
+        rc = _pCompare(curr->pItem, pCand->pItem);
+        if (rc > 0) {
+            pCand = curr;
+        }
+        curr = curr->pSibling;
+    }
+
+    pRet = pCand->pItem;
+    return pRet;
+}
 
 
 /**
