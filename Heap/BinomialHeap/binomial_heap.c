@@ -77,10 +77,11 @@ HeapNode* _BinomialHeapMerge(HeapNode *pListSrc, HeapNode *pListTge);
 void _BinomialHeapUnion(HeapNode *pListSrc, HeapNode *pListTge);
 
 
+void _BinomialHeapDebug(HeapNode *pCurr);
 /*===========================================================================*
  *                Implementation for exported functions                      *
  *===========================================================================*/
-void BinomialHeapInit(BinomialHeap *self) {
+bool BinomialHeapInit(BinomialHeap *self) {
 
     _ulSize = 0;
     _pRootList = NULL;
@@ -95,7 +96,7 @@ void BinomialHeapInit(BinomialHeap *self) {
     self->set_compare = BinomialHeapSetCompare;
     self->set_destroy = BinomialHeapSetDestroy;
 
-    return;
+    return true;
 }
 
 
@@ -140,7 +141,7 @@ bool BinomialHeapInsert(BinomialHeap *self, void *pItem) {
 void* BinomialHeapDelete(BinomialHeap *self) {
     int  rc;
     void *pRet;
-    HeapNode *pred, *curr, *succ, *pCand, *pPredCand, *pNewHead;
+    HeapNode *pPred, *pCurr, *pSucc, *pCand, *pPredCand, *pNewHead;
 
     /* Selecte the node from root list with the maximum order. */
     if (_pRootList == NULL) {
@@ -150,19 +151,20 @@ void* BinomialHeapDelete(BinomialHeap *self) {
     if (_pRootList->pSibling == NULL) {
         pPredCand = pCand = _pRootList;
         _pRootList = NULL;
+
     } else {
         pCand = _pRootList;
         pPredCand = NULL;
-        curr = _pRootList->pSibling;
-        pred = NULL;
-        while (curr != NULL) {
-            rc = _pCompare(curr->pItem, pCand->pItem);
+        pCurr = _pRootList->pSibling;
+        pPred = _pRootList;
+        while (pCurr != NULL) {
+            rc = _pCompare(pCurr->pItem, pCand->pItem);
             if (rc > 0) {
-                pPredCand = pred;
-                pCand = curr;
+                pPredCand = pPred;
+                pCand = pCurr;
             }
-            pred = curr;
-            curr = curr->pSibling;
+            pPred = pCurr;
+            pCurr = pCurr->pSibling;
         }
     }
 
@@ -174,19 +176,18 @@ void* BinomialHeapDelete(BinomialHeap *self) {
     }
 
     /* Reverse the direction for the children list of the selected node. */
-    curr = pCand->pChild;
-    pred = NULL;
-    while (curr != NULL) {
-        curr->pParent = NULL;
-        succ = curr->pSibling;
-        curr->pSibling = pred;
-        pred = curr;
-        curr = succ;
-        curr = curr->pSibling;
+    pCurr = pCand->pChild;
+    pPred = NULL;
+    while (pCurr != NULL) {
+        pCurr->pParent = NULL;
+        pSucc = pCurr->pSibling;
+        pCurr->pSibling = pPred;
+        pPred = pCurr;
+        pCurr = pSucc;
     }
 
     /* Consider the children list as a temporary root list. */
-    pNewHead = pred;
+    pNewHead = pPred;
 
     /* Record the item stored in the selected node and delete the node respectively. */
     pRet = pCand->pItem;
@@ -206,20 +207,20 @@ void* BinomialHeapDelete(BinomialHeap *self) {
 void* BinomialHeapTop(BinomialHeap *self) {
     int  rc;
     void *pRet;
-    HeapNode *curr, *pCand;
+    HeapNode *pCurr, *pCand;
 
     if (_pRootList == NULL) {
         return NULL;
     }    
 
     pCand = _pRootList;
-    curr = _pRootList->pSibling;
-    while (curr != NULL) {
-        rc = _pCompare(curr->pItem, pCand->pItem);
+    pCurr = _pRootList->pSibling;
+    while (pCurr != NULL) {
+        rc = _pCompare(pCurr->pItem, pCand->pItem);
         if (rc > 0) {
-            pCand = curr;
+            pCand = pCurr;
         }
-        curr = curr->pSibling;
+        pCurr = pCurr->pSibling;
     }
 
     pRet = pCand->pItem;
@@ -383,6 +384,10 @@ void _BinomialHeapUnion(HeapNode *pListSrc, HeapNode *pListTge) {
     if (_pRootList == NULL) {
         return;
     }
+    printf("\tBefore Union\n");
+    printf("\tOld Root %d\n", _pRootList->pItem);
+    _BinomialHeapDebug(_pRootList);
+    printf("\n");
 
     /* Adjust the heap structure by sliding through the merged root list. */
     pPred = NULL;
@@ -390,42 +395,58 @@ void _BinomialHeapUnion(HeapNode *pListSrc, HeapNode *pListTge) {
     pSucc = pCurr->pSibling;
 
     while (pSucc != NULL) {
-        /* Case 1: degree[curr] != degree[succ] */
+        /* Case 1: degree[pCurr] != degree[pSucc] */
         if (pCurr->ulDegree != pSucc->ulDegree) {
             pPred = pCurr;
             pCurr = pSucc;
         } 
-        /* Case 2: degree[curr] == degree[succ] == degree[succ->sibling] */
+        /* Case 2: degree[pCurr] == degree[pSucc] == degree[pSucc->pSibling] */
         else if ((pSucc->pSibling != NULL) && (pSucc->pSibling->ulDegree == pCurr->ulDegree)) {
             pPred = pCurr;
             pCurr = pSucc;
         } else {
-            /* Case 3 & 4: degree[curr] == degree[succ] != degree[succ->sibling]. */
+            /* Case 3 & 4: degree[pCurr] == degree[pSucc] != degree[pSucc->pSibling]. */
             rc = _pCompare(pCurr->pItem, pSucc->pItem);
 
-            /* Case 3: order(curr) > order(succ) */            
+            /* Case 3: order(pCurr) > order(pSucc) */            
             if (rc > 0) {
                 pCurr->pSibling = pSucc->pSibling;
-                _BinomialLink(pSucc, pCurr);
+                _BinomialHeapLink(pSucc, pCurr);
             } 
-            /* Case 4: order(curr) <= order(succ) */
+            /* Case 4: order(pCurr) <= order(pSucc) */
             else {
                 if (pPred == NULL) {
                     _pRootList = pSucc;
                 } else {
                     pPred->pSibling = pSucc;
                 }
-                _BinomialLink(pCurr, pSucc);
+                _BinomialHeapLink(pCurr, pSucc);
+                pCurr = pSucc;
             }
-            pCurr = pSucc;
         }
         pSucc = pCurr->pSibling;
     }
+    printf("\tAfter  Union\n");
+    printf("\tNew Root %d\n", _pRootList->pItem);
+    _BinomialHeapDebug(_pRootList);
+    printf("\n");
 
     return;
 }
 
 
+void _BinomialHeapDebug(HeapNode *pCurr) {
+
+    if (pCurr->pChild != NULL) {
+        _BinomialHeapDebug(pCurr->pChild);
+    }
+    printf("\t%4d\n", pCurr->pItem);
+    if (pCurr->pSibling != NULL) {
+        _BinomialHeapDebug(pCurr->pSibling);
+    }
+
+    return;
+}
 /*===========================================================================*
  *                 The interface definition of plugin                        *
  *===========================================================================*/
