@@ -153,10 +153,10 @@ void* BinomialHeapDelete(BinomialHeap *self) {
         _pRootList = NULL;
 
     } else {
-        pCand = _pRootList;
         pPredCand = NULL;
-        pCurr = _pRootList->pSibling;
+        pCand = _pRootList;
         pPred = _pRootList;
+        pCurr = _pRootList->pSibling;
         while (pCurr != NULL) {
             rc = _pCompare(pCurr->pItem, pCand->pItem);
             if (rc > 0) {
@@ -193,6 +193,11 @@ void* BinomialHeapDelete(BinomialHeap *self) {
     pRet = pCand->pItem;
     free(pCand);
     _ulSize--;
+
+    printf("\tRoot\n");
+    _BinomialHeapDebug(_pRootList);
+    printf("\tNew Head\n");
+    _BinomialHeapDebug(pNewHead);
 
     /* Merge two root lists and determine the new list head. */
     _BinomialHeapUnion(_pRootList, pNewHead);
