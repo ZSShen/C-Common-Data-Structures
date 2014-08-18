@@ -111,8 +111,18 @@ int main(int argc, char **argv) {
     pQueue->set_destroy(pQueue, ItemDestroy);
     
     /* Test the main features of PriorityQueue. */    
+#ifdef ELAPSE
+    clock_t tBegin, tEnd, tTotal;
+    tBegin = clock();
+#endif
+
     test_push(pQueue);    
     test_pop(pQueue);
+
+#ifdef ELAPSE
+    tEnd = clock();
+    tTotal = tEnd - tBegin;
+#endif
     
     /* Free the PriorityQueue structure. */
     PriorityQueue_deinit(pQueue);
@@ -129,8 +139,18 @@ int main(int argc, char **argv) {
     pQueue->set_compare(pQueue, ItemCompareMin);
     pQueue->set_destroy(pQueue, ItemDestroy);
 
+#ifdef ELAPSE
+    tBegin = clock();
+#endif
+
     test_push(pQueue);
     test_pop(pQueue);
+
+#ifdef ELAPSE
+    tEnd = clock();
+    tTotal += tEnd - tBegin;
+    printf("Real Processing Time: %d microseconds.\n", tTotal);
+#endif
 
     PriorityQueue_deinit(pQueue);
 
