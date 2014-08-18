@@ -16,13 +16,9 @@ run:
 run_debug:
 	valgrind --leak-check=yes --track-origins=yes ./test_program
 
-build_static_lib:
-	gcc -c binomial_heap.c
-	ar rcs libbinomial_heap.a binomial_heap.o
-
 build_dynamic_lib:
-	gcc -DBUILD_PLUGIN -c binomial_heap.c
+	gcc -DBUILD_PLUGIN -fPIC -c binomial_heap.c
 	gcc binomial_heap.o -fPIC -shared -o libbinomial_heap.so
 
 clean:
-	rm test_program.o binomial_heap.o test_program
+	rm test_program.o binomial_heap.o test_program libbinomial_heap.so
