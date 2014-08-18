@@ -77,7 +77,6 @@ HeapNode* _BinomialHeapMerge(HeapNode *pListSrc, HeapNode *pListTge);
 void _BinomialHeapUnion(HeapNode *pListSrc, HeapNode *pListTge);
 
 
-void _BinomialHeapDebug(HeapNode *pCurr);
 /*===========================================================================*
  *                Implementation for exported functions                      *
  *===========================================================================*/
@@ -193,11 +192,6 @@ void* BinomialHeapDelete(BinomialHeap *self) {
     pRet = pCand->pItem;
     free(pCand);
     _ulSize--;
-
-    printf("\tRoot\n");
-    _BinomialHeapDebug(_pRootList);
-    printf("\tNew Head\n");
-    _BinomialHeapDebug(pNewHead);
 
     /* Merge two root lists and determine the new list head. */
     _BinomialHeapUnion(_pRootList, pNewHead);
@@ -335,7 +329,7 @@ void _BinomialHeapLink(HeapNode *pChild, HeapNode *pParent) {
  */
 HeapNode* _BinomialHeapMerge(HeapNode *pListSrc, HeapNode *pListTge) {
     unsigned long ulDegSrc, ulDegTge;
-    HeapNode *pHead, *pSiblingSrc, *pSiblingTge;
+    HeapNode *pNewHead, *pCurr, *pSucc;
 
     /* Select the new head for the merged root list. */
     ulDegSrc = ulDegTge = -1;
@@ -347,33 +341,45 @@ HeapNode* _BinomialHeapMerge(HeapNode *pListSrc, HeapNode *pListTge) {
     }
 
     if ((ulDegSrc != -1) && (ulDegTge == -1)) {
-        pHead = pListSrc;
+        pNewHead = pListSrc;
     } else if ((ulDegSrc == -1) && (ulDegTge != -1)) {
-        pHead = pListTge;
+        pNewHead = pListTge;
     } else if ((ulDegSrc == -1) && (ulDegTge == -1)) {
-        pHead = NULL;
+        pNewHead = NULL;
     } else {
         if (ulDegSrc <= ulDegTge) {
-            pHead = pListSrc;
+            pNewHead = pListSrc;
+            pListSrc = pListSrc->pSibling;
         } else {
-            pHead = pListTge;
+            pNewHead = pListTge;
+            pListTge = pListTge->pSibling;
         }
         
         /* Merge two lists by examining the degrees of root nodes. */
+        pCurr = pNewHead;
         while ((pListSrc != NULL) && (pListTge != NULL)) {
             if (pListSrc->ulDegree <= pListTge->ulDegree) {
-                pSiblingSrc = pListSrc->pSibling;
-                pListSrc->pSibling = pListTge;
-                pListSrc = pSiblingSrc;                
+                pSucc = pListSrc->pSibling;
+                pCurr->pSibling = pListSrc;
+                pListSrc = pSucc;                
             } else {
-                pSiblingTge = pListTge->pSibling;
-                pListTge->pSibling = pListSrc;
-                pListTge = pSiblingTge;
+                pSucc = pListTge->pSibling;
+                pCurr->pSibling = pListTge;
+                pListTge = pSucc;
             }
+            pCurr = pCurr->pSibling;
         }            
+
+        if (pListSrc == NULL) {
+            pCurr->pSibling = pListTge;
+        }
+
+        if (pListTge == NULL) {
+            pCurr->pSibling = pListSrc;
+        }
     }
 
-    return pHead;
+    return pNewHead;
 }
 
 
@@ -389,10 +395,6 @@ void _BinomialHeapUnion(HeapNode *pListSrc, HeapNode *pListTge) {
     if (_pRootList == NULL) {
         return;
     }
-    printf("\tBefore Union\n");
-    printf("\tOld Root %d\n", _pRootList->pItem);
-    _BinomialHeapDebug(_pRootList);
-    printf("\n");
 
     /* Adjust the heap structure by sliding through the merged root list. */
     pPred = NULL;
@@ -431,27 +433,11 @@ void _BinomialHeapUnion(HeapNode *pListSrc, HeapNode *pListTge) {
         }
         pSucc = pCurr->pSibling;
     }
-    printf("\tAfter  Union\n");
-    printf("\tNew Root %d\n", _pRootList->pItem);
-    _BinomialHeapDebug(_pRootList);
-    printf("\n");
 
     return;
 }
 
 
-void _BinomialHeapDebug(HeapNode *pCurr) {
-
-    if (pCurr->pChild != NULL) {
-        _BinomialHeapDebug(pCurr->pChild);
-    }
-    printf("\t%4d\n", pCurr->pItem);
-    if (pCurr->pSibling != NULL) {
-        _BinomialHeapDebug(pCurr->pSibling);
-    }
-
-    return;
-}
 /*===========================================================================*
  *                 The interface definition of plugin                        *
  *===========================================================================*/
