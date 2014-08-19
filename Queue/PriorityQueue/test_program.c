@@ -180,16 +180,7 @@ int ItemCompareMax(const void *pSrc, const void *pTge) {
     pKeySrc = (Key*)(((Data*)pSrc)->pKey);
     pKeyTge = (Key*)(((Data*)pTge)->pKey);
 
-    return pKeySrc->key_major
-
-    if (pKeySrc->key_major == pKeyTge->key_major)
-        return 0;
-    else {
-        if (pKeySrc->key_major > pKeyTge->key_major)
-            return 1;
-        else
-            return -1;
-    }
+    return pKeySrc->key_major - pKeyTge->key_major;
 }
 
 
@@ -198,14 +189,8 @@ int ItemCompareMin(const void *pSrc, const void *pTge) {
 
     pKeySrc = (Key*)(((Data*)pSrc)->pKey);
     pKeyTge = (Key*)(((Data*)pTge)->pKey);
-    if (pKeySrc->key_major == pKeyTge->key_major)
-        return 0;
-    else {
-        if (pKeySrc->key_major < pKeyTge->key_major)
-            return 1;
-        else
-            return -1;
-    }
+
+    return -(pKeySrc->key_major - pKeyTge->key_major);
 } 
 
 
@@ -246,7 +231,7 @@ void test_pop(PriorityQueue *pQueue) {
 
     for (i = 0 ; i < SIZE_DATA / 2; i++) {
         pData = (Data*)pQueue->pop(pQueue);
-        //printf("%d\n", pData->pKey->key_major);
+        /* printf("%d\n", pData->pKey->key_major); */
         ItemDestroy(pData);
     }
 
