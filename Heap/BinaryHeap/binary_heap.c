@@ -168,13 +168,13 @@ void* BinaryHeapDelete(BinaryHeap *self) {
         pItemCurr = _pArray->get(_pArray, idxCurr - 1);
         pItemLeft = _pArray->get(_pArray, idxLeft - 1);
         pItemRight = _pArray->get(_pArray, idxRight - 1);
-        if ((idxLeft <= _ulSize) && (_pCompare(pItemLeft, pItemCurr) == 1))
+        if ((idxLeft <= _ulSize) && (_pCompare(pItemLeft, pItemCurr) > 0))
             idxLarge = idxLeft;
         else
             idxLarge = idxCurr;
 
         pItemLarge = _pArray->get(_pArray, idxLarge - 1);
-        if ((idxRight <= _ulSize) && (_pCompare(pItemRight, pItemLarge) == 1))
+        if ((idxRight <= _ulSize) && (_pCompare(pItemRight, pItemLarge) > 0))
             idxLarge = idxRight;
                     
         if (idxCurr == idxLarge)
