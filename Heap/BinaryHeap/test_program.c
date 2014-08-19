@@ -43,8 +43,9 @@ int main() {
     /* Initialize the random seed. */
     srand(time(NULL));
 
-    //-----------------------------------------------
-    // Test for maximum binary heap.
+    /*-----------------------------------------------*/
+    /*      Test for maximum binary heap.            */
+    /*-----------------------------------------------*/
 
     /* Create the maximum BinaryHeap structure. */
     BinaryHeap_init(pHeap);
@@ -60,8 +61,10 @@ int main() {
     /* Free the BinaryHeap structure. */
     BinaryHeap_deinit(pHeap);
 
-    //-----------------------------------------------
-    // Test for minimum binary heap.
+    /*-----------------------------------------------*/
+    /*      Test for minimum binary heap.            */
+    /*-----------------------------------------------*/
+
     BinaryHeap_init(pHeap);
 
     pHeap->set_compare(pHeap, ItemCompareMin);
@@ -81,14 +84,8 @@ int ItemCompareMax(const void *pSrc, const void *pTge) {
 
     pKeySrc = (Key*)(((Data*)pSrc)->pKey);
     pKeyTge = (Key*)(((Data*)pTge)->pKey);
-    if (pKeySrc->key_major == pKeyTge->key_major)
-        return 0;
-    else {
-        if (pKeySrc->key_major > pKeyTge->key_major)
-            return 1;
-        else
-            return -1;
-    }
+
+    return pKeySrc->key_major - pKeyTge->key_major;
 }
 
 
@@ -97,14 +94,8 @@ int ItemCompareMin(const void *pSrc, const void *pTge) {
 
     pKeySrc = (Key*)(((Data*)pSrc)->pKey);
     pKeyTge = (Key*)(((Data*)pTge)->pKey);
-    if (pKeySrc->key_major == pKeyTge->key_major)
-        return 0;
-    else {
-        if (pKeySrc->key_major < pKeyTge->key_major)
-            return 1;
-        else
-            return -1;
-    }
+
+    return -(pKeySrc->key_major - pKeyTge->key_major);
 } 
 
 
@@ -145,7 +136,7 @@ void test_delete(BinaryHeap *pHeap) {
 
     for (i = 0 ; i < SIZE_DATA / 2; i++) {
         pData = (Data*)pHeap->delete(pHeap);
-        //printf("%d\n", pData->pKey->key_major);
+        /* printf("%d\n", pData->pKey->key_major); */
         ItemDestroy(pData);
     }
 

@@ -179,6 +179,9 @@ int ItemCompareMax(const void *pSrc, const void *pTge) {
 
     pKeySrc = (Key*)(((Data*)pSrc)->pKey);
     pKeyTge = (Key*)(((Data*)pTge)->pKey);
+
+    return pKeySrc->key_major
+
     if (pKeySrc->key_major == pKeyTge->key_major)
         return 0;
     else {
