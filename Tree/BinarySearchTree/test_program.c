@@ -6,13 +6,13 @@
 #define SIZE_DATA 10000
 
 typedef struct _Data {
-    unsigned long key;
+    long key;
     void *value;
 } Data;
 
 
 /* Define the node item comparison strategy for BinSearchTree. */
-int data_compare(const void *pSrc, const void *pTge);
+long data_compare(const void *pSrc, const void *pTge);
 
 /* Define the node item deallocation strategy for BinSearchTree. */
 void data_destroy(void *pItem);
@@ -49,16 +49,13 @@ int main() {
 }
 
 
-int data_compare(const void *pSrc, const void *pTge) {
+long data_compare(const void *pSrc, const void *pTge) {
+    long nSrc, nTge;
 
-    if (((Data*)pSrc)->key == ((Data*)pTge)->key)
-        return 0;
-    else {
-        if (((Data*)pSrc)->key > ((Data*)pTge)->key)
-            return 1;
-        else
-            return -1;
-    }
+    nSrc = (long)((Data*)pSrc)->key;
+    nTge = (long)((Data*)pTge)->key;
+
+    return nSrc - nTge;
 }
 
 
@@ -105,7 +102,7 @@ void test_delete(BinSearchTree *pTree) {
             break;
         
         pTree->delete(pTree, pNode);
-        //printf("%lu\n", pTree->size(pTree));
+        printf("%lu\n", pTree->size(pTree));
         turn++;    
     }
 

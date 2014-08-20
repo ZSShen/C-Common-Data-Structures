@@ -4,7 +4,7 @@
  *                  Simulation for private variables                         *
  *===========================================================================*/
 static unsigned long _ulSize;
-static int (*_pCompare)(const void*, const void*);
+static long (*_pCompare)(const void*, const void*);
 static void (*_pDestroy)(void*);
 
 
@@ -76,11 +76,11 @@ TreeNode* _BSTreePredecessor(TreeNode *curr);
  * @param pSrc          The pointer to the source item.
  * @param pDst          The pointer to the target item.
  *
- * @return          1 : The source item goes after the target one with certain ordering criteria.
+ * @return        > 0 : The source item goes after the target one with certain ordering criteria.
  *                  0 : The source item equals to the target one with certain ordering criteria.
- *                  -1: The source item goes before the target one with certain ordering criteria.
+ *                < 0 : The source item goes before the target one with certain ordering criteria.
  */
-int _BSTreeItemCompare(const void *pSrc, const void *pTge);
+long _BSTreeItemCompare(const void *pSrc, const void *pTge);
 
 
 /**
@@ -167,7 +167,7 @@ TreeNode* BSTreePredecessor(BinSearchTree *self, TreeNode *pCurNode) {
  * BSTreeInsert(): Insert a new node storing the requested item to the appropriate position of the tree.
  */
 TreeNode* BSTreeInsert(BinSearchTree *self, void *pItem) {
-    int         rc;
+    long        rc;
     bool        direction;    
     TreeNode    *new, *curr, *parent;
     
@@ -186,11 +186,11 @@ TreeNode* BSTreeInsert(BinSearchTree *self, void *pItem) {
         parent = curr;    
         rc = _pCompare(pItem, curr->pItem);
 
-        if (rc == 1) {
+        if (rc > 0) {
             curr = curr->pRight;
             direction = DIRECTION_RIGHT;        
         }        
-        else if (rc == -1) {
+        else if (rc < 0) {
             curr = curr->pLeft;
             direction = DIRECTION_LEFT;        
         }
@@ -311,7 +311,7 @@ void BSTreeDelete(BinSearchTree *self, TreeNode *pNode) {
  * BSTreeSearch(): Check whethere the tree has the specified item.
  */
 bool BSTreeSearch(BinSearchTree *self, void *pItem) {
-    int      rc;    
+    long     rc;    
     TreeNode *curr;
 
     curr = self->pRoot;
@@ -344,7 +344,7 @@ unsigned long BSTreeSize(BinSearchTree *self) {
 /**
  * BSTreeSetCompare(): Set the item comparison strategy with the one defined by user.
  */
-void BSTreeSetCompare(BinSearchTree *self, int (*pFunc)(const void*, const void*)) {
+void BSTreeSetCompare(BinSearchTree *self, long (*pFunc)(const void*, const void*)) {
     
     _pCompare = pFunc;
     return;
@@ -448,17 +448,15 @@ TreeNode* _BSTreePredecessor(TreeNode *curr) {
  * Note: It considers source and target items as primitive data and 
  *       gives the larger order to the one with larger value.
  */
-int _BSTreeItemCompare(const void *pSrc, const void *pTge) {
-    
-    if ((size_t)pSrc == (size_t)pTge)
-        return 0;
-    else {
-        if ((size_t)pSrc > (size_t)pTge)
-            return 1;
-        else
-            return -1;    
-    }
+long _BSTreeItemCompare(const void *pSrc, const void *pTge) {
+    long nSrc, nTge;
+
+    nSrc = (long)pSrc;
+    nTge = (long)pTge;    
+
+    return nSrc - nTge;
 }
+
 
 /**
  * _BSTreeItemDestroy(): The default deallocation strategy for a node item.

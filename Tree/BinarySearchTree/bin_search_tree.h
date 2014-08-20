@@ -39,7 +39,7 @@ typedef struct _BinSearchTree {
     TreeNode*     (*successor)  (struct _BinSearchTree*, TreeNode*);  
     TreeNode*     (*predecessor)(struct _BinSearchTree*, TreeNode*);
 
-    void          (*set_compare)(struct _BinSearchTree*, int (*)(const void*, const void*));
+    void          (*set_compare)(struct _BinSearchTree*, long (*)(const void*, const void*));
     void          (*set_destroy)(struct _BinSearchTree*, void (*) (void*));
 } BinSearchTree;
 
@@ -145,7 +145,7 @@ TreeNode* BSTreePredecessor(BinSearchTree *self, TreeNode *pCurNode);
  * @param self          The pointer to the BinSearchTree structure.
  * @param pFunc         The pointer to the customized function.
  */
-void BSTreeSetCompare(BinSearchTree *self, int (*pFunc)(const void*, const void*));
+void BSTreeSetCompare(BinSearchTree *self, long (*pFunc)(const void*, const void*));
 
 
 /**
