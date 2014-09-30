@@ -1,4 +1,10 @@
-C-Common-Data-Structures
-========================
+#C-Common-Data-Structures
 
-Practice for common data structures and algorithms using C
+
+##Introduction
+
+##Usage
+### 1. Source Building
+        
+
+### 2. Binary Execution
