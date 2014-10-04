@@ -105,7 +105,7 @@ void test_delete(RedBlackTree *pTree) {
             break;
         
         pTree->delete(pTree, pNode);
-        //printf("%lu\n", pTree->size(pTree));
+        /* printf("%lu\n", pTree->size(pTree)); */
         turn++;    
     }
 

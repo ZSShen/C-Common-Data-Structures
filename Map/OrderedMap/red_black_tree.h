@@ -6,13 +6,20 @@
 #include <stdbool.h>
 
 
-/* Wrapper for red black tree structure initialization. */
+/* Wrapper for RedBlackTree initialization. */
 #define RedBlackTree_init(p)        p = NULL; \
                                     p = (RedBlackTree*)malloc(sizeof(RedBlackTree)); \
-                                    if (p != NULL) \
-                                        RBTreeInit(p);     
+                                    if (p != NULL) { \
+                                        bool check; \
+                                        check = RBTreeInit(p); \
+                                        if (check == false) { \
+                                            free(p); \
+                                            p = NULL; \
+                                        } \
+                                    }                                  
 
-/* Wrapper for red black tree structure initialization. */
+
+/* Wrapper for RedBlackTree deinitialization. */
 #define RedBlackTree_deinit(p)      if (p != NULL) { \
                                         RBTreeDeinit(p); \
                                         free(p); \
@@ -45,30 +52,30 @@ typedef struct _RedBlackTree {
 } RedBlackTree;
 
 
-/* Constructor for red black tree structure. */
-void RBTreeInit(RedBlackTree *self);
+/* Constructor for RedBlackTree structure. */
+bool RBTreeInit(RedBlackTree *self);
 
 
-/* Destructor for red black tree structure. */
+/* Destructor for RedBlackTree structure. */
 void RBTreeDeinit(RedBlackTree *self);
 
 
 /**
- * This function inserts the new red black node to the appropriate location of the tree.
- * Since the new node insertion may violate the attributes of red black tree, the corresponding 
- * tree structure adjustment is necessary.
+ * This function inserts a new node storing the requested item to the appropriate position of the tree.
+ * Since the new node insertion may violate the attributes of red black tree, the tree structure 
+ * adjustment is necessary.
  *
  * @param self          The pointer to the RedBlackTree structure.
  * @param pItem         The pointer to the item which is to be inserted to the tree.
  *
- * @return              Non-NULL: The pointer to the successfully inserted node containing the requested item.
- *                      NULL    : Fail to insert the requested item due to unsuccessful memory allocation. 
+ * @return              Non-NULL: The pointer to the successfully inserted node.
+ *                      NULL    : The node cannot be inserted due to insufficient memory space. 
  */
 RedBlackNode* RBTreeInsert(RedBlackTree *self, void *pItem);
 
 
 /**
- * This function deletes the specified red black node from the tree and adjusts the tree structure.
+ * This function deletes the specified node from the tree and adjusts the tree structure.
  *
  * @param self          The pointer to the RedBlackTree structure.
  * @param pNode         The pointer to the node which is to be deleted from the tree.
@@ -77,7 +84,7 @@ void RBTreeDelete(RedBlackTree *self, RedBlackNode *pNode);
 
 
 /**
- * This function checks whethere the tree has the designated item.
+ * This function checks whethere the tree has the specified item.
  *
  * @param self          The pointer to the RedBlackTree structure.
  * @param pItem         The pointer to the item which is to be checked.
@@ -99,29 +106,29 @@ unsigned long RBTreeSize(RedBlackTree *self);
 
 
 /**
- * This function locates the node containing the maximum key of the tree.
+ * This function returns the node with maximum order of the tree.
  *
  * @param self          The pointer to the RedBlackTree structure.
  *
- * @return              Non-NULL: The pointer to the node containing maximum key.
+ * @return              Non-NULL: The pointer to the node with maximum order.
  *                      NULL    : The tree is empty.
  */
 RedBlackNode* RBTreeMaximum(RedBlackTree *self);
 
 
 /**
- * This function locates the node containing the minimum key of the tree.
+ * This function returns the node with minimum order of the tree.
  *
  * @param self          The pointer to the RedBlackTree structure.
  *
- * @return              Non-NULL: The pointer to the node containing minimum key.
+ * @return              Non-NULL: The pointer to the node with minimum order.
  *                      NULL    : The tree is empty.
  */
 RedBlackNode* RBTreeMinimum(RedBlackTree *self);
 
 
 /**
- * This function locates the successor of the designated node.
+ * This function returns the successor of the designated node.
  *
  * @param self          The pointer to the RedBlackTree structure.
  *
@@ -132,7 +139,7 @@ RedBlackNode* RBTreeSuccessor(RedBlackTree *self, RedBlackNode *pCurNode);
 
 
 /**
- * This function locates the predecessor of the designated node.
+ * This function returns the predecessor of the designated node.
  *
  * @param self          The pointer to the RedBlackTree structure.
  *
@@ -143,7 +150,7 @@ RedBlackNode* RBTreePredecessor(RedBlackTree *self, RedBlackNode *pCurNode);
 
 
 /*
- * This function sets the item comparison strategy with the one defined by user.
+ * This function sets the node item comparison strategy with the one defined by user.
  *
  * @param self          The pointer to the RedBlackTree structure.
  * @param pFunc         The pointer to the customized function.
@@ -152,7 +159,7 @@ void RBTreeSetCompare(RedBlackTree *self, int (*pFunc)(const void*, const void*)
 
 
 /*
- * This function sets the item destroy strategy with the one defined by user.
+ * This function sets the node item deallocation strategy with the one defined by user.
  * @param self          The pointer to the RedBlackTree structure.
  * @param pFunc         The pointer to the customized function.
  */

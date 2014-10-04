@@ -2,7 +2,11 @@
 # Prepare the list of implemented data structures.
 PATH_CUR := $(shell pwd)
 PATH_BIN_TREE := $(PATH_CUR)/Tree/BinarySearchTree
+PATH_RB_TREE := $(PATH_CUR)/Tree/RedBlackTree
+PATH_ORDER_MAP := $(PATH_CUR)/Map/OrderedMap
 LIST := $(PATH_BIN_TREE)
+LIST := $(LIST) $(PATH_RB_TREE)
+LIST := $(LIST) $(PATH_ORDER_MAP)
 
 
 # Prepare the building rules for implemented data structures.
@@ -26,6 +30,7 @@ all:
         cd $$path; \
         $(MAKE_CLEAN); \
         $(MAKE_BUILD); \
+        echo "\n\n"; \
     done
 
 
@@ -34,5 +39,6 @@ coverage:
 	for path in $(LIST); do \
         cd $$path; \
         $(MAKE_COVERAGE); \
+        echo "\n\n"; \
     done
 
