@@ -1,0 +1,22 @@
+language: c
+
+compiler:
+    - gcc
+    
+git:
+  depth: 1
+
+install:
+    - sudo pip install cpp-coveralls --use-mirrors
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq cmake python3-minimal
+    - sudo apt-get install -qq valgrind
+
+script:
+    - make all DEBUG=true COVERAGE=true
+    - make coverage DEBUG=true
+
+after_success:
+    - coveralls
+
+
