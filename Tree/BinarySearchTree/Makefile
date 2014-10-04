@@ -19,6 +19,9 @@ ARCH_OPT := rcs
 ifeq ($(DEBUG), true)
 	FLAG := $(FLAG) -g
 endif
+ifeq ($(COVERAGE), true)
+	FLAG := $(FLAG) -O0 --coverage
+endif
 
 
 # List the project building rules.
@@ -48,8 +51,12 @@ else
 endif
 
 
+# List the coverage testing rule.
+coverage: test
+	
+
 # List the project cleaning rule.
 .PHONY: clean
 clean:
-	rm -f *.o *.a *.so $(TEST_PROG)
+	rm -f *.o *.a *.so *.gcda *.gcno $(TEST_PROG)
 
