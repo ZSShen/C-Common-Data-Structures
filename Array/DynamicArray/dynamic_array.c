@@ -26,13 +26,19 @@ void _DArrayItemDestroy(void *pItem);
  *                Implementation for exported functions                      *
  *===========================================================================*/
 bool DArrayInit(DynamicArray *self, unsigned long ulCapacity) {
+    unsigned long i;
 
     _ulCapacity = ulCapacity;
-    _ulSize = ulCapacity;
+    _ulSize = 0;
     self->array = (void**)malloc(sizeof(void*) * _ulCapacity);    
     if (self->array == NULL)
         return false;
     
+    /* Let all the elements initially point to NULL. */
+    for (i = 0 ; i < _ulCapacity ; i++) {
+        self->array[i] = NULL;
+    }
+
     /* Let the function pointers point to the corresponding functions. */
     _pDestroy = _DArrayItemDestroy;
 
@@ -49,8 +55,15 @@ bool DArrayInit(DynamicArray *self, unsigned long ulCapacity) {
 
 
 void DArrayDeinit(DynamicArray *self) {
-
+    unsigned long i;
+    
+    for (i = 0 ; i < _ulCapacity ; i++) {
+        if (self->array[i] != NULL) {
+            _pDestroy(self->array[i]);
+        }
+    }
     free(self->array);
+
     return;
 }
 
@@ -60,11 +73,6 @@ void DArrayDeinit(DynamicArray *self) {
  */
 bool DArrayPut(DynamicArray *self, void *pItem, unsigned long ulIndex) {
 
-    /* Reject the invalid index*/
-    if (ulIndex >= _ulCapacity) {
-        return false;
-    }
-
     /* If the current size equals the capacity, the array should automatically 
        extend its capacity. But if the extension is failed, the array will 
        delay the operation until next trial. */
@@ -72,8 +80,14 @@ bool DArrayPut(DynamicArray *self, void *pItem, unsigned long ulIndex) {
         DArrayResize(self, DEFAULT_AUTO_RESIZE);
     }
 
+    /* Reject the invalid index*/
+    if (ulIndex >= _ulCapacity) {
+        return false;
+    }
+
     self->array[ulIndex] = pItem;
     _ulSize++;
+
     return true;
 }
 
@@ -104,6 +118,7 @@ bool DArrayDelete(DynamicArray *self, unsigned long ulIndex) {
 
     pItem = self->array[ulIndex];
     _pDestroy(pItem);
+    self->array[ulIndex] = NULL;
     _ulSize--;
 
     return true;
@@ -114,7 +129,7 @@ bool DArrayDelete(DynamicArray *self, unsigned long ulIndex) {
  * DArrayResize(): Resize the array with the specified number of times.
  */
 bool DArrayResize(DynamicArray *self, double udTimes) {
-    unsigned long   ulNewCapacity;    
+    unsigned long   i, ulNewCapacity;    
     void            **new;
 
     ulNewCapacity = _ulCapacity * udTimes;
@@ -124,8 +139,15 @@ bool DArrayResize(DynamicArray *self, double udTimes) {
     new = realloc(self->array, ulNewCapacity * sizeof(void*));
     if (new == NULL)
         return false;
-
     self->array = new;
+
+    /* For space expansion, let all the newly allocated elements point to NULL. */
+    if (ulNewCapacity > _ulCapacity) {
+        for (i = _ulCapacity ; i < ulNewCapacity ; i++) {
+            self->array[i] = NULL;
+        }    
+    }
+
     _ulCapacity = ulNewCapacity;
 
     return true;

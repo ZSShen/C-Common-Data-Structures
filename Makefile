@@ -3,9 +3,13 @@
 PATH_CUR := $(shell pwd)
 PATH_BIN_TREE := $(PATH_CUR)/Tree/BinarySearchTree
 PATH_RB_TREE := $(PATH_CUR)/Tree/RedBlackTree
+PATH_SLLIST := $(PATH_CUR)/List/SinglyLinkedList
+PATH_DARRAY := $(PATH_CUR)/Array/DynamicArray
 PATH_ORDER_MAP := $(PATH_CUR)/Map/OrderedMap
 LIST := $(PATH_BIN_TREE)
 LIST := $(LIST) $(PATH_RB_TREE)
+LIST := $(LIST) $(PATH_SLLIST)
+LIST := $(LIST) $(PATH_DARRAY)
 LIST := $(LIST) $(PATH_ORDER_MAP)
 
 
