@@ -29,9 +29,13 @@ typedef struct _DynamicArray {
     void **array;
 
     bool          (*put)      (struct _DynamicArray*, void*, unsigned long);
-    void*         (*get)      (struct _DynamicArray*, unsigned long);    
+    void*         (*get)      (struct _DynamicArray*, unsigned long);
+    bool          (*delete)   (struct _DynamicArray*, unsigned long);
     bool          (*resize)   (struct _DynamicArray*, double);
+    unsigned long (*size)     (struct _DynamicArray*);
     unsigned long (*capacity) (struct _DynamicArray*);
+
+    void          (*set_destroy) (struct _DynamicArray*, void (*) (void*));
 } DynamicArray;
 
 
@@ -69,6 +73,7 @@ bool DArrayPut(DynamicArray *self, void *pItem, unsigned long ulIndex);
 
 /**
  * This function retrives an item from the designated index of the array.
+ *
  * @param self          The pointer to the DynamicArray structure.
  * @param ulIndex       The designated index.
  *
@@ -76,6 +81,18 @@ bool DArrayPut(DynamicArray *self, void *pItem, unsigned long ulIndex);
  *                      NULL    : The item cannot be retrieved due to illegally designated array index.
  */
 void* DArrayGet(DynamicArray *self, unsigned long ulIndex);
+
+
+/**
+ * This function deletes an item from the designated index of the array.
+ *
+ * @param self          The pointer to the DynamicArray structure.
+ * @param ulIndex       The designated index.        
+ *
+ * @return              true : The item is deleted successfully.
+ *                      false: The item cannot be deleted due to illegally designated array index.
+ */
+bool DArrayDelete(DynamicArray *self, unsigned long ulIndex);
 
 
 /**
@@ -92,13 +109,32 @@ bool DArrayResize(DynamicArray *self, double udTimes);
 
 
 /**
- * This function returns the capacity of the array.
+ * This function returns the size of the array.
+ *
+ * @param self          The pointer to the DynamicArray structure.
+ *
+ * @return              The size.
+ */
+unsigned long DArraySize(DynamicArray *self);
 
+
+/**
+ * This function returns the capacity of the array.
+ *
  * @param self          The pointer to the DynamicArray structure.
  * 
  * @return              The capacity.
  */
 unsigned long DArrayCapacity(DynamicArray *self);
+
+
+/**
+ * This function sets the item deallcation strategy with the one defined by user.
+ *
+ * @param self          The pointer to the DynamicArray structure.
+ * @param pFunc         The pointer to the customized function.
+ */
+void DArraySetDestroy(DynamicArray *self, void (*pFunc)(void*));
 
 
 #endif
