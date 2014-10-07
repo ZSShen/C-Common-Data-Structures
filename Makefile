@@ -6,11 +6,15 @@ PATH_RB_TREE := $(PATH_CUR)/Tree/RedBlackTree
 PATH_SLLIST := $(PATH_CUR)/List/SinglyLinkedList
 PATH_DARRAY := $(PATH_CUR)/Array/DynamicArray
 PATH_ORDER_MAP := $(PATH_CUR)/Map/OrderedMap
+PATH_BINARY_HEAP := $(PATH_CUR)/Heap/BinaryHeap
+PATH_BINOMIAL_HEAP := $(PATH_CUR)/Heap/BinomialHeap
 LIST := $(PATH_BIN_TREE)
 LIST := $(LIST) $(PATH_RB_TREE)
 LIST := $(LIST) $(PATH_SLLIST)
 LIST := $(LIST) $(PATH_DARRAY)
 LIST := $(LIST) $(PATH_ORDER_MAP)
+LIST := $(LIST) $(PATH_BINARY_HEAP)
+LIST := $(LIST) $(PATH_BINOMIAL_HEAP)
 
 
 # Prepare the building rules for implemented data structures.
