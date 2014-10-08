@@ -48,7 +48,7 @@ typedef struct _BinomialHeap {
 } BinomialHeap;
 
 
-void BinomialHeapInit(BinomialHeap *self);
+bool BinomialHeapInit(BinomialHeap *self);
 
 
 void BinomialHeapDeinit(BinomialHeap *self);
