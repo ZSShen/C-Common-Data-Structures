@@ -26,6 +26,9 @@ SECTION_TABLE_INDEX = "The index mapping table of exported functions.";
 SECTION_TABLE_NAME  = "The name mapping table of exported functions.";
 SECTION_PTR_PROTO   = "The function pointer types of exported functions.";
 
+FUNCTION_INDEX_PREFIX = "FUNC";
+FUNCTION_TOTAL_COUNT  = "NUM_FUNCS";
+
 
 def main():
 
@@ -38,6 +41,8 @@ def main():
     name_interface = os.path.basename(path_interface)[:-2];
     h_interface = open(path_interface, 'w');
     put_interface_prologue(h_interface, name_interface);
+    put_interface_index_table(h_interface, list_exp_func);
+    put_interface_name_table(h_interface, list_exp_func);
     put_interface_epilogue(h_interface);
     h_interface.close();
     return;
@@ -113,6 +118,64 @@ def put_interface_epilogue(h_interface):
 
     line = "%s\n" % (MACRO_ENDIF);
     h_interface.write(line);
+    return;
+
+
+def put_interface_index_table(h_interface, list_exp_func):
+
+    line = "%s%s %s %s%s\n" % (COMMENT_CORNER, COMMENT_MARK_VERTICAL, \
+                               SECTION_TABLE_INDEX, \
+                               COMMENT_MARK_VERTICAL, COMMENT_CORNER);
+    h_interface.write(line);
+
+    line = "enum {\n";
+    h_interface.write(line);
+
+    for dict_func in list_exp_func:
+        name = dict_func[KEY_FUNCTION_NAME];
+        caps_name = name.upper();
+        line = "\t%s_%s,\n" % (FUNCTION_INDEX_PREFIX, caps_name);
+        h_interface.write(line);
+    line = "\t%s\n" % (FUNCTION_TOTAL_COUNT);
+    h_interface.write(line);
+
+    line = "};\n\n\n";
+    h_interface.write(line);
+    return;
+
+
+def put_interface_name_table(h_interface, list_exp_func):
+
+    line = "%s%s %s %s%s\n" % (COMMENT_CORNER, COMMENT_MARK_VERTICAL, \
+                               SECTION_TABLE_NAME, \
+                               COMMENT_MARK_VERTICAL, COMMENT_CORNER);
+    h_interface.write(line);
+
+    line = "#define gTableFuncName  ((char const *[]) {";
+    h_interface.write(line);
+
+    str_alias = "";
+    len_alias = len(line);
+    for idx in xrange(len_alias):
+        str_alias += " ";
+
+    count_exp_func = len(list_exp_func);
+    if count_exp_func < 1:
+        return;
+    
+    idx_bgn = 1;
+    idx_end = count_exp_func - 1;
+    line = " \"%s\", \\\n" % (list_exp_func[idx_bgn][KEY_FUNCTION_NAME]);
+    h_interface.write(line);
+
+    for idx in (1, count_exp_func - 1):
+        line = "%s \"%s\", \\\n" % (str_alias, list_exp_func[idx][KEY_FUNCTION_NAME]);
+        h_interface.write(line);
+
+    line = "%s \"%s\"" % (str_alias, list_exp_func[idx_end][KEY_FUNCTION_NAME]);
+    line = " })\n\n\n";
+    h_interface.write(line);
+
     return;
 
 
