@@ -5,7 +5,7 @@
 #include <getopt.h>
 
 
-#define SIZE_DATA           300000
+#define SIZE_DATA           10000
 #define BUF_SIZE_SMALL      64
 #define OPT_IMPLEMENT       'i'
 #define OPT_HELP            'h'

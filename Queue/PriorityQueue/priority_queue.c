@@ -40,6 +40,7 @@ void _PQueueItemDestroy(void *pItem);
  *===========================================================================*/
 bool PQueueInit(PriorityQueue *self, const char *cszNameLib) {
     int  i;
+    bool bInit;    
     char szPathLib[BUF_SIZE_MID];
     FPTR_INIT func_init;
     FPTR_SET_COMPARE func_set_compare;
@@ -67,7 +68,11 @@ bool PQueueInit(PriorityQueue *self, const char *cszNameLib) {
 
     /* Initialize the heap structure. */
     func_init = (FPTR_INIT)_tableAPI[FUNC_INIT];
-    func_init();
+    bInit = func_init();
+    if (bInit == false) {
+        printf("Error: Cannot initialize library %s.\n", cszNameLib);    
+        return false;
+    }
 
     /* Specify the default item comparison and deallocation strategies for the heap. */
     func_set_compare = (FPTR_SET_COMPARE)_tableAPI[FUNC_SET_COMPARE];

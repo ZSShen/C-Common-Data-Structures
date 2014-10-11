@@ -178,7 +178,7 @@ def put_interface_name_table(h_interface, list_exp_func):
     if count_exp_func < 1:
         return;
 
-    idx_bgn = 1;
+    idx_bgn = 0;
     idx_end = count_exp_func - 1;
     line = " \"%s\", \\\n" % (list_exp_func[idx_bgn][KEY_FUNCTION_NAME]);
     h_interface.write(line);

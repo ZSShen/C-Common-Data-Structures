@@ -31,7 +31,7 @@ VPATH := $(PATH_CUR)
 # Specify the compilation options.
 CC := gcc
 FLAG :=
-LIB := -L. -l$(IMPORT_LIB_NAME)
+LIB := -L. -ldl
 SO_FLAG := -shared
 ARCH := ar
 ARCH_OPT := rcs
@@ -52,6 +52,9 @@ ifeq ($(COVERAGE), true)
 	PARAM := $(PARAM) COVERAGE=true
 endif
 
+# $(1): For the root folder of the designated data structure.
+# $(2): For its header file.
+# $(3): For its shared object file.
 define preprocess
 	make build_dynamic_lib $(PARAM)
 	$(PATH_INTERFACE_GEN) $(1)/$(2) $(PATH_CUR)/$(HEAP_INTERFACE)
@@ -60,8 +63,8 @@ endef
 
 
 # List the project building rules.
-#build_test: include_lib $(DEPENDENCY_LIB) $(DEPENDENCY_TEST)
-#	$(CC) $(FLAG) -o $(TEST_PROG) *.o $(LIB)
+build_test: include_dynamic_lib $(DEPENDENCY_LIB) $(DEPENDENCY_TEST)
+	$(CC) $(FLAG) -o $(TEST_PROG) *.o $(LIB)
 
 #build_static_lib: include_lib $(DEPENDENCY_LIB)
 #	$(ARCH) $(ARCH_OPT) lib$(LIB_NAME).a $(SRC_NAME).o
@@ -70,29 +73,30 @@ endef
 #build_dynamic_lib: include_lib $(DEPENDENCY_LIB)
 #	$(CC) $(SO_FLAG) $(SRC_NAME).o -o lib$(LIB_NAME).so
 
-#$(DEPENDENCY_TEST):
-#	$(CC) $(FLAG) $(LIB) -c $@.c -o $@.o
+$(DEPENDENCY_TEST):
+	$(CC) $(FLAG) $(LIB) -c $@.c -o $@.o
 
-#$(DEPENDENCY_LIB):
-#	$(CC) $(FLAG) $(LIB) -c $@.c -o $@.o
+$(DEPENDENCY_LIB):
+	$(CC) $(FLAG) $(LIB) -c $@.c -o $@.o
 
-include_lib:
+include_dynamic_lib:
 	cd $(PATH_BINARY_HEAP) && \
     $(call preprocess, $(PATH_BINARY_HEAP),$(BINARY_HEAP_HAD),$(BINARY_HEAP_BIN_D))
 	cd $(PATH_BINOMIAL_HEAP) && \
     $(call preprocess, $(PATH_BINOMIAL_HEAP),$(BINOMIAL_HEAP_HAD),$(BINOMIAL_HEAP_BIN_D))
 
+
 # List the project execution rules.
-#test:
-#ifeq ($(DEBUG), true)
-#	valgrind --leak-check=yes --track-origins=yes ./$(TEST_PROG)
-#else
-#	./$(TEST_PROG)
-#endif
+test:
+ifeq ($(DEBUG), true) 
+	valgrind --leak-check=yes --track-origins=yes ./$(TEST_PROG) -i $(IMPLEMENT)
+else
+	./$(TEST_PROG) -i $(IMPLEMENT)
+endif
 
 
 # List the coverage testing rule.
-#coverage: test
+coverage: test
 	
 
 # List the project cleaning rule.
