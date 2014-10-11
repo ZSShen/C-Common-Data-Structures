@@ -28,6 +28,7 @@ endif
 build_test: $(DEPENDENCY_LIB) $(DEPENDENCY_TEST)
 	$(CC) $(FLAG) -o $(TEST_PROG) *.o
 
+build_static_lib: FLAG := $(FLAG) -fPIC
 build_static_lib: $(DEPENDENCY_LIB)
 	$(ARCH) $(ARCH_OPT) lib$(LIB_NAME).a $(SRC_NAME).o
 

@@ -51,11 +51,11 @@ build_test: include_lib $(DEPENDENCY_LIB) $(DEPENDENCY_TEST)
 
 build_static_lib: FLAG := $(FLAG) -DBUILD_PLUGIN
 build_static_lib: include_lib $(DEPENDENCY_LIB)
-	$(ARCH) $(ARCH_OPT) lib$(LIB_NAME).a $(SRC_NAME).o
+	$(ARCH) $(ARCH_OPT) $(LIB) lib$(LIB_NAME).a $(SRC_NAME).o
 
 build_dynamic_lib: FLAG := $(FLAG) -fPIC -DBUILD_PLUGIN
 build_dynamic_lib: include_lib $(DEPENDENCY_LIB)
-	$(CC) $(SO_FLAG) $(SRC_NAME).o -o lib$(LIB_NAME).so
+	$(CC) $(SO_FLAG) $(SRC_NAME).o -o lib$(LIB_NAME).so $(LIB)
 
 $(DEPENDENCY_TEST):
 	$(CC) $(FLAG) $(LIB) -c $@.c -o $@.o
