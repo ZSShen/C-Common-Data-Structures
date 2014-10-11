@@ -442,20 +442,66 @@ void _BinomialHeapUnion(HeapNode *pListSrc, HeapNode *pListTge) {
  *                 The interface definition of plugin                        *
  *===========================================================================*/
 #ifdef BUILD_PLUGIN
-bool init();
+static BinomialHeap *pHeap;
 
-void deinit();
 
-bool insert(void*);
+bool init() {
 
-void* delete();
+    BinomialHeap_init(pHeap);
+    return (pHeap != NULL)? true : false;
+}
 
-void* top();
 
-unsigned long size();
+void deinit() {
+    
+    BinomialHeap_deinit(pHeap);
+    return;
+}
 
-void set_compare(int(*)(const void*, const void*));
 
-void set_destroy(void(*)(void*));
+bool insert(void *pItem) {
+    bool rc;
+
+    rc = pHeap->insert(pHeap, pItem);
+    return rc;    
+}
+
+
+void* delete() {
+    void *pItemRet;
+    
+    pItemRet = pHeap->delete(pHeap);
+    return pItemRet;
+}
+
+
+void* top() {
+    void *pItemRet;
+
+    pItemRet = pHeap->top(pHeap);
+    return pItemRet;
+}
+
+
+unsigned long size() {
+    unsigned long ulSize;
+
+    ulSize = pHeap->size(pHeap);
+    return ulSize;
+}
+
+
+void set_compare(int(*pFunc)(const void*, const void*)) {
+
+    pHeap->set_compare(pHeap, pFunc);
+    return;
+}
+
+
+void set_destroy(void(*pFunc)(void*)) {
+
+    pHeap->set_destroy(pHeap, pFunc);
+    return;
+}
 #endif
 

@@ -49,10 +49,11 @@ COPY_IMPORT_LIB := cp $(PATH_IMPORT_LIB)/$(IMPORT_BIN_NAME) $(PATH_IMPORT_LIB)/$
 build_test: include_lib $(DEPENDENCY_LIB) $(DEPENDENCY_TEST)
 	$(CC) $(FLAG) -o $(TEST_PROG) *.o $(LIB)
 
+build_static_lib: FLAG := $(FLAG) -DBUILD_PLUGIN
 build_static_lib: include_lib $(DEPENDENCY_LIB)
 	$(ARCH) $(ARCH_OPT) lib$(LIB_NAME).a $(SRC_NAME).o
 
-build_dynamic_lib: FLAG := $(FLAG) -fPIC
+build_dynamic_lib: FLAG := $(FLAG) -fPIC -DBUILD_PLUGIN
 build_dynamic_lib: include_lib $(DEPENDENCY_LIB)
 	$(CC) $(SO_FLAG) $(SRC_NAME).o -o lib$(LIB_NAME).so
 
