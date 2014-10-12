@@ -28,7 +28,7 @@ ifeq ($(DEBUG), true)
 	FLAG := $(FLAG) -g
 endif
 ifeq ($(COVERAGE), true)
-	FLAG := $(FLAG) -O0 --coverage
+	FLAG  := $(FLAG) -O0 --coverage
 	COVER := -lgcov
 endif
 
