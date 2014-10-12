@@ -21,6 +21,7 @@ ifeq ($(DEBUG), true)
 endif
 ifeq ($(COVERAGE), true)
 	FLAG := $(FLAG) -O0 --coverage
+	COVER := -lgcov
 endif
 
 
@@ -28,12 +29,13 @@ endif
 build_test: $(DEPENDENCY_LIB) $(DEPENDENCY_TEST)
 	$(CC) $(FLAG) -o $(TEST_PROG) *.o
 
+build_static_lib: FLAG := $(FLAG) -DBUILD_PLUGIN
 build_static_lib: $(DEPENDENCY_LIB)
 	$(ARCH) $(ARCH_OPT) lib$(LIB_NAME).a $(SRC_NAME).o
 
-build_dynamic_lib: FLAG := $(FLAG) -fPIC
+build_dynamic_lib: FLAG := $(FLAG) -fPIC -DBUILD_PLUGIN
 build_dynamic_lib: $(DEPENDENCY_LIB)
-	$(CC) $(SO_FLAG) $(SRC_NAME).o -o lib$(LIB_NAME).so
+	$(CC) $(SO_FLAG) $(SRC_NAME).o -o lib$(LIB_NAME).so $(COVER)
 
 $(DEPENDENCY_TEST):
 	$(CC) $(FLAG) -c $@.c -o $@.o
