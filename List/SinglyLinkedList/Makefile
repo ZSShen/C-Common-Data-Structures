@@ -1,26 +1,27 @@
 
 # Define the constants for output binary.
-SRC_NAME := singly_linked_list
-LIB_NAME := sllist
-TEST_PROG := test_program
+SRC_NAME 	:= singly_linked_list
+LIB_NAME 	:= sllist
+TEST_PROG 	:= test_program
 
 
 # List the dependencies for project building.
-DEPENDENCY_LIB := $(SRC_NAME)
+DEPENDENCY_LIB 	:= $(SRC_NAME)
 DEPENDENCY_TEST := $(TEST_PROG)
 
 
 # Specify the compilation options.
-CC := gcc
-FLAG :=
-SO_FLAG := -shared
-ARCH := ar
-ARCH_OPT := rcs
+CC 			:= gcc
+FLAG 		:=
+SO_FLAG 	:= -shared
+ARCH 		:= ar
+ARCH_OPT 	:= rcs
 ifeq ($(DEBUG), true)
 	FLAG := $(FLAG) -g
 endif
 ifeq ($(COVERAGE), true)
-	FLAG := $(FLAG) -O0 --coverage
+	FLAG  := $(FLAG) -O0 --coverage
+	COVER := -lgcov
 endif
 
 
@@ -28,12 +29,13 @@ endif
 build_test: $(DEPENDENCY_LIB) $(DEPENDENCY_TEST)
 	$(CC) $(FLAG) -o $(TEST_PROG) *.o
 
+build_static_lib: FLAG := $(FLAG) -fPIC
 build_static_lib: $(DEPENDENCY_LIB)
 	$(ARCH) $(ARCH_OPT) lib$(LIB_NAME).a $(SRC_NAME).o
 
 build_dynamic_lib: FLAG := $(FLAG) -fPIC
 build_dynamic_lib: $(DEPENDENCY_LIB)
-	$(CC) $(SO_FLAG) $(SRC_NAME).o -o lib$(LIB_NAME).so
+	$(CC) $(SO_FLAG) $(SRC_NAME).o -o lib$(LIB_NAME).so $(COVER)
 
 $(DEPENDENCY_TEST):
 	$(CC) $(FLAG) -c $@.c -o $@.o

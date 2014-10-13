@@ -1,9 +1,9 @@
 
 # Define the constants for output binary and the dependent library.
-SRC_NAME := binary_heap
-LIB_NAME := binaryheap
-TEST_PROG := test_program
-PATH_CUR := $(shell pwd)
+SRC_NAME 		:= binary_heap
+LIB_NAME 		:= binaryheap
+TEST_PROG 		:= test_program
+PATH_CUR 		:= $(shell pwd)
 PATH_IMPORT_LIB := $(PATH_CUR)/../../Array/DynamicArray
 IMPORT_SRC_NAME := dynamic_array
 IMPORT_LIB_NAME := darray
@@ -12,18 +12,18 @@ IMPORT_HAD_NAME := $(IMPORT_SRC_NAME).h
 
 
 # List the dependencies for project building.
-DEPENDENCY_LIB := $(SRC_NAME)
+DEPENDENCY_LIB 	:= $(SRC_NAME)
 DEPENDENCY_TEST := $(TEST_PROG)
-VPATH := $(PATH_CUR)
+VPATH 			:= $(PATH_CUR)
 
 
 # Specify the compilation options.
-CC := gcc
-FLAG :=
-LIB := -L. -l$(IMPORT_LIB_NAME)
-SO_FLAG := -shared
-ARCH := ar
-ARCH_OPT := rcs
+CC 			:= gcc
+FLAG 		:=
+LIB 		:= -L. -l$(IMPORT_LIB_NAME)
+SO_FLAG 	:= -shared
+ARCH 		:= ar
+ARCH_OPT 	:= rcs
 ifeq ($(DEBUG), true)
 	FLAG := $(FLAG) -g
 endif
@@ -50,7 +50,7 @@ COPY_IMPORT_LIB := cp $(PATH_IMPORT_LIB)/$(IMPORT_BIN_NAME) $(PATH_IMPORT_LIB)/$
 build_test: include_lib $(DEPENDENCY_LIB) $(DEPENDENCY_TEST)
 	$(CC) $(FLAG) -o $(TEST_PROG) *.o $(LIB)
 
-build_static_lib: FLAG := $(FLAG) -DBUILD_PLUGIN
+build_static_lib: FLAG := $(FLAG) -fPIC  -DBUILD_PLUGIN
 build_static_lib: include_lib $(DEPENDENCY_LIB)
 	$(ARCH) $(ARCH_OPT) $(LIB) lib$(LIB_NAME).a $(SRC_NAME).o
 

@@ -1,26 +1,27 @@
 
 # Define the constants for output binary.
-SRC_NAME := dynamic_array
-LIB_NAME := darray
-TEST_PROG := test_program
+SRC_NAME 	:= dynamic_array
+LIB_NAME 	:= darray
+TEST_PROG 	:= test_program
 
 
 # List the dependencies for project building.
-DEPENDENCY_LIB := $(SRC_NAME)
+DEPENDENCY_LIB 	:= $(SRC_NAME)
 DEPENDENCY_TEST := $(TEST_PROG)
 
 
 # Specify the compilation options.
-CC := gcc
-FLAG :=
-SO_FLAG := -shared
-ARCH := ar
-ARCH_OPT := rcs
+CC 			:= gcc
+FLAG 		:=
+SO_FLAG 	:= -shared
+ARCH 		:= ar
+ARCH_OPT 	:= rcs
 ifeq ($(DEBUG), true)
 	FLAG := $(FLAG) -g
 endif
 ifeq ($(COVERAGE), true)
-	FLAG := $(FLAG) -O0 --coverage
+	FLAG  := $(FLAG) -O0 --coverage
+	COVER := -lgcov
 endif
 
 
@@ -34,7 +35,7 @@ build_static_lib: $(DEPENDENCY_LIB)
 
 build_dynamic_lib: FLAG := $(FLAG) -fPIC
 build_dynamic_lib: $(DEPENDENCY_LIB)
-	$(CC) $(SO_FLAG) $(SRC_NAME).o -o lib$(LIB_NAME).so
+	$(CC) $(SO_FLAG) $(SRC_NAME).o -o lib$(LIB_NAME).so $(COVER)
 
 $(DEPENDENCY_TEST):
 	$(CC) $(FLAG) -c $@.c -o $@.o
