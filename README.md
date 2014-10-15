@@ -12,11 +12,10 @@ or theoretical structures.
 
 ##Usage
 ### 1. Source Building
-   The project can now be utilized only under the Linux-related platform.
    
 #### 1.1 Source Tree
 + The contained data structures and the relevant building tools.   
-    - Makefile   
+    - Makefile
     - Tree   
         * BinarySearchTree   
         * RedBlackTree   
@@ -34,8 +33,21 @@ or theoretical structures.
     - Misc   
         * interface_generator.py   
 
++ The source files for a single structure.
+    - DataStructure
+        * data_structure.c
+        * data_structure.h
+        * test_program.c
+        * Makefile
    
 #### 1.2 Building Entire Source
+    Generally, each data structure is wrapped in a single C structure and   
+    is built as an object file. To verify its correctness, we must rely  
+    on the test program which sets up several unit test functions.   
+
+    Therefore, there is a major Makefile at the top of source tree:   
+        For the normal build, execute `make all`.   
+        For the debug build (memory inspection), executre `make all DEBUG=true`.   
 
 #### 1.3 Building Specific Structure
 
