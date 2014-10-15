@@ -41,13 +41,17 @@ or theoretical structures.
         * Makefile
    
 #### 1.2 Building Entire Source
-    Generally, each data structure is wrapped in a single C structure and   
-    is built as an object file. To verify its correctness, we must rely  
-    on the test program which sets up several unit test functions.   
++ Generally, each data structure is wrapped in a single C structure and   
+  is built as an object file. To verify its correctness, we must rely  
+  on the test program which sets up several unit test functions.   
 
-    Therefore, there is a major Makefile at the top of source tree:   
-        For the normal build, execute `make all`.   
-        For the debug build (memory inspection), executre `make all DEBUG=true`.   
++ Therefore, there is a major Makefile at the top of source tree:   
+    - For the normal build, execute `make all`.   
+    - For the debug build (memory inspection), executre `make all DEBUG=true`.     
+
++ By running the above command, we compile the object files and the test   
+  programs for all the data structures. Also note that the memory debug   
+  build should be driven by the valgrind utility.
 
 #### 1.3 Building Specific Structure
 
