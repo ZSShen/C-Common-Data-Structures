@@ -16,23 +16,23 @@ or theoretical structures.
    
 #### 1.1 Source Tree
 + The contained data structures and the relevant building tools.   
-   |-- Makefile   
-   |-- Tree   
-      |-- BinarySearchTree   
-      |-- RedBlackTree   
-   |-- List   
-      |-- SinglyLinkedList   
-   |-- Array   
-      |-- DynamicArray   
-   |-- Map   
-      |-- OrderedMap   
-   |-- Heap   
-      |-- BinaryHeap   
-      |-- BinomialHeap   
-   |-- Queue   
-      |-- PriorityQueue   
-   |-- Misc   
-      |-- interface_generator.py   
+    - Makefile   
+    - Tree   
+        * BinarySearchTree   
+        * RedBlackTree   
+    - List   
+        * SinglyLinkedList   
+    - Array   
+        * DynamicArray   
+    - Map   
+        * OrderedMap   
+    - Heap   
+        * BinaryHeap   
+        * BinomialHeap   
+    - Queue   
+        * PriorityQueue   
+    - Misc   
+        * interface_generator.py   
 
    
 #### 1.2 Building Entire Source
