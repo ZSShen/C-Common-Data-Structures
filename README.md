@@ -12,9 +12,29 @@ or theoretical structures.
 
 ##Usage
 ### 1. Source Building
-
+   The project can now be utilized only under the Linux-related platform.
+   
 #### 1.1 Source Tree
++ The contained data structures and the relevant building tools.   
+   |-- Makefile   
+   |-- Tree   
+      |-- BinarySearchTree   
+      |-- RedBlackTree   
+   |-- List   
+      |-- SinglyLinkedList   
+   |-- Array   
+      |-- DynamicArray   
+   |-- Map   
+      |-- OrderedMap   
+   |-- Heap   
+      |-- BinaryHeap   
+      |-- BinomialHeap   
+   |-- Queue   
+      |-- PriorityQueue   
+   |-- Misc   
+      |-- interface_generator.py   
 
+   
 #### 1.2 Building Entire Source
 
 #### 1.3 Building Specific Structure
