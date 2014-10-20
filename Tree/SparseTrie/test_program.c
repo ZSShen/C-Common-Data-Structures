@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     szFileAnswer = argv[2];
 
     /* Create the SparseTrie instance. */
-    init_SparseTrie(pTrie);
+    SparseTrie_init(pTrie);
     if (pTrie == NULL) {
         goto EXIT;
     }
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 
 
     /* Release the allocated resources. */
-    deinit_SparseTrie(pTrie);
+    SparseTrie_deinit(pTrie);
 EXIT:
     return 0;
 }

@@ -6,9 +6,9 @@
 #define CHAR_INDEX_BASE_A_Z     37
 
 
-/*---------------------------------------------------*
- *        Definition for Internal Functions          *
- *---------------------------------------------------*/
+/*-----------------------------------------------------------*
+ *            Definition for Internal Functions              *
+ *-----------------------------------------------------------*/
 void _STrieCreateNode(TrieNode **pNew);
 
 
@@ -18,71 +18,117 @@ void _STrieDeinitHelper(TrieNode *pCurr);
 int _STrieCharTransform(char cChar);
 
 
-/*---------------------------------------------------*
- *      Implementation for Exported Functions        *
- *---------------------------------------------------*/
-bool STrieInit(SparseTrie *pTrie) {
+/*-----------------------------------------------------------*
+ *          Implementation for Exported Functions            *
+ *-----------------------------------------------------------*/
+bool STrieInit(SparseTrie *self) {
     int i;
 
     /* Create the dummy root node.  */
-    _STrieCreateNode(&(pTrie->pRoot));
-    if (pTrie->pRoot == NULL) {
+    _STrieCreateNode(&(self->pRoot));
+    if (self->pRoot == NULL) {
         return false;
     }
 
     /* Assign the corresponding function pointers.  */
-    pTrie->search = STrieSearch;
-    pTrie->insert = STrieInsert;
-    pTrie->delete = STrieDelete;
-    pTrie->set_auto_insert = STrieSetAutoInsert;
+    self->search = STrieSearch;
+    self->insert = STrieInsert;
+    self->delete = STrieDelete;
+    self->set_auto_insert = STrieSetAutoInsert;
 
     /* Turn on the auto insertion mode by default.  */
-    pTrie->bModeAutoInsert = true;
+    self->bModeAutoInsert = true;
 
     return true;
 }
 
 
-bool STrieDeinit(SparseTrie *pTrie) {
+bool STrieDeinit(SparseTrie *self) {
 
     /* Apply the helper function to delete all the trie nodes.  */
-    _STrieDeinitHelper(pTrie->pRoot);
+    _STrieDeinitHelper(self->pRoot);
     
     return true;
 }
 
 
-bool STrieSearch(SparseTrie *pTrie, char *szKey) {
+bool STrieSearch(SparseTrie *self, char *szKey) {
+    int  i, iLenKey, idxChild;
     bool rc;
+    TrieNode *pCurr, *pPred;
 
     rc = true;
+    pCurr = self->pRoot;
+    iLenKey = strlen(szKey);
+    for (i = 0 ; i < iLenKey ; i++) {
+        /* Transform the ASCII character into the child link index. */
+        idxChild = _STrieCharTransform(szKey[i]);
+    
+        /* Check the link. */
+        pPred = pCurr;
+        pCurr = pCurr->pChildren[idxChild];
+    
+        /* The key does not exist. */
+        if (pCurr == NULL) {
+            rc = false;
+            break;
+        }
+    }
+
+    if (rc == true) {
+        /* The key does not exist. */
+        if (pCurr->bKey == false) {
+            rc = false;
+        }
+    } else {
+        /* Automatically insert the new key if the flag is turned on. */
+        if (self->bModeAutoInsert == true) {
+            pCurr = pPred;
+
+            for (; i < iLenKey ; i++) {
+                /* Transform the ASCII character into the child link index. */
+                idxChild = _STrieCharTransform(szKey[i]);
+                
+                /* Check the link. */
+                pPred = pCurr;   
+                pCurr = pCurr->pChildren[idxChild];
+                
+                /* If the link is NULL, create the corresponding new child. */
+                if (pCurr == NULL) {
+                    _STrieCreateNode(&pCurr);            
+                    if (pCurr == NULL) {
+                        rc = false;
+                        break;
+                    }
+                    pPred->pChildren[idxChild] = pCurr;
+                    pPred->iCountChildren = pPred->iCountChildren + 1;
+                }
+            }
+        }
+    }
 
     return rc;
 }
 
 
-bool STrieInsert(SparseTrie *pTrie, char *szKey) {
+bool STrieInsert(SparseTrie *self, char *szKey) {
     int  i, iLenKey, idxChild;
     bool rc;
     TrieNode *pCurr, *pPred;
 
     rc = true;
     
-    pCurr = pTrie->pRoot;
+    pCurr = self->pRoot;
     iLenKey = strlen(szKey);
     for (i = 0 ; i < iLenKey ; i++) {
-        
-        /* Transform the ascii character to the child index. */
+        /* Transform the ASCII character into the child link index. */
         idxChild = _STrieCharTransform(szKey[i]);
         
-        /* Go through the designated child.  */
-        if (pCurr->bLeaf == true) {
-            pCurr->bLeaf = false;
-        }
+        /* Check the link. */
         pPred = pCurr;   
         pCurr = pCurr->pChildren[idxChild];
         
-        /* If the child is empty, Create a new node for it. */
+        /* If the link is NULL, create the corresponding new child. */
         if (pCurr == NULL) {
             _STrieCreateNode(&pCurr);            
             if (pCurr == NULL) {
@@ -90,14 +136,20 @@ bool STrieInsert(SparseTrie *pTrie, char *szKey) {
                 break;
             }
             pPred->pChildren[idxChild] = pCurr;
+            pPred->iCountChildren = pPred->iCountChildren + 1;
         }
+    }
+
+    /* Mark the node storing the last key character as key node. */
+    if (i == iLenKey) {
+        pCurr->bKey = true;
     }
 
     return rc;
 }
 
 
-bool STrieDelete(SparseTrie *pTrie, char *szKey) {
+bool STrieDelete(SparseTrie *self, char *szKey) {
     bool rc;
 
     rc = true;
@@ -106,16 +158,16 @@ bool STrieDelete(SparseTrie *pTrie, char *szKey) {
 }
 
 
-void STrieSetAutoInsert(SparseTrie *pTrie, bool bMode) {
+void STrieSetAutoInsert(SparseTrie *self, bool bMode) {
 
-    pTrie->bModeAutoInsert = bMode;
+    self->bModeAutoInsert = bMode;
     return;
 }
 
 
-/*---------------------------------------------------*
- *      Implementation for Internal Functions        *
- *---------------------------------------------------*/
+/*-----------------------------------------------------------*
+ *          Implementation for Internal Functions            *
+ *-----------------------------------------------------------*/
 void _STrieCreateNode(TrieNode **ppNew) {
     int i;
     TrieNode *pNew;
@@ -129,7 +181,8 @@ void _STrieCreateNode(TrieNode **ppNew) {
     for (i = 0 ; i <= CHAR_SET ; i++) {
         pNew->pChildren[i] = NULL;
     }   
-    pNew->bLeaf = true;
+    pNew->bKey = false;
+    pNew->iCountChildren = 0;
 
     return;
 }
@@ -140,14 +193,14 @@ void _STrieDeinitHelper(TrieNode *pCurr) {
 
     if (pCurr != NULL) {
         
-        /* Recursively traverse all non-NULL children.  */
+        /* Recursively traverse all children.  */
         for (i = 0 ; i <= CHAR_SET ; i++) {
             if (pCurr->pChildren[i] != NULL) {
                 _STrieDeinitHelper(pCurr->pChildren[i]);
             }
         }
 
-        /* Release the current node upon returning from the children. */
+        /* Release the current node when returning from the children. */
         free(pCurr);
     }
     return;
