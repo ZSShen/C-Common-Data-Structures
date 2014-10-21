@@ -15,6 +15,9 @@ void _STrieCreateNode(TrieNode **pNew);
 void _STrieDeinitHelper(TrieNode *pCurr);
 
 
+bool _STrieInsertHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCurr);
+
+
 int _STrieCharTransform(char cChar);
 
 
@@ -53,16 +56,16 @@ bool STrieDeinit(SparseTrie *self) {
 
 
 bool STrieSearch(SparseTrie *self, char *szKey) {
-    int  i, iLenKey, idxChild;
+    int  iOffsetCurr, iLenKey, idxChild;
     bool rc;
     TrieNode *pCurr, *pPred;
 
     rc = true;
     pCurr = self->pRoot;
     iLenKey = strlen(szKey);
-    for (i = 0 ; i < iLenKey ; i++) {
+    for (iOffsetCurr = 0 ; iOffsetCurr < iLenKey ; iOffsetCurr++) {
         /* Transform the ASCII character into the child link index. */
-        idxChild = _STrieCharTransform(szKey[i]);
+        idxChild = _STrieCharTransform(szKey[iOffsetCurr]);
     
         /* Check the link. */
         pPred = pCurr;
@@ -81,29 +84,10 @@ bool STrieSearch(SparseTrie *self, char *szKey) {
             rc = false;
         }
     } else {
-        /* Automatically insert the new key if the flag is turned on. */
+        /* If the automatic key insertion mode is turned on. */
         if (self->bModeAutoInsert == true) {
-            pCurr = pPred;
-
-            for (; i < iLenKey ; i++) {
-                /* Transform the ASCII character into the child link index. */
-                idxChild = _STrieCharTransform(szKey[i]);
-                
-                /* Check the link. */
-                pPred = pCurr;   
-                pCurr = pCurr->pChildren[idxChild];
-                
-                /* If the link is NULL, create the corresponding new child. */
-                if (pCurr == NULL) {
-                    _STrieCreateNode(&pCurr);            
-                    if (pCurr == NULL) {
-                        rc = false;
-                        break;
-                    }
-                    pPred->pChildren[idxChild] = pCurr;
-                    pPred->iCountChildren = pPred->iCountChildren + 1;
-                }
-            }
+            /* Apply the helper function to create the necessary nodes for the given key. */
+            rc = _STrieInsertHelper(pPred, szKey, iLenKey, iOffsetCurr);
         }
     }
 
@@ -114,36 +98,10 @@ bool STrieSearch(SparseTrie *self, char *szKey) {
 bool STrieInsert(SparseTrie *self, char *szKey) {
     int  i, iLenKey, idxChild;
     bool rc;
-    TrieNode *pCurr, *pPred;
 
-    rc = true;
-    
-    pCurr = self->pRoot;
+    /* Apply the helper function to create the necessary nodes for the given key. */
     iLenKey = strlen(szKey);
-    for (i = 0 ; i < iLenKey ; i++) {
-        /* Transform the ASCII character into the child link index. */
-        idxChild = _STrieCharTransform(szKey[i]);
-        
-        /* Check the link. */
-        pPred = pCurr;   
-        pCurr = pCurr->pChildren[idxChild];
-        
-        /* If the link is NULL, create the corresponding new child. */
-        if (pCurr == NULL) {
-            _STrieCreateNode(&pCurr);            
-            if (pCurr == NULL) {
-                rc = false;
-                break;
-            }
-            pPred->pChildren[idxChild] = pCurr;
-            pPred->iCountChildren = pPred->iCountChildren + 1;
-        }
-    }
-
-    /* Mark the node storing the last key character as key node. */
-    if (i == iLenKey) {
-        pCurr->bKey = true;
-    }
+    rc = _STrieInsertHelper(self->pRoot, szKey, iLenKey, 0); 
 
     return rc;
 }
@@ -204,6 +162,40 @@ void _STrieDeinitHelper(TrieNode *pCurr) {
         free(pCurr);
     }
     return;
+}
+
+
+bool _STrieInsertHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCurr) {
+    int  idxChild;
+    bool rc;
+    TrieNode *pPred;
+
+    rc = true;
+    while (iOffsetCurr < iLenKey) {
+        /* Transform the ASCII character into child link index. */
+        idxChild = _STrieCharTransform(szKey[iOffsetCurr]);
+        pPred = pCurr;
+        pCurr = pCurr->pChildren[idxChild];
+
+        /* If the child link is NULL, create a new node for that character. */
+        if (pCurr == NULL) {
+            _STrieCreateNode(&pCurr);
+            if (pCurr == NULL) {
+                rc = false;
+                break;
+            }
+            pPred->pChildren[idxChild] = pCurr;
+            pPred->iCountChildren = pPred->iCountChildren + 1;
+        }
+        iOffsetCurr++;
+    }
+
+    /* Mark the node storing the last key character as key node. */
+    if (iOffsetCurr == iLenKey) {
+        pCurr->bKey = true;
+    }
+    
+    return rc;
 }
 
 
