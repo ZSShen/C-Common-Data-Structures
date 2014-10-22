@@ -19,7 +19,13 @@
 /*-----------------------------------------------------------*
  *            Definition for Internal Functions              *
  *-----------------------------------------------------------*/
-void _STrieCreateNode(TrieNode **pNew);
+/**
+ * This function creates a new node to store the character metadata.
+ *
+ * @param ppNew     The pointer to the pointer of new node.
+ *
+ */
+void _STrieCreateNode(TrieNode **ppNew);
 
 
 void _STrieDeinitHelper(TrieNode *pCurr);
@@ -31,6 +37,13 @@ bool _STrieInsertHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCu
 bool _STrieDeleteHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCurr);
 
 
+/**
+ * This function transforms the input character into child link index.
+ * 
+ * @param cChar     The to be trasformed character.
+ *
+ * @return          The transformed index.
+ */
 int _STrieCharTransform(char cChar);
 
 
@@ -97,10 +110,13 @@ bool STrieSearch(SparseTrie *self, char *szKey) {
             rc = false;
         }
     } else {
+
         /* If the automatic key insertion mode is turned on. */
         if (self->bModeAutoInsert == true) {
             /* Apply the helper function to create the necessary nodes for the given key. */
-            rc = _STrieInsertHelper(pPred, szKey, iLenKey, iOffsetCurr);
+            /* Note that we ignore the return value here, but the insertion may still fail*/
+            /* Even if it fails, it does not influence the result of this key search.     */
+            _STrieInsertHelper(pPred, szKey, iLenKey, iOffsetCurr);
         }
     }
 
