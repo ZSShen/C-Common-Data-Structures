@@ -1,9 +1,19 @@
 #include "sparse_trie.h"
 
 
+/* The bases to trasnform ASICC characters into children links. */
 #define CHAR_INDEX_BASE_0_9     1
 #define CHAR_INDEX_BASE_a_z     11
 #define CHAR_INDEX_BASE_A_Z     37
+
+
+/* The return state of the _STrieDeleteHelper. */
+/* Key exists and the relevant node must be deleted. */
+#define TRUE_NEED_DELETE        true
+/* Key exists and no need to delete the node. */
+#define TRUE_NONEED_DELETE      true + 1
+/* Key does not exist. */
+#define FALSE                   false
 
 
 /*-----------------------------------------------------------*
@@ -16,6 +26,9 @@ void _STrieDeinitHelper(TrieNode *pCurr);
 
 
 bool _STrieInsertHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCurr);
+
+
+bool _STrieDeleteHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCurr);
 
 
 int _STrieCharTransform(char cChar);
@@ -196,6 +209,49 @@ bool _STrieInsertHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCu
     }
     
     return rc;
+}
+
+
+
+bool _STrieDeleteHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCurr) {
+    int  idxChild;
+    bool rc;
+
+    if (pCurr != NULL) {
+        if (iOffsetCurr == iLenKey) {
+            /* The given key is found. */
+            if (pCurr->bKey == true) {
+                /* The key is the prefix of other keys. */
+                if (pCurr->iCountChildren > 0) {
+                    pCurr->bKey = false;
+                    return TRUE_NONEED_DELETE;
+                } 
+                /* The key locates at the leaf and cascading deletion is started. */
+                else {
+                    return TRUE_NEED_DELETE; 
+                }
+            } else {
+                return FALSE;
+            }
+        } else {
+            idxChild = _STrieCharTransform(szKey[iOffsetCurr]);
+            rc = _STrieDeleteHelper(pCurr->pChildren[idxChild], szKey, iLenKey, iOffsetCurr + 1);
+            if (rc != TRUE_NEED_DELETE) {
+                return rc;
+            }
+            
+            /* Delete the child and decide whether to continue the cascading deletion. */
+            free(pCurr->pChildren[idxChild]);
+            pCurr->pChildren[idxChild] = NULL;
+            pCurr->iCountChildren = pCurr->iCountChildren - 1;
+            if ((pCurr->bKey == true) || (pCurr->iCountChildren > 0)) {
+                return TRUE_NONEED_DELETE;
+            } else {
+                return TRUE_NEED_DELETE;
+            }
+        }
+    }
+    return FALSE;
 }
 
 
