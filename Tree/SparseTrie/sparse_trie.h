@@ -93,7 +93,7 @@ bool STrieDelete(SparseTrie *self, char *szKey);
 
 
 /**
- * This function sets the flag for auto insertion for search function.
+ * This function controls the mode of auto insertion for key search.
  * (Note: The key will be automatically inserted if the search fails.)
  *
  * @param self      The pointer to SparseTrie.

@@ -9,7 +9,7 @@
 
 /* The return state of the _STrieDeleteHelper. */
 /* Key exists and the relevant node must be deleted. */
-#define TRUE_NEED_DELETE        true
+#define TRUE_NEED_DELETE        true/
 /* Key exists and no need to delete the node. */
 #define TRUE_NONEED_DELETE      true + 1
 /* Key does not exist. */
@@ -22,18 +22,48 @@
 /**
  * This function creates a new node to store the character metadata.
  *
- * @param ppNew     The pointer to the pointer of new node.
+ * @param ppNew     The pointer to the pointer of to be created new node.
  *
  */
 void _STrieCreateNode(TrieNode **ppNew);
 
 
+/**
+ * This function helps to delete all the allocated trie node.
+ * 
+ * @param pCurr     The pointer to the root of trie. (The root of subtrie in recursive view.)
+ */
 void _STrieDeinitHelper(TrieNode *pCurr);
 
 
+/**
+ * This function helps to insert the relevant nodes of a given key.
+ *
+ * @param pCurr         The pointer to the root of subtrie which collects all the
+ *                      possible suffixes of the given key prefix.
+ * @param szKey         The designated search key.
+ * @param iLenKey       The length of the search key.
+ * @param iOffsetCurr   The offset to the search key.
+ *
+ * @return         true : Insertion is done successfully.
+ *                 false: The nodes cannot be allocated due to insufficient memory.
+ */
 bool _STrieInsertHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCurr);
 
 
+/**
+ * This function helps to adjust the node attribute or to delete the relevant nodes as
+ * the maintenance tasks for key deletion.
+ *
+ * @param pCurr         The pointer to the root of subtrie which collects all the
+ *                      possible suffixes of the given key prefix.
+ * @param szKey         The designated search key.
+ * @param iLenKey       The length of the search key.
+ * @param iOffsetCurr   The offset to the search key.
+ *
+ * @return         true : Deletion is done successfully.
+ *                 false: The given key cannot be found.
+ */
 bool _STrieDeleteHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCurr);
 
 
@@ -81,6 +111,9 @@ bool STrieDeinit(SparseTrie *self) {
 }
 
 
+/**
+ * STrieSearch(): Search for the given key.
+ */
 bool STrieSearch(SparseTrie *self, char *szKey) {
     int  iOffsetCurr, iLenKey, idxChild;
     bool rc;
@@ -124,8 +157,11 @@ bool STrieSearch(SparseTrie *self, char *szKey) {
 }
 
 
+/**
+ * STrieInsert(): Insert the given key into the trie.
+ */
 bool STrieInsert(SparseTrie *self, char *szKey) {
-    int  i, iLenKey, idxChild;
+    int  i, iLenKey;
     bool rc;
 
     /* Apply the helper function to create the necessary nodes for the given key. */
@@ -136,15 +172,25 @@ bool STrieInsert(SparseTrie *self, char *szKey) {
 }
 
 
+/**
+ * STrieDelete(): Delete the given key from the trie.
+ */
 bool STrieDelete(SparseTrie *self, char *szKey) {
+    int  i, iLenKey;    
     bool rc;
 
-    rc = true;
+    /* Apply the helper function to change the node attribute or to delete the 
+       relevant nodes as maintenance task. */
+    iLenKey = strlen(szKey);
+    rc = _STrieDeleteHelper(self->pRoot, szKey, iLenKey, 0);
 
     return rc;
 }
 
 
+/**
+ * STrieSetAutoInsert(): Control the mode of auto insertion for key search.
+ */
 void STrieSetAutoInsert(SparseTrie *self, bool bMode) {
 
     self->bModeAutoInsert = bMode;
@@ -155,6 +201,9 @@ void STrieSetAutoInsert(SparseTrie *self, bool bMode) {
 /*-----------------------------------------------------------*
  *          Implementation for Internal Functions            *
  *-----------------------------------------------------------*/
+/**
+ * _STrieCreateNode(): Create a new node to store the character metadata.
+ */
 void _STrieCreateNode(TrieNode **ppNew) {
     int i;
     TrieNode *pNew;
@@ -175,6 +224,9 @@ void _STrieCreateNode(TrieNode **ppNew) {
 }
 
 
+/**
+ * _STrieDeinitHelper(): Help to delete all the allocated trie node.
+ */
 void _STrieDeinitHelper(TrieNode *pCurr) {
     int i;
 
@@ -194,6 +246,9 @@ void _STrieDeinitHelper(TrieNode *pCurr) {
 }
 
 
+/**
+ * _STrieInsertHelper(): Help to insert the relevant nodes of a given key.
+ */
 bool _STrieInsertHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCurr) {
     int  idxChild;
     bool rc;
@@ -228,7 +283,10 @@ bool _STrieInsertHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCu
 }
 
 
-
+/**
+ * _STrieDeleteHelper(): Help to adjust the node attribute or to delete the 
+ * relevant nodes as the maintenance tasks for key deletion.
+ */
 bool _STrieDeleteHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCurr) {
     int  idxChild;
     bool rc;
@@ -271,6 +329,9 @@ bool _STrieDeleteHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCu
 }
 
 
+/**
+ * _STrieCharTransform(): Transform the input character into child link index.
+ */
 int _STrieCharTransform(char cChar) {
 
     if ((cChar >= '0') && (cChar <= '9')) {
