@@ -9,11 +9,11 @@
 
 /* The return state of the _STrieDeleteHelper. */
 /* Key exists and the relevant node must be deleted. */
-#define TRUE_NEED_DELETE        true
+#define TRUE_NEED_DELETE        1
 /* Key exists and no need to delete the node. */
-#define TRUE_NONEED_DELETE      true + 1
+#define TRUE_NONEED_DELETE      2
 /* Key does not exist. */
-#define FALSE                   false
+#define FALSE                   0
 
 
 /*-----------------------------------------------------------*
@@ -61,10 +61,11 @@ bool _STrieInsertHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCu
  * @param iLenKey       The length of the search key.
  * @param iOffsetCurr   The offset to the search key.
  *
- * @return         true : Deletion is done successfully.
- *                 false: The given key cannot be found.
+ * @return         TRUE_NEED_DELETE   : The child node should be deleted.
+ *                 TRUE_NONEED_DELETE : The child node should not be deleted.
+ *                 FALSE              : The key cannot be found.
  */
-bool _STrieDeleteHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCurr);
+int _STrieDeleteHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCurr);
 
 
 /**
@@ -287,9 +288,8 @@ bool _STrieInsertHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCu
  * _STrieDeleteHelper(): Help to adjust the node attribute or to delete the 
  * relevant nodes as the maintenance tasks for key deletion.
  */
-bool _STrieDeleteHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCurr) {
-    int  idxChild;
-    bool rc;
+int _STrieDeleteHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCurr) {
+    int rc, idxChild;
 
     if (pCurr != NULL) {
         if (iOffsetCurr == iLenKey) {
@@ -314,7 +314,7 @@ bool _STrieDeleteHelper(TrieNode *pCurr, char *szKey, int iLenKey, int iOffsetCu
                 return rc;
             }
             
-            /* Delete the child and decide whether to continue the cascading deletion. */
+            /* Delete the child and determine whether to continue the cascading deletion. */
             free(pCurr->pChildren[idxChild]);
             pCurr->pChildren[idxChild] = NULL;
             pCurr->iCountChildren = pCurr->iCountChildren - 1;

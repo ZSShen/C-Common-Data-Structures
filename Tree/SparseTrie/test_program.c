@@ -104,18 +104,27 @@ int main(int argc, char **argv) {
     /* First round: Insert the keys and test the searching capability. */
     ret = test_key_insert(pTrie, szInsert);
     if (ret == false) {
-        ret = -1;
+        rc = -1;
         goto DEINIT;
     }
     ret = test_key_search(pTrie, szSearch);
     if (ret == false) {
-        ret = -1;
+        rc = -1;
         goto DEINIT;
     }
     
     /* Second round: Delete some keys and then search again to test the
        maintenance capability. */
-
+    ret = test_key_delete(pTrie, szDelete);
+    if (ret == false) {
+        rc = -1;
+        goto DEINIT;
+    }
+    ret = test_key_search(pTrie, szSearch);
+    if (ret == false) {
+        rc = -1;
+        goto DEINIT;
+    }
 
     /* Release the allocated resources. */
 DEINIT:
@@ -200,6 +209,7 @@ bool test_key_search(SparseTrie *pTrie, char *szSearch) {
         rc = pTrie->search(pTrie, buf);
         printf("%s %d\n", buf, rc);
     }
+    printf("\n");
 
     fclose(fpSearch);
     return true;
