@@ -9,7 +9,7 @@
 
 /* The return state of the _STrieDeleteHelper. */
 /* Key exists and the relevant node must be deleted. */
-#define TRUE_NEED_DELETE        true/
+#define TRUE_NEED_DELETE        true
 /* Key exists and no need to delete the node. */
 #define TRUE_NONEED_DELETE      true + 1
 /* Key does not exist. */

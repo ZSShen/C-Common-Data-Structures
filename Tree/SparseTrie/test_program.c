@@ -2,120 +2,235 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <getopt.h>
 #include "sparse_trie.h"
 
 
-#define BUF_SIZE 4096
+#define BUF_SIZE_SMALL      64
+#define BUF_SIZE_LARGE      4096
+#define OPT_HELP            'h'
+#define OPT_INSERT          'i'
+#define OPT_SEARCH          's'
+#define OPT_DELETE          'd'
+#define OPT_LONG_HELP       "help"
+#define OPT_LONG_INSERT     "insert"
+#define OPT_LONG_SEARCH     "search"
+#define OPT_LONG_DELETE     "delete"
+
+#define EARLY_EXIT          print_usage(); \
+                            rc = -1; \
+                            goto EXIT;
 
 
-bool test_key_input(SparseTrie *pTrie, char *szFileInput);
+/* The unit test function for the key insertion. */
+bool test_key_insert(SparseTrie *pTrie, char *szInsert);
 
 
-bool test_key_search(SparseTrie *pTrie, char *szFileSearch);
+/* The unit test function for the key search. */
+bool test_key_search(SparseTrie *pTrie, char *szSearch);
+
+
+/* The unit test function for the key deletion. */
+bool test_key_delete(SparseTrie *pTrie, char *szDelete);
+
+
+/* Print the help message to use this program. */
+void print_usage();
 
 
 int main(int argc, char **argv) {
-    bool rc;
-    char *szFileInput, *szFileSearch;
+    int  rc, idxOpt;
+    bool ret;
+    char opt;
+    char *szInsert, *szSearch, *szDelete;
     SparseTrie *pTrie;
+    char szOrder[BUF_SIZE_SMALL];
 
-    /* Prepare the input and answer datasets. */
-    if (argc != 3) {
-        printf("Please specify the input and answer datasets.");
-        return -1;
+    /* Retrieve the paths of test cases. */
+    static struct option Options[] = {
+        {OPT_LONG_INSERT, required_argument, 0, OPT_INSERT},
+        {OPT_LONG_SEARCH, required_argument, 0, OPT_SEARCH},
+        {OPT_LONG_DELETE, required_argument, 0, OPT_DELETE}
+    };
+    memset(szOrder, 0, sizeof(char) * BUF_SIZE_SMALL);
+    sprintf(szOrder, "%c%c:%c:%c:", OPT_HELP, OPT_INSERT, OPT_SEARCH, OPT_DELETE);
+
+    rc = 0;
+    idxOpt = 0;
+    szInsert = szSearch = szDelete = NULL;
+    while ((opt = getopt_long(argc, argv, szOrder, Options, &idxOpt)) != -1) {
+        switch (opt) {
+            case OPT_INSERT: {
+                szInsert = optarg;
+                break;
+            }
+            case OPT_SEARCH: {
+                szSearch = optarg;
+                break;
+            }
+            case OPT_DELETE: {
+                szDelete = optarg;
+                break;            
+            }
+            case OPT_HELP: {            
+                EARLY_EXIT
+            }
+            default: {
+                EARLY_EXIT
+            }
+        }
     }
-    szFileInput = argv[1];
-    szFileSearch = argv[2];
+
+    if (szInsert == NULL) {
+        EARLY_EXIT       
+    }
+    if (szSearch == NULL) {
+        EARLY_EXIT
+    }
+    if (szDelete == NULL) {
+        EARLY_EXIT
+    }
 
     /* Create the SparseTrie instance. */
     SparseTrie_init(pTrie);
     if (pTrie == NULL) {
+        rc = -1;
         goto EXIT;
     }
 
-    /* Run the key insertion test suit. */
-    rc = test_key_input(pTrie, szFileInput);
-    if (rc == false) {
-        goto DEINIT;
-    }
+    /* Turn of the auto key insertion mode. */
+    pTrie->set_auto_insert(pTrie, false);
 
-    /* Run the key insertion test suit. */
-    rc = test_key_search(pTrie, szFileSearch);
-    if (rc == false) {
+    /* First round: Insert the keys and test the searching capability. */
+    ret = test_key_insert(pTrie, szInsert);
+    if (ret == false) {
+        ret = -1;
         goto DEINIT;
     }
+    ret = test_key_search(pTrie, szSearch);
+    if (ret == false) {
+        ret = -1;
+        goto DEINIT;
+    }
+    
+    /* Second round: Delete some keys and then search again to test the
+       maintenance capability. */
+
 
     /* Release the allocated resources. */
 DEINIT:
     SparseTrie_deinit(pTrie);
 EXIT:
-    return 0;
+    return rc;
 }
 
 
-bool test_key_input(SparseTrie *pTrie, char *szFileInput) {
+void print_usage() {
+    
+    const char *cszMsg = "Usage: test_program --insert(-i) path_insert\n"
+                         "       test_program --search(-s) path_search\n"
+                         "       test_program --delete(-d) path_delete\n"
+                         "       path_insert: The path to the key insertion test case.\n"
+                         "       path_search: The path to the key searching test case.\n"
+                         "       path_delete: The path to the key deletion test case.\n"
+                         "-------------------------------------------------------------\n"
+                         "Example: test_program --insert path_insert --search path_search"
+                         " --delete path_delete\n"
+                         "         test_program -i       path_insert -s       path_search"
+                         " -d       path_delete\n\n";
+    printf("%s", cszMsg);
+    return;
+}
+
+
+bool test_key_insert(SparseTrie *pTrie, char *szInsert) {
+    int  iLenKey;    
     bool rc;
     char *ret;
-    FILE *fpInput;
-    char buf[BUF_SIZE + 1];
+    FILE *fpInsert;
+    char buf[BUF_SIZE_LARGE + 1];
 
-    /* Open the test suit. */
-    fpInput = fopen(szFileInput, "r");
-    if (fpInput == NULL) {
+    fpInsert = fopen(szInsert, "r");
+    if (fpInsert == NULL) {
         return false;
     }
 
+    /* Iteratively insert each key into the trie. */
     rc = true;
     while (true) {
-        /* Read single case. */
-        memset(buf, 0, sizeof(char) * (BUF_SIZE + 1));
-        ret = fgets(buf, BUF_SIZE, fpInput);
+        memset(buf, 0, sizeof(char) * (BUF_SIZE_LARGE + 1));
+        ret = fgets(buf, BUF_SIZE_LARGE, fpInsert);
         if (ret == NULL) {
             break;
         }
-        /* Insert the case into trie. */    
+        iLenKey = strlen(buf);
+        buf[iLenKey - 1] = 0;
         rc = pTrie->insert(pTrie, buf);
         if (rc == false) {
             break;
         }
     }
 
-    /* Close the test suit. */
-    fclose(fpInput);
-
+    fclose(fpInsert);
     return rc;
 }
 
 
-bool test_key_search(SparseTrie *pTrie, char *szFileSearch) {
+bool test_key_search(SparseTrie *pTrie, char *szSearch) {
+    int  iLenKey;    
     bool rc;
     char *ret;
     FILE *fpSearch;
-    char buf[BUF_SIZE + 1];
+    char buf[BUF_SIZE_LARGE + 1];
 
-    /* Open the test suit. */
-    fpSearch = fopen(szFileSearch, "r");
+    fpSearch = fopen(szSearch, "r");
     if (fpSearch == NULL) {
         return false;
     }
 
-    rc = true;
+    /* Iteratively search the trie for each given key. */
     while (true) {
-        /* Read single case. */
-        memset(buf, 0, sizeof(char) * (BUF_SIZE + 1));
-        ret = fgets(buf, BUF_SIZE, fpSearch);
+        memset(buf, 0, sizeof(char) * (BUF_SIZE_LARGE + 1));
+        ret = fgets(buf, BUF_SIZE_LARGE, fpSearch);
         if (ret == NULL) {
             break;
         }
-        /* Search the trie for matching. */
+        iLenKey = strlen(buf);
+        buf[iLenKey - 1] = 0;
         rc = pTrie->search(pTrie, buf);
-        if (rc == false) {
-            break;
-        }
+        printf("%s %d\n", buf, rc);
     }
 
-    /* Close the test suit. */
     fclose(fpSearch);
+    return true;
+}
 
-    return rc;
+
+bool test_key_delete(SparseTrie *pTrie, char *szDelete) {
+    int  iLenKey;        
+    bool rc;
+    char *ret;
+    FILE *fpDelete;
+    char buf[BUF_SIZE_LARGE + 1];
+
+    fpDelete = fopen(szDelete, "r");
+    if (fpDelete == NULL) {
+        return false;
+    }
+
+    /* Iteratively delete each key from the trie. */
+    rc = false;
+    while (true) {
+        memset(buf, 0, sizeof(char) * (BUF_SIZE_LARGE + 1));
+        ret = fgets(buf, BUF_SIZE_LARGE, fpDelete);
+        if (ret == NULL) {
+            break;
+        }
+        iLenKey = strlen(buf);
+        buf[iLenKey - 1] = 0;
+        rc = pTrie->delete(pTrie, buf);
+    }
+
+    fclose(fpDelete);
+    return true;
 }
