@@ -9,6 +9,7 @@ PATH_ORDER_MAP          := $(PATH_CUR)/Map/OrderedMap
 PATH_BINARY_HEAP        := $(PATH_CUR)/Heap/BinaryHeap
 PATH_BINOMIAL_HEAP      := $(PATH_CUR)/Heap/BinomialHeap
 PATH_PRIORITY_QUEUE     := $(PATH_CUR)/Queue/PriorityQueue
+PATH_SPARSE_TRIE 		:= $(PATH_CUR)/Tree/SparseTrie
 
 LIST := $(PATH_BIN_TREE)
 LIST := $(LIST) $(PATH_RB_TREE)
@@ -18,6 +19,7 @@ LIST := $(LIST) $(PATH_ORDER_MAP)
 LIST := $(LIST) $(PATH_BINARY_HEAP)
 LIST := $(LIST) $(PATH_BINOMIAL_HEAP)
 LIST := $(LIST) $(PATH_PRIORITY_QUEUE)
+LIST := $(LIST) $(PATH_SPARSE_TRIE)
 
 
 # Prepare the building rules for implemented data structures.
@@ -44,7 +46,6 @@ all:
         echo "\n\n"; \
     done
 
-$(filter-out SomethingElse,$(VAR))
 
 # List the coverage testing rule.
 coverage: LIST := $(filter-out $(PATH_PRIORITY_QUEUE), $(LIST))

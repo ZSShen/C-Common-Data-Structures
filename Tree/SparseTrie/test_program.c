@@ -207,9 +207,9 @@ bool test_key_search(SparseTrie *pTrie, char *szSearch) {
         iLenKey = strlen(buf);
         buf[iLenKey - 1] = 0;
         rc = pTrie->search(pTrie, buf);
-        printf("%s %d\n", buf, rc);
+        /* printf("%s %d\n", buf, rc); */
     }
-    printf("\n");
+    /* printf("\n"); */
 
     fclose(fpSearch);
     return true;

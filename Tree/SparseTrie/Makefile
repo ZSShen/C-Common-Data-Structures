@@ -5,6 +5,14 @@ LIB_NAME    := trie
 TEST_PROG   := test_program
 
 
+# Define the constants for test case generation.
+PATH_CUR    			:= $(shell pwd)
+PATH_CASE_GENERATOR 	:= $(PATH_CUR)/../../Misc/dictionary_generator.py
+CASE_INSERT := insert.case
+CASE_SEARCH := search.case
+CASE_DELETE := delete.case
+
+
 # List the dependencies for project building.
 DEPENDENCY_LIB  := $(SRC_NAME)
 DEPENDENCY_TEST := $(TEST_PROG)
@@ -46,11 +54,12 @@ $(DEPENDENCY_LIB):
 
 # List the project execution rules.
 test:
+	$(PATH_CASE_GENERATOR)
 ifeq ($(DEBUG), true)
 	valgrind --leak-check=yes --track-origins=yes ./$(TEST_PROG) \
-    -i $(INSERT) -s $(SEARCH) -d $(DELETE)
+    -i $(CASE_INSERT) -s $(CASE_SEARCH) -d $(CASE_DELETE)
 else
-	./$(TEST_PROG) -i $(INSERT) -s $(SEARCH) -d $(DELETE)
+	./$(TEST_PROG) -i $(CASE_INSERT) -s $(CASE_SEARCH) -d $(CASE_DELETE)
 endif
 
 
@@ -61,5 +70,5 @@ coverage: test
 # List the project cleaning rule.
 .PHONY: clean
 clean:
-	rm -f *.o *.a *.so *.gcda *.gcno $(TEST_PROG)
+	rm -f *.o *.a *.so *.gcda *.gcno *.case $(TEST_PROG)
 
