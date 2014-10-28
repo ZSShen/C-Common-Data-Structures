@@ -18,7 +18,8 @@ or theoretical structures.
     - Makefile
     - Tree   
         * BinarySearchTree   
-        * RedBlackTree   
+        * RedBlackTree  
+        * SparseTrie
     - List   
         * SinglyLinkedList   
     - Array   
@@ -32,6 +33,7 @@ or theoretical structures.
         * PriorityQueue   
     - Misc   
         * interface_generator.py   
+        * dictionary_generator.py
 
 + The source files for a single structure.
     - DataStructure
@@ -43,16 +45,31 @@ or theoretical structures.
 #### 1.2 Building Entire Source
 + Generally, each data structure is wrapped in a single C structure and   
   is built as an object file. To verify its correctness, we must rely  
-  on the test program which sets up several unit test functions.   
+  on the test program which prepares several unit test functions.   
 
-+ Therefore, there is a major Makefile at the top of source tree:   
++ There is a major Makefile at the top of source tree:   
     - For the normal build, execute `make all`.   
     - For the debug build (memory inspection), executre `make all DEBUG=true`.     
 
 + By running the above command, we compile the object files and the test   
   programs for all the data structures. Also note that the memory debug   
-  build should be driven by the valgrind utility.
+  build should be driven by the `valgrind` utility.
 
-#### 1.3 Building Specific Structure
+#### 1.3 Building Specific Structure  
++ To generate object file bundled with test program.  
+    - For the normal build, execute `make build_test`.  
+    - For the debug build, execute `make build_test DEBUG=true`.  
++ To generate static library  
+    - For the normal build, execute `make build_static_lib`.  
+    - For the debug build, execute `make build_static_lib DEBUG=true`.  
++ To generate dynamic library
+    - For the normal build, execute `make build_dynamic_lib`.  
+    - For the debug build, execute `make build_dynamic_lib DEBUG=true`.  
 
 ### 2. Binary Execution
++ As aforementioned, we rely on the test program to verify each kind of  
+  data structure. For this, the testing can be launched for all the structures  
+  (except for the PriorityQueue and SparseTrie) with the following commands:  
+    - For simple testing, execute `make test`.  
+    - For debug testing (the object file and test program should be debug  
+      build), execute `make test DEBUG=true`.  
