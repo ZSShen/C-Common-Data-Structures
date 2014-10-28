@@ -12,10 +12,12 @@
 #define OPT_INSERT          'i'
 #define OPT_SEARCH          's'
 #define OPT_DELETE          'd'
+#define OPT_OUT             'o'
 #define OPT_LONG_HELP       "help"
 #define OPT_LONG_INSERT     "insert"
 #define OPT_LONG_SEARCH     "search"
 #define OPT_LONG_DELETE     "delete"
+#define OPT_LONG_OUT        "out"
 
 #define EARLY_EXIT          print_usage(); \
                             rc = -1; \
@@ -27,7 +29,7 @@ bool test_key_insert(SparseTrie *pTrie, char *szInsert);
 
 
 /* The unit test function for the key search. */
-bool test_key_search(SparseTrie *pTrie, char *szSearch);
+bool test_key_search(SparseTrie *pTrie, char *szSearch, FILE *fpOut);
 
 
 /* The unit test function for the key deletion. */
@@ -42,7 +44,8 @@ int main(int argc, char **argv) {
     int  rc, idxOpt;
     bool ret;
     char opt;
-    char *szInsert, *szSearch, *szDelete;
+    char *szInsert, *szSearch, *szDelete, *szOut;
+    FILE *fpOut;
     SparseTrie *pTrie;
     char szOrder[BUF_SIZE_SMALL];
 
@@ -50,14 +53,16 @@ int main(int argc, char **argv) {
     static struct option Options[] = {
         {OPT_LONG_INSERT, required_argument, 0, OPT_INSERT},
         {OPT_LONG_SEARCH, required_argument, 0, OPT_SEARCH},
-        {OPT_LONG_DELETE, required_argument, 0, OPT_DELETE}
+        {OPT_LONG_DELETE, required_argument, 0, OPT_DELETE},
+        {OPT_LONG_HELP  , no_argument,       0, OPT_HELP},
+        {OPT_LONG_OUT   , optional_argument, 0, OPT_OUT},
     };
     memset(szOrder, 0, sizeof(char) * BUF_SIZE_SMALL);
-    sprintf(szOrder, "%c%c:%c:%c:", OPT_HELP, OPT_INSERT, OPT_SEARCH, OPT_DELETE);
+    sprintf(szOrder, "%c%c:%c:%c:%c:", OPT_HELP, OPT_INSERT, OPT_SEARCH, OPT_DELETE, OPT_OUT);
 
     rc = 0;
     idxOpt = 0;
-    szInsert = szSearch = szDelete = NULL;
+    szInsert = szSearch = szDelete = szOut = NULL;
     while ((opt = getopt_long(argc, argv, szOrder, Options, &idxOpt)) != -1) {
         switch (opt) {
             case OPT_INSERT: {
@@ -74,6 +79,11 @@ int main(int argc, char **argv) {
             }
             case OPT_HELP: {            
                 EARLY_EXIT
+                break;
+            }
+            case OPT_OUT: {
+                szOut = optarg;
+                break;
             }
             default: {
                 EARLY_EXIT
@@ -98,6 +108,16 @@ int main(int argc, char **argv) {
         goto EXIT;
     }
 
+    /* Create the log file if necessary. */
+    fpOut = NULL;
+    if (szOut != NULL) {
+        fpOut = fopen(szOut, "w");
+        if (fpOut == NULL) {
+            rc = -1;
+            goto DEINIT;
+        }
+    }
+
     /* Turn of the auto key insertion mode. */
     pTrie->set_auto_insert(pTrie, false);
 
@@ -107,7 +127,7 @@ int main(int argc, char **argv) {
         rc = -1;
         goto DEINIT;
     }
-    ret = test_key_search(pTrie, szSearch);
+    ret = test_key_search(pTrie, szSearch, fpOut);
     if (ret == false) {
         rc = -1;
         goto DEINIT;
@@ -120,7 +140,7 @@ int main(int argc, char **argv) {
         rc = -1;
         goto DEINIT;
     }
-    ret = test_key_search(pTrie, szSearch);
+    ret = test_key_search(pTrie, szSearch, fpOut);
     if (ret == false) {
         rc = -1;
         goto DEINIT;
@@ -129,6 +149,9 @@ int main(int argc, char **argv) {
     /* Release the allocated resources. */
 DEINIT:
     SparseTrie_deinit(pTrie);
+    if (fpOut != NULL) {
+        fclose(fpOut);
+    }
 EXIT:
     return rc;
 }
@@ -185,7 +208,7 @@ bool test_key_insert(SparseTrie *pTrie, char *szInsert) {
 }
 
 
-bool test_key_search(SparseTrie *pTrie, char *szSearch) {
+bool test_key_search(SparseTrie *pTrie, char *szSearch, FILE *fpOut) {
     int  iLenKey;    
     bool rc;
     char *ret;
@@ -207,9 +230,14 @@ bool test_key_search(SparseTrie *pTrie, char *szSearch) {
         iLenKey = strlen(buf);
         buf[iLenKey - 1] = 0;
         rc = pTrie->search(pTrie, buf);
-        /* printf("%s %d\n", buf, rc); */
+        if (fpOut != NULL) {
+            fprintf(fpOut, "%s\t%d\n", buf, rc);
+        }
     }
-    /* printf("\n"); */
+    
+    if (fpOut != NULL) {
+        fprintf(fpOut, "\n");
+    }
 
     fclose(fpSearch);
     return true;

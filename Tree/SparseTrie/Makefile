@@ -11,6 +11,7 @@ PATH_CASE_GENERATOR 	:= $(PATH_CUR)/../../Misc/dictionary_generator.py
 CASE_INSERT := insert.case
 CASE_SEARCH := search.case
 CASE_DELETE := delete.case
+COMPARE_LOG := compare.log
 
 
 # List the dependencies for project building.
@@ -57,9 +58,10 @@ test:
 	$(PATH_CASE_GENERATOR)
 ifeq ($(DEBUG), true)
 	valgrind --leak-check=yes --track-origins=yes ./$(TEST_PROG) \
-    -i $(CASE_INSERT) -s $(CASE_SEARCH) -d $(CASE_DELETE)
+    -i $(CASE_INSERT) -s $(CASE_SEARCH) -d $(CASE_DELETE) -o $(COMPARE_LOG)
 else
-	./$(TEST_PROG) -i $(CASE_INSERT) -s $(CASE_SEARCH) -d $(CASE_DELETE)
+	./$(TEST_PROG) -i $(CASE_INSERT) -s $(CASE_SEARCH) -d $(CASE_DELETE) \
+    --out=$(COMPARE_LOG)
 endif
 
 
@@ -70,5 +72,5 @@ coverage: test
 # List the project cleaning rule.
 .PHONY: clean
 clean:
-	rm -f *.o *.a *.so *.gcda *.gcno *.case $(TEST_PROG)
+	rm -f *.o *.a *.so *.gcda *.gcno *.case *.log $(TEST_PROG)
 
