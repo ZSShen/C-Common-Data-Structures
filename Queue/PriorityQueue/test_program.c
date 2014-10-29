@@ -164,11 +164,11 @@ void print_usage() {
     const char *cszMsg = "Usage: test_program --implement data_structure.\n"
                          "       test_program -i          data_structure.\n\n"
                          "       data_structure: The implementation for priority queue.\n"
-                         "                       1. binary heap\n"
-                         "                       2. binomial heap\n"
+                         "                       1. binary heap (use binaryheap as parameter)\n"
+                         "                       2. binomial heap (use binomialheap as parameter)\n"
                          "-------------------------------------------------------------\n"
-                         "Example: test_program --implement binary_heap\n"
-                         "         test_program -i          binary_heap\n\n";
+                         "Example: test_program --implement binaryheap\n"
+                         "         test_program -i          binaryheap\n\n";
     printf("%s", cszMsg);
     return;
 }
