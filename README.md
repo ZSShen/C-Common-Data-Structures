@@ -73,3 +73,14 @@ or theoretical structures.
     - For simple testing, execute `make test`.  
     - For debug testing (the object file and test program should be debug  
       build), execute `make test DEBUG=true`.  
+
++ For PriorityQueue  
+  Currently, the queue is just an interface which relies on the implementation  
+  of `binary heap` and `binomial heap`. In the source building stage (entire source  
+  or specific structure), the dependent heap implementations are also generated  
+  with the makefile command. Thus users do not neet do care about the dependency  
+  and can focus on the testing of each kind of implementation.
+    - To choose binary heap as implementation,  
+      execute `make test IMPLEMENT=binaryheap`. (`DEBUG=true` for debug build)
+    - To choose binomial heap as implementation,  
+      execute `make test IMPLEMENT=binomialheap`. (the same for debug build)  
