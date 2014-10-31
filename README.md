@@ -43,7 +43,8 @@ or theoretical structures.
         * Makefile
    
 + The dependency (inheritance) relation between data structures.  
-![Dependency] (https://github.com/ZSShen/C-Common-Data-Structures/tree/master/graphviz/dependency.png)  
+
+![Dependency] (http://raw.github.com/ZSShen/C-Common-Data-Structures/master/graphviz/dependency.png)  
 
 #### 1.2 Building Entire Source
 + Generally, each data structure is wrapped in a single C structure and   
