@@ -69,7 +69,7 @@ or theoretical structures.
 ### 2. Binary Execution
 + As aforementioned, we rely on the test program to verify each kind of  
   data structure. For this, the testing can be launched for all the structures  
-  (except for the PriorityQueue and SparseTrie) with the following commands:  
+  (except for the PriorityQueue) with the following commands:  
     - For simple testing, execute `make test`.  
     - For debug testing (the object file and test program should be debug  
       build), execute `make test DEBUG=true`.  

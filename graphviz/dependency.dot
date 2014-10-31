@@ -1,0 +1,14 @@
+digraph dependency {
+   red_black_tree    [label="RedBlackTree"];
+   ordered_map       [label="OrderedMap"];
+
+   dynamic_array     [label="DynamicArray"];
+   binary_heap       [label="BinaryHeap"];
+   binomial_heap     [label="BinomialHeap"];
+   priority_queue    [label="PriorityQueue"];
+   
+   red_black_tree->ordered_map   [dir="back"];
+   dynamic_array->binary_heap    [dir="back"];
+   binary_heap->priority_queue   [dir="back"];
+   binomial_heap->priority_queue [dir="back"];
+}
