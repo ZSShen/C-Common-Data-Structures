@@ -42,6 +42,9 @@ or theoretical structures.
         * test_program.c
         * Makefile
    
++ The dependency (inheritance) relation between data structures.  
+![Dependency] (https://github.com/ZSShen/C-Common-Data-Structures/tree/master/graphviz/dependency.png)  
+
 #### 1.2 Building Entire Source
 + Generally, each data structure is wrapped in a single C structure and   
   is built as an object file. To verify its correctness, we must rely  
