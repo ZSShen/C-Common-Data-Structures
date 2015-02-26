@@ -3,8 +3,8 @@
 /*===========================================================================*
  *                  Simulation for private variables                         *
  *===========================================================================*/
-static unsigned long _ulSize;
-static long (*_pCompare)(const void*, const void*);
+static unsigned int _uiSize;
+static int (*_pCompare)(const void*, const void*);
 static void (*_pDestroy)(void*);
 
 
@@ -80,7 +80,7 @@ TreeNode* _BSTreePredecessor(TreeNode *curr);
  *                  0 : The source item equals to the target one with certain ordering criteria.
  *                < 0 : The source item goes before the target one with certain ordering criteria.
  */
-long _BSTreeItemCompare(const void *pSrc, const void *pTge);
+int _BSTreeItemCompare(const void *pSrc, const void *pTge);
 
 
 /**
@@ -97,7 +97,7 @@ void _BSTreeItemDestroy(void *pItem);
 void BSTreeInit(BinSearchTree *self) {
     
     self->pRoot = NULL;
-    _ulSize = 0;
+    _uiSize = 0;
 
     /* Let the function pointers point to the corresponding functions */
     _pCompare = _BSTreeItemCompare;
@@ -167,7 +167,7 @@ TreeNode* BSTreePredecessor(BinSearchTree *self, TreeNode *pCurNode) {
  * BSTreeInsert(): Insert a new node storing the requested item to the appropriate position of the tree.
  */
 TreeNode* BSTreeInsert(BinSearchTree *self, void *pItem) {
-    long        rc;
+    int        rc;
     bool        direction;    
     TreeNode    *new, *curr, *parent;
     
@@ -222,7 +222,7 @@ TreeNode* BSTreeInsert(BinSearchTree *self, void *pItem) {
     }
 
     /* Increase the size. */
-    _ulSize++;
+    _uiSize++;
 
     /* Arrive at the appropriate location. */
     new->pParent = parent;
@@ -300,7 +300,7 @@ void BSTreeDelete(BinSearchTree *self, TreeNode *pNode) {
         } 
 
         /* Decrease the size. */
-        _ulSize--;
+        _uiSize--;
     }
 
     return;
@@ -311,7 +311,7 @@ void BSTreeDelete(BinSearchTree *self, TreeNode *pNode) {
  * BSTreeSearch(): Check whethere the tree has the specified item.
  */
 bool BSTreeSearch(BinSearchTree *self, void *pItem) {
-    long     rc;    
+    int     rc;    
     TreeNode *curr;
 
     curr = self->pRoot;
@@ -335,16 +335,16 @@ bool BSTreeSearch(BinSearchTree *self, void *pItem) {
 /*
  * BSTreeSize(): Return the size of the tree.
  */
-unsigned long BSTreeSize(BinSearchTree *self) {
+unsigned int BSTreeSize(BinSearchTree *self) {
 
-    return _ulSize;
+    return _uiSize;
 }
 
 
 /**
  * BSTreeSetCompare(): Set the item comparison strategy with the one defined by user.
  */
-void BSTreeSetCompare(BinSearchTree *self, long (*pFunc)(const void*, const void*)) {
+void BSTreeSetCompare(BinSearchTree *self, int (*pFunc)(const void*, const void*)) {
     
     _pCompare = pFunc;
     return;
@@ -448,11 +448,11 @@ TreeNode* _BSTreePredecessor(TreeNode *curr) {
  * Note: It considers source and target items as primitive data and 
  *       gives the larger order to the one with larger value.
  */
-long _BSTreeItemCompare(const void *pSrc, const void *pTge) {
-    long nSrc, nTge;
+int _BSTreeItemCompare(const void *pSrc, const void *pTge) {
+    int nSrc, nTge;
 
-    nSrc = (long)pSrc;
-    nTge = (long)pTge;    
+    nSrc = (int)pSrc;
+    nTge = (int)pTge;    
 
     return nSrc - nTge;
 }
@@ -466,4 +466,3 @@ void _BSTreeItemDestroy(void *pItem) {
 
     return;
 }
-
