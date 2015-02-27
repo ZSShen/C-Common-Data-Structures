@@ -4,48 +4,46 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdint.h>
+
+#define SUCCESS             (0)
+#define FAIL                (-1)
+
 
 /* Wrapper for BinSearchTree initialization. */
-#define BinSearchTree_init(p)       p = NULL;                                           \
-                                    p = (BinSearchTree*)malloc(sizeof(BinSearchTree));  \
-                                    if (p != NULL)                                      \
-                                        BSTreeInit(p);     
-
-/* Wrapper for BinSearchTree deinitialization. */
-#define BinSearchTree_deinit(p)     if (p != NULL) {                                    \
-                                        BSTreeDeinit(p);                                \
-                                        free(p);                                        \
-                                        p = NULL;                                       \
+#define BinSearchTree_init(p)       p = (BinSearchTree*)malloc(sizeof(BinSearchTree)); \
+                                    if (p) {                                           \
+                                        int32_t rc = BSTreeInit(p);                    \
+                                        if(rc == FAIL) {                               \
+                                            BSTreeDeinit(p);                           \
+                                            p = NULL;                                  \
+                                        }                                              \
                                     }
 
+/* Wrapper for BinSearchTree deinitialization. */
+#define BinSearchTree_deinit(p)     BSTreeDeinit(p);                                   \
+                                    p = NULL;                                          \
 
-typedef struct _TreeNode {
-    void    *pItem;
-    struct _TreeNode    *pParent;
-    struct _TreeNode    *pLeft;
-    struct _TreeNode    *pRight;
-} TreeNode;
-
+typedef struct _TreeNode TreeNode;
+typedef struct _BSTreeData BSTreeData;
 
 typedef struct _BinSearchTree {
-    TreeNode    *pRoot;
-        
-    TreeNode*     (*insert)     (struct _BinSearchTree*, void*);
-    void          (*delete)     (struct _BinSearchTree*, TreeNode*);
-    unsigned int  (*size)       (struct _BinSearchTree*);     
-    bool          (*search)     (struct _BinSearchTree*, void*);
-    TreeNode*     (*maximum)    (struct _BinSearchTree*);
-    TreeNode*     (*minimum)    (struct _BinSearchTree*);
-    TreeNode*     (*successor)  (struct _BinSearchTree*, TreeNode*);  
-    TreeNode*     (*predecessor)(struct _BinSearchTree*, TreeNode*);
-
-    void          (*set_compare)(struct _BinSearchTree*, int (*)(const void*, const void*));
-    void          (*set_destroy)(struct _BinSearchTree*, void (*) (void*));
+    BSTreeData *pData;
+    TreeNode* (*insert)     (struct _BinSearchTree*, void*);
+    void      (*delete)     (struct _BinSearchTree*, TreeNode*);
+    uint32_t  (*size)       (struct _BinSearchTree*);     
+    bool      (*search)     (struct _BinSearchTree*, void*);
+    TreeNode* (*maximum)    (struct _BinSearchTree*);
+    TreeNode* (*minimum)    (struct _BinSearchTree*);
+    TreeNode* (*successor)  (struct _BinSearchTree*, TreeNode*);  
+    TreeNode* (*predecessor)(struct _BinSearchTree*, TreeNode*);
+    void (*set_compare)(struct _BinSearchTree*, int32_t (*) (const void*, const void*));
+    void (*set_destroy)(struct _BinSearchTree*, void (*) (void*));
 } BinSearchTree;
 
 
 /* Constructor for BinSearchTree structure. */
-void BSTreeInit(BinSearchTree *self);
+int32_t BSTreeInit(BinSearchTree *self);
 
 
 /* Destructor for BinSearchTree structure. */
@@ -80,7 +78,7 @@ void BSTreeDelete(BinSearchTree *self, TreeNode *pNode);
  *
  * @return              The size;
  */
-unsigned int BSTreeSize(BinSearchTree *self);
+uint32_t BSTreeSize(BinSearchTree *self);
 
 
 /**
@@ -145,7 +143,7 @@ TreeNode* BSTreePredecessor(BinSearchTree *self, TreeNode *pCurNode);
  * @param self          The pointer to the BinSearchTree structure.
  * @param pFunc         The pointer to the customized function.
  */
-void BSTreeSetCompare(BinSearchTree *self, int (*pFunc)(const void*, const void*));
+void BSTreeSetCompare(BinSearchTree *self, int32_t (*pFunc)(const void*, const void*));
 
 
 /**

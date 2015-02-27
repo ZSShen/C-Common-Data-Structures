@@ -1,18 +1,19 @@
 #include "bin_search_tree.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 #include <time.h>
 
 #define SIZE_DATA 10000
 
 typedef struct _Data {
-    int key;
+    int32_t key;
     void *value;
 } Data;
 
 
 /* Define the node item comparison strategy for BinSearchTree. */
-int data_compare(const void *pSrc, const void *pTge);
+int32_t data_compare(const void *pSrc, const void *pTge);
 
 /* Define the node item deallocation strategy for BinSearchTree. */
 void data_destroy(void *pItem);
@@ -23,7 +24,7 @@ void test_insert(BinSearchTree *pTree);
 /* Test function for deletion-related utilities. */
 void test_delete(BinSearchTree *pTree);
 
-int main() {
+int32_t main() {
     BinSearchTree *pTree;
 
     /* Initialize the random seed. */
@@ -49,11 +50,11 @@ int main() {
 }
 
 
-int data_compare(const void *pSrc, const void *pTge) {
-    int nSrc, nTge;
+int32_t data_compare(const void *pSrc, const void *pTge) {
+    int32_t nSrc, nTge;
 
-    nSrc = (int)((Data*)pSrc)->key;
-    nTge = (int)((Data*)pTge)->key;
+    nSrc = (int32_t)((Data*)pSrc)->key;
+    nTge = (int32_t)((Data*)pTge)->key;
 
     return nSrc - nTge;
 }
@@ -67,9 +68,9 @@ void data_destroy(void *pItem) {
 
 
 void test_insert(BinSearchTree *pTree) {
-    int             i;
-    unsigned int    key;
-    Data            *pData;
+    int32_t i;
+    uint32_t key;
+    Data *pData;
 
     for (i = 0 ; i < SIZE_DATA ; i++) {
         key = rand() % SIZE_DATA;
@@ -88,7 +89,7 @@ void test_insert(BinSearchTree *pTree) {
 
 
 void test_delete(BinSearchTree *pTree) {
-    int       turn;    
+    int32_t turn;    
     TreeNode *pNode;
 
     turn = 1;
