@@ -6,15 +6,16 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define SUCCESS             (0)
-#define FAIL                (-1)
+#define SUCCESS                     (0)
+#define FAIL_NO_MEMORY              (-1)
+#define FAIL_DATA_CONFLICT          (-2)
 
 
 /* Wrapper for BinSearchTree initialization. */
 #define BinSearchTree_init(p)       p = (BinSearchTree*)malloc(sizeof(BinSearchTree)); \
                                     if (p) {                                           \
                                         int32_t rc = BSTreeInit(p);                    \
-                                        if(rc == FAIL) {                               \
+                                        if(rc == FAIL_NO_MEMORY) {                     \
                                             BSTreeDeinit(p);                           \
                                             p = NULL;                                  \
                                         }                                              \
@@ -29,7 +30,7 @@ typedef struct _BSTreeData BSTreeData;
 
 typedef struct _BinSearchTree {
     BSTreeData *pData;
-    TreeNode* (*insert)     (struct _BinSearchTree*, void*);
+    int32_t (*insert) (struct _BinSearchTree*, void*);
     void      (*delete)     (struct _BinSearchTree*, TreeNode*);
     uint32_t  (*size)       (struct _BinSearchTree*);     
     bool      (*search)     (struct _BinSearchTree*, void*);
@@ -42,24 +43,23 @@ typedef struct _BinSearchTree {
 } BinSearchTree;
 
 
-/* Constructor for BinSearchTree structure. */
-int32_t BSTreeInit(BinSearchTree *self);
-
-
-/* Destructor for BinSearchTree structure. */
-void BSTreeDeinit(BinSearchTree *self);
-
-
 /**
- * This function inserts a new node storing the requested item to the appropriate position of the tree.
- *
+ * int32_t (*insert) (BinSearchTree *self, void *pItem)
+ * 
  * @param self          The pointer to the BinSearchTree structure.
- * @param pItem         The pointer to the item which is to be inserted to the tree.
+ * @param pItem         The pointer to the requested item.
  *
- * @return              Non-NULL: The pointer to the successfully inserted node.
- *                      NULL    : The node cannot be inserted due to insufficient memory space. 
+ * @return              SUCCESS
+ *                      FAIL_NO_MEMORY
+ *                      FAIL_DATA_CONFLICT
+ *
+ * This operation allocates a node to store the requested item and inserts it
+ * into the proper position of the tree.
+ * It will fail under two conditions:
+ *     1. Insufficient memory space.
+ *     2. The requested item conflicts with the one stored in the tree.
  */
-TreeNode* BSTreeInsert(BinSearchTree *self, void *pItem);
+
 
 
 /**

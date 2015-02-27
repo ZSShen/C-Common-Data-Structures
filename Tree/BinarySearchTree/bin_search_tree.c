@@ -23,6 +23,38 @@ struct _BSTreeData {
 
 
 /*===========================================================================*
+ *             Definition for the exported member operations                 *
+ *===========================================================================*/
+/**
+ * The constructor for BinSearchTree.
+ * 
+ * @param self          The pointer to the BinSearchTree structure.
+ *
+ * @return              SUCCESS: Operation success.
+ *                      FAIL_NO_MEMORY   : Insufficient memory space.
+ */
+int32_t BSTreeInit(BinSearchTree *self);
+
+/**
+ * The destructor for BinSearchTree.
+ */
+void BSTreeDeinit(BinSearchTree *self);
+
+/**
+ * This function allocates a node to store the requested item and inserts it
+ * into the proper position of the tree.
+ *
+ * @param self          The pointer to the BinSearchTree structure.
+ * @param pItem         The pointer to the requested item.
+ *
+ * @return              SUCCESS
+ *                      FAIL_NO_MEMORY
+ *                      FAIL_DATA_CONFLICT
+ */
+int32_t BSTreeInsert(BinSearchTree *self, void *pItem);
+
+
+/*===========================================================================*
  *                  Definition for internal functions                        *
  *===========================================================================*/
 /**
@@ -32,7 +64,6 @@ struct _BSTreeData {
  * @param func      The pointer to the function which describes the node item deallocation strategy.
  */
 void _BSTreeDeinit(TreeNode *curr, void (*func) (void*));
-
 
 /**
  * This function returns the node with minimal order within the subtree rooted by the
@@ -57,7 +88,6 @@ TreeNode* _BSTreeMinimal(TreeNode *curr);
  */
 TreeNode* _BSTreeMaximal(TreeNode *curr);
 
-
 /**
  * This function returns the successor of the designated node.
  *
@@ -67,7 +97,6 @@ TreeNode* _BSTreeMaximal(TreeNode *curr);
  *                  NULL    : There is no successor for the designated node.
  */
 TreeNode* _BSTreeSuccessor(TreeNode *curr);
-
 
 /**
  * This function returns the predecessor of the designated node.
@@ -102,13 +131,13 @@ void _BSTreeItemDestroy(void *pItem);
 
 
 /*===========================================================================*
- *               Implementation for exported functions                       *
+ *           Implementation for the exported member operations               *
  *===========================================================================*/
 int32_t BSTreeInit(BinSearchTree *self)
 {
     self->pData = (BSTreeData*)malloc(sizeof(BSTreeData));
     if (!self->pData)
-        return FAIL;
+        return FAIL_NO_MEMORY;
 
     self->pData->_pRoot = NULL;
     self->pData->_uiSize = 0;
@@ -131,7 +160,6 @@ int32_t BSTreeInit(BinSearchTree *self)
     return SUCCESS;
 }
 
-
 void BSTreeDeinit(BinSearchTree *self)
 {
     if (self) {
@@ -142,6 +170,55 @@ void BSTreeDeinit(BinSearchTree *self)
         free(self);
     }
     return;
+}
+
+int32_t BSTreeInsert(BinSearchTree *self, void *pItem)
+{
+    int32_t iOrder;
+    int8_t cDirect;
+    TreeNode *pNew, *pCurr, *pParent;
+
+    pNew = (TreeNode*)malloc(sizeof(TreeNode));
+    if (!pNew)
+        return FAIL_NO_MEMORY;
+    pNew->pItem = pItem;
+    pNew->pParent = NULL;
+    pNew->pLeft = NULL;
+    pNew->pRight = NULL;
+
+    pParent = NULL;
+    pCurr = self->pData->_pRoot;
+    while (pCurr) {
+        pParent = pCurr;
+        iOrder = self->pData->_pCompare(pItem, pCurr->pItem);
+        if (iOrder > 0) {
+            pCurr = pCurr->pRight;
+            cDirect = DIRECTION_RIGHT;
+        }
+        else if (iOrder < 0) {
+            pCurr = pCurr->pLeft;
+            cDirect = DIRECTION_LEFT;
+        }
+        else {
+            free(pNew);
+            return FAIL_DATA_CONFLICT;
+        }
+    }
+
+    /* Arrive at the proper position. */
+    pNew->pParent = pParent;
+    if (pParent) {
+        if (cDirect == DIRECTION_LEFT)
+            pParent->pLeft = pNew;
+        else
+            pParent->pRight = pNew;
+    } else
+        self->pData->_pRoot = pNew;
+
+    /* Increase the size. */
+    self->pData->_uiSize++;
+
+    return SUCCESS;
 }
 
 
@@ -178,81 +255,6 @@ TreeNode* BSTreeSuccessor(BinSearchTree *self, TreeNode *pCurNode)
 TreeNode* BSTreePredecessor(BinSearchTree *self, TreeNode *pCurNode)
 {
     return _BSTreePredecessor(pCurNode);
-}
-
-
-/**
- * BSTreeInsert(): Insert a new node storing the requested item to the appropriate position of the tree.
- */
-TreeNode* BSTreeInsert(BinSearchTree *self, void *pItem)
-{
-    int32_t rc;
-    bool direction;
-    TreeNode *new, *curr, *parent;
-
-    new = (TreeNode*)malloc(sizeof(TreeNode));
-    if (!new)
-        return new;
-
-    new->pItem = pItem;
-    new->pParent = NULL;
-    new->pLeft = NULL;
-    new->pRight = NULL;
-
-    parent = NULL;
-    curr = self->pData->_pRoot;
-    while (curr) {
-        parent = curr;
-        rc = self->pData->_pCompare(pItem, curr->pItem);
-
-        if (rc > 0) {
-            curr = curr->pRight;
-            direction = DIRECTION_RIGHT;
-        }
-        else if (rc < 0) {
-            curr = curr->pLeft;
-            direction = DIRECTION_LEFT;
-        }
-        else {
-            /* The conflict occurs. The new node will replace the existing one. */
-            new->pLeft = curr->pLeft;
-            new->pRight = curr->pRight;
-            new->pParent = curr->pParent;
-
-            if (curr->pLeft)
-                curr->pLeft->pParent = new;
-
-            if (curr->pRight)
-                curr->pRight->pParent = new;
-
-            if (curr->pParent) {
-                if (curr == curr->pParent->pLeft)
-                    curr->pParent->pLeft = new;
-                else
-                    curr->pParent->pRight = new;
-            } else
-                self->pData->_pRoot = new;
-
-            self->pData->_pDestroy(curr->pItem);
-            free(curr);
-            return new;
-        }
-    }
-
-    /* Increase the size. */
-    self->pData->_uiSize++;
-
-    /* Arrive at the appropriate location. */
-    new->pParent = parent;
-    if (parent) {
-        if (direction == DIRECTION_LEFT)
-            parent->pLeft = new;
-        else
-            parent->pRight = new;
-    } else
-        self->pData->_pRoot = new;
-
-    return new;
 }
 
 
