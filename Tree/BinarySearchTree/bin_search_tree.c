@@ -26,21 +26,6 @@ struct _BSTreeData {
  *             Definition for the exported member operations                 *
  *===========================================================================*/
 /**
- * The constructor for BinSearchTree.
- *
- * @param self          The pointer to the BinSearchTree structure.
- *
- * @return              SUCCESS: Operation success.
- *                      FAIL_NO_MEMORY   : Insufficient memory space.
- */
-int32_t BSTreeInit(BinSearchTree *self);
-
-/**
- * The destructor for BinSearchTree.
- */
-void BSTreeDeinit(BinSearchTree *self);
-
-/**
  * Insert the requested item into the proper location of the tree.
  */
 int32_t BSTreeInsert(BinSearchTree *self, Item item);
@@ -89,6 +74,7 @@ void BSTreeSetCompare(BinSearchTree *self, int32_t (*pFunc) (Item, Item));
  * Set the user defined item deallocation strategy.
  */
 void BSTreeSetDestroy(BinSearchTree *self, void (*pFunc) (Item));
+
 
 /*===========================================================================*
  *                  Definition for internal functions                        *
@@ -177,41 +163,49 @@ void _BSTreeItemDestroy(Item item);
 /*===========================================================================*
  *           Implementation for the exported member operations               *
  *===========================================================================*/
-int32_t BSTreeInit(BinSearchTree *self)
+int32_t BSTreeInit(BinSearchTree **ppObj)
 {
-    self->pData = (BSTreeData*)malloc(sizeof(BSTreeData));
-    if (!self->pData)
+    BinSearchTree *pObj;
+    *ppObj = (BinSearchTree*)malloc(sizeof(BinSearchTree));
+    if (!(*ppObj))
         return FAIL_NO_MEMORY;
+    pObj = *ppObj;
 
-    self->pData->_pRoot = NULL;
-    self->pData->_uiSize = 0;
-    self->pData->_pCompare = _BSTreeItemCompare;
-    self->pData->_pDestroy = _BSTreeItemDestroy;
+    pObj->pData = (BSTreeData*)malloc(sizeof(BSTreeData));
+    if (!pObj->pData) {
+        free(*ppObj);
+        *ppObj = NULL;
+        return FAIL_NO_MEMORY;
+    }
+    pObj->pData->_pRoot = NULL;
+    pObj->pData->_uiSize = 0;
+    pObj->pData->_pCompare = _BSTreeItemCompare;
+    pObj->pData->_pDestroy = _BSTreeItemDestroy;
 
-    self->insert = BSTreeInsert;
-    self->delete = BSTreeDelete;
-    self->search = BSTreeSearch;
-    self->size = BSTreeSize;
-
-    self->maximum = BSTreeMaximum;
-    self->minimum = BSTreeMinimum;
-    self->successor = BSTreeSuccessor;
-    self->predecessor = BSTreePredecessor;
-
-    self->set_compare = BSTreeSetCompare;
-    self->set_destroy = BSTreeSetDestroy;
+    pObj->insert = BSTreeInsert;
+    pObj->search = BSTreeSearch;
+    pObj->delete = BSTreeDelete;
+    pObj->maximum = BSTreeMaximum;
+    pObj->minimum = BSTreeMinimum;
+    pObj->successor = BSTreeSuccessor;
+    pObj->predecessor = BSTreePredecessor;
+    pObj->size = BSTreeSize;
+    pObj->set_compare = BSTreeSetCompare;
+    pObj->set_destroy = BSTreeSetDestroy;
 
     return SUCCESS;
 }
 
-void BSTreeDeinit(BinSearchTree *self)
+void BSTreeDeinit(BinSearchTree **ppObj)
 {
-    if (self) {
-        if (self->pData) {
-            _BSTreeDeinit(self->pData->_pRoot, self->pData->_pDestroy);
-            free(self->pData);
+    BinSearchTree *pObj;
+    if (*ppObj) {
+        pObj = *ppObj;
+        if (pObj->pData) {
+            _BSTreeDeinit(pObj->pData->_pRoot, pObj->pData->_pDestroy);
+            free(pObj->pData);
         }
-        free(self);
+        free(*ppObj);
     }
     return;
 }

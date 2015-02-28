@@ -6,25 +6,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+
 #define SUCCESS                     (0)
 #define FAIL_NO_MEMORY              (-1)
 #define FAIL_NO_DATA                (-2)
 #define FAIL_DATA_CONFLICT          (-3)
-
-
-/* Wrapper for BinSearchTree initialization. */
-#define BinSearchTree_init(p)       p = (BinSearchTree*)malloc(sizeof(BinSearchTree)); \
-                                    if (p) {                                           \
-                                        int32_t rc = BSTreeInit(p);                    \
-                                        if(rc == FAIL_NO_MEMORY) {                     \
-                                            BSTreeDeinit(p);                           \
-                                            p = NULL;                                  \
-                                        }                                              \
-                                    }
-
-/* Wrapper for BinSearchTree deinitialization. */
-#define BinSearchTree_deinit(p)     BSTreeDeinit(p);                                   \
-                                    p = NULL;                                          \
 
 typedef const void* Item;
 typedef struct _TreeNode TreeNode;
@@ -40,10 +26,27 @@ typedef struct _BinSearchTree {
     int32_t (*successor) (struct _BinSearchTree*, Item*);
     int32_t (*predecessor) (struct _BinSearchTree*, Item*);
     uint32_t (*size) (struct _BinSearchTree*);
-    void (*set_compare)(struct _BinSearchTree*, int32_t (*) (Item, Item));
-    void (*set_destroy)(struct _BinSearchTree*, void (*) (Item));
+    void (*set_compare) (struct _BinSearchTree*, int32_t (*) (Item, Item));
+    void (*set_destroy) (struct _BinSearchTree*, void (*) (Item));
 } BinSearchTree;
 
+
+/**
+ * The constructor for BinSearchTree.
+ *
+ * @param ppObj         The double pointer to the to be constructed tree. 
+ *
+ * @return              SUCCESS
+ *                      FAIL_NO_MEMORY
+ */
+int32_t BSTreeInit(BinSearchTree **ppObj);
+
+/**
+ * The destructor for BinSearchTree.
+ *
+ * @param ppObj          The double pointer to the to be destructed tree.
+ */
+void BSTreeDeinit(BinSearchTree **ppObj);
 
 /**
  * int32_t (*insert) (BinSearchTree *self, Item item)
