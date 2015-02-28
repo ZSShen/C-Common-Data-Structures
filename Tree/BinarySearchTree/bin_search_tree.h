@@ -26,30 +26,31 @@
 #define BinSearchTree_deinit(p)     BSTreeDeinit(p);                                   \
                                     p = NULL;                                          \
 
+typedef const void* Item;
 typedef struct _TreeNode TreeNode;
 typedef struct _BSTreeData BSTreeData;
 
 typedef struct _BinSearchTree {
     BSTreeData *pData;
-    int32_t (*insert) (struct _BinSearchTree*, void*);
-    int32_t (*search) (struct _BinSearchTree*, void*);
-    int32_t (*delete) (struct _BinSearchTree*, void*);
+    int32_t (*insert) (struct _BinSearchTree*, Item);
+    int32_t (*search) (struct _BinSearchTree*, Item);
+    int32_t (*delete) (struct _BinSearchTree*, Item);
 
     uint32_t  (*size)       (struct _BinSearchTree*);
     TreeNode* (*maximum)    (struct _BinSearchTree*);
     TreeNode* (*minimum)    (struct _BinSearchTree*);
     TreeNode* (*successor)  (struct _BinSearchTree*, TreeNode*);
     TreeNode* (*predecessor)(struct _BinSearchTree*, TreeNode*);
-    void (*set_compare)(struct _BinSearchTree*, int32_t (*) (const void*, const void*));
-    void (*set_destroy)(struct _BinSearchTree*, void (*) (void*));
+    void (*set_compare)(struct _BinSearchTree*, int32_t (*) (Item, Item));
+    void (*set_destroy)(struct _BinSearchTree*, void (*) (Item));
 } BinSearchTree;
 
 
 /**
- * int32_t (*insert) (BinSearchTree *self, void *pItem)
+ * int32_t (*insert) (BinSearchTree *self, Item item)
  *
  * @param self          The pointer to the BinSearchTree structure.
- * @param pItem         The pointer to the requested item.
+ * @param item          The requested item.
  *
  * @return              SUCCESS
  *                      FAIL_NO_MEMORY
@@ -62,10 +63,10 @@ typedef struct _BinSearchTree {
  */
 
 /**
- * int32_t (*search) (BinSearchTree *self, void *pItem)
+ * int32_t (*search) (BinSearchTree *self, Item item)
  *
  * @param self          The pointer to the BinSearchTree structure.
- * @param pItem         The pointer to the requested item.
+ * @param item          The requested item.
  *
  * @return              SUCCESS
  *                      FAIL_NO_DATA
@@ -76,10 +77,10 @@ typedef struct _BinSearchTree {
  */
 
 /**
- * int32_t (*delete) (BinSearchTree *self, void *pItem)
+ * int32_t (*delete) (BinSearchTree *self, Item item)
  *
  * @param self          The pointer to the BinSearchTree structure.
- * @param pItem         The pointer to the requested item.
+ * @param item          The requested item.
  *
  * @return              SUCCESS
  *                      FAIL_NO_DATA
@@ -150,7 +151,7 @@ TreeNode* BSTreePredecessor(BinSearchTree *self, TreeNode *pCurNode);
  * @param self          The pointer to the BinSearchTree structure.
  * @param pFunc         The pointer to the customized function.
  */
-void BSTreeSetCompare(BinSearchTree *self, int32_t (*pFunc)(const void*, const void*));
+void BSTreeSetCompare(BinSearchTree *self, int32_t (*pFunc)(Item, Item));
 
 
 /**
@@ -159,6 +160,6 @@ void BSTreeSetCompare(BinSearchTree *self, int32_t (*pFunc)(const void*, const v
  * @param self          The pointer to the BinSearchTree structure.
  * @param pFunc         The pointer to the customized function.
  */
-void BSTreeSetDestroy(BinSearchTree *self, void (*pFunc)(void*));
+void BSTreeSetDestroy(BinSearchTree *self, void (*pFunc)(Item));
 
 #endif
