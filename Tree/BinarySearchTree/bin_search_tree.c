@@ -1,5 +1,6 @@
 #include "bin_search_tree.h"
 
+
 /*===========================================================================*
  *                  Hide the private data of the tree                        *
  *===========================================================================*/
@@ -17,7 +18,6 @@ struct _BSTreeData {
     void (*_pDestroy)(void*);
 };
 
-
 #define DIRECTION_LEFT      (0)
 #define DIRECTION_RIGHT     (1)
 
@@ -27,7 +27,7 @@ struct _BSTreeData {
  *===========================================================================*/
 /**
  * The constructor for BinSearchTree.
- * 
+ *
  * @param self          The pointer to the BinSearchTree structure.
  *
  * @return              SUCCESS: Operation success.
@@ -41,73 +41,82 @@ int32_t BSTreeInit(BinSearchTree *self);
 void BSTreeDeinit(BinSearchTree *self);
 
 /**
- * This function allocates a node to store the requested item and inserts it
- * into the proper position of the tree.
- *
- * @param self          The pointer to the BinSearchTree structure.
- * @param pItem         The pointer to the requested item.
- *
- * @return              SUCCESS
- *                      FAIL_NO_MEMORY
- *                      FAIL_DATA_CONFLICT
+ * Insert the requested item into the proper location of the tree.
  */
 int32_t BSTreeInsert(BinSearchTree *self, void *pItem);
+
+/**
+ * Check whethere the tree has the requested item.
+ */
+int32_t BSTreeSearch(BinSearchTree *self, void *pItem);
+
+/**
+ * Delete the requested item from the tree and adjust the tree structure.
+ */
+int32_t BSTreeDelete(BinSearchTree *self, void *pItem);
 
 
 /*===========================================================================*
  *                  Definition for internal functions                        *
  *===========================================================================*/
 /**
- * This function traverses all the nodes and releases the allocated memory space.
+ * Traverse all the nodes and release the allocated memory space.
  *
- * @param curr      The pointer to the node currently traversed.
+ * @param pCurr      The pointer to the node currently traversed.
  * @param func      The pointer to the function which describes the node item deallocation strategy.
  */
-void _BSTreeDeinit(TreeNode *curr, void (*func) (void*));
+void _BSTreeDeinit(TreeNode *pCurr, void (*func) (void*));
 
 /**
- * This function returns the node with minimal order within the subtree rooted by the
- * specified node.
+ * Return the node with minimal order in the subtree rooted by the requested node.
  *
- * @param curr      The pointer to the root node of a specific subtree.
+ * @param pCurr      The pointer to the requested node.
  *
- * @return          Non-NULL: The pointer to the target node.
- *                  NULL    : The subtree is empty.
+ * @return           Non-NULL: The pointer to the target node.
+ *                   NULL    : The subtree is empty.
  */
-TreeNode* _BSTreeMinimal(TreeNode *curr);
-
+TreeNode* _BSTreeMinimal(TreeNode *pCurr);
 
 /**
- * This function returns the node with maximal order within the subtree rooted by the
- * specified node.
+ * Return the node with maximal order in the subtree rooted by the requested node.
  *
- * @param curr      The pointer to the root node of a specific subtree.
+ * @param pCurr      The pointer to the requested node.
  *
- * @return          Non-NULL: The pointer to the target node.
- *                  NULL    : The subtree is empty.
+ * @return           Non-NULL: The pointer to the target node.
+ *                   NULL    : The subtree is empty.
  */
-TreeNode* _BSTreeMaximal(TreeNode *curr);
+TreeNode* _BSTreeMaximal(TreeNode *pCurr);
 
 /**
- * This function returns the successor of the designated node.
+ * Return the successor of the requested node.
  *
- * @param curr      The pointer to the node for successor search.
+ * @param pCurr      The pointer to the requested node.
  *
- * @return          Non-NULL: The pointer to the target node.
- *                  NULL    : There is no successor for the designated node.
+ * @return           Non-NULL: The pointer to the target node.
+ *                   NULL    : No successor can be found.
  */
-TreeNode* _BSTreeSuccessor(TreeNode *curr);
+TreeNode* _BSTreeSuccessor(TreeNode *pCurr);
 
 /**
- * This function returns the predecessor of the designated node.
+ * Return the predecessor of the requested node.
  *
- * @param curr      The pointer to the node for predecessor search.
+ * @param pCurr      The pointer to the requested node.
  *
- * @return          Non-NULL: The pointer to the target node.
- *                  NULL    : There is no predecessor for the designated node.
+ * @return           Non-NULL: The pointer to the target node.
+ *                   NULL    : No predecessor can be found.
  */
-TreeNode* _BSTreePredecessor(TreeNode *curr);
+TreeNode* _BSTreePredecessor(TreeNode *pCurr);
 
+/**
+ * Return the node containing the requested item.
+ *
+ * @param self       The pointer to the BinSearchTree structure.
+ * @param pItem      The pointer to the requested item.
+ *
+ * @return           Non-NULL: The pointer to the target node.
+ *                   NULL    : No matched node.
+ */
+TreeNode* _BSTreeSearch(BinSearchTree *self, void *pItem);
 
 /**
  * This function is the default comparison strategy for the items of a pair of tree nodes.
@@ -221,6 +230,82 @@ int32_t BSTreeInsert(BinSearchTree *self, void *pItem)
     return SUCCESS;
 }
 
+int32_t BSTreeSearch(BinSearchTree *self, void *pItem)
+{
+    TreeNode *pFind;
+    pFind = _BSTreeSearch(self, pItem);
+    if (pFind)
+        return SUCCESS;
+    return FAIL_NO_DATA;
+}
+
+int32_t BSTreeDelete(BinSearchTree *self, void *pItem)
+{
+    TreeNode *pCurr, *pChild, *pSucc, *pParent;
+
+    pCurr = _BSTreeSearch(self, pItem);
+    if (pCurr) {
+        /* The specified node has no child. */
+        if ((!pCurr->pLeft) && (!pCurr->pRight)) {
+            if (pCurr->pParent) {
+                if (pCurr == pCurr->pParent->pLeft)
+                    pCurr->pParent->pLeft = NULL;
+                else
+                    pCurr->pParent->pRight = NULL;
+            } else
+                self->pData->_pRoot = NULL;
+
+            self->pData->_pDestroy(pCurr->pItem);
+            free(pCurr);
+        } else {
+            /* The specified node has two children. */
+            if ((pCurr->pLeft) && (pCurr->pRight)) {
+                pSucc = _BSTreeSuccessor(pCurr);
+
+                pChild = pSucc->pLeft;
+                if (!pChild)
+                    pChild = pSucc->pRight;
+
+                if (pChild)
+                    pChild->pParent = pSucc->pParent;
+
+                if (pSucc == pSucc->pParent->pLeft)
+                    pSucc->pParent->pLeft = pChild;
+                else
+                    pSucc->pParent->pRight = pChild;
+
+                self->pData->_pDestroy(pCurr->pItem);
+                pCurr->pItem = pSucc->pItem;
+                free(pSucc);
+            }
+            /* The specified node has one child. */
+            else {
+                pChild = pCurr->pLeft;
+                if (!pChild)
+                    pChild = pCurr->pRight;
+
+                pChild->pParent = pCurr->pParent;
+
+                if (pCurr->pParent) {
+                    if (pCurr == pCurr->pParent->pLeft)
+                        pCurr->pParent->pLeft = pChild;
+                    else
+                        pCurr->pParent->pRight = pChild;
+                } else
+                    self->pData->_pRoot = pChild;
+
+                self->pData->_pDestroy(pCurr->pItem);
+                free(pCurr);
+            }
+        }
+
+        /* Decrease the size. */
+        self->pData->_uiSize--;
+        return SUCCESS;
+    }
+
+    return FAIL_NO_DATA;
+}
 
 /**
  * BSTreeMinimum(): Return the node with minimum order of the tree.
@@ -259,101 +344,6 @@ TreeNode* BSTreePredecessor(BinSearchTree *self, TreeNode *pCurNode)
 
 
 /**
- * BSTreeDelete(): Delete the specified node from the tree and adjust the tree structure.
- */
-void BSTreeDelete(BinSearchTree *self, TreeNode *pNode)
-{
-    TreeNode *child, *succ, *parent;
-
-    if (pNode) {
-        /* The specified node has no child. */
-        if ((pNode->pLeft == NULL) && (pNode->pRight == NULL)) {
-            if (pNode->pParent != NULL) {
-                if (pNode == pNode->pParent->pLeft)
-                    pNode->pParent->pLeft = NULL;
-                else
-                    pNode->pParent->pRight = NULL;
-            } else
-                self->pData->_pRoot = NULL;
-
-            self->pData->_pDestroy(pNode->pItem);
-            free(pNode);
-        } else {
-            /* The specified node has two children. */
-            if ((pNode->pLeft != NULL) && (pNode->pRight != NULL)) {
-                succ = _BSTreeSuccessor(pNode);
-
-                child = succ->pLeft;
-                if (child == NULL)
-                    child = succ->pRight;
-
-                if (child != NULL)
-                    child->pParent = succ->pParent;
-
-                if (succ == succ->pParent->pLeft)
-                    succ->pParent->pLeft = child;
-                else
-                    succ->pParent->pRight = child;
-
-                self->pData->_pDestroy(pNode->pItem);
-                pNode->pItem = succ->pItem;
-                free(succ);
-            }
-            /* The specified node has one child. */
-            else {
-                child = pNode->pLeft;
-                if (child == NULL)
-                    child = pNode->pRight;
-
-                child->pParent = pNode->pParent;
-
-                if (pNode->pParent != NULL) {
-                    if (pNode == pNode->pParent->pLeft)
-                        pNode->pParent->pLeft = child;
-                    else
-                        pNode->pParent->pRight = child;
-                } else
-                    self->pData->_pRoot = child;
-
-                self->pData->_pDestroy(pNode->pItem);
-                free(pNode);
-            }
-        }
-
-        /* Decrease the size. */
-        self->pData->_uiSize--;
-    }
-
-    return;
-}
-
-
-/**
- * BSTreeSearch(): Check whethere the tree has the specified item.
- */
-bool BSTreeSearch(BinSearchTree *self, void *pItem)
-{
-    int32_t rc;
-    TreeNode *curr;
-
-    curr = self->pData->_pRoot;
-    while(curr) {
-        rc = self->pData->_pCompare(pItem, curr->pItem);
-        if (rc == 0)
-            return true;
-        else {
-            if (rc > 0)
-                curr = curr->pRight;
-            else
-                curr = curr->pLeft;
-        }
-    }
-
-    return false;
-}
-
-
-/**
  * BSTreeSize(): Return the size of the tree.
  */
 uint32_t BSTreeSize(BinSearchTree *self)
@@ -385,79 +375,91 @@ void BSTreeSetDestroy(BinSearchTree *self, void (*pFunc)(void*))
 /*===========================================================================*
  *               Implementation for internal functions                       *
  *===========================================================================*/
-void _BSTreeDeinit(TreeNode *curr, void (*func) (void*))
+void _BSTreeDeinit(TreeNode *pCurr, void (*func) (void*))
 {
-    if (curr) {
-        _BSTreeDeinit(curr->pLeft, func);
-        _BSTreeDeinit(curr->pRight, func);
-        func(curr->pItem);
-        free(curr);
+    if (pCurr) {
+        _BSTreeDeinit(pCurr->pLeft, func);
+        _BSTreeDeinit(pCurr->pRight, func);
+        func(pCurr->pItem);
+        free(pCurr);
     }
     return;
 }
 
-
-TreeNode* _BSTreeMinimal(TreeNode *curr)
+TreeNode* _BSTreeMinimal(TreeNode *pCurr)
 {
-    TreeNode *parent;
-    parent = NULL;
-    while (curr) {
-        parent = curr;
-        curr = curr->pLeft;
+    TreeNode *pParent;
+    pParent = NULL;
+    while (pCurr) {
+        pParent = pCurr;
+        pCurr = pCurr->pLeft;
     }
-    return parent;
+    return pParent;
 }
 
-
-TreeNode* _BSTreeMaximal(TreeNode *curr)
+TreeNode* _BSTreeMaximal(TreeNode *pCurr)
 {
-    TreeNode *parent;
-    parent = NULL;
-    while (curr) {
-        parent = curr;
-        curr = curr->pRight;
+    TreeNode *pParent;
+    pParent = NULL;
+    while (pCurr) {
+        pParent = pCurr;
+        pCurr = pCurr->pRight;
     }
-    return parent;
+    return pParent;
 }
 
-
-TreeNode* _BSTreeSuccessor(TreeNode *curr)
+TreeNode* _BSTreeSuccessor(TreeNode *pCurr)
 {
-    if (curr) {
+    if (pCurr) {
         /* Case 1: The minimal node of the non-null right subtree. */
-        if (curr->pRight != NULL)
-            curr = _BSTreeMinimal(curr->pRight);
+        if (pCurr->pRight)
+            pCurr = _BSTreeMinimal(pCurr->pRight);
 
         /* Case 2: The ancestor which considers the designated node as the maximal node of
            its left subtree. */
         else {
-            while((curr->pParent != NULL) && (curr == curr->pParent->pRight))
-                curr = curr->pParent;
-            curr = curr->pParent;
+            while((pCurr->pParent) && (pCurr == pCurr->pParent->pRight))
+                pCurr = pCurr->pParent;
+            pCurr = pCurr->pParent;
         }
     }
-
-    return curr;
+    return pCurr;
 }
 
-
-TreeNode* _BSTreePredecessor(TreeNode *curr)
+TreeNode* _BSTreePredecessor(TreeNode *pCurr)
 {
-    if (curr) {
+    if (pCurr) {
         /* Case 1: The maximal node of the non-null left subtree. */
-        if (curr->pLeft != NULL)
-            curr = _BSTreeMaximal(curr->pLeft);
+        if (pCurr->pLeft)
+            pCurr = _BSTreeMaximal(pCurr->pLeft);
 
         /* Case 2: The ancestor which considers the designated node as the minimal node of
            its right subtree. */
         else {
-            while((curr->pParent != NULL) && (curr == curr->pParent->pLeft))
-                curr = curr->pParent;
-            curr = curr->pParent;
+            while((pCurr->pParent) && (pCurr == pCurr->pParent->pLeft))
+                pCurr = pCurr->pParent;
+            pCurr = pCurr->pParent;
         }
     }
+    return pCurr;
+}
 
-    return curr;
+TreeNode* _BSTreeSearch(BinSearchTree *self, void *pItem)
+{
+    int32_t iOrder;
+    TreeNode *pCurr = self->pData->_pRoot;
+    while(pCurr) {
+        iOrder = self->pData->_pCompare(pItem, pCurr->pItem);
+        if (iOrder == 0)
+            break;
+        else {
+            if (iOrder > 0)
+                pCurr = pCurr->pRight;
+            else
+                pCurr = pCurr->pLeft;
+        }
+    }
+    return pCurr;
 }
 
 
