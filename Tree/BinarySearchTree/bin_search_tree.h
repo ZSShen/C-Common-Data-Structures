@@ -33,14 +33,13 @@ typedef struct _BSTreeData BSTreeData;
 typedef struct _BinSearchTree {
     BSTreeData *pData;
     int32_t (*insert) (struct _BinSearchTree*, Item);
-    int32_t (*search) (struct _BinSearchTree*, Item);
+    int32_t (*search) (struct _BinSearchTree*, Item*);
     int32_t (*delete) (struct _BinSearchTree*, Item);
-
-    uint32_t  (*size)       (struct _BinSearchTree*);
-    TreeNode* (*maximum)    (struct _BinSearchTree*);
-    TreeNode* (*minimum)    (struct _BinSearchTree*);
-    TreeNode* (*successor)  (struct _BinSearchTree*, TreeNode*);
-    TreeNode* (*predecessor)(struct _BinSearchTree*, TreeNode*);
+    int32_t (*maximum) (struct _BinSearchTree*, Item*);
+    int32_t (*minimum) (struct _BinSearchTree*, Item*);
+    int32_t (*successor) (struct _BinSearchTree*, Item*);
+    int32_t (*predecessor) (struct _BinSearchTree*, Item*);
+    uint32_t (*size) (struct _BinSearchTree*);
     void (*set_compare)(struct _BinSearchTree*, int32_t (*) (Item, Item));
     void (*set_destroy)(struct _BinSearchTree*, void (*) (Item));
 } BinSearchTree;
@@ -63,15 +62,16 @@ typedef struct _BinSearchTree {
  */
 
 /**
- * int32_t (*search) (BinSearchTree *self, Item item)
+ * int32_t (*search) (BinSearchTree *self, Item *pItem)
  *
  * @param self          The pointer to the BinSearchTree structure.
- * @param item          The requested item.
+ * @param pItem         The pointer to the requested item.
  *
  * @return              SUCCESS
  *                      FAIL_NO_DATA
  *
- * This function checks whethere the tree has the requested item.
+ * This function checks whethere the tree has the requested item. It the input
+ * item can be found, it will be replaced with the one stored in the tree.
  * It will fail under one condition:
  *     1. The requested item cannot be found in the tree.
  */
@@ -90,76 +90,88 @@ typedef struct _BinSearchTree {
  *     1. The requested item cannot be found in the tree.
  */
 
+/**
+ * int32_t (*maximum) (struct _BinSearchTree *self, Item *pItem)
+ *
+ * @param self          The pointer to the BinSearchTree structure.
+ * @param pItem         The pointer to the returned item.
+ *
+ * @return              SUCCESS
+ *                      FAIL_NO_DATA
+ *
+ * This function returns the item with the maximum order of the tree.
+ * It will fail under one condition:
+ *     1. The tree is empty.
+ */
 
 /**
+ * int32_t (*minimum) (struct _BinSearchTree *self, Item *pItem)
+ *
+ * @param self          The pointer to the BinSearchTree structure.
+ * @param pItem         The pointer to the returned item.
+ *
+ * @return              SUCCESS
+ *                      FAIL_NO_DATA
+ *
+ * This function returns the item with the minimum order of the tree.
+ * It will fail under one condition:
+ *     1. The tree is empty.
+ */
+
+/**
+ * int32_t (*successor) (struct _BinSearchTree *self, Item *pItem)
+ *
+ * @param self         The pointer to the BinSearchTree structure.
+ * @param pItem        The pointer to the returned item.
+ *
+ * @return             SUCCESS
+ *                     FAIL_NO_DATA
+ *
+ * This function returns the item which is the successor of the requested one.
+ * It will fail under one condition:
+ *     1. The successor cannot be found.
+ */
+
+/**
+ * int32_t (*predecessor) (struct _BinSearchTree *self, Item *pItem)
+ *
+ * @param self         The pointer to the BinSearchTree structure.
+ * @param pItem        The pointer to the returned item.
+ *
+ * @return             SUCCESS
+ *                     FAIL_NO_DATA
+ *
+ * This function returns the item which is the predecessor of the requested one.
+ * It will fail under one condition:
+ *     1. The predecessor cannot be found.
+ */
+
+/**
+ * uint32_t (*size) (struct _BinSearchTree*)
+ *
+ * @param self          The pointer to the BinSearchTree structure.
+ *
+ * @return              Tree size
+ *
  * This function returns the size of the tree.
- *
- * @param self          The pointer to the BinSearchTree structure.
- *
- * @return              The size;
  */
-uint32_t BSTreeSize(BinSearchTree *self);
-
 
 /**
- * This function returns the node with maximum order of the tree.
+ * void (*set_compare)(struct _BinSearchTree*, int32_t (*) (Item, Item))
  *
  * @param self          The pointer to the BinSearchTree structure.
+ * @param pFunc         The pointer to the user defined function.
  *
- * @return              Non-NULL: The pointer to the node with maximum order.
- *                      NULL    : The tree is empty.
+ * This function sets the user defined item comparison strategy.
  */
-TreeNode* BSTreeMaximum(BinSearchTree *self);
-
 
 /**
- * This function returns the node with minimum order of the tree.
+ * void (*set_destroy)(struct _BinSearchTree*, void (*) (Item))
  *
  * @param self          The pointer to the BinSearchTree structure.
+ * @param pFunc         The pointer to the user defined function.
  *
- * @return              Non-NULL: The pointer to the node with minimum order.
- *                      NULL    : The tree is empty.
+ * This function sets the user defined item deallocation strategy.
  */
-TreeNode* BSTreeMinimum(BinSearchTree *self);
-
-
-/**
- * This function returns the successor of the designated node.
- *
- * @param self          The pointer to the BinSearchTree structure.
- *
- * @return              Non-NULL: The pointer to the successor.
- *                      NULL    : There is no successor for the designated node.
- */
-TreeNode* BSTreeSuccessor(BinSearchTree *self, TreeNode *pCurNode);
-
-
-/**
- * This function returns the predecessor of the designated node.
- *
- * @param self          The pointer to the BinSearchTree structure.
- *
- * @return              Non-Null: The pointer to the predecessor.
- *                      NULL    : There is no predecessor for the designated node.
- */
-TreeNode* BSTreePredecessor(BinSearchTree *self, TreeNode *pCurNode);
-
-
-/**
- * This function sets the item comparison strategy with the one defined by user.
- *
- * @param self          The pointer to the BinSearchTree structure.
- * @param pFunc         The pointer to the customized function.
- */
-void BSTreeSetCompare(BinSearchTree *self, int32_t (*pFunc)(Item, Item));
-
-
-/**
- * This function sets the item deallocation strategy with the one defined by user.
- *
- * @param self          The pointer to the BinSearchTree structure.
- * @param pFunc         The pointer to the customized function.
- */
-void BSTreeSetDestroy(BinSearchTree *self, void (*pFunc)(Item));
 
 #endif

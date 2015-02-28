@@ -48,13 +48,47 @@ int32_t BSTreeInsert(BinSearchTree *self, Item item);
 /**
  * Check whethere the tree has the requested item.
  */
-int32_t BSTreeSearch(BinSearchTree *self, Item item);
+int32_t BSTreeSearch(BinSearchTree *self, Item *pItem);
 
 /**
  * Delete the requested item from the tree and adjust the tree structure.
  */
 int32_t BSTreeDelete(BinSearchTree *self, Item item);
 
+/**
+ * Return the item with the maximum order of the tree.
+ */
+int32_t BSTreeMaximum(BinSearchTree *self, Item *pItem);
+
+/**
+ * Return the item with the minimum order of the tree.
+ */
+int32_t BSTreeMinimum(BinSearchTree *self, Item *pItem);
+
+/**
+ * Return the item which is the successor of the requested one.
+ */
+int32_t BSTreeSuccessor(BinSearchTree *self, Item *pItem);
+
+/**
+ * Return the item which is the predecessor of the requested one.
+ */
+int32_t BSTreePredecessor(BinSearchTree *self, Item *pItem);
+
+/**
+ * Return the size of the tree.
+ */
+uint32_t BSTreeSize(BinSearchTree *self);
+
+/**
+ * Set the user defined item comparison strategy.
+ */
+void BSTreeSetCompare(BinSearchTree *self, int32_t (*pFunc) (Item, Item));
+
+/**
+ * Set the user defined item deallocation strategy.
+ */
+void BSTreeSetDestroy(BinSearchTree *self, void (*pFunc) (Item));
 
 /*===========================================================================*
  *                  Definition for internal functions                        *
@@ -68,16 +102,6 @@ int32_t BSTreeDelete(BinSearchTree *self, Item item);
 void _BSTreeDeinit(TreeNode *pCurr, void (*func) (Item));
 
 /**
- * Return the node with minimal order in the subtree rooted by the requested node.
- *
- * @param pCurr      The pointer to the requested node.
- *
- * @return           Non-NULL: The pointer to the target node.
- *                   NULL    : The subtree is empty.
- */
-TreeNode* _BSTreeMinimal(TreeNode *pCurr);
-
-/**
  * Return the node with maximal order in the subtree rooted by the requested node.
  *
  * @param pCurr      The pointer to the requested node.
@@ -86,6 +110,16 @@ TreeNode* _BSTreeMinimal(TreeNode *pCurr);
  *                   NULL    : The subtree is empty.
  */
 TreeNode* _BSTreeMaximal(TreeNode *pCurr);
+
+/**
+ * Return the node with minimal order in the subtree rooted by the requested node.
+ *
+ * @param pCurr      The pointer to the requested node.
+ *
+ * @return           Non-NULL: The pointer to the target node.
+ *                   NULL    : The subtree is empty.
+ */
+TreeNode* _BSTreeMinimal(TreeNode *pCurr);
 
 /**
  * Return the successor of the requested node.
@@ -111,7 +145,7 @@ TreeNode* _BSTreePredecessor(TreeNode *pCurr);
  * Return the node containing the requested item.
  *
  * @param self       The pointer to the BinSearchTree structure.
- * @param item      The pointer to the requested item.
+ * @param item       The pointer to the requested item.
  *
  * @return           Non-NULL: The pointer to the target node.
  *                   NULL    : No matched node.
@@ -119,22 +153,23 @@ TreeNode* _BSTreePredecessor(TreeNode *pCurr);
 TreeNode* _BSTreeSearch(BinSearchTree *self, Item item);
 
 /**
- * This function is the default comparison strategy for the items of a pair of tree nodes.
+ * This function is the default item comparison strategy for a pair of tree nodes.
+ * Note that it considers source and target items as primitive data and gives the
+ * larger order to the one with larger value.
+ * 
+ * @param itemSrc       The source item.
+ * @param itemTge       The target item.
  *
- * @param pSrc          The pointer to the source item.
- * @param pDst          The pointer to the target item.
- *
- * @return        > 0 : The source item goes after the target one with certain ordering criteria.
- *                  0 : The source item equals to the target one with certain ordering criteria.
- *                < 0 : The source item goes before the target one with certain ordering criteria.
+ * @return        > 0 : The source item goes after the target one.
+ *                  0 : The source item equals to the target one.
+ *                < 0 : The source item goes before the target one.
  */
-int32_t _BSTreeItemCompare(Item pSrc, Item pTge);
-
+int32_t _BSTreeItemCompare(Item itemSrc, Item itemTge);
 
 /**
  * This function is the default deallcation strategy for an item.
  *
- * @param item         The pointer to the item which is to be deallocated.
+ * @param item         The requested item.
  */
 void _BSTreeItemDestroy(Item item);
 
@@ -230,12 +265,14 @@ int32_t BSTreeInsert(BinSearchTree *self, Item item)
     return SUCCESS;
 }
 
-int32_t BSTreeSearch(BinSearchTree *self, Item item)
+int32_t BSTreeSearch(BinSearchTree *self, Item *pItem)
 {
     TreeNode *pFind;
-    pFind = _BSTreeSearch(self, item);
-    if (pFind)
+    pFind = _BSTreeSearch(self, *pItem);
+    if (pFind) {
+        *pItem = pFind->item;
         return SUCCESS;
+    }
     return FAIL_NO_DATA;
 }
 
@@ -307,65 +344,58 @@ int32_t BSTreeDelete(BinSearchTree *self, Item item)
     return FAIL_NO_DATA;
 }
 
-/**
- * BSTreeMinimum(): Return the node with minimum order of the tree.
- */
-TreeNode* BSTreeMinimum(BinSearchTree *self)
+int32_t BSTreeMaximum(BinSearchTree *self, Item *pItem)
 {
-    return _BSTreeMinimal(self->pData->_pRoot);
+    TreeNode *pFind = _BSTreeMaximal(self->pData->_pRoot);
+    if (pFind) {
+        *pItem = pFind->item;
+        return SUCCESS;
+    }
+    return FAIL_NO_DATA;
 }
 
-
-/**
- * BSTreeMaximum(): Return the node with maximum order of the tree.
- */
-TreeNode* BSTreeMaximum(BinSearchTree *self)
+int32_t BSTreeMinimum(BinSearchTree *self, Item *pItem)
 {
-    return _BSTreeMaximal(self->pData->_pRoot);
+    TreeNode *pFind = _BSTreeMinimal(self->pData->_pRoot);
+    if (pFind) {
+        *pItem = pFind->item;
+        return SUCCESS;
+    }
+    return FAIL_NO_DATA;
 }
 
-
-/**
- * BSTreeSuccessor(): Return the successor of the designated node.
- */
-TreeNode* BSTreeSuccessor(BinSearchTree *self, TreeNode *pCurNode)
+int32_t BSTreeSuccessor(BinSearchTree *self, Item *pItem)
 {
-    return _BSTreeSuccessor(pCurNode);
+    TreeNode *pFind = _BSTreeSuccessor(self->pData->_pRoot);
+    if (pFind) {
+        *pItem = pFind->item;
+        return SUCCESS;
+    }
+    return FAIL_NO_DATA;
 }
 
-
-/**
- * BSTreePredecessor(): Return the predecessor of the designated node.
- */
-TreeNode* BSTreePredecessor(BinSearchTree *self, TreeNode *pCurNode)
+int32_t BSTreePredecessor(BinSearchTree *self, Item *pItem)
 {
-    return _BSTreePredecessor(pCurNode);
+    TreeNode *pFind = _BSTreePredecessor(self->pData->_pRoot);
+    if (pFind) {
+        *pItem = pFind->item;
+        return SUCCESS;
+    }
+    return FAIL_NO_DATA;
 }
 
-
-/**
- * BSTreeSize(): Return the size of the tree.
- */
 uint32_t BSTreeSize(BinSearchTree *self)
 {
     return self->pData->_uiSize;
 }
 
-
-/**
- * BSTreeSetCompare(): Set the item comparison strategy with the one defined by user.
- */
-void BSTreeSetCompare(BinSearchTree *self, int32_t (*pFunc)(Item, Item))
+void BSTreeSetCompare(BinSearchTree *self, int32_t (*pFunc) (Item, Item))
 {
     self->pData->_pCompare = pFunc;
     return;
 }
 
-
-/**
- * BSTreeSetDestroy(): Set the item deallocation strategy with the one defined by user.
- */
-void BSTreeSetDestroy(BinSearchTree *self, void (*pFunc)(Item))
+void BSTreeSetDestroy(BinSearchTree *self, void (*pFunc) (Item))
 {
     self->pData->_pDestroy = pFunc;
     return;
@@ -388,8 +418,7 @@ void _BSTreeDeinit(TreeNode *pCurr, void (*func) (Item))
 
 TreeNode* _BSTreeMinimal(TreeNode *pCurr)
 {
-    TreeNode *pParent;
-    pParent = NULL;
+    TreeNode *pParent = NULL;
     while (pCurr) {
         pParent = pCurr;
         pCurr = pCurr->pLeft;
@@ -399,8 +428,7 @@ TreeNode* _BSTreeMinimal(TreeNode *pCurr)
 
 TreeNode* _BSTreeMaximal(TreeNode *pCurr)
 {
-    TreeNode *pParent;
-    pParent = NULL;
+    TreeNode *pParent = NULL;
     while (pCurr) {
         pParent = pCurr;
         pCurr = pCurr->pRight;
@@ -462,41 +490,23 @@ TreeNode* _BSTreeSearch(BinSearchTree *self, Item item)
     return pCurr;
 }
 
-
-/**
- * _BSTreeItemCompare(): The default comparison strategy for the items of a pair of tree nodes.
- * Note: It considers source and target items as primitive data and
- *       gives the larger order to the one with larger value.
- */
-int32_t _BSTreeItemCompare(Item pSrc, Item pTge)
+int32_t _BSTreeItemCompare(Item itemSrc, Item itemTge)
 {
-    int32_t nSrc, nTge;
+    int32_t iSrc, iTge;
 
 #if __x86_64__
-    int64_t nTmp;
-    nTmp = (int64_t)pSrc;
-    nSrc = (int32_t)nTmp;
-    nTmp = (int64_t)pTge;
-    nTge = (int32_t)nTmp;
+    int64_t lTmp;
+    lTmp = (int64_t)itemSrc;
+    iSrc = (int32_t)lTmp;
+    lTmp = (int64_t)itemTge;
+    iTge = (int32_t)lTmp;
 #else
-    nSrc = (int32_t)pSrc;
-    nTge = (int32_t)pTge;
+    iSrc = (int32_t)itemSrc;
+    iTge = (int32_t)itemTge;
 #endif
 
-    return nSrc - nTge;
+    return iSrc - iTge;
 }
 
-
-/**
- * This function is the default deallcation strategy for an item.
- *
- * @param item         The pointer to the item which is to be deallocated.
- */
-void _BSTreeItemDestroy(Item item);
-
-/**
- * _BSTreeItemDestroy(): The default deallocation strategy for a node item.
- * Note: By default, the item is a primitive data, and thus no further operations are required.
- */
 void _BSTreeItemDestroy(Item item)
 { return; }
