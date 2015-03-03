@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <assert.h>
 
 
 #define SUCCESS                     (0)

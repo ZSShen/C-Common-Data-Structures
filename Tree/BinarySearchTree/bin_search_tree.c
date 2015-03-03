@@ -82,10 +82,10 @@ void BSTreeSetDestroy(BinSearchTree *self, void (*pFunc) (Item));
 /**
  * Traverse all the nodes and release the allocated memory space.
  *
- * @param pCurr      The pointer to the node currently traversed.
+ * @param pData     The pointer to the tree private data.
  * @param func      The pointer to the function which describes the node item deallocation strategy.
  */
-void _BSTreeDeinit(TreeNode *pCurr, void (*func) (Item));
+void _BSTreeDeinit(BSTreeData *pData, void (*func) (Item));
 
 /**
  * Return the node with maximal order in the subtree rooted by the requested node.
@@ -142,7 +142,7 @@ TreeNode* _BSTreeSearch(BinSearchTree *self, Item item);
  * This function is the default item comparison strategy for a pair of tree nodes.
  * Note that it considers source and target items as primitive data and gives the
  * larger order to the one with larger value.
- * 
+ *
  * @param itemSrc       The source item.
  * @param itemTge       The target item.
  *
@@ -202,10 +202,11 @@ void BSTreeDeinit(BinSearchTree **ppObj)
     if (*ppObj) {
         pObj = *ppObj;
         if (pObj->pData) {
-            _BSTreeDeinit(pObj->pData->_pRoot, pObj->pData->_pDestroy);
+            _BSTreeDeinit(pObj->pData, pObj->pData->_pDestroy);
             free(pObj->pData);
         }
         free(*ppObj);
+        *ppObj = NULL;
     }
     return;
 }
@@ -399,14 +400,33 @@ void BSTreeSetDestroy(BinSearchTree *self, void (*pFunc) (Item))
 /*===========================================================================*
  *               Implementation for internal functions                       *
  *===========================================================================*/
-void _BSTreeDeinit(TreeNode *pCurr, void (*func) (Item))
+void _BSTreeDeinit(BSTreeData *pData, void (*func) (Item))
 {
-    if (pCurr) {
-        _BSTreeDeinit(pCurr->pLeft, func);
-        _BSTreeDeinit(pCurr->pRight, func);
-        func(pCurr->item);
-        free(pCurr);
+    if (!(pData->_pRoot))
+        return;
+
+    /* Simulate the stack and apply iterative post-order tree traversal. */
+    TreeNode ***stack = (TreeNode***)malloc(sizeof(TreeNode**) * pData->_uiSize);
+    assert(stack != NULL);
+
+    uint32_t uiSize = 0;
+    stack[uiSize++] = &(pData->_pRoot);
+    while (uiSize > 0) {
+        TreeNode **ppCurr = stack[uiSize - 1];
+        TreeNode *pCurr = *ppCurr;
+        if (pCurr->pLeft)
+            stack[uiSize++] = &(pCurr->pLeft);
+        else if (pCurr->pRight)
+            stack[uiSize++] = &(pCurr->pRight);
+        else {
+            func(pCurr->item);
+            free(pCurr);
+            *ppCurr = NULL;
+            uiSize--;
+        }
     }
+    
+    free(stack);
     return;
 }
 

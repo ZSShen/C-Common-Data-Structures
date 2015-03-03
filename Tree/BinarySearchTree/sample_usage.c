@@ -7,7 +7,7 @@
 #include <assert.h>
 
 
-#define COUNT_CASE          (100)
+#define COUNT_CASE          (1000)
 #define SIZE_PRINT_BUF      (256)
 
 #if __x86_64__
@@ -79,12 +79,14 @@ void test_primitive()
     }
 
     /* Iteratively request the element with minimum order and delete it. */
+    /*
     uiHalf = uiSize - uiHalf;
     for (i = 0 ; i < uiHalf ; i++) {
         iStat = pTree->minimum(pTree, (Item*)&nCase);
         wrap_printf("Min Order Element: ", nCase);
         iStat = pTree->delete(pTree, (Item)nCase);
     }
+    */
 
     /* Deinitialize the tree. */
     BSTreeDeinit(&pTree);
