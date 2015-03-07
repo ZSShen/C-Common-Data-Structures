@@ -7,7 +7,6 @@
 #include <stdint.h>
 #include <assert.h>
 
-
 #define SUCCESS                     (0)
 #define FAIL_NO_MEMORY              (-1)
 #define FAIL_NO_DATA                (-2)

@@ -1,5 +1,7 @@
 #include "bin_search_tree.h"
-
+#ifdef DEBUG
+    #include <assert.h>
+#endif
 
 /*===========================================================================*
  *                  Hide the private data of the tree                        *
@@ -159,6 +161,18 @@ int32_t _BSTreeItemCompare(Item itemSrc, Item itemTge);
  */
 void _BSTreeItemDestroy(Item item);
 
+#ifdef DEBUG
+/**
+ * This function is used for tree structure verification and is only built
+ * for debug version.
+ *
+ * @param pData         The pointer to the tree private data.
+ *                      the current node.
+ *
+ * @return          true|false: Whether the tree has legal structure.
+ */
+bool _BSTreeValidate(BSTreeData *pData);
+#endif
 
 /*===========================================================================*
  *           Implementation for the exported member operations               *
@@ -257,6 +271,11 @@ int32_t BSTreeInsert(BinSearchTree *self, Item item)
     /* Increase the size. */
     self->pData->_uiSize++;
 
+#ifdef DEBUG
+    bool bLegal = _BSTreeValidate(self->pData);
+    assert(bLegal == true);
+#endif
+
     return SUCCESS;
 }
 
@@ -333,6 +352,12 @@ int32_t BSTreeDelete(BinSearchTree *self, Item item)
 
         /* Decrease the size. */
         self->pData->_uiSize--;
+
+        #ifdef DEBUG
+            bool bLegal = _BSTreeValidate(self->pData);
+            assert(bLegal == true);
+        #endif
+        
         return SUCCESS;
     }
 
@@ -524,3 +549,35 @@ int32_t _BSTreeItemCompare(Item itemSrc, Item itemTge)
 
 void _BSTreeItemDestroy(Item item)
 { return; }
+
+#ifdef DEBUG
+bool _BSTreeValidate(BSTreeData *pData)
+{
+    bool bLegal = true;
+
+    /* Simulate the stack and apply iterative in order tree traversal. */
+    TreeNode **stack = (TreeNode**)malloc(sizeof(TreeNode*) * pData->_uiSize);
+    TreeNode *pCurr = pData->_pRoot;
+    TreeNode *pPred = NULL;
+    int32_t (*funcComp) (Item, Item) = pData->_pCompare;
+    uint32_t uiSize = 0;
+
+    while (pCurr || (uiSize > 0)) {
+        if (pCurr) {
+            stack[uiSize++] = pCurr;
+            pCurr = pCurr->pLeft;
+        } else {
+            if (pPred) {
+                pCurr = stack[uiSize - 1];
+                int32_t iOrder = funcComp(pPred->item, pCurr->item);
+                if (iOrder >= 0)
+                    bLegal = false;
+            }
+            pPred = stack[--uiSize];
+            pCurr = pPred->pRight;
+        }
+    }
+
+    return bLegal;
+}
+#endif

@@ -17,7 +17,7 @@ SO_FLAG     := -shared
 ARCH        := ar
 ARCH_OPT    := rcs
 ifeq ($(DEBUG), true)
-	FLAG := $(FLAG) -g
+	FLAG := $(FLAG) -g -DDEBUG
 endif
 ifeq ($(COVERAGE), true)
 	FLAG  := $(FLAG) -O0 --coverage
@@ -61,4 +61,3 @@ coverage: test
 .PHONY: clean
 clean:
 	rm -f *.o *.a *.so *.gcda *.gcno $(TEST_PROG)
-
