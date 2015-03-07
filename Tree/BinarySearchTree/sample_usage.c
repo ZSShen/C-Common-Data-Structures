@@ -7,7 +7,7 @@
 #include <assert.h>
 
 
-#define COUNT_CASE          (1000)
+#define COUNT_CASE          (1024)
 #define SIZE_PRINT_BUF      (256)
 
 #if __x86_64__
@@ -16,8 +16,6 @@
     typedef uint32_t IntData;
 #endif
 
-
-void wrap_printf(char*, IntData);
 
 /* The item comparator for integer type. */
 int32_t func_compare_primitive(Item, Item);
@@ -44,17 +42,10 @@ int main()
 
 void test_primitive()
 {
-    /* Initialize the tree. */
-    BinSearchTree *pTree;
-    int32_t iStat = BSTreeInit(&pTree);
-    if (iStat != SUCCESS)
+    /* Prepare the testing data. */
+    Item *aData = (Item*)malloc(sizeof(Item) * COUNT_CASE);
+    if (!aData)
         return;
-
-    /* Set the comparison and deallocation functions. */
-    pTree->set_compare(pTree, func_compare_primitive);
-    pTree->set_destroy(pTree, func_destroy_primitive);
-
-    /* Insert integers into the tree. */
     uint32_t i;
     #if __x86_64__
         int64_t nCase;
@@ -63,33 +54,45 @@ void test_primitive()
     #endif
     for (i = 0 ; i < COUNT_CASE ; i++) {
         nCase = rand() % COUNT_CASE;
-        iStat = pTree->insert(pTree, (Item)nCase);
-        wrap_printf("Insert Element: ", nCase);
-        if (iStat != SUCCESS)
-            wrap_printf("[Insertion Conflict] ", nCase);
+        aData[i] = (Item)nCase;
+    }
+    
+    /* Initialize the tree. */
+    BinSearchTree *pTree;
+    int32_t iStat = BSTreeInit(&pTree);
+    if (iStat != SUCCESS)
+        goto EXIT;
+
+    /* Set the comparison and deallocation functions. */
+    pTree->set_compare(pTree, func_compare_primitive);
+    pTree->set_destroy(pTree, func_destroy_primitive);
+
+    /* Insert integers into the tree. */
+    for (i = 0 ; i < COUNT_CASE ; i++) {
+        iStat = pTree->insert(pTree, (Item)aData[i]);
+        if (iStat == FAIL_DATA_CONFLICT);
+            /* Handle data conflict if necessary. */
+        else if (iStat == FAIL_NO_MEMORY)
+            goto EXIT;
     }
 
-    /* Iteratively request the element with maximum order and delete it. */
+    /* Search integers stored in the tree. */
+    for (i = 0 ; i < COUNT_CASE ; i++) {
+        iStat = pTree->search(pTree, (Item*)&aData[i]);
+        assert(iStat == SUCCESS);
+    }
+
+    /* Delete parts of the integers stored in the tree. */
     uint32_t uiSize = pTree->size(pTree);
-    uint32_t uiHalf = uiSize / 2;
-    for (i = 0 ; i < uiHalf ; i++) {
-        iStat = pTree->maximum(pTree, (Item*)&nCase);
-        wrap_printf("Max Order Element: ", nCase);
-        iStat = pTree->delete(pTree, (Item)nCase);
-    }
+    for (i = 0 ; i < uiSize / 2 ; i++)
+        pTree->delete(pTree, (Item)aData[i]);
 
-    /* Iteratively request the element with minimum order and delete it. */
-    /*
-    uiHalf = uiSize - uiHalf;
-    for (i = 0 ; i < uiHalf ; i++) {
-        iStat = pTree->minimum(pTree, (Item*)&nCase);
-        wrap_printf("Min Order Element: ", nCase);
-        iStat = pTree->delete(pTree, (Item)nCase);
-    }
-    */
-
+EXIT:
     /* Deinitialize the tree. */
     BSTreeDeinit(&pTree);
+
+    if (aData)
+        free(aData);
 
     return;
 }
@@ -114,17 +117,3 @@ int32_t func_compare_primitive(Item itemSrc, Item itemTge)
 
 void func_destroy_primitive(Item item)
 { return; }
-
-void wrap_printf(char *szMsg, IntData num)
-{
-    char szBuf[SIZE_PRINT_BUF];
-
-#if __x86_64__
-    snprintf(szBuf, SIZE_PRINT_BUF, "%s %ld\n", szMsg, num);
-#else
-    snprintf(szBuf, SIZE_PRINT_BUF, "%s %d\n", szMsg, num);
-#endif
-    printf("%s", szBuf);
-
-    return;
-}
