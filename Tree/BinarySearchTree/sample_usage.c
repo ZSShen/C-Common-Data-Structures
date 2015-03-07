@@ -7,8 +7,8 @@
 #include <assert.h>
 
 
-#define COUNT_CASE          (1024)
-#define SIZE_PRINT_BUF      (256)
+#define COUNT_CASE          (2 << 12)
+#define SIZE_PRINT_BUF      (2 << 8)
 
 #if __x86_64__
     typedef uint64_t IntData;
@@ -56,7 +56,7 @@ void test_primitive()
         nCase = rand() % COUNT_CASE;
         aData[i] = (Item)nCase;
     }
-    
+
     /* Initialize the tree. */
     BinSearchTree *pTree;
     int32_t iStat = BSTreeInit(&pTree);

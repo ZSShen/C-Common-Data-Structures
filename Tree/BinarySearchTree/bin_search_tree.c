@@ -292,73 +292,72 @@ int32_t BSTreeDelete(BinSearchTree *self, Item item)
     TreeNode *pCurr, *pChild, *pSucc, *pParent;
 
     pCurr = _BSTreeSearch(self->pData, item);
-    if (pCurr) {
-        /* The specified node has no child. */
-        if ((!pCurr->pLeft) && (!pCurr->pRight)) {
+    if (!pCurr)
+        return FAIL_NO_DATA;
+
+    /* The specified node has no child. */
+    if ((!pCurr->pLeft) && (!pCurr->pRight)) {
+        if (pCurr->pParent) {
+            if (pCurr == pCurr->pParent->pLeft)
+                pCurr->pParent->pLeft = NULL;
+            else
+                pCurr->pParent->pRight = NULL;
+        } else
+            self->pData->_pRoot = NULL;
+
+        self->pData->_pDestroy(pCurr->item);
+        free(pCurr);
+    } else {
+        /* The specified node has two children. */
+        if ((pCurr->pLeft) && (pCurr->pRight)) {
+            pSucc = _BSTreeSuccessor(pCurr);
+
+            pChild = pSucc->pLeft;
+            if (!pChild)
+                pChild = pSucc->pRight;
+
+            if (pChild)
+                pChild->pParent = pSucc->pParent;
+
+            if (pSucc == pSucc->pParent->pLeft)
+                pSucc->pParent->pLeft = pChild;
+            else
+                pSucc->pParent->pRight = pChild;
+
+            self->pData->_pDestroy(pCurr->item);
+            pCurr->item = pSucc->item;
+            free(pSucc);
+        }
+        /* The specified node has one child. */
+        else {
+            pChild = pCurr->pLeft;
+            if (!pChild)
+                pChild = pCurr->pRight;
+
+            pChild->pParent = pCurr->pParent;
+
             if (pCurr->pParent) {
                 if (pCurr == pCurr->pParent->pLeft)
-                    pCurr->pParent->pLeft = NULL;
+                    pCurr->pParent->pLeft = pChild;
                 else
-                    pCurr->pParent->pRight = NULL;
+                    pCurr->pParent->pRight = pChild;
             } else
-                self->pData->_pRoot = NULL;
+                self->pData->_pRoot = pChild;
 
             self->pData->_pDestroy(pCurr->item);
             free(pCurr);
-        } else {
-            /* The specified node has two children. */
-            if ((pCurr->pLeft) && (pCurr->pRight)) {
-                pSucc = _BSTreeSuccessor(pCurr);
-
-                pChild = pSucc->pLeft;
-                if (!pChild)
-                    pChild = pSucc->pRight;
-
-                if (pChild)
-                    pChild->pParent = pSucc->pParent;
-
-                if (pSucc == pSucc->pParent->pLeft)
-                    pSucc->pParent->pLeft = pChild;
-                else
-                    pSucc->pParent->pRight = pChild;
-
-                self->pData->_pDestroy(pCurr->item);
-                pCurr->item = pSucc->item;
-                free(pSucc);
-            }
-            /* The specified node has one child. */
-            else {
-                pChild = pCurr->pLeft;
-                if (!pChild)
-                    pChild = pCurr->pRight;
-
-                pChild->pParent = pCurr->pParent;
-
-                if (pCurr->pParent) {
-                    if (pCurr == pCurr->pParent->pLeft)
-                        pCurr->pParent->pLeft = pChild;
-                    else
-                        pCurr->pParent->pRight = pChild;
-                } else
-                    self->pData->_pRoot = pChild;
-
-                self->pData->_pDestroy(pCurr->item);
-                free(pCurr);
-            }
         }
-
-        /* Decrease the size. */
-        self->pData->_uiSize--;
-
-        #ifdef DEBUG
-            bool bLegal = _BSTreeValidate(self->pData);
-            assert(bLegal == true);
-        #endif
-        
-        return SUCCESS;
     }
 
-    return FAIL_NO_DATA;
+    /* Decrease the size. */
+    self->pData->_uiSize--;
+
+#ifdef DEBUG
+    bool bLegal = _BSTreeValidate(self->pData);
+    assert(bLegal == true);
+#endif
+
+    return SUCCESS;
 }
 
 int32_t BSTreeMaximum(BinSearchTree *self, Item *pItem)

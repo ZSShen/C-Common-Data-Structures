@@ -34,7 +34,7 @@ typedef struct _BinSearchTree {
 /**
  * The constructor for BinSearchTree.
  *
- * @param ppObj         The double pointer to the to be constructed tree. 
+ * @param ppObj         The double pointer to the to be constructed tree.
  *
  * @return              SUCCESS
  *                      FAIL_NO_MEMORY
