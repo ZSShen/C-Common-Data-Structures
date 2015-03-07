@@ -85,9 +85,8 @@ void BSTreeSetDestroy(BinSearchTree *self, void (*pFunc) (Item));
  * Traverse all the nodes and release the allocated memory space.
  *
  * @param pData     The pointer to the tree private data.
- * @param func      The pointer to the function which describes the node item deallocation strategy.
  */
-void _BSTreeDeinit(BSTreeData *pData, void (*func) (Item));
+void _BSTreeDeinit(BSTreeData *pData);
 
 /**
  * Return the node with maximal order in the subtree rooted by the requested node.
@@ -132,13 +131,13 @@ TreeNode* _BSTreePredecessor(TreeNode *pCurr);
 /**
  * Return the node containing the requested item.
  *
- * @param self       The pointer to the BinSearchTree structure.
+ * @param pData      The pointer to tree private data.
  * @param item       The pointer to the requested item.
  *
  * @return           Non-NULL: The pointer to the target node.
  *                   NULL    : No matched node.
  */
-TreeNode* _BSTreeSearch(BinSearchTree *self, Item item);
+TreeNode* _BSTreeSearch(BSTreeData *pData, Item item);
 
 /**
  * This function is the default item comparison strategy for a pair of tree nodes.
@@ -216,7 +215,7 @@ void BSTreeDeinit(BinSearchTree **ppObj)
     if (*ppObj) {
         pObj = *ppObj;
         if (pObj->pData) {
-            _BSTreeDeinit(pObj->pData, pObj->pData->_pDestroy);
+            _BSTreeDeinit(pObj->pData);
             free(pObj->pData);
         }
         free(*ppObj);
@@ -282,7 +281,7 @@ int32_t BSTreeInsert(BinSearchTree *self, Item item)
 int32_t BSTreeSearch(BinSearchTree *self, Item *pItem)
 {
     TreeNode *pFind;
-    pFind = _BSTreeSearch(self, *pItem);
+    pFind = _BSTreeSearch(self->pData, *pItem);
     if (pFind) {
         *pItem = pFind->item;
         return SUCCESS;
@@ -294,7 +293,7 @@ int32_t BSTreeDelete(BinSearchTree *self, Item item)
 {
     TreeNode *pCurr, *pChild, *pSucc, *pParent;
 
-    pCurr = _BSTreeSearch(self, item);
+    pCurr = _BSTreeSearch(self->pData, item);
     if (pCurr) {
         /* The specified node has no child. */
         if ((!pCurr->pLeft) && (!pCurr->pRight)) {
@@ -425,7 +424,7 @@ void BSTreeSetDestroy(BinSearchTree *self, void (*pFunc) (Item))
 /*===========================================================================*
  *               Implementation for internal functions                       *
  *===========================================================================*/
-void _BSTreeDeinit(BSTreeData *pData, void (*func) (Item))
+void _BSTreeDeinit(BSTreeData *pData)
 {
     if (!(pData->_pRoot))
         return;
@@ -444,7 +443,7 @@ void _BSTreeDeinit(BSTreeData *pData, void (*func) (Item))
         else if (pCurr->pRight)
             stack[uiSize++] = &(pCurr->pRight);
         else {
-            func(pCurr->item);
+            pData->_pDestroy(pCurr->item);
             free(pCurr);
             *ppCurr = NULL;
             uiSize--;
@@ -511,12 +510,12 @@ TreeNode* _BSTreePredecessor(TreeNode *pCurr)
     return pCurr;
 }
 
-TreeNode* _BSTreeSearch(BinSearchTree *self, Item item)
+TreeNode* _BSTreeSearch(BSTreeData *pData, Item item)
 {
     int32_t iOrder;
-    TreeNode *pCurr = self->pData->_pRoot;
+    TreeNode *pCurr = pData->_pRoot;
     while(pCurr) {
-        iOrder = self->pData->_pCompare(item, pCurr->item);
+        iOrder = pData->_pCompare(item, pCurr->item);
         if (iOrder == 0)
             break;
         else {
@@ -559,7 +558,6 @@ bool _BSTreeValidate(BSTreeData *pData)
     TreeNode **stack = (TreeNode**)malloc(sizeof(TreeNode*) * pData->_uiSize);
     TreeNode *pCurr = pData->_pRoot;
     TreeNode *pPred = NULL;
-    int32_t (*funcComp) (Item, Item) = pData->_pCompare;
     uint32_t uiSize = 0;
 
     while (pCurr || (uiSize > 0)) {
@@ -569,7 +567,7 @@ bool _BSTreeValidate(BSTreeData *pData)
         } else {
             if (pPred) {
                 pCurr = stack[uiSize - 1];
-                int32_t iOrder = funcComp(pPred->item, pCurr->item);
+                int32_t iOrder = pData->_pCompare(pPred->item, pCurr->item);
                 if (iOrder >= 0)
                     bLegal = false;
             }
