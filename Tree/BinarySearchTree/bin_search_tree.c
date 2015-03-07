@@ -1,7 +1,5 @@
 #include "bin_search_tree.h"
-#ifdef DEBUG
-    #include <assert.h>
-#endif
+
 
 /*===========================================================================*
  *                  Hide the private data of the tree                        *
@@ -449,8 +447,8 @@ void _BSTreeDeinit(BSTreeData *pData)
             uiSize--;
         }
     }
-    
     free(stack);
+
     return;
 }
 
@@ -575,6 +573,7 @@ bool _BSTreeValidate(BSTreeData *pData)
             pCurr = pPred->pRight;
         }
     }
+    free(stack);
 
     return bLegal;
 }
