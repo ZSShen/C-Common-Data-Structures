@@ -17,7 +17,9 @@ set(HDR_DS "bin_search_tree.h")
 set(SRC_DS "bin_search_tree.c")
 set(SRC_DEMO "sample_usage.c")
 set(OUT_DS "bstree")
+set(OUT_DEMO "sample_usage")
 set(TGE_DS "BIN_SEARCH_TREE")
+set(TGE_DEMO "BIN_SEARCH_DEMO")
 
 
 # Determine the build type and prepare the C macro if necessary.
@@ -31,14 +33,21 @@ else()
     return()
 endif()
 
-message(${PATH_OUT})
 
 # List the source building rules.
 include_directories(${PATH_INC})
+
 add_library(${TGE_DS} ${LIB_TYPE} ${SRC_DS})
 set_target_properties(${TGE_DS} PROPERTIES
     PUBLIC_HEADER ${HDR_DS}
     LIBRARY_OUTPUT_DIRECTORY ${PATH_OUT}
     OUTPUT_NAME ${OUT_DS}
+)
+
+add_executable(${TGE_DEMO} ${SRC_DEMO})
+target_link_libraries(${TGE_DEMO} ${TGE_DS})
+set_target_properties(${TGE_DEMO} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${PATH_BIN}
+    OUTPUT_NAME ${OUT_DEMO}
 )
 
