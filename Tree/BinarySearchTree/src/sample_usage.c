@@ -8,13 +8,8 @@
 
 
 #define COUNT_CASE          (2 << 12)
+#define SIZE_VALUE_SPACE    (2 << 20)
 #define SIZE_PRINT_BUF      (2 << 8)
-
-#if __x86_64__
-    typedef uint64_t IntData;
-#else
-    typedef uint32_t IntData;
-#endif
 
 
 /* The item comparator for integer type. */
@@ -46,14 +41,25 @@ void test_primitive()
     Item *aData = (Item*)malloc(sizeof(Item) * COUNT_CASE);
     if (!aData)
         return;
-    uint32_t i;
+    uint32_t i, j;
     #if __x86_64__
         int64_t nCase;
     #else
         int32_t nCase;
     #endif
     for (i = 0 ; i < COUNT_CASE ; i++) {
-        nCase = rand() % COUNT_CASE;
+        do {
+            nCase = rand() % SIZE_VALUE_SPACE;
+            bool bDup = false;
+            for (j = 0 ; j < i ; j++) {
+                if (aData[j] == (Item)nCase) {
+                    bDup = true;
+                    break;
+                }
+            }
+            if (bDup == false)
+                break;
+        } while (true);
         aData[i] = (Item)nCase;
     }
 
@@ -84,8 +90,18 @@ void test_primitive()
 
     /* Delete parts of the integers stored in the tree. */
     uint32_t uiSize = pTree->size(pTree);
-    for (i = 0 ; i < uiSize / 2 ; i++)
+    for (i = 0 ; i < uiSize / 2 ; i++) {
         pTree->delete(pTree, (Item)aData[i]);
+        aData[i] = (Item)-1; // Mark it as deleted element.
+    }
+
+    /* Search integers stored in the tree again. */
+    for (i = 0 ; i < COUNT_CASE ; i++) {
+        if (aData[i] != (Item)-1) {
+            iStat = pTree->search(pTree, (Item*)&aData[i]);
+            assert(iStat == SUCCESS);
+        }
+    }
 
 EXIT:
     /* Deinitialize the tree. */
