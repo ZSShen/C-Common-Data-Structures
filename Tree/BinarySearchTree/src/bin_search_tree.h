@@ -94,7 +94,7 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * int32_t (*maximum) (struct _BinSearchTree *self, Item *pItem)
+ * int32_t (*maximum) (BinSearchTree *self, Item *pItem)
  *
  * @param self          The pointer to the BinSearchTree structure.
  * @param pItem         The pointer to the returned item.
@@ -108,7 +108,7 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * int32_t (*minimum) (struct _BinSearchTree *self, Item *pItem)
+ * int32_t (*minimum) (BinSearchTree *self, Item *pItem)
  *
  * @param self          The pointer to the BinSearchTree structure.
  * @param pItem         The pointer to the returned item.
@@ -122,7 +122,7 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * int32_t (*successor) (struct _BinSearchTree *self, Item *pItem)
+ * int32_t (*successor) (BinSearchTree *self, Item *pItem)
  *
  * @param self         The pointer to the BinSearchTree structure.
  * @param pItem        The pointer to the returned item.
@@ -136,7 +136,7 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * int32_t (*predecessor) (struct _BinSearchTree *self, Item *pItem)
+ * int32_t (*predecessor) (BinSearchTree *self, Item *pItem)
  *
  * @param self         The pointer to the BinSearchTree structure.
  * @param pItem        The pointer to the returned item.
@@ -150,7 +150,7 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * uint32_t (*size) (struct _BinSearchTree*)
+ * uint32_t (*size) (BinSearchTree *self)
  *
  * @param self          The pointer to the BinSearchTree structure.
  *
@@ -160,7 +160,7 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * void (*set_compare)(struct _BinSearchTree*, int32_t (*) (Item, Item))
+ * void (*set_compare) (BinSearchTree *self, int32_t (*pFunc) (Item, Item))
  *
  * @param self          The pointer to the BinSearchTree structure.
  * @param pFunc         The pointer to the user defined function.
@@ -169,7 +169,7 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * void (*set_destroy)(struct _BinSearchTree*, void (*) (Item))
+ * void (*set_destroy) (BinSearchTree *self, void (*pFunc) (Item))
  *
  * @param self          The pointer to the BinSearchTree structure.
  * @param pFunc         The pointer to the user defined function.
