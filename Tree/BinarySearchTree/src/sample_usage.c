@@ -21,17 +21,17 @@ typedef struct RECORD_ {
 } RECORD;
 
 
-/* The item comparator for integer type. */
-int32_t func_compare_primitive(Item, Item);
-
-/* The item deallocator for integer type. */
-void func_destroy_primitive(Item);
-
 /* The testing suit which inserts integer into the tree. */
 void test_primitive();
 
 /* The testing suit which inserts pointers to structures into the tree. */
 void test_non_primitive();
+
+/* The item comparator for integer type. */
+int32_t func_compare_primitive(Item, Item);
+
+/* The item deallocator for integer type. */
+void func_destroy_primitive(Item);
 
 /* The item comparator for type of pointer to structure. */
 int32_t func_compare_non_primitive(Item, Item);
@@ -45,7 +45,9 @@ int main()
     /* Initialize the random seed. */
     srand(time(NULL));
 
-    //test_primitive();
+    printf("====== Test Suit for Primitive Types ======\n");
+    test_primitive();
+    printf("====== Test Suit for Non-Primitive Types ======\n");
     test_non_primitive();
 
     return 0;
@@ -129,28 +131,6 @@ EXIT:
     return;
 }
 
-int32_t func_compare_primitive(Item itemSrc, Item itemTge)
-{
-    int32_t iSrc, iTge;
-
-#if __x86_64__
-    int64_t lTmp;
-    lTmp = (int64_t)itemSrc;
-    iSrc = (int32_t)lTmp;
-    lTmp = (int64_t)itemTge;
-    iTge = (int32_t)lTmp;
-#else
-    iSrc = (int32_t)itemSrc;
-    iTge = (int32_t)itemTge;
-#endif
-
-    return iSrc - iTge;
-}
-
-void func_destroy_primitive(Item item)
-{ return; }
-
-
 void test_non_primitive()
 {
     /* Prepare the testing data. */
@@ -229,24 +209,43 @@ void test_non_primitive()
         }
     }
 
-
 DEINIT:
     /* Deinitialize the tree. */
     BSTreeDeinit(&pTree);
-    
+
 EXIT:
     if (aRecord) {
         for (i = 0 ; i < COUNT_CASE ; i++) {
             if (aRecord[i].pKey)
                 free(aRecord[i].pKey);
             if (aRecord[i].pValue)
-                free(aRecord[i].pValue);        
+                free(aRecord[i].pValue);
         }
         free(aRecord);
     }
 
     return;
 }
+
+int32_t func_compare_primitive(Item itemSrc, Item itemTge)
+{
+    int32_t iSrc, iTge;
+
+#if __x86_64__
+    int64_t lTmp;
+    lTmp = (int64_t)itemSrc;
+    iSrc = (int32_t)lTmp;
+    lTmp = (int64_t)itemTge;
+    iTge = (int32_t)lTmp;
+#else
+    iSrc = (int32_t)itemSrc;
+    iTge = (int32_t)itemTge;
+#endif
+
+    return iSrc - iTge;
+}
+
+void func_destroy_primitive(Item item) { return; }
 
 int32_t func_compare_non_primitive(Item itemSrc, Item itemTge)
 {
