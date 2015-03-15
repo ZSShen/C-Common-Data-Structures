@@ -13,13 +13,13 @@ set(PATH_BIN "${CMAKE_CURRENT_SOURCE_DIR}/../bin")
 
 set(LIB_TYPE "SHARED")
 
-set(HDR_DS "bin_search_tree.h")
-set(SRC_DS "bin_search_tree.c")
+set(HDR_DS "vector.h")
+set(SRC_DS "vector.c")
 set(SRC_DEMO "sample_usage.c")
-set(OUT_DS "bstree")
+set(OUT_DS "vector")
 set(OUT_DEMO "sample_usage")
-set(TGE_DS "BIN_SEARCH_TREE")
-set(TGE_DEMO "BIN_SEARCH_TREE_DEMO")
+set(TGE_DS "VECTOR")
+set(TGE_DEMO "VECTOR_DEMO")
 
 
 # Determine the build type and prepare the C macro if necessary.
