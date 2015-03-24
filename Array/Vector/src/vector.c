@@ -56,10 +56,31 @@ int32_t VectorInit(Vector **ppObj)
     pData->uiSize_ = 0;
     pData->uiCapacity_ = DEFAULT_CAPACITY;
     pData->pDestroy_ = _VectorItemDestroy;
+    return SUCCESS;
 }
 
 void VectorDeinit(Vector **ppObj)
 {
+    if (!(*ppObj))
+        goto EXIT;
+    VectorData *pData = (*ppObj)->pData;
+    if (!pData)
+        goto FREE_VECTOR;
+    Item *aItem = pData->aItem_;
+    if (!aItem)
+        goto FREE_INTERNAL;
+
+    uint32_t uiIdx;
+    for (uiIdx = 0 ; uiIdx < pData->uiSize_ ; uiIdx)
+        pData->pDestroy_(aItem[uiIdx]);
+
+    free(pData->aItem_);
+FREE_INTERNAL:
+    free((*ppObj)->pData);
+FREE_VECTOR:
+    free(*ppObj);
+    *ppObj = NULL;
+EXIT:
     return;
 }
 

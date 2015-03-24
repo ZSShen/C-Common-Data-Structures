@@ -83,8 +83,7 @@ void VectorDeinit(Vector **ppObj);
  *                      FAIL_OUT_OF_RANGE
  *
  * This function inserts the requested item into the designated index of the
- * vector and shifts the trailing elements. Notice that if the cell is not
- * empty, the stored item will be removed first.
+ * vector and shifts the trailing elements.
  * It will fail under one condition:
  *     1. The designated index exceeds the range of the vector.
  */
