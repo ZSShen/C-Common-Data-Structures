@@ -112,9 +112,8 @@ void VectorDeinit(Vector **ppObj);
  * @return              SUCCESS
  *                      FAIL_NO_MEMORY
  *
- * This function reshaps the vector with the designated size. Note that if
- * the new size is smaller than the old one, the trailing elements will be
- * removed.
+ * This function resizes the vector. Note that if the new size is smaller
+ * than the old one, the trailing elements will be removed.
  * It will fail under one condition:
  *     1. Insufficient memory space for vector expansion.
  */
