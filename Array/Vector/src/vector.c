@@ -17,7 +17,20 @@ struct _VectorData {
 /*===========================================================================*
  *             Definition for the exported member operations                 *
  *===========================================================================*/
- int32_t VectorResize(Vector *self, uint32_t uiSize);
+/**
+ * Insert the requested item to the tail of the vector.
+ */
+int32_t VectorPushBack(Vector *self, Item item);
+
+/**
+ * Delete the item from the tail of the vector.
+ */
+int32_t VectorPopBack(Vector *self);
+
+/**
+ * Resize the vector and handle some resource collection if necessary.
+ */
+int32_t VectorResize(Vector *self, uint32_t uiSize);
 
 
 /*===========================================================================*
@@ -99,6 +112,35 @@ FREE_VECTOR:
     *ppObj = NULL;
 EXIT:
     return;
+}
+
+int32_t VectorPushBack(Vector *self, Item item)
+{
+    VectorData *pData = self->pData;
+
+    /* If the internal array is full, expand it to double capacity. */
+    if (pData->uiSize_ == pData->uiCapacity_) {
+        int iRtnCode = _VectorReisze(pData, pData->uiCapacity_ * 2);
+        if (iRtnCode != SUCCESS)
+            return iRtnCode;
+    }
+
+    pData->aItem_[pData->uiSize_] = item;
+    pData->uiSize_++;
+    return SUCCESS;
+}
+
+int32_t VectorPopBack(Vector *self)
+{
+    VectorData *pData = self->pData;
+
+    if (pData->uiSize_ == 0)
+        return FAIL_OUT_OF_RANGE;
+
+    pData->uiSize_--;
+    Item item = pData->aItem_[pData->uiSize_];
+    pData->pDestroy_(item);
+    return SUCCESS;
 }
 
 int32_t VectorResize(Vector *self, uint32_t uiSize)
