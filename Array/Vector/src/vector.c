@@ -34,10 +34,35 @@ int32_t VectorPopBack(Vector *self);
 int32_t VectorInsert(Vector *self, Item item, uint32_t uiIdx);
 
 /**
+ * Delete the item from the designated index and shift down the
+ * elements.
+ */
+int32_t VectorDelete(Vector *self, uint32_t uiIdx);
+
+/**
  * Resize the vector and handle some resource collection if necessary.
  */
-int32_t VectorResize(Vector *self, uint32_t uiSize);
+inline int32_t VectorResize(Vector *self, uint32_t uiSize);
 
+/**
+ * Return the number of elements stored in the vector.
+ */
+inline uint32_t VectorSize(Vector *self);
+
+/**
+ * Return the size of the preallocated memory space.
+ */
+inline uint32_t VectorCapacity(Vector *self);
+
+/**
+ * Return the item stored in the designated index.
+ */
+inline Item VectorAt(Vector *self, uint32_t uiIdx);
+
+/**
+ * Set the user defined item deallocation strategy.
+ */
+inline void VectorSetDestroy(Vector *self, void (*pFunc) (Item));
 
 /*===========================================================================*
  *                  Definition for internal functions                        *
@@ -88,10 +113,20 @@ int32_t VectorInit(Vector **ppObj)
         *ppObj = NULL;
         return FAIL_NO_MEMORY;
     }
-
     pData->uiSize_ = 0;
     pData->uiCapacity_ = DEFAULT_CAPACITY;
     pData->pDestroy_ = _VectorItemDestroy;
+
+    pObj->push_back = VectorPushBack;
+    pObj->pop_back = VectorPopBack;
+    pObj->insert = VectorInsert;
+    pObj->delete = VectorDelete;
+    pObj->resize = VectorResize;
+    pObj->size = VectorSize;
+    pObj->capacity = VectorCapacity;
+    pObj->at = VectorAt;
+    pObj->set_destroy = VectorSetDestroy;
+
     return SUCCESS;
 }
 
@@ -194,10 +229,34 @@ int32_t VectorDelete(Vector *self, uint32_t uiIdx)
     return SUCCESS;
 }
 
-int32_t VectorResize(Vector *self, uint32_t uiSize)
+inline int32_t VectorResize(Vector *self, uint32_t uiSize)
 {
     return _VectorReisze(self->pData, uiSize);
 }
+
+inline uint32_t VectorSize(Vector *self)
+{
+    return self->pData->uiSize_;
+}
+
+inline uint32_t VectorCapacity(Vector *self)
+{
+    return self->pData->uiCapacity_;
+}
+
+inline Item VectorAt(Vector *self, uint32_t uiIdx)
+{
+    VectorData *pData = self->pData;
+    if (uiIdx >= pData->uiSize_)
+        return NULL;
+    return pData->aItem_[uiIdx];
+}
+
+inline void VectorSetDestroy(Vector *self, void (*pFunc) (Item))
+{
+    self->pData->pDestroy_ = pFunc;
+}
+
 
 /*===========================================================================*
  *               Implementation for internal functions                       *
