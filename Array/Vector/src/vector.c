@@ -28,6 +28,12 @@ int32_t VectorPushBack(Vector *self, Item item);
 int32_t VectorPopBack(Vector *self);
 
 /**
+ * Insert the requested item into the designated index and shift
+ * the trailing elements.
+ */
+int32_t VectorInsert(Vector *self, Item item, uint32_t uiIdx);
+
+/**
  * Resize the vector and handle some resource collection if necessary.
  */
 int32_t VectorResize(Vector *self, uint32_t uiSize);
@@ -140,6 +146,51 @@ int32_t VectorPopBack(Vector *self)
     pData->uiSize_--;
     Item item = pData->aItem_[pData->uiSize_];
     pData->pDestroy_(item);
+    return SUCCESS;
+}
+
+int32_t VectorInsert(Vector *self, Item item, uint32_t uiIdx)
+{
+    VectorData *pData = self->pData;
+
+    /* Check for illegal index. */
+    if (uiIdx >= pData->uiSize_)
+        return FAIL_OUT_OF_RANGE;
+
+    /* If the internal array is full, expand it to double capacity. */
+    if (pData->uiSize_ == pData->uiCapacity_) {
+        int iRtnCode = _VectorReisze(pData, pData->uiCapacity_ * 2);
+        if (iRtnCode != SUCCESS)
+            return iRtnCode;
+    }
+
+    /* Shift the trailing elements. */
+    Item *aItem = pData->aItem_;
+    uint32_t uiShftSize = pData->uiSize_ - uiIdx;
+    memmove(aItem + uiIdx + 1, aItem + uiIdx, sizeof(Item) * uiShftSize);
+    aItem[uiIdx] = item;
+    pData->uiSize_++;
+
+    return SUCCESS;
+}
+
+int32_t VectorDelete(Vector *self, uint32_t uiIdx)
+{
+    VectorData *pData = self->pData;
+
+    /* Check for illegal index. */
+    if (uiIdx >= pData->uiSize_)
+        return FAIL_OUT_OF_RANGE;
+
+    Item *aItem = pData->aItem_;
+    pData->pDestroy_(aItem[uiIdx]);
+
+    /* Shift the trailing elements if necessary. */
+    uint32_t uiShftSize = pData->uiSize_ - uiIdx - 1;
+    if (uiShftSize > 0)
+        memmove(aItem + uiIdx, aItem + uiIdx + 1, sizeof(Item) *uiShftSize);
+    pData->uiSize_--;
+
     return SUCCESS;
 }
 
