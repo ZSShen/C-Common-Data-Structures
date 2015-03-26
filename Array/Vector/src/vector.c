@@ -142,7 +142,7 @@ void VectorDeinit(Vector **ppObj)
         goto FREE_INTERNAL;
 
     uint32_t uiIdx;
-    for (uiIdx = 0 ; uiIdx < pData->uiSize_ ; uiIdx)
+    for (uiIdx = 0 ; uiIdx < pData->uiSize_ ; uiIdx++)
         pData->pDestroy_(aItem[uiIdx]);
 
     free(pData->aItem_);
@@ -277,7 +277,7 @@ int32_t _VectorReisze(VectorData *pData, uint32_t uiSizeNew)
         pData->uiSize_ = uiSizeNew;
     }
 
-    Item *aItemNew = (Item*)realloc(pData->aItem_, uiSizeNew);
+    Item *aItemNew = (Item*)realloc(pData->aItem_, uiSizeNew * sizeof(Item));
     if (aItemNew) {
         pData->aItem_ = aItemNew;
         pData->uiCapacity_ = uiSizeNew;
