@@ -56,7 +56,7 @@ void VectorDeinit(Vector **ppObj);
  *                      FAIL_NO_MEMORY
  *
  * This function inserts the requested item to the tail of the vector.
- * It will fail under one condition:
+ * It will fail when:
  *     1. Insufficient memory space.
  */
 
@@ -69,7 +69,7 @@ void VectorDeinit(Vector **ppObj);
  *                      FAIL_OUT_OF_RANGE
  *
  * This function deletes an item from the tail of the vector.
- * It will fail under one condition:
+ * It will fail when:
  *     1. The vector is already empty.
  */
 
@@ -83,9 +83,9 @@ void VectorDeinit(Vector **ppObj);
  * @return              SUCCESS
  *                      FAIL_OUT_OF_RANGE
  *
- * This function inserts the requested item into the designated index of the
- * vector and shifts the trailing elements.
- * It will fail under one condition:
+ * This function inserts the requested item to the designated index of the
+ * vector and shifts the trailing elements one position towards the tail.
+ * It will fail when:
  *     1. The designated index exceeds the range of the vector.
  */
 
@@ -98,9 +98,9 @@ void VectorDeinit(Vector **ppObj);
  * @return              SUCCESS
  *                      FAIL_OUT_OF_RANGE
  *
- * This function deletes the item from the designated index and shifts down
- * the elements.
- * It will fail under one condition:
+ * This function deletes the item from the designated index and shifts the
+ * trailing elements one position towards the head.
+ * It will fail when:
  *     1. The designated index exceeds the range of the vector.
  */
 
@@ -115,7 +115,7 @@ void VectorDeinit(Vector **ppObj);
  *
  * This function resizes the vector. Note that if the new size is smaller
  * than the old one, the trailing elements will be removed.
- * It will fail under one condition:
+ * It will fail when:
  *     1. Insufficient memory space for vector expansion.
  */
 
@@ -124,7 +124,7 @@ void VectorDeinit(Vector **ppObj);
  *
  * @param self          The pointer to the Vector structure.
  *
- * @return              Number of stored elements.
+ * @return              Number of the stored elements.
  *
  * This function returns the number of elements stored in the vector.
  */
@@ -134,9 +134,9 @@ void VectorDeinit(Vector **ppObj);
  *
  * @param self          The pointer to the Vector structure.
  *
- * @return              Size of the preallocated memory space.
+ * @return              Size of the current capacity.
  *
- * This function returns the size of the preallocated memory space.
+ * This function returns the size of the current capacity.
  */
 
 /**
@@ -149,7 +149,7 @@ void VectorDeinit(Vector **ppObj);
  *                      NULL
  *
  * This function returns the item stored in the designated index.
- * It will fail under one condition:
+ * It will fail when:
  *     1. The designated index exceeds the range of the vector.
  */
 

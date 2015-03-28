@@ -2,7 +2,7 @@
 
 
 /*===========================================================================*
- *                  Hide the private data of the tree                        *
+ *                  Hide the private data of the vector                      *
  *===========================================================================*/
 struct _VectorData {
     uint32_t uiSize_;
@@ -28,19 +28,20 @@ int32_t VectorPushBack(Vector *self, Item item);
 int32_t VectorPopBack(Vector *self);
 
 /**
- * Insert the requested item into the designated index and shift
- * the trailing elements.
+ * Insert the requested item to the designated index and shift
+ * the trailing elements one position towards the tail.
  */
 int32_t VectorInsert(Vector *self, Item item, uint32_t uiIdx);
 
 /**
- * Delete the item from the designated index and shift down the
- * elements.
+ * Delete the item from the designated index and shift the the
+ * trailing elements one position towards the head.
  */
 int32_t VectorDelete(Vector *self, uint32_t uiIdx);
 
 /**
- * Resize the vector and handle some resource collection if necessary.
+ * Resize the vector. Note that if the new size is smaller than
+ * the old one, the trailing elements will be removed
  */
 inline int32_t VectorResize(Vector *self, uint32_t uiSize);
 
@@ -50,7 +51,7 @@ inline int32_t VectorResize(Vector *self, uint32_t uiSize);
 inline uint32_t VectorSize(Vector *self);
 
 /**
- * Return the size of the preallocated memory space.
+ * Return the size of the current capacity.
  */
 inline uint32_t VectorCapacity(Vector *self);
 
@@ -68,7 +69,7 @@ inline void VectorSetDestroy(Vector *self, void (*pFunc) (Item));
  *                  Definition for internal functions                        *
  *===========================================================================*/
 /**
- * This function is the default deallcation strategy for an item.
+ * This function is the default deallocation strategy for an item.
  *
  * @param item          The requested item.
  */
@@ -77,7 +78,7 @@ void _VectorItemDestroy(Item item);
 /**
  * This function resizes the internal array.
  *
- * @param pData         The pointer to the vector private data.
+ * @param pData         The pointer to the private data handle.
  * @param uiSizeNew     The designated size;
  *
  * @return              SUCCESS

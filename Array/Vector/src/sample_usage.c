@@ -68,7 +68,8 @@ void test_primitive()
         goto EXIT;
 
     /* Set the deallocation function. */
-    pVector->set_destroy(pVector, func_destroy_primitive);
+    /* Since our testing data is primitive type, we do not need the
+       resource clean strategy. */
 
     /* Push the first half of the elements into vector. */
     uint32_t uiRange = COUNT_CASE >> 1;
