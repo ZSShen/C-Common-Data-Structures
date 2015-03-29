@@ -31,7 +31,7 @@ struct _BSTreeData {
 int32_t BSTreeInsert(BinSearchTree *self, Item item);
 
 /**
- * Check whethere the tree has the requested item.
+ * Check whether the tree has the requested item.
  */
 int32_t BSTreeSearch(BinSearchTree *self, Item *pItem);
 
@@ -152,7 +152,7 @@ TreeNode* _BSTreeSearch(BSTreeData *pData, Item item);
 int32_t _BSTreeItemCompare(Item itemSrc, Item itemTge);
 
 /**
- * This function is the default deallcation strategy for an item.
+ * This function is the default deallocation strategy for an item.
  *
  * @param item         The requested item.
  */
@@ -164,7 +164,6 @@ void _BSTreeItemDestroy(Item item);
  * for debug version.
  *
  * @param pData         The pointer to the tree private data.
- *                      the current node.
  *
  * @return          true|false: Whether the tree has legal structure.
  */

@@ -59,7 +59,7 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  *                      FAIL_DATA_CONFLICT
  *
  * This function inserts the requested item into the proper location of the tree.
- * It will fail under two conditions:
+ * It will fail when:
  *     1. Insufficient memory space.
  *     2. The requested item conflicts with the one stored in the tree.
  */
@@ -73,9 +73,10 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  * @return              SUCCESS
  *                      FAIL_NO_DATA
  *
- * This function checks whethere the tree has the requested item. It the input
- * item can be found, it will be replaced with the one stored in the tree.
- * It will fail under one condition:
+ * This function checks whether the tree has the requested item. If the input
+ * item can be found, it's content is replaced with the content of the item
+ * found in the tree.
+ * It will fail when:
  *     1. The requested item cannot be found in the tree.
  */
 
@@ -89,7 +90,7 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  *                      FAIL_NO_DATA
  *
  * This function deletes the requested item from the tree and adjusts the tree structure.
- * It will fail under one condition:
+ * It will fail when:
  *     1. The requested item cannot be found in the tree.
  */
 
@@ -103,7 +104,7 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  *                      FAIL_NO_DATA
  *
  * This function returns the item with the maximum order of the tree.
- * It will fail under one condition:
+ * It will fail when:
  *     1. The tree is empty.
  */
 
@@ -117,7 +118,7 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  *                      FAIL_NO_DATA
  *
  * This function returns the item with the minimum order of the tree.
- * It will fail under one condition:
+ * It will fail when:
  *     1. The tree is empty.
  */
 
@@ -131,7 +132,7 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  *                     FAIL_NO_DATA
  *
  * This function returns the item which is the successor of the requested one.
- * It will fail under one condition:
+ * It will fail when:
  *     1. The successor cannot be found.
  */
 
@@ -145,7 +146,7 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  *                     FAIL_NO_DATA
  *
  * This function returns the item which is the predecessor of the requested one.
- * It will fail under one condition:
+ * It will fail when:
  *     1. The predecessor cannot be found.
  */
 

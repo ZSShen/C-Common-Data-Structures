@@ -87,9 +87,10 @@ void test_primitive()
     if (iStat != SUCCESS)
         goto EXIT;
 
-    /* Set the comparison and deallocation functions. */
+    /* Set the comparison function. */
+    /* Since our testing data is primitive type, we do not need the
+       resource clean strategy. */
     pTree->set_compare(pTree, func_compare_primitive);
-    pTree->set_destroy(pTree, func_destroy_primitive);
 
     /* Insert integers into the tree. */
     for (i = 0 ; i < COUNT_CASE ; i++) {
