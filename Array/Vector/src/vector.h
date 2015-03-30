@@ -29,6 +29,9 @@ typedef struct _Vector {
 } Vector;
 
 
+/*===========================================================================*
+ *             Definition for the exported member operations                 *
+ *===========================================================================*/
 /**
  * The constructor for Vector.
  *
@@ -47,34 +50,35 @@ int32_t VectorInit(Vector **ppObj);
 void VectorDeinit(Vector **ppObj);
 
 /**
- * int32_t (*push_back) (Vector *self, Item item)
+ * This function inserts the requested item to the tail of the vector.
+ * It will fail when:
+ *     1. Insufficient memory space.
  *
  * @param self          The pointer to the Vector structure.
  * @param item          The requested item.
  *
  * @return              SUCCESS
  *                      FAIL_NO_MEMORY
- *
- * This function inserts the requested item to the tail of the vector.
- * It will fail when:
- *     1. Insufficient memory space.
  */
+int32_t VectorPushBack(Vector *self, Item item);
 
 /**
- * int32_t (*pop_back) (Vector *self)
+ * This function deletes an item from the tail of the vector.
+ * It will fail when:
+ *     1. The vector is already empty.
  *
  * @param self          The pointer to the Vector structure.
  *
  * @return              SUCCESS
  *                      FAIL_OUT_OF_RANGE
- *
- * This function deletes an item from the tail of the vector.
- * It will fail when:
- *     1. The vector is already empty.
  */
+int32_t VectorPopBack(Vector *self);
 
 /**
- * int32_t (*insert) (Vector *self, Item item, uint32_t uiIdx)
+ * This function inserts the requested item to the designated index of the
+ * vector and shifts the trailing elements one position towards the tail.
+ * It will fail when:
+ *     1. The designated index exceeds the range of the vector.
  *
  * @param self          The pointer to the Vector structure.
  * @param item          The requested item.
@@ -82,84 +86,76 @@ void VectorDeinit(Vector **ppObj);
  *
  * @return              SUCCESS
  *                      FAIL_OUT_OF_RANGE
- *
- * This function inserts the requested item to the designated index of the
- * vector and shifts the trailing elements one position towards the tail.
- * It will fail when:
- *     1. The designated index exceeds the range of the vector.
  */
+int32_t VectorInsert(Vector *self, Item item, uint32_t uiIdx);
 
 /**
- * int32_t (*delete) (Vector *self, uint32_t uiIdx)
+ * This function deletes the item from the designated index and shifts the
+ * trailing elements one position towards the head.
+ * It will fail when:
+ *     1. The designated index exceeds the range of the vector.
  *
  * @param self          The pointer to the Vector structure.
  * @param uiIdx         The designated index.
  *
  * @return              SUCCESS
  *                      FAIL_OUT_OF_RANGE
- *
- * This function deletes the item from the designated index and shifts the
- * trailing elements one position towards the head.
- * It will fail when:
- *     1. The designated index exceeds the range of the vector.
  */
+int32_t VectorDelete(Vector *self, uint32_t uiIdx);
+
 
 /**
- * int32_t (*resize) (Vector *self, uint32_t uiSize)
+ * This function resizes the vector. Note that if the new size is smaller
+ * than the old one, the trailing elements will be removed.
+ * It will fail when:
+ *     1. Insufficient memory space for vector expansion.
  *
  * @param self          The pointer to the Vector structure.
  * @param uiSize        The designated size.
  *
  * @return              SUCCESS
  *                      FAIL_NO_MEMORY
- *
- * This function resizes the vector. Note that if the new size is smaller
- * than the old one, the trailing elements will be removed.
- * It will fail when:
- *     1. Insufficient memory space for vector expansion.
  */
+int32_t VectorResize(Vector *self, uint32_t uiSize);
+
 
 /**
- * uint32_t (*size) (Vector *self)
+ * This function returns the number of elements stored in the vector.
  *
  * @param self          The pointer to the Vector structure.
  *
  * @return              Number of the stored elements.
- *
- * This function returns the number of elements stored in the vector.
  */
+uint32_t VectorSize(Vector *self);
 
 /**
- * uint32_t (*capacity) (Vector *self)
+ * This function returns the size of the current capacity.
  *
  * @param self          The pointer to the Vector structure.
  *
  * @return              Size of the current capacity.
- *
- * This function returns the size of the current capacity.
  */
+uint32_t VectorCapacity(Vector *self);
 
 /**
- * Item (*at) (Vector *self, uint32_t uiIdx)
+ * This function returns the item stored in the designated index.
+ * It will fail when:
+ *     1. The designated index exceeds the range of the vector.
  *
  * @param self          The pointer to the Vector structure.
  * @param uiIdx         The designated index.
  *
  * @return              The corresponding item
  *                      NULL
- *
- * This function returns the item stored in the designated index.
- * It will fail when:
- *     1. The designated index exceeds the range of the vector.
  */
+Item VectorAt(Vector *self, uint32_t uiIdx);
 
 /**
- * void (*set_destroy) (Vector *self, void (*pFunc) (Item))
+ * This function sets the user defined item deallocation strategy.
  *
  * @param self          The pointer to the Vector structure.
  * @param pFunc         The pointer to the user defined function.
- *
- * This function sets the user defined item deallocation strategy.
  */
+void VectorSetDestroy(Vector *self, void (*pFunc) (Item));
 
 #endif

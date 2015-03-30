@@ -2,7 +2,7 @@
 
 
 /*===========================================================================*
- *                  Hide the private data of the vector                      *
+ *                       The container private data                          *
  *===========================================================================*/
 struct _VectorData {
     uint32_t uiSize_;
@@ -15,58 +15,7 @@ struct _VectorData {
 
 
 /*===========================================================================*
- *             Definition for the exported member operations                 *
- *===========================================================================*/
-/**
- * Insert the requested item to the tail of the vector.
- */
-int32_t VectorPushBack(Vector *self, Item item);
-
-/**
- * Delete the item from the tail of the vector.
- */
-int32_t VectorPopBack(Vector *self);
-
-/**
- * Insert the requested item to the designated index and shift
- * the trailing elements one position towards the tail.
- */
-int32_t VectorInsert(Vector *self, Item item, uint32_t uiIdx);
-
-/**
- * Delete the item from the designated index and shift the the
- * trailing elements one position towards the head.
- */
-int32_t VectorDelete(Vector *self, uint32_t uiIdx);
-
-/**
- * Resize the vector. Note that if the new size is smaller than
- * the old one, the trailing elements will be removed
- */
-inline int32_t VectorResize(Vector *self, uint32_t uiSize);
-
-/**
- * Return the number of elements stored in the vector.
- */
-inline uint32_t VectorSize(Vector *self);
-
-/**
- * Return the size of the current capacity.
- */
-inline uint32_t VectorCapacity(Vector *self);
-
-/**
- * Return the item stored in the designated index.
- */
-inline Item VectorAt(Vector *self, uint32_t uiIdx);
-
-/**
- * Set the user defined item deallocation strategy.
- */
-inline void VectorSetDestroy(Vector *self, void (*pFunc) (Item));
-
-/*===========================================================================*
- *                  Definition for internal functions                        *
+ *                  Definition for internal operations                       *
  *===========================================================================*/
 /**
  * This function is the default deallocation strategy for an item.
@@ -88,7 +37,7 @@ int32_t _VectorReisze(VectorData *pData, uint32_t uiSizeNew);
 
 
 /*===========================================================================*
- *           Implementation for the exported member operations               *
+ *         Implementation for the container supporting operations            *
  *===========================================================================*/
 int32_t VectorInit(Vector **ppObj)
 {
@@ -260,10 +209,9 @@ inline void VectorSetDestroy(Vector *self, void (*pFunc) (Item))
 
 
 /*===========================================================================*
- *               Implementation for internal functions                       *
+ *               Implementation for internal operations                      *
  *===========================================================================*/
-void _VectorItemDestroy(Item item)
-{ return; }
+void _VectorItemDestroy(Item item) {}
 
 int32_t _VectorReisze(VectorData *pData, uint32_t uiSizeNew)
 {
