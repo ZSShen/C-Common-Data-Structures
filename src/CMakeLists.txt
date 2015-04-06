@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.8)
 #==================================================================#
 # This subroutine builds the specified data structure.
 function(SUB_BUILD_SPECIFIC DS)
-    # Build the library for specific data structure.
+    # Build the library for the data structure.
     set(HEAD_DS "${DS}.h")
     set(SRC_DS "${DS}.c")
     set(PATH_SUB "${PATH_OUT}/sub")
@@ -15,6 +15,18 @@ function(SUB_BUILD_SPECIFIC DS)
     set_target_properties(${TGE_DS} PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${PATH_SUB}
         OUTPUT_NAME ${DS}
+    )
+
+    # Build the demo program for the data structure.
+    set(NAME_DEMO "demo_${DS}")
+    set(SRC_DEMO "${PATH_DEMO}/${NAME_DEMO}.c")
+    string(TOUPPER ${NAME_DEMO} TGE_DEMO)
+
+    add_executable(${TGE_DEMO} ${SRC_DEMO})
+    target_link_libraries(${TGE_DEMO} ${TGE_DS})
+    set_target_properties(${TGE_DEMO} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${PATH_BIN}
+        OUTPUT_NAME ${NAME_DEMO}
     )
 endfunction()
 
@@ -49,6 +61,7 @@ set(OPT_BUILD_RELEASE "Release")
 set(PATH_INC "${CMAKE_CURRENT_SOURCE_DIR}/../include")
 set(PATH_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../lib")
 set(PATH_BIN "${CMAKE_CURRENT_SOURCE_DIR}/../bin")
+set(PATH_DEMO "${CMAKE_CURRENT_SOURCE_DIR}/../demo")
 
 # By default, we build the statically linked shared library.
 set(LIB_TYPE "SHARED")
