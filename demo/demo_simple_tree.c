@@ -82,8 +82,8 @@ void test_primitive()
     }
 
     /* Initialize the tree. */
-    BinSearchTree *pTree;
-    int32_t iStat = BSTreeInit(&pTree);
+    SimpleTree *pTree;
+    int32_t iStat = SimTreeInit(&pTree);
     if (iStat != SUCCESS)
         goto EXIT;
 
@@ -124,7 +124,7 @@ void test_primitive()
 
 EXIT:
     /* Deinitialize the tree. */
-    BSTreeDeinit(&pTree);
+    SimTreeDeinit(&pTree);
 
     if (aData)
         free(aData);
@@ -171,8 +171,8 @@ void test_non_primitive()
     }
 
     /* Initialize the tree. */
-    BinSearchTree *pTree;
-    int32_t iStat = BSTreeInit(&pTree);
+    SimpleTree *pTree;
+    int32_t iStat = SimTreeInit(&pTree);
     if (iStat != SUCCESS)
         goto EXIT;
 
@@ -212,7 +212,7 @@ void test_non_primitive()
 
 DEINIT:
     /* Deinitialize the tree. */
-    BSTreeDeinit(&pTree);
+    SimTreeDeinit(&pTree);
 
 EXIT:
     if (aRecord) {

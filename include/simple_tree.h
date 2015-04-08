@@ -13,45 +13,45 @@
 #define FAIL_DATA_CONFLICT          (-3)
 
 typedef const void* Item;
-typedef struct _TreeNode TreeNode;
-typedef struct _BSTreeData BSTreeData;
+typedef struct _SimTreeNode SimTreeNode;
+typedef struct _SimTreeData SimTreeData;
 
-typedef struct _BinSearchTree {
-    BSTreeData *pData;
-    int32_t (*insert) (struct _BinSearchTree*, Item);
-    int32_t (*search) (struct _BinSearchTree*, Item*);
-    int32_t (*delete) (struct _BinSearchTree*, Item);
-    int32_t (*maximum) (struct _BinSearchTree*, Item*);
-    int32_t (*minimum) (struct _BinSearchTree*, Item*);
-    int32_t (*successor) (struct _BinSearchTree*, Item*);
-    int32_t (*predecessor) (struct _BinSearchTree*, Item*);
-    uint32_t (*size) (struct _BinSearchTree*);
-    void (*set_compare) (struct _BinSearchTree*, int32_t (*) (Item, Item));
-    void (*set_destroy) (struct _BinSearchTree*, void (*) (Item));
-} BinSearchTree;
+typedef struct _SimpleTree {
+    SimTreeData *pData;
+    int32_t (*insert) (struct _SimpleTree*, Item);
+    int32_t (*search) (struct _SimpleTree*, Item*);
+    int32_t (*delete) (struct _SimpleTree*, Item);
+    int32_t (*maximum) (struct _SimpleTree*, Item*);
+    int32_t (*minimum) (struct _SimpleTree*, Item*);
+    int32_t (*successor) (struct _SimpleTree*, Item*);
+    int32_t (*predecessor) (struct _SimpleTree*, Item*);
+    uint32_t (*size) (struct _SimpleTree*);
+    void (*set_compare) (struct _SimpleTree*, int32_t (*) (Item, Item));
+    void (*set_destroy) (struct _SimpleTree*, void (*) (Item));
+} SimpleTree;
 
 
 /**
- * The constructor for BinSearchTree.
+ * The constructor for SimpleTree.
  *
  * @param ppObj         The double pointer to the to be constructed tree.
  *
  * @return              SUCCESS
  *                      FAIL_NO_MEMORY
  */
-int32_t BSTreeInit(BinSearchTree **ppObj);
+int32_t SimTreeInit(SimpleTree **ppObj);
 
 /**
- * The destructor for BinSearchTree.
+ * The destructor for SimpleTree.
  *
  * @param ppObj          The double pointer to the to be destructed tree.
  */
-void BSTreeDeinit(BinSearchTree **ppObj);
+void SimTreeDeinit(SimpleTree **ppObj);
 
 /**
- * int32_t (*insert) (BinSearchTree *self, Item item)
+ * int32_t (*insert) (SimpleTree *self, Item item)
  *
- * @param self          The pointer to the BinSearchTree structure.
+ * @param self          The pointer to the SimpleTree structure.
  * @param item          The requested item.
  *
  * @return              SUCCESS
@@ -65,9 +65,9 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * int32_t (*search) (BinSearchTree *self, Item *pItem)
+ * int32_t (*search) (SimpleTree *self, Item *pItem)
  *
- * @param self          The pointer to the BinSearchTree structure.
+ * @param self          The pointer to the SimpleTree structure.
  * @param pItem         The pointer to the requested item.
  *
  * @return              SUCCESS
@@ -81,9 +81,9 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * int32_t (*delete) (BinSearchTree *self, Item item)
+ * int32_t (*delete) (SimpleTree *self, Item item)
  *
- * @param self          The pointer to the BinSearchTree structure.
+ * @param self          The pointer to the SimpleTree structure.
  * @param item          The requested item.
  *
  * @return              SUCCESS
@@ -95,9 +95,9 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * int32_t (*maximum) (BinSearchTree *self, Item *pItem)
+ * int32_t (*maximum) (SimpleTree *self, Item *pItem)
  *
- * @param self          The pointer to the BinSearchTree structure.
+ * @param self          The pointer to the SimpleTree structure.
  * @param pItem         The pointer to the returned item.
  *
  * @return              SUCCESS
@@ -109,9 +109,9 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * int32_t (*minimum) (BinSearchTree *self, Item *pItem)
+ * int32_t (*minimum) (SimpleTree *self, Item *pItem)
  *
- * @param self          The pointer to the BinSearchTree structure.
+ * @param self          The pointer to the SimpleTree structure.
  * @param pItem         The pointer to the returned item.
  *
  * @return              SUCCESS
@@ -123,9 +123,9 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * int32_t (*successor) (BinSearchTree *self, Item *pItem)
+ * int32_t (*successor) (SimpleTree *self, Item *pItem)
  *
- * @param self         The pointer to the BinSearchTree structure.
+ * @param self         The pointer to the SimpleTree structure.
  * @param pItem        The pointer to the returned item.
  *
  * @return             SUCCESS
@@ -137,9 +137,9 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * int32_t (*predecessor) (BinSearchTree *self, Item *pItem)
+ * int32_t (*predecessor) (SimpleTree *self, Item *pItem)
  *
- * @param self         The pointer to the BinSearchTree structure.
+ * @param self         The pointer to the SimpleTree structure.
  * @param pItem        The pointer to the returned item.
  *
  * @return             SUCCESS
@@ -151,9 +151,9 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * uint32_t (*size) (BinSearchTree *self)
+ * uint32_t (*size) (SimpleTree *self)
  *
- * @param self          The pointer to the BinSearchTree structure.
+ * @param self          The pointer to the SimpleTree structure.
  *
  * @return              Tree size
  *
@@ -161,18 +161,18 @@ void BSTreeDeinit(BinSearchTree **ppObj);
  */
 
 /**
- * void (*set_compare) (BinSearchTree *self, int32_t (*pFunc) (Item, Item))
+ * void (*set_compare) (SimpleTree *self, int32_t (*pFunc) (Item, Item))
  *
- * @param self          The pointer to the BinSearchTree structure.
+ * @param self          The pointer to the SimpleTree structure.
  * @param pFunc         The pointer to the user defined function.
  *
  * This function sets the user defined item comparison strategy.
  */
 
 /**
- * void (*set_destroy) (BinSearchTree *self, void (*pFunc) (Item))
+ * void (*set_destroy) (SimpleTree *self, void (*pFunc) (Item))
  *
- * @param self          The pointer to the BinSearchTree structure.
+ * @param self          The pointer to the SimpleTree structure.
  * @param pFunc         The pointer to the user defined function.
  *
  * This function sets the user defined item deallocation strategy.
