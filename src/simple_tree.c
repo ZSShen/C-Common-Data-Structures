@@ -23,60 +23,6 @@ struct _SimTreeData {
 
 
 /*===========================================================================*
- *             Definition for the exported member operations                 *
- *===========================================================================*/
-/**
- * Insert the requested item into the proper location of the tree.
- */
-int32_t SimTreeInsert(SimpleTree *self, Item item);
-
-/**
- * Check whether the tree has the requested item.
- */
-int32_t SimTreeSearch(SimpleTree *self, Item *pItem);
-
-/**
- * Delete the requested item from the tree and adjust the tree structure.
- */
-int32_t SimTreeDelete(SimpleTree *self, Item item);
-
-/**
- * Return the item with the maximum order of the tree.
- */
-int32_t SimTreeMaximum(SimpleTree *self, Item *pItem);
-
-/**
- * Return the item with the minimum order of the tree.
- */
-int32_t SimTreeMinimum(SimpleTree *self, Item *pItem);
-
-/**
- * Return the item which is the successor of the requested one.
- */
-int32_t SimTreeSuccessor(SimpleTree *self, Item *pItem);
-
-/**
- * Return the item which is the predecessor of the requested one.
- */
-int32_t SimTreePredecessor(SimpleTree *self, Item *pItem);
-
-/**
- * Return the size of the tree.
- */
-uint32_t SimTreeSize(SimpleTree *self);
-
-/**
- * Set the user defined item comparison strategy.
- */
-void SimTreeSetCompare(SimpleTree *self, int32_t (*pFunc) (Item, Item));
-
-/**
- * Set the user defined item deallocation strategy.
- */
-void SimTreeSetDestroy(SimpleTree *self, void (*pFunc) (Item));
-
-
-/*===========================================================================*
  *                  Definition for internal functions                        *
  *===========================================================================*/
 /**

@@ -49,8 +49,6 @@ int32_t SimTreeInit(SimpleTree **ppObj);
 void SimTreeDeinit(SimpleTree **ppObj);
 
 /**
- * int32_t (*insert) (SimpleTree *self, Item item)
- *
  * @param self          The pointer to the SimpleTree structure.
  * @param item          The requested item.
  *
@@ -63,10 +61,9 @@ void SimTreeDeinit(SimpleTree **ppObj);
  *     1. Insufficient memory space.
  *     2. The requested item conflicts with the one stored in the tree.
  */
+int32_t SimTreeInsert(SimpleTree *self, Item item);
 
 /**
- * int32_t (*search) (SimpleTree *self, Item *pItem)
- *
  * @param self          The pointer to the SimpleTree structure.
  * @param pItem         The pointer to the requested item.
  *
@@ -79,10 +76,9 @@ void SimTreeDeinit(SimpleTree **ppObj);
  * It will fail when:
  *     1. The requested item cannot be found in the tree.
  */
+int32_t SimTreeSearch(SimpleTree *self, Item *pItem);
 
 /**
- * int32_t (*delete) (SimpleTree *self, Item item)
- *
  * @param self          The pointer to the SimpleTree structure.
  * @param item          The requested item.
  *
@@ -93,10 +89,9 @@ void SimTreeDeinit(SimpleTree **ppObj);
  * It will fail when:
  *     1. The requested item cannot be found in the tree.
  */
+int32_t SimTreeDelete(SimpleTree *self, Item item);
 
 /**
- * int32_t (*maximum) (SimpleTree *self, Item *pItem)
- *
  * @param self          The pointer to the SimpleTree structure.
  * @param pItem         The pointer to the returned item.
  *
@@ -107,10 +102,9 @@ void SimTreeDeinit(SimpleTree **ppObj);
  * It will fail when:
  *     1. The tree is empty.
  */
+int32_t SimTreeMaximum(SimpleTree *self, Item *pItem);
 
 /**
- * int32_t (*minimum) (SimpleTree *self, Item *pItem)
- *
  * @param self          The pointer to the SimpleTree structure.
  * @param pItem         The pointer to the returned item.
  *
@@ -121,10 +115,9 @@ void SimTreeDeinit(SimpleTree **ppObj);
  * It will fail when:
  *     1. The tree is empty.
  */
+int32_t SimTreeMinimum(SimpleTree *self, Item *pItem);
 
 /**
- * int32_t (*successor) (SimpleTree *self, Item *pItem)
- *
  * @param self         The pointer to the SimpleTree structure.
  * @param pItem        The pointer to the returned item.
  *
@@ -135,10 +128,9 @@ void SimTreeDeinit(SimpleTree **ppObj);
  * It will fail when:
  *     1. The successor cannot be found.
  */
+int32_t SimTreeSuccessor(SimpleTree *self, Item *pItem);
 
 /**
- * int32_t (*predecessor) (SimpleTree *self, Item *pItem)
- *
  * @param self         The pointer to the SimpleTree structure.
  * @param pItem        The pointer to the returned item.
  *
@@ -149,6 +141,7 @@ void SimTreeDeinit(SimpleTree **ppObj);
  * It will fail when:
  *     1. The predecessor cannot be found.
  */
+int32_t SimTreePredecessor(SimpleTree *self, Item *pItem);
 
 /**
  * uint32_t (*size) (SimpleTree *self)
@@ -159,6 +152,7 @@ void SimTreeDeinit(SimpleTree **ppObj);
  *
  * This function returns the size of the tree.
  */
+uint32_t SimTreeSize(SimpleTree *self);
 
 /**
  * void (*set_compare) (SimpleTree *self, int32_t (*pFunc) (Item, Item))
@@ -168,14 +162,14 @@ void SimTreeDeinit(SimpleTree **ppObj);
  *
  * This function sets the user defined item comparison strategy.
  */
+void SimTreeSetCompare(SimpleTree *self, int32_t (*pFunc) (Item, Item));
 
 /**
- * void (*set_destroy) (SimpleTree *self, void (*pFunc) (Item))
- *
  * @param self          The pointer to the SimpleTree structure.
  * @param pFunc         The pointer to the user defined function.
  *
  * This function sets the user defined item deallocation strategy.
  */
+void SimTreeSetDestroy(SimpleTree *self, void (*pFunc) (Item));
 
 #endif
