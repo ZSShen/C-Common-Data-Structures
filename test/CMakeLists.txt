@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 2.8)
 
+
 #==================================================================#
 #                The subroutines for specific task                 #
 #==================================================================#
-# This subroutine builds the specified data structure.
+# This subroutine builds the unit test for the specified data structure.
 function(SUB_BUILD_SPECIFIC DS)
-    # Build the unit test for the data structure.
     set(NAME_UNIT "unit_${DS}")
     set(SRC_UNIT "${CMAKE_CURRENT_SOURCE_DIR}/${NAME_UNIT}.c")
     string(TOUPPER ${NAME_UNIT} TGE_UNIT)
@@ -16,6 +16,13 @@ function(SUB_BUILD_SPECIFIC DS)
         RUNTIME_OUTPUT_DIRECTORY ${PATH_BIN}
         OUTPUT_NAME ${NAME_UNIT}
     )
+endfunction()
+
+# This subroutine builds all the unit tests.
+function(SUB_BUILD_ENTIRE)
+    foreach(DS ${LIST_DS})
+        SUB_BUILD_SPECIFIC(${DS})
+    endforeach()
 endfunction()
 
 
