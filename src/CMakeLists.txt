@@ -3,9 +3,8 @@ cmake_minimum_required(VERSION 2.8)
 #==================================================================#
 #                The subroutines for specific task                 #
 #==================================================================#
-# This subroutine builds the specified data structure.
+# This subroutine builds the library for the specified data structure.
 function(SUB_BUILD_SPECIFIC DS)
-    # Build the library for the data structure.
     set(HEAD_DS "${DS}.h")
     set(SRC_DS "${DS}.c")
     set(PATH_SUB "${PATH_OUT}/sub")
@@ -15,18 +14,6 @@ function(SUB_BUILD_SPECIFIC DS)
     set_target_properties(${TGE_DS} PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${PATH_SUB}
         OUTPUT_NAME ${DS}
-    )
-
-    # Build the demo program for the data structure.
-    set(NAME_DEMO "demo_${DS}")
-    set(SRC_DEMO "${PATH_DEMO}/${NAME_DEMO}.c")
-    string(TOUPPER ${NAME_DEMO} TGE_DEMO)
-
-    add_executable(${TGE_DEMO} ${SRC_DEMO})
-    target_link_libraries(${TGE_DEMO} ${TGE_DS})
-    set_target_properties(${TGE_DEMO} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${PATH_BIN}
-        OUTPUT_NAME ${NAME_DEMO}
     )
 endfunction()
 
@@ -83,8 +70,8 @@ else()
     return()
 endif()
 
-# By default, we build all the data structures. But we can
-# still use the command argument to build the specific one.
+# By default, we build the libraries for all the data structures. But we can
+# still use the command argument to build the one for specific structure.
 include_directories(${PATH_INC})
 if (BUILD_SOURCE)
     if (";${LIST_DS};" MATCHES ";${BUILD_SOURCE};")

@@ -6,15 +6,15 @@ cmake_minimum_required(VERSION 2.8)
 #==================================================================#
 # This subroutine builds the unit test for the specified data structure.
 function(SUB_BUILD_SPECIFIC DS)
-    set(NAME_UNIT "unit_${DS}")
-    set(SRC_UNIT "${CMAKE_CURRENT_SOURCE_DIR}/${NAME_UNIT}.c")
-    string(TOUPPER ${NAME_UNIT} TGE_UNIT)
+    set(NAME_TEST "unit_${DS}")
+    set(SRC_TEST "${CMAKE_CURRENT_SOURCE_DIR}/${NAME_TEST}.c")
+    string(TOUPPER ${NAME_TEST} TGE_TEST)
 
-    add_executable(${TGE_UNIT} ${SRC_UNIT})
-    target_link_libraries(${TGE_UNIT} ${DS} cunit)
-    set_target_properties(${TGE_UNIT} PROPERTIES
+    add_executable(${TGE_TEST} ${SRC_TEST})
+    target_link_libraries(${TGE_TEST} ${DS} cunit)
+    set_target_properties(${TGE_TEST} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${PATH_BIN}
-        OUTPUT_NAME ${NAME_UNIT}
+        OUTPUT_NAME ${NAME_TEST}
     )
 endfunction()
 
