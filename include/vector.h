@@ -28,14 +28,14 @@ typedef struct _Vector {
 
     /* The operators for direct index. */
     int32_t (*set) (struct _Vector*, Item, int32_t);
-    int32_t (*get) (struct _Vector*, *Item, int32_t);
+    int32_t (*get) (struct _Vector*, Item*, int32_t);
 
     /* The operator to change the internal storage. */
-    int32_t (*resize) (struct _Vector*, uint32_t);
+    int32_t (*resize) (struct _Vector*, int32_t);
 
     /* The operators to query the container capacity. */
-    uint32_t (*size) (struct _Vector*);
-    uint32_t (*capacity) (struct _Vector*);
+    int32_t (*size) (struct _Vector*);
+    int32_t (*capacity) (struct _Vector*);
 
     /* The operators to set the user defined resource management policy. */
     void (*set_destroy) (struct _Vector*, void (*) (Item));
