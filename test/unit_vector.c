@@ -3,52 +3,12 @@
 #include "CUnit/Basic.h"
 
 
-void TestPrimPushBack()
-{
-    Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec) == SUCCESS);
+/*===========================================================================*
+ *        Definition for the test cases of the primitive data suite          *
+ *===========================================================================*/
+void TestPrimPushBack();
+void TestPrimInsert();
 
-    CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCCESS);
-    CU_ASSERT(pVec->push_back(pVec, (Item)2) == SUCCESS);
-    CU_ASSERT(pVec->push_back(pVec, (Item)3) == SUCCESS);
-    CU_ASSERT(pVec->push_back(pVec, (Item)4) == SUCCESS);
-
-    CU_ASSERT_EQUAL(pVec->at(pVec, 0), (Item)1);
-    CU_ASSERT_EQUAL(pVec->at(pVec, 1), (Item)2);
-    CU_ASSERT_EQUAL(pVec->at(pVec, 2), (Item)3);
-    CU_ASSERT_EQUAL(pVec->at(pVec, 3), (Item)4);
-
-    VectorDeinit(&pVec);
-}
-
-void TestPrimInsert()
-{
-    Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec) == SUCCESS);
-
-    CU_ASSERT(pVec->insert(pVec, (Item)0, 0) == FAIL_OUT_OF_RANGE);
-    CU_ASSERT(pVec->push_back(pVec, (Item)4) == SUCCESS);
-    CU_ASSERT(pVec->insert(pVec, (Item)2, 0) == SUCCESS);
-    CU_ASSERT(pVec->insert(pVec, (Item)3, 1) == SUCCESS);
-    CU_ASSERT(pVec->insert(pVec, (Item)1, 0) == SUCCESS);
-
-    CU_ASSERT_EQUAL(pVec->at(pVec, 0), (Item)1);
-    CU_ASSERT_EQUAL(pVec->at(pVec, 1), (Item)2);
-    CU_ASSERT_EQUAL(pVec->at(pVec, 2), (Item)3);
-    CU_ASSERT_EQUAL(pVec->at(pVec, 3), (Item)4);
-
-    VectorDeinit(&pVec);
-}
-
-void TestPrimResize()
-{
-    Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec) == SUCCESS);
-
-
-
-    VectorDeinit(&pVec);
-}
 
 int32_t SuitePrimitive()
 {
@@ -88,3 +48,76 @@ int32_t main()
     CU_cleanup_registry();
     return SUCCESS;
 }
+
+
+/*===========================================================================*
+ *      Implementation for the test cases of the primitive data suite        *
+ *===========================================================================*/
+void TestPrimPushBack()
+{
+    Vector *pVec;
+    CU_ASSERT(VectorInit(&pVec) == SUCCESS);
+
+    /* Append the items. */
+    CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCCESS);
+    CU_ASSERT(pVec->push_back(pVec, (Item)2) == SUCCESS);
+    CU_ASSERT(pVec->push_back(pVec, (Item)3) == SUCCESS);
+    CU_ASSERT(pVec->push_back(pVec, (Item)4) == SUCCESS);
+
+    /* Check the item insertion sequence. */
+    Item item;
+    CU_ASSERT(pVec->get(pVec, &item, 0) == SUCCESS);
+    CU_ASSERT_EQUAL(item, (Item)1);
+    CU_ASSERT(pVec->get(pVec, &item, 1) == SUCCESS);
+    CU_ASSERT_EQUAL(item, (Item)2);
+    CU_ASSERT(pVec->get(pVec, &item, 2) == SUCCESS);
+    CU_ASSERT_EQUAL(item, (Item)3);
+    CU_ASSERT(pVec->get(pVec, &item, 3) == SUCCESS);
+    CU_ASSERT_EQUAL(item, (Item)4);
+
+    /* Check the vector storage. */
+    CU_ASSERT_EQUAL(pVec->size(pVec), 4);
+    CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
+
+    /* Check for the illegal indexing. */
+    CU_ASSERT(pVec->get(pVec, &item, -1) == FAIL_OUT_OF_RANGE);
+    CU_ASSERT(pVec->get(pVec, &item, 4) == FAIL_OUT_OF_RANGE);
+
+    VectorDeinit(&pVec);
+}
+
+void TestPrimInsert()
+{
+    Vector *pVec;
+    CU_ASSERT(VectorInit(&pVec) == SUCCESS);
+
+    /* Check the same effect as push_back(). */
+    CU_ASSERT(pVec->insert(pVec, (Item)3, 0) == SUCCESS);
+    CU_ASSERT(pVec->insert(pVec, (Item)4, 1) == SUCCESS);
+
+    /* Check the shift for trailing items. */
+    CU_ASSERT(pVec->insert(pVec, (Item)1, 0) == SUCCESS);
+    CU_ASSERT(pVec->insert(pVec, (Item)2, 1) == SUCCESS);
+
+    /* Check the item insertion sequence. */
+    Item item;
+    CU_ASSERT(pVec->get(pVec, &item, 0) == SUCCESS);
+    CU_ASSERT_EQUAL(item, (Item)1);
+    CU_ASSERT(pVec->get(pVec, &item, 1) == SUCCESS);
+    CU_ASSERT_EQUAL(item, (Item)2);
+    CU_ASSERT(pVec->get(pVec, &item, 2) == SUCCESS);
+    CU_ASSERT_EQUAL(item, (Item)3);
+    CU_ASSERT(pVec->get(pVec, &item, 3) == SUCCESS);
+    CU_ASSERT_EQUAL(item, (Item)4);
+
+    /* Check the vector storage. */
+    CU_ASSERT_EQUAL(pVec->size(pVec), 4);
+    CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
+
+    /* Check for the illegal indexing. */
+    CU_ASSERT(pVec->insert(pVec, (Item)-1, -1) == FAIL_OUT_OF_RANGE);
+    CU_ASSERT(pVec->insert(pVec, (Item)-1, 5) == FAIL_OUT_OF_RANGE);
+
+    VectorDeinit(&pVec);
+}
+
