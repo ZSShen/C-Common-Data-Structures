@@ -179,22 +179,22 @@ int32_t VectorDelete(Vector *self, uint32_t uiIdx)
     return SUCCESS;
 }
 
-inline int32_t VectorResize(Vector *self, uint32_t uiSize)
+int32_t VectorResize(Vector *self, uint32_t uiSize)
 {
     return _VectorReisze(self->pData, uiSize);
 }
 
-inline uint32_t VectorSize(Vector *self)
+uint32_t VectorSize(Vector *self)
 {
     return self->pData->uiSize_;
 }
 
-inline uint32_t VectorCapacity(Vector *self)
+uint32_t VectorCapacity(Vector *self)
 {
     return self->pData->uiCapacity_;
 }
 
-inline Item VectorAt(Vector *self, uint32_t uiIdx)
+Item VectorAt(Vector *self, uint32_t uiIdx)
 {
     VectorData *pData = self->pData;
     if (uiIdx >= pData->uiSize_)
@@ -202,7 +202,7 @@ inline Item VectorAt(Vector *self, uint32_t uiIdx)
     return pData->aItem_[uiIdx];
 }
 
-inline void VectorSetDestroy(Vector *self, void (*pFunc) (Item))
+void VectorSetDestroy(Vector *self, void (*pFunc) (Item))
 {
     self->pData->pDestroy_ = pFunc;
 }
