@@ -8,6 +8,9 @@
  *===========================================================================*/
 void TestPrimPushBack();
 void TestPrimInsert();
+void TestPrimSet();
+void TestPrimPopBack();
+void TestPrimDelete();
 
 
 int32_t SuitePrimitive()
@@ -16,11 +19,15 @@ int32_t SuitePrimitive()
     if (!pSuite)
         return FAIL_NO_MEMORY;
 
-    CU_pTest pTest = CU_add_test(pSuite, "Basic push_back()", TestPrimPushBack);
+    CU_pTest pTest = CU_add_test(pSuite, "Basic item appending", TestPrimPushBack);
     if (!pTest)
         return FAIL_NO_MEMORY;
 
-    pTest = CU_add_test(pSuite, "Basic insert()", TestPrimInsert);
+    pTest = CU_add_test(pSuite, "Basic item insertion", TestPrimInsert);
+    if (!pTest)
+        return FAIL_NO_MEMORY;
+
+    pTest = CU_add_test(pSuite, "Basic item replacement", TestPrimSet);
     if (!pTest)
         return FAIL_NO_MEMORY;
 
@@ -91,7 +98,7 @@ void TestPrimInsert()
     Vector *pVec;
     CU_ASSERT(VectorInit(&pVec) == SUCCESS);
 
-    /* Check the same effect as push_back(). */
+    /* Check the same behavior as push_back(). */
     CU_ASSERT(pVec->insert(pVec, (Item)3, 0) == SUCCESS);
     CU_ASSERT(pVec->insert(pVec, (Item)4, 1) == SUCCESS);
 
@@ -121,3 +128,28 @@ void TestPrimInsert()
     VectorDeinit(&pVec);
 }
 
+void TestPrimSet()
+{
+    Vector *pVec;
+    CU_ASSERT(VectorInit(&pVec) == SUCCESS);
+
+    /* Insert the initial items. */
+    CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCCESS);
+    CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCCESS);
+
+    /* Replace the existing items and check the behavior. */
+    CU_ASSERT(pVec->set(pVec, (Item)2, 0) == SUCCESS);
+    CU_ASSERT(pVec->set(pVec, (Item)3, 1) == SUCCESS);
+
+    Item item;
+    CU_ASSERT(pVec->get(pVec, &item, 0) == SUCCESS);
+    CU_ASSERT_EQUAL(item, (Item)2);
+    CU_ASSERT(pVec->get(pVec, &item, 1) == SUCCESS);
+    CU_ASSERT_EQUAL(item, (Item)3);
+
+    /* Check for the illegal indexing. */
+    CU_ASSERT(pVec->set(pVec, (Item)-1, -1) == FAIL_OUT_OF_RANGE);
+    CU_ASSERT(pVec->set(pVec, (Item)-1, 2) == FAIL_OUT_OF_RANGE);
+
+    VectorDeinit(&pVec);
+}
