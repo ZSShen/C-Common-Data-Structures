@@ -11,6 +11,7 @@ void TestPrimInsert();
 void TestPrimSet();
 void TestPrimPopBack();
 void TestPrimDelete();
+void TestPrimResize();
 
 
 int32_t SuitePrimitive()
@@ -36,6 +37,10 @@ int32_t SuitePrimitive()
         return FAIL_NO_MEMORY;
 
     pTest = CU_add_test(pSuite, "Basic item deletion", TestPrimDelete);
+    if (!pTest)
+        return FAIL_NO_MEMORY;
+
+    pTest = CU_add_test(pSuite, "Basic storage reallocation", TestPrimResize);
     if (!pTest)
         return FAIL_NO_MEMORY;
 
@@ -218,3 +223,34 @@ void TestPrimDelete()
     VectorDeinit(&pVec);
 }
 
+void TestPrimResize()
+{
+    Vector *pVec;
+    CU_ASSERT(VectorInit(&pVec) == SUCCESS);
+
+    /* Expand the internal capacity. */
+    CU_ASSERT(pVec->resize(pVec, 4) == SUCCESS);
+    CU_ASSERT_EQUAL(pVec->size(pVec), 0);
+    CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
+
+    /* Push items to fill the half of the storage.  */
+    CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCCESS);
+    CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCCESS);
+    CU_ASSERT_EQUAL(pVec->size(pVec), 2);
+    CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
+
+    /* Shrink a little storage. */
+    CU_ASSERT(pVec->resize(pVec, 3) == SUCCESS);
+    CU_ASSERT_EQUAL(pVec->size(pVec), 2);
+    CU_ASSERT_EQUAL(pVec->capacity(pVec), 3);
+
+    /* Further shrink the storage and trim the trailing items. */
+    CU_ASSERT(pVec->resize(pVec, 1) == SUCCESS);
+    Item item;
+    CU_ASSERT(pVec->get(pVec, &item, 0) == SUCCESS);
+    CU_ASSERT_EQUAL(item, (Item)0);
+    CU_ASSERT_EQUAL(pVec->size(pVec), 1);
+    CU_ASSERT_EQUAL(pVec->capacity(pVec), 1);
+
+    VectorDeinit(&pVec);
+}
