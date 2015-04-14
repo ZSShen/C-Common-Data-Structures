@@ -31,6 +31,14 @@ int32_t SuitePrimitive()
     if (!pTest)
         return FAIL_NO_MEMORY;
 
+    pTest = CU_add_test(pSuite, "Basic item popping", TestPrimPopBack);
+    if (!pTest)
+        return FAIL_NO_MEMORY;
+
+    pTest = CU_add_test(pSuite, "Basic item deletion", TestPrimDelete);
+    if (!pTest)
+        return FAIL_NO_MEMORY;
+
     return SUCCESS;
 }
 
@@ -133,7 +141,7 @@ void TestPrimSet()
     Vector *pVec;
     CU_ASSERT(VectorInit(&pVec) == SUCCESS);
 
-    /* Insert the initial items. */
+    /* Prepare the initial items. */
     CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCCESS);
     CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCCESS);
 
@@ -153,3 +161,60 @@ void TestPrimSet()
 
     VectorDeinit(&pVec);
 }
+
+void TestPrimPopBack()
+{
+    Vector *pVec;
+    CU_ASSERT(VectorInit(&pVec) == SUCCESS);
+
+    /* Prepare the initial items. */
+    CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCCESS);
+    CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCCESS);
+
+    /* Pop all the items. */
+    CU_ASSERT(pVec->pop_back(pVec) == SUCCESS);
+    CU_ASSERT(pVec->pop_back(pVec) == SUCCESS);
+
+    /* Check the vector storage. */
+    CU_ASSERT_EQUAL(pVec->size(pVec), 0);
+    CU_ASSERT_EQUAL(pVec->capacity(pVec), 2);
+
+    /* Check for illegal pop. */
+    CU_ASSERT(pVec->pop_back(pVec) == FAIL_OUT_OF_RANGE);
+
+    VectorDeinit(&pVec);
+}
+
+void TestPrimDelete()
+{
+    Vector *pVec;
+    CU_ASSERT(VectorInit(&pVec) == SUCCESS);
+
+    /* Prepare the initial items. */
+    CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCCESS);
+    CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCCESS);
+    CU_ASSERT(pVec->push_back(pVec, (Item)2) == SUCCESS);
+    CU_ASSERT(pVec->push_back(pVec, (Item)3) == SUCCESS);
+
+    /* Delete the head and the tail items. */
+    CU_ASSERT(pVec->delete(pVec, 3) == SUCCESS);
+    CU_ASSERT(pVec->delete(pVec, 0) == SUCCESS);
+
+    /* Check the item shifting sequence. */
+    Item item;
+    CU_ASSERT(pVec->get(pVec, &item, 0) == SUCCESS);
+    CU_ASSERT_EQUAL(item, (Item)1);
+    CU_ASSERT(pVec->get(pVec, &item, 1) == SUCCESS);
+    CU_ASSERT_EQUAL(item, (Item)2);
+
+    /* Check the vector storage. */
+    CU_ASSERT_EQUAL(pVec->size(pVec), 2);
+    CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
+
+    /* Check for illegal deletion. */
+    CU_ASSERT(pVec->delete(pVec, -1) == FAIL_OUT_OF_RANGE);
+    CU_ASSERT(pVec->delete(pVec, 2) == FAIL_OUT_OF_RANGE);
+
+    VectorDeinit(&pVec);
+}
+
