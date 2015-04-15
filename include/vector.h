@@ -3,14 +3,20 @@
 
 #include "util.h"
 
+/** Item is the element type for this container. */
 typedef const void* Item;
+
+/** VectorData is the type of the private data handle. */
 typedef struct _VectorData VectorData;
 
+/** Vector is the exported type to interact with this container. */
 typedef struct _Vector {
     VectorData *pData;
 
-    /* The operators for data insertion. */
+    /** The operator to push an item into the end of the vector. */
     int32_t (*push_back) (struct _Vector*, Item);
+
+    /** The operator to insert an item into the designated index of the vector. */
     int32_t (*insert) (struct _Vector*, Item, int32_t);
 
     /* The operators for data deletion. */

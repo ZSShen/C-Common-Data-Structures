@@ -1,10 +1,4 @@
-#include "vector.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
-#include <time.h>
-#include <assert.h>
+#include "cds.h"
 
 
 /* The example usage for primitive input manipulation. */
