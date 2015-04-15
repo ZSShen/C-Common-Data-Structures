@@ -18,25 +18,26 @@ struct _VectorData {
  *                  Definition for internal operations                       *
  *===========================================================================*/
 /**
- * This function is the default item resource clean strategy.
+ * @brief The default clean strategy for the resource hold by an item.
  *
- * @param item          The requested item.
+ * @param item          The requested item
  */
 void _VectorItemDestroy(Item item);
 
 /**
+ * @brief Change the capacity of the internal array.
+ *
  * This function resizes the internal array with the proper space reallocation.
- * If the new size is smaller than the old one, the trailing items will be
+ * If the new capacity is smaller than the old one, the trailing items will be
  * cleaned.
  *
- * It will fail when:
- *   (1) Insufficient memory space for array expansion.
+ * @param pData         The pointer to the private data
+ * @param iSizeNew      The designated size
  *
- * @param pData         The pointer to the private data.
- * @param iSizeNew      The designated size;
+ * @retval SUCC
+ * @retval ERR_NOMEM    Insufficient memory for array expansion
  *
- * @return              SUCCESS
- *                      FAIL_NO_MEMORY;
+ * @note The designated capacity should greater than zero.
  */
 int32_t _VectorReisze(VectorData *pData, int32_t iSizeNew);
 
@@ -49,7 +50,7 @@ int32_t VectorInit(Vector **ppObj)
     Vector *pObj;
     *ppObj = (Vector*)malloc(sizeof(Vector));
     if (!(*ppObj))
-        return FAIL_NO_MEMORY;
+        return ERR_NOMEM;
     pObj = *ppObj;
 
     VectorData *pData;
@@ -57,7 +58,7 @@ int32_t VectorInit(Vector **ppObj)
     if (!(pObj->pData)) {
         free(*ppObj);
         *ppObj = NULL;
-        return FAIL_NO_MEMORY;
+        return ERR_NOMEM;
     }
     pData = pObj->pData;
 
@@ -66,7 +67,7 @@ int32_t VectorInit(Vector **ppObj)
         free(pObj->pData);
         free(*ppObj);
         *ppObj = NULL;
-        return FAIL_NO_MEMORY;
+        return ERR_NOMEM;
     }
     pData->iSize_ = 0;
     pData->iCapacity_ = DEFAULT_CAPACITY;
@@ -83,7 +84,7 @@ int32_t VectorInit(Vector **ppObj)
     pObj->get = VectorGet;
     pObj->set_destroy = VectorSetDestroy;
 
-    return SUCCESS;
+    return SUCC;
 }
 
 void VectorDeinit(Vector **ppObj)
@@ -118,13 +119,13 @@ int32_t VectorPushBack(Vector *self, Item item)
     /* If the internal array is full, expand it to double capacity. */
     if (pData->iSize_ == pData->iCapacity_) {
         int iRtnCode = _VectorReisze(pData, pData->iCapacity_ * 2);
-        if (iRtnCode != SUCCESS)
+        if (iRtnCode != SUCC)
             return iRtnCode;
     }
 
     pData->aItem_[pData->iSize_] = item;
     pData->iSize_++;
-    return SUCCESS;
+    return SUCC;
 }
 
 int32_t VectorInsert(Vector *self, Item item, int32_t iIdx)
@@ -133,12 +134,12 @@ int32_t VectorInsert(Vector *self, Item item, int32_t iIdx)
 
     /* Check for illegal index. */
     if ((iIdx < 0) || (iIdx > pData->iSize_))
-        return FAIL_OUT_OF_RANGE;
+        return ERR_IDX;
 
     /* If the internal array is full, expand it to double capacity. */
     if (pData->iSize_ == pData->iCapacity_) {
         int iRtnCode = _VectorReisze(pData, pData->iCapacity_ * 2);
-        if (iRtnCode != SUCCESS)
+        if (iRtnCode != SUCC)
             return iRtnCode;
     }
 
@@ -150,7 +151,7 @@ int32_t VectorInsert(Vector *self, Item item, int32_t iIdx)
     aItem[iIdx] = item;
     pData->iSize_++;
 
-    return SUCCESS;
+    return SUCC;
 }
 
 int32_t VectorPopBack(Vector *self)
@@ -158,12 +159,12 @@ int32_t VectorPopBack(Vector *self)
     VectorData *pData = self->pData;
 
     if (pData->iSize_ == 0)
-        return FAIL_OUT_OF_RANGE;
+        return ERR_IDX;
 
     pData->iSize_--;
     Item item = pData->aItem_[pData->iSize_];
     pData->pDestroy_(item);
-    return SUCCESS;
+    return SUCC;
 }
 
 int32_t VectorDelete(Vector *self, int32_t iIdx)
@@ -172,7 +173,7 @@ int32_t VectorDelete(Vector *self, int32_t iIdx)
 
     /* Check for illegal index. */
     if ((iIdx < 0) || (iIdx >= pData->iSize_))
-        return FAIL_OUT_OF_RANGE;
+        return ERR_IDX;
 
     Item *aItem = pData->aItem_;
     pData->pDestroy_(aItem[iIdx]);
@@ -183,7 +184,7 @@ int32_t VectorDelete(Vector *self, int32_t iIdx)
         memmove(aItem + iIdx, aItem + iIdx + 1, sizeof(Item) *iShftSize);
     pData->iSize_--;
 
-    return SUCCESS;
+    return SUCC;
 }
 
 int32_t VectorResize(Vector *self, int32_t iSize)
@@ -207,14 +208,14 @@ int32_t VectorSet(Vector *self, Item item, int32_t iIdx)
 
     /* Check for illegal index. */
     if ((iIdx < 0) || (iIdx >= pData->iSize_))
-        return FAIL_OUT_OF_RANGE;
+        return ERR_IDX;
 
     /* Clean the resource hold by the old item. */
     Item *aItem = pData->aItem_;
     pData->pDestroy_(aItem[iIdx]);
 
     aItem[iIdx] = item;
-    return SUCCESS;
+    return SUCC;
 }
 
 int32_t VectorGet(Vector *self, Item *pItem, int32_t iIdx)
@@ -223,10 +224,10 @@ int32_t VectorGet(Vector *self, Item *pItem, int32_t iIdx)
 
     /* Check for illegal index. */
     if ((iIdx < 0) || (iIdx >= pData->iSize_))
-        return FAIL_OUT_OF_RANGE;
+        return ERR_IDX;
 
     *pItem = pData->aItem_[iIdx];
-    return SUCCESS;
+    return SUCC;
 }
 
 void VectorSetDestroy(Vector *self, void (*pFunc) (Item))
@@ -257,5 +258,5 @@ int32_t _VectorReisze(VectorData *pData, int32_t iSizeNew)
         pData->aItem_ = aItemNew;
         pData->iCapacity_ = iSizeNew;
     }
-    return (aItemNew)? SUCCESS : FAIL_NO_MEMORY;
+    return (aItemNew)? SUCC : ERR_NOMEM;
 }

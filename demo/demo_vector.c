@@ -24,7 +24,7 @@ void usage_primitive()
     Vector *pVec;
 
     int32_t rc = VectorInit(&pVec);
-    if (rc != SUCCESS)
+    if (rc != SUCC)
         return;
 
     /* Push the item. */

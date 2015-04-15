@@ -8,9 +8,9 @@
 #include <stdint.h>
 #include <assert.h>
 
-#define SUCCESS                     (0)
-#define FAIL_NO_MEMORY              (-1)
-#define FAIL_OUT_OF_RANGE           (-2)
+#define SUCC                     (0)
+#define ERR_NOMEM              (-1)
+#define ERR_IDX           (-2)
 
 typedef const void* Item;
 typedef struct _VectorData VectorData;
@@ -46,168 +46,165 @@ typedef struct _Vector {
  *             Definition for the exported member operations                 *
  *===========================================================================*/
 /**
- * The constructor for Vector.
+ * @brief The constructor for Vector.
  *
- * @param ppObj         The double pointer to the to be constructed vector.
+ * @param ppObj         The double pointer to the to be constructed vector
  *
- * @return              SUCCESS
- *                      FAIL_NO_MEMORY
+ * @retval SUCC
+ * @retval ERR_NOMEM    Insufficient memory for vector construction
  */
 int32_t VectorInit(Vector **ppObj);
 
 /**
- * The destructor for Vector.
+ * @brief The destructor for Vector.
  *
- * @param ppObj          The double pointer to the to be destructed vector.
+ * @param ppObj          The double pointer to the to be destructed vector
  */
 void VectorDeinit(Vector **ppObj);
 
 /**
- * This function inserts the requested item into the tail of the vector with the
+ * @brief Push an item into the end of the vector.
+ *
+ * This function pushes the requested item into the end of the vector with the
  * corresponding vector size extension. If the internal storage is full, the space
- * reallocation is automatically triggered to store the newly inserted item.
+ * reallocation is automatically triggered to store the newly pushed item.
  *
- * It will fail when:
- *   (1) Insufficient memory space for vector expansion.
+ * @param self          The pointer to the Vector structure
+ * @param item          The requested item
  *
- * @param self          The pointer to the Vector structure.
- * @param item          The requested item.
- *
- * @return              SUCCESS
- *                      FAIL_NO_MEMORY
+ * @retval SUCC
+ * @retval ERR_NOMEM    Insufficient memory for vector expansion
  */
 int32_t VectorPushBack(Vector *self, Item item);
 
 /**
+ * @brief Insert an item into the designated index of the vector.
+ *
  * This function inserts the requested item into the designated index of the
- * vector and shifts the trailing items one position towards the tail. Naturally,
+ * vector and shifts the trailing items one position to the end. Naturally,
  * the vector size is extended. And if the internal storage is full, the space
  * reallocation is automatically triggered to store the newly inserted item.
  *
- * Note that the designated index should be equal to or smaller than the vector
+ * @param self          The pointer to the Vector structure
+ * @param item          The requested item
+ * @param iIdx          The designated index
+ *
+ * @retval SUCC
+ * @retval ERR_IDX      The index exceeding the range of the vector
+ *
+ * @note The designated index should be equal to or smaller than the vector
  * size and should not be negative. If the index is equal to the vector size,
- * the operation is equivalent to the push_back().
+ * the operation is equivalent to push_back().
  *
- * It will fail when:
- *   (1) The designated index exceeds the range of the vector.
- *
- * @param self          The pointer to the Vector structure.
- * @param item          The requested item.
- * @param iIdx          The designated index.
- *
- * @return              SUCCESS
- *                      FAIL_OUT_OF_RANGE
  */
 int32_t VectorInsert(Vector *self, Item item, int32_t iIdx);
 
 /**
+ * @brief Pop and item from the end of the vector.
+ *
  * This function removes an item from the end of the vector and applies the
  * configured policy to clean the resource acquired by that item. Naturally,
  * the vector size is shrunk.
  *
- * It will fail when:
- *   (1) The vector is already empty.
+ * @param self          The pointer to the Vector structure
  *
- * @param self          The pointer to the Vector structure.
- *
- * @return              SUCCESS
- *                      FAIL_OUT_OF_RANGE
+ * @retval SUCC
+ * @retval ERR_IDX      The vector is already empty
  */
 int32_t VectorPopBack(Vector *self);
 
 /**
+ * @brief Delete an item from the designated index of the vector.
+ *
  * This function removes the item from the designated index of the vector and
- * shifts the trailing items one position towards the head. The resource acquired
+ * shifts the trailing items one position to the head. The resource acquired
  * by the item will also be cleaned by the configured policy. And naturally, the
  * vector size is shrunk.
  *
- * Note that the designated index should be smaller than the vector size and
+ * @param self          The pointer to the Vector structure
+ * @param iIdx          The designated index
+ *
+ * @retval SUCC
+ * @retval ERR_IDX      The index exceeding the range of the vector
+ *
+ * @note The designated index should be smaller than the vector size and
  * should not be negative. If the index is equal to the vector size minus one,
- * the operation is equivalent to the pop_back().
- *
- * It will fail when:
- *   (1) The designated index exceeds the range of the vector.
- *
- * @param self          The pointer to the Vector structure.
- * @param iIdx          The designated index.
- *
- * @return              SUCCESS
- *                      FAIL_OUT_OF_RANGE
+ * the operation is equivalent to pop_back().
  */
 int32_t VectorDelete(Vector *self, int32_t iIdx);
 
 /**
- * This function inserts the requested item into the designated index of the
+ * @brief Set the requested item at the designated index of the vector.
+ *
+ * This function puts the requested item into the designated index of the
  * vector and cleans the previously stored item.
  *
- * Note that the designated index should be smaller than the vector size.
+ * @param self          The pointer to the Vector structure
+ * @param item          The requested item
+ * @param iIdx          The designated index
  *
- * It will fail when:
- *   (1) The designated index exceeds the range of the vector.
+ * @retval SUCC
+ * @retval ERR_IDX      The index exceeding the range of the vector
  *
- * @param self          The pointer to the Vector structure.
- * @param item          The requested item.
- * @param iIdx          The designated index.
- *
- * @return              SUCCESS
- *                      FAIL_OUT_OF_RANGE
+ * @note The designated index should be smaller than the vector size and should
+ * not be negative.
  */
 int32_t VectorSet(Vector *self, Item item, int32_t iIdx);
 
 /**
- * This function returns the item stored in the designated index.
+ * @brief Get an item from the designated index of the vector.
  *
- * Note that the designated index should be smaller than the vector size.
+ * @param self          The pointer to the Vector structure
+ * @param item          The pointer to the returned item
+ * @param iIdx          The designated index
  *
- * It will fail when:
- *   (1) The designated index exceeds the range of the vector.
+ * @retval SUCC
+ * @retval ERR_IDX      The index exceeding the range of the vector
  *
- * @param self          The pointer to the Vector structure.
- * @param item          The pointer to the returned item.
- * @param iIdx          The designated index.
+ * @note The designated index should be smaller than the vector size and should
+ * not be negative.
  */
 int32_t VectorGet(Vector *self, Item *pItem, int32_t iIdx);
 
 /**
+ * @brief Change the container capacity.
+ *
  * This function resizes the capacity of the internal storage. If the new
  * capacity is smaller than the old size. The trailing items will be cleaned.
  *
- * Note that the designated capacity should greater than zero.
+ * @param self         The pointer to the Vector structure
+ * @param iCap         The designated capacity
  *
- * It will fail when:
- *   (1) Insufficient memory space for vector expansion.
+ * @retval SUCC
+ * @retval ERR_NOMEM   Insufficient memory for vector expansion
  *
- * @param self         The pointer to the Vector structure.
- * @param iCap         The designated capacity.
- *
- * @return              SUCCESS
- *                      FAIL_NO_MEMORY
+ * @note The designated capacity should greater than zero.
  */
 int32_t VectorResize(Vector *self, int32_t iCap);
 
 /**
- * This function returns the number of items stored in the vector.
+ * @brief Return the number of stored items.
  *
- * @param self          The pointer to the Vector structure.
+ * @param self          The pointer to the Vector structure
  *
- * @return              Number of the stored items.
+ * @return              The number of stored items
  */
 int32_t VectorSize(Vector *self);
 
 /**
- * This function returns the capacity of the internal storage.
+ * @brief Return the container capacity.
  *
- * @param self          The pointer to the Vector structure.
+ * @param self          The pointer to the Vector structure
  *
- * @return              Size of the current capacity.
+ * @return              The container capacity
  */
 int32_t VectorCapacity(Vector *self);
 
 /**
- * This function sets the user defined item resource clean strategy.
+ * @brief Set the user defined clean strategy for the resource hold by an item.
  *
- * @param self          The pointer to the Vector structure.
- * @param pFunc         The pointer to the user defined function.
+ * @param self          The pointer to the Vector structure
+ * @param pFunc         The pointer to the user defined function
  */
 void VectorSetDestroy(Vector *self, void (*pFunc) (Item));
 
