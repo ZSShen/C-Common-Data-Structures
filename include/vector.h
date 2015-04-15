@@ -1,16 +1,7 @@
 #ifndef _VECTOR_H_
 #define _VECTOR_H_
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
-#include <stdint.h>
-#include <assert.h>
-
-#define SUCC                     (0)
-#define ERR_NOMEM              (-1)
-#define ERR_IDX           (-2)
+#include "util.h"
 
 typedef const void* Item;
 typedef struct _VectorData VectorData;
