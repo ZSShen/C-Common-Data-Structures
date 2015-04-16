@@ -4,22 +4,22 @@
 /*===========================================================================*
  *                  Hide the private data of the tree                        *
  *===========================================================================*/
-struct _SimTreeNode {
+typedef struct _SimTreeNode {
     Item item;
     struct _SimTreeNode *pParent;
     struct _SimTreeNode *pLeft;
     struct _SimTreeNode *pRight;
-};
+} SimTreeNode;
 
 struct _SimTreeData {
-    uint32_t _uiSize;
+    int32_t _iSize;
     SimTreeNode *_pRoot;
     int32_t (*_pCompare)(Item, Item);
     void (*_pDestroy)(Item);
 };
 
-#define DIRECTION_LEFT      (0)
-#define DIRECTION_RIGHT     (1)
+#define DIRECT_LEFT      (0)
+#define DIRECT_RIGHT     (1)
 
 
 /*===========================================================================*
@@ -53,12 +53,12 @@ SimTreeNode* _SimTreeMaximal(SimTreeNode *pCurr);
 SimTreeNode* _SimTreeMinimal(SimTreeNode *pCurr);
 
 /**
- * Return the successor of the requested node.
+ * Return the SUCCor of the requested node.
  *
  * @param pCurr      The pointer to the requested node.
  *
  * @return           Non-NULL: The pointer to the target node.
- *                   NULL    : No successor can be found.
+ *                   NULL    : No SUCCor can be found.
  */
 SimTreeNode* _SimTreeSuccessor(SimTreeNode *pCurr);
 
@@ -104,7 +104,6 @@ int32_t _SimTreeItemCompare(Item itemSrc, Item itemTge);
  */
 void _SimTreeItemDestroy(Item item);
 
-#ifdef DEBUG
 /**
  * This function is used for tree structure verification and is only built
  * for debug version.
@@ -114,7 +113,7 @@ void _SimTreeItemDestroy(Item item);
  * @return          true|false: Whether the tree has legal structure.
  */
 bool _SimTreeValidate(SimTreeData *pData);
-#endif
+
 
 /*===========================================================================*
  *           Implementation for the exported member operations               *
@@ -124,17 +123,17 @@ int32_t SimTreeInit(SimpleTree **ppObj)
     SimpleTree *pObj;
     *ppObj = (SimpleTree*)malloc(sizeof(SimpleTree));
     if (!(*ppObj))
-        return FAIL_NO_MEMORY;
+        return ERR_NOMEM;
     pObj = *ppObj;
 
     pObj->pData = (SimTreeData*)malloc(sizeof(SimTreeData));
     if (!pObj->pData) {
         free(*ppObj);
         *ppObj = NULL;
-        return FAIL_NO_MEMORY;
+        return ERR_NOMEM;
     }
     pObj->pData->_pRoot = NULL;
-    pObj->pData->_uiSize = 0;
+    pObj->pData->_iSize = 0;
     pObj->pData->_pCompare = _SimTreeItemCompare;
     pObj->pData->_pDestroy = _SimTreeItemDestroy;
 
@@ -149,7 +148,7 @@ int32_t SimTreeInit(SimpleTree **ppObj)
     pObj->set_compare = SimTreeSetCompare;
     pObj->set_destroy = SimTreeSetDestroy;
 
-    return SUCCESS;
+    return SUCC;
 }
 
 void SimTreeDeinit(SimpleTree **ppObj)
@@ -175,7 +174,7 @@ int32_t SimTreeInsert(SimpleTree *self, Item item)
 
     pNew = (SimTreeNode*)malloc(sizeof(SimTreeNode));
     if (!pNew)
-        return FAIL_NO_MEMORY;
+        return ERR_NOMEM;
     pNew->item = item;
     pNew->pParent = NULL;
     pNew->pLeft = NULL;
@@ -188,22 +187,22 @@ int32_t SimTreeInsert(SimpleTree *self, Item item)
         iOrder = self->pData->_pCompare(item, pCurr->item);
         if (iOrder > 0) {
             pCurr = pCurr->pRight;
-            cDirect = DIRECTION_RIGHT;
+            cDirect = DIRECT_RIGHT;
         }
         else if (iOrder < 0) {
             pCurr = pCurr->pLeft;
-            cDirect = DIRECTION_LEFT;
+            cDirect = DIRECT_LEFT;
         }
         else {
             free(pNew);
-            return FAIL_DATA_CONFLICT;
+            return ERR_DUPKEY;
         }
     }
 
     /* Arrive at the proper position. */
     pNew->pParent = pParent;
     if (pParent) {
-        if (cDirect == DIRECTION_LEFT)
+        if (cDirect == DIRECT_LEFT)
             pParent->pLeft = pNew;
         else
             pParent->pRight = pNew;
@@ -211,14 +210,9 @@ int32_t SimTreeInsert(SimpleTree *self, Item item)
         self->pData->_pRoot = pNew;
 
     /* Increase the size. */
-    self->pData->_uiSize++;
+    self->pData->_iSize++;
 
-#ifdef DEBUG
-    bool bLegal = _SimTreeValidate(self->pData);
-    assert(bLegal == true);
-#endif
-
-    return SUCCESS;
+    return SUCC;
 }
 
 int32_t SimTreeSearch(SimpleTree *self, Item *pItem)
@@ -227,9 +221,9 @@ int32_t SimTreeSearch(SimpleTree *self, Item *pItem)
     pFind = _SimTreeSearch(self->pData, *pItem);
     if (pFind) {
         *pItem = pFind->item;
-        return SUCCESS;
+        return SUCC;
     }
-    return FAIL_NO_DATA;
+    return ERR_NODATA;
 }
 
 int32_t SimTreeDelete(SimpleTree *self, Item item)
@@ -238,9 +232,9 @@ int32_t SimTreeDelete(SimpleTree *self, Item item)
 
     pCurr = _SimTreeSearch(self->pData, item);
     if (!pCurr)
-        return FAIL_NO_DATA;
+        return ERR_NODATA;
 
-    /* The specified node has no child. */
+    /* The target node has no child. */
     if ((!pCurr->pLeft) && (!pCurr->pRight)) {
         if (pCurr->pParent) {
             if (pCurr == pCurr->pParent->pLeft)
@@ -253,7 +247,7 @@ int32_t SimTreeDelete(SimpleTree *self, Item item)
         self->pData->_pDestroy(pCurr->item);
         free(pCurr);
     } else {
-        /* The specified node has two children. */
+        /* The target node has two children. */
         if ((pCurr->pLeft) && (pCurr->pRight)) {
             pSucc = _SimTreeSuccessor(pCurr);
 
@@ -273,7 +267,7 @@ int32_t SimTreeDelete(SimpleTree *self, Item item)
             pCurr->item = pSucc->item;
             free(pSucc);
         }
-        /* The specified node has one child. */
+        /* The target node has one child. */
         else {
             pChild = pCurr->pLeft;
             if (!pChild)
@@ -295,14 +289,9 @@ int32_t SimTreeDelete(SimpleTree *self, Item item)
     }
 
     /* Decrease the size. */
-    self->pData->_uiSize--;
+    self->pData->_iSize--;
 
-#ifdef DEBUG
-    bool bLegal = _SimTreeValidate(self->pData);
-    assert(bLegal == true);
-#endif
-
-    return SUCCESS;
+    return SUCC;
 }
 
 int32_t SimTreeMaximum(SimpleTree *self, Item *pItem)
@@ -310,9 +299,9 @@ int32_t SimTreeMaximum(SimpleTree *self, Item *pItem)
     SimTreeNode *pFind = _SimTreeMaximal(self->pData->_pRoot);
     if (pFind) {
         *pItem = pFind->item;
-        return SUCCESS;
+        return SUCC;
     }
-    return FAIL_NO_DATA;
+    return ERR_NODATA;
 }
 
 int32_t SimTreeMinimum(SimpleTree *self, Item *pItem)
@@ -320,19 +309,19 @@ int32_t SimTreeMinimum(SimpleTree *self, Item *pItem)
     SimTreeNode *pFind = _SimTreeMinimal(self->pData->_pRoot);
     if (pFind) {
         *pItem = pFind->item;
-        return SUCCESS;
+        return SUCC;
     }
-    return FAIL_NO_DATA;
+    return ERR_NODATA;
 }
 
 int32_t SimTreeSuccessor(SimpleTree *self, Item *pItem)
 {
-    SimTreeNode *pFind = _SimTreeSuccessor(self->pData->_pRoot);
+    SimTreeNode *pFind = _SimTreeSUCCor(self->pData->_pRoot);
     if (pFind) {
         *pItem = pFind->item;
-        return SUCCESS;
+        return SUCC;
     }
-    return FAIL_NO_DATA;
+    return ERR_NODATA;
 }
 
 int32_t SimTreePredecessor(SimpleTree *self, Item *pItem)
@@ -340,14 +329,14 @@ int32_t SimTreePredecessor(SimpleTree *self, Item *pItem)
     SimTreeNode *pFind = _SimTreePredecessor(self->pData->_pRoot);
     if (pFind) {
         *pItem = pFind->item;
-        return SUCCESS;
+        return SUCC;
     }
-    return FAIL_NO_DATA;
+    return ERR_NODATA;
 }
 
-uint32_t SimTreeSize(SimpleTree *self)
+int32_t SimTreeSize(SimpleTree *self)
 {
-    return self->pData->_uiSize;
+    return self->pData->_iSize;
 }
 
 void SimTreeSetCompare(SimpleTree *self, int32_t (*pFunc) (Item, Item))
@@ -372,23 +361,23 @@ void _SimTreeDeinit(SimTreeData *pData)
         return;
 
     /* Simulate the stack and apply iterative post-order tree traversal. */
-    SimTreeNode ***stack = (SimTreeNode***)malloc(sizeof(SimTreeNode**) * pData->_uiSize);
+    SimTreeNode ***stack = (SimTreeNode***)malloc(sizeof(SimTreeNode**) * pData->_iSize);
     assert(stack != NULL);
 
-    uint32_t uiSize = 0;
-    stack[uiSize++] = &(pData->_pRoot);
-    while (uiSize > 0) {
-        SimTreeNode **ppCurr = stack[uiSize - 1];
+    int32_t iSize = 0;
+    stack[iSize++] = &(pData->_pRoot);
+    while (iSize > 0) {
+        SimTreeNode **ppCurr = stack[iSize - 1];
         SimTreeNode *pCurr = *ppCurr;
         if (pCurr->pLeft)
-            stack[uiSize++] = &(pCurr->pLeft);
+            stack[iSize++] = &(pCurr->pLeft);
         else if (pCurr->pRight)
-            stack[uiSize++] = &(pCurr->pRight);
+            stack[iSize++] = &(pCurr->pRight);
         else {
             pData->_pDestroy(pCurr->item);
             free(pCurr);
             *ppCurr = NULL;
-            uiSize--;
+            iSize--;
         }
     }
     free(stack);
@@ -419,12 +408,12 @@ SimTreeNode* _SimTreeMaximal(SimTreeNode *pCurr)
 SimTreeNode* _SimTreeSuccessor(SimTreeNode *pCurr)
 {
     if (pCurr) {
-        /* Case 1: The minimal node of the non-null right subtree. */
+        /* Case 1: The minimal node in the non-null right subtree. */
         if (pCurr->pRight)
             pCurr = _SimTreeMinimal(pCurr->pRight);
 
-        /* Case 2: The ancestor which considers the designated node as the maximal node of
-           its left subtree. */
+        /* Case 2: The ancestor which considers the designated node as the
+           maximal node of its left subtree. */
         else {
             while((pCurr->pParent) && (pCurr == pCurr->pParent->pRight))
                 pCurr = pCurr->pParent;
@@ -437,12 +426,12 @@ SimTreeNode* _SimTreeSuccessor(SimTreeNode *pCurr)
 SimTreeNode* _SimTreePredecessor(SimTreeNode *pCurr)
 {
     if (pCurr) {
-        /* Case 1: The maximal node of the non-null left subtree. */
+        /* Case 1: The maximal node in the non-null left subtree. */
         if (pCurr->pLeft)
             pCurr = _SimTreeMaximal(pCurr->pLeft);
 
-        /* Case 2: The ancestor which considers the designated node as the minimal node of
-           its right subtree. */
+        /* Case 2: The ancestor which considers the designated node as the
+           minimal node of its right subtree. */
         else {
             while((pCurr->pParent) && (pCurr == pCurr->pParent->pLeft))
                 pCurr = pCurr->pParent;
@@ -472,48 +461,36 @@ SimTreeNode* _SimTreeSearch(SimTreeData *pData, Item item)
 
 int32_t _SimTreeItemCompare(Item itemSrc, Item itemTge)
 {
-    int32_t iSrc, iTge;
-
-#if __x86_64__
-    int64_t lTmp;
-    lTmp = (int64_t)itemSrc;
-    iSrc = (int32_t)lTmp;
-    lTmp = (int64_t)itemTge;
-    iTge = (int32_t)lTmp;
-#else
-    iSrc = (int32_t)itemSrc;
-    iTge = (int32_t)itemTge;
-#endif
-
-    return iSrc - iTge;
+    if (itemSrc == itemTge)
+        return 0;
+    else
+        return (itemSrc > itemTge)? 1 : -1;
 }
 
-void _SimTreeItemDestroy(Item item)
-{ return; }
+void _SimTreeItemDestroy(Item item) {}
 
-#ifdef DEBUG
 bool _SimTreeValidate(SimTreeData *pData)
 {
     bool bLegal = true;
 
     /* Simulate the stack and apply iterative in order tree traversal. */
-    SimTreeNode **stack = (SimTreeNode**)malloc(sizeof(SimTreeNode*) * pData->_uiSize);
+    SimTreeNode **stack = (SimTreeNode**)malloc(sizeof(SimTreeNode*) * pData->_iSize);
     SimTreeNode *pCurr = pData->_pRoot;
     SimTreeNode *pPred = NULL;
-    uint32_t uiSize = 0;
+    int32_t iSize = 0;
 
-    while (pCurr || (uiSize > 0)) {
+    while (pCurr || (iSize > 0)) {
         if (pCurr) {
-            stack[uiSize++] = pCurr;
+            stack[iSize++] = pCurr;
             pCurr = pCurr->pLeft;
         } else {
             if (pPred) {
-                pCurr = stack[uiSize - 1];
+                pCurr = stack[iSize - 1];
                 int32_t iOrder = pData->_pCompare(pPred->item, pCurr->item);
                 if (iOrder >= 0)
                     bLegal = false;
             }
-            pPred = stack[--uiSize];
+            pPred = stack[--iSize];
             pCurr = pPred->pRight;
         }
     }
@@ -521,4 +498,3 @@ bool _SimTreeValidate(SimTreeData *pData)
 
     return bLegal;
 }
-#endif

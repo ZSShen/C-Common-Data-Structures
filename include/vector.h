@@ -3,38 +3,46 @@
 
 #include "util.h"
 
-/** Item is the element type for this container. */
+/** Item is the data type for the container element. */
 typedef const void* Item;
 
-/** VectorData is the type of the private data handle. */
+/** VectorData is the data type for the container private information. */
 typedef struct _VectorData VectorData;
 
-/** Vector is the exported type to interact with this container. */
+/** Vector is the implementation for dynamic array. */
 typedef struct _Vector {
+    /** The container private information */
     VectorData *pData;
 
-    /** The operator to push an item into the end of the vector. */
+    /** Operator to push an item into the end of the vector. */
     int32_t (*push_back) (struct _Vector*, Item);
 
-    /** The operator to insert an item into the designated index of the vector. */
+    /** Operator to insert an item into the designated index of the vector. */
     int32_t (*insert) (struct _Vector*, Item, int32_t);
 
-    /* The operators for data deletion. */
+    /** Operator to pop an item from the end of the vector. */
     int32_t (*pop_back) (struct _Vector*);
+
+    /** Operator to delete an item from the designated index of the vector. */
     int32_t (*delete) (struct _Vector*, int32_t);
 
-    /* The operators for direct index. */
+    /** Operator to set the requested item at the designated index of the vector. */
     int32_t (*set) (struct _Vector*, Item, int32_t);
+
+    /** Operator to get an item from the designated index of the vector. */
     int32_t (*get) (struct _Vector*, Item*, int32_t);
 
-    /* The operator to change the internal storage. */
+    /** Operator to change the container capacity. */
     int32_t (*resize) (struct _Vector*, int32_t);
 
-    /* The operators to query the container capacity. */
+    /** Operator to return the number of stored items. */
     int32_t (*size) (struct _Vector*);
+
+    /** Operator to return the container capacity. */
     int32_t (*capacity) (struct _Vector*);
 
-    /* The operators to set the user defined resource management policy. */
+    /** Operator to set the user defined clean strategy for the resource hold
+        by an item */
     void (*set_destroy) (struct _Vector*, void (*) (Item));
 } Vector;
 
@@ -97,7 +105,7 @@ int32_t VectorPushBack(Vector *self, Item item);
 int32_t VectorInsert(Vector *self, Item item, int32_t iIdx);
 
 /**
- * @brief Pop and item from the end of the vector.
+ * @brief Pop an item from the end of the vector.
  *
  * This function removes an item from the end of the vector and applies the
  * configured policy to clean the resource acquired by that item. Naturally,

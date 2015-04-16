@@ -1,6 +1,6 @@
 var simple__tree_8h =
 [
-    [ "_SimpleTree", "struct__SimpleTree.html", "struct__SimpleTree" ],
+    [ "SimpleTree", "structSimpleTree.html", "structSimpleTree" ],
     [ "SUCCESS", "simple__tree_8h.html#aa90cac659d18e8ef6294c7ae337f6b58", null ],
     [ "FAIL_NO_MEMORY", "simple__tree_8h.html#a845e1da5e8a92b35853fd0b9a09b6e1e", null ],
     [ "FAIL_NO_DATA", "simple__tree_8h.html#ad78ac5833a57b71fec0ec7755b80ae7e", null ],
@@ -8,7 +8,6 @@ var simple__tree_8h =
     [ "Item", "simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed", null ],
     [ "SimTreeNode", "simple__tree_8h.html#a3ce45cf5d11b5a05f2a72fbbe67183df", null ],
     [ "SimTreeData", "simple__tree_8h.html#ade561e68da2347c9616c57a54790f581", null ],
-    [ "SimpleTree", "simple__tree_8h.html#afd68b00da5f5ed12a1b313bdb4840e54", null ],
     [ "SimTreeInit", "simple__tree_8h.html#a464772056a4bc22cb84951c7cd5f06a2", null ],
     [ "SimTreeDeinit", "simple__tree_8h.html#a9573faaafd97c678341783863dfc2846", null ],
     [ "SimTreeInsert", "simple__tree_8h.html#aacb272050870f9f6a488953694ed6c01", null ],
