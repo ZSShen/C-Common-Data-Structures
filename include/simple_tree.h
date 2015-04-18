@@ -3,149 +3,179 @@
 
 #include "util.h"
 
+/** Item is the data type for the container element. */
 typedef const void* Item;
+
+/** SimTreeData is the data type for the container private information. */
 typedef struct _SimTreeData SimTreeData;
 
+/** The implementation for basic binary search tree. */
 typedef struct _SimpleTree {
+    /** The container private information. */
     SimTreeData *pData;
+
+    /** The operator to insert an item into the tree. */
     int32_t (*insert) (struct _SimpleTree*, Item);
-    int32_t (*search) (struct _SimpleTree*, Item*);
+
+    /** The operator to check for the existence of the item having the same
+        order with the requested one. */
+    int32_t (*search) (struct _SimpleTree*, Item, Item*);
+
+    /** The operator to delete the item having the same order with the
+        requested one. */
     int32_t (*delete) (struct _SimpleTree*, Item);
+
+    /** The operator to get the item with the maximum order of the tree. */
     int32_t (*maximum) (struct _SimpleTree*, Item*);
+
+    /** The operator to get the item with the minimum order of the tree. */
     int32_t (*minimum) (struct _SimpleTree*, Item*);
-    int32_t (*successor) (struct _SimpleTree*, Item*);
-    int32_t (*predecessor) (struct _SimpleTree*, Item*);
+
+    /** The operator to get the immediate successor of the requested item. */
+    int32_t (*successor) (struct _SimpleTree*, Item, Item*);
+
+    /** The operator to get the immediate predecessor of the requested item. */
+    int32_t (*predecessor) (struct _SimpleTree*, Item, Item*);
+
+    /** The operator to get the number of stored item. */
     int32_t (*size) (struct _SimpleTree*);
+
+    /** The operator to set the user defined order comparison strategy for a
+        a pair of items. */
     void (*set_compare) (struct _SimpleTree*, int32_t (*) (Item, Item));
+
+    /** The operator to set the user defined clean strategy for the resource
+        hold by an item. */
     void (*set_destroy) (struct _SimpleTree*, void (*) (Item));
 } SimpleTree;
 
 
 /**
- * The constructor for SimpleTree.
+ * @brief The constructor for SimpleTree.
  *
- * @param ppObj         The double pointer to the to be constructed tree.
+ * @param ppObj         The double pointer to the to be constructed tree
  *
- * @return              SUCC
- *                      ERR_NOMEM
+ * @retval SUCC
+ * @retval ERR_NOMEM    Insufficient memory for tree construction
  */
 int32_t SimTreeInit(SimpleTree **ppObj);
 
 /**
- * The destructor for SimpleTree.
+ * @brief The destructor for SimpleTree.
  *
- * @param ppObj          The double pointer to the to be destructed tree.
+ * @param ppObj         The double pointer to the to be destructed tree
  */
 void SimTreeDeinit(SimpleTree **ppObj);
 
 /**
- * @param self          The pointer to the SimpleTree structure.
+ * @brief Insert an item into the tree.
+ *
+ * This function inserts the requested item into the proper position of the
+ * tree to maintain the structure invariant.
+ *
+ * @param self          The pointer to the SimpleTree structure
  * @param item          The requested item.
  *
- * @return              SUCC
- *                      ERR_NOMEM
- *                      ERR_DUPKEY
+ * @retval SUCC
+ * @retval ERR_NOMEM    Insufficient memory for item insertion
  *
- * This function inserts the requested item into the proper location of the tree.
- * It will fail when:
- *     1. Insufficient memory space.
- *     2. The requested item conflicts with the one stored in the tree.
+ * @note If the order of the requested item is the same with a certain one
+ * already stored in the tree. The old item will be cleaned by the configured
+ * policy so that the requested one can take the position.
  */
 int32_t SimTreeInsert(SimpleTree *self, Item item);
 
 /**
- * @param self          The pointer to the SimpleTree structure.
- * @param pItem         The pointer to the requested item.
+ * @brief Check for the existence of the item having the same order with the
+ * requested one.
  *
- * @return              SUCC
- *                      ERR_NODATA
+ * This function checks if there is already an item having the same order with
+ * the requested one in the tree. If such item can be found, it will be returned
+ * by the third parameter. In other words, this function can be used to query
+ * the item existence. And it can also be to acquire the found item.
  *
- * This function checks whether the tree has the requested item. If the input
- * item can be found, it's content is replaced with the content of the item
- * found in the tree.
- * It will fail when:
- *     1. The requested item cannot be found in the tree.
+ * @param self          The pointer to the SimpleTree structure
+ * @param itemIn        The requested item
+ * @param pItemOut      The pointer to the returned item
+ *
+ * @retval SUCC
+ * @retval ERR_NODATA   The target item cannot be found
  */
-int32_t SimTreeSearch(SimpleTree *self, Item *pItem);
+int32_t SimTreeSearch(SimpleTree *self, Item itemIn, Item *pItemOut);
 
 /**
- * @param self          The pointer to the SimpleTree structure.
- * @param item          The requested item.
+ * @brief Delete the item having the same order with the requested one from the
+ * tree.
  *
- * @return              SUCC
- *                      ERR_NODATA
+ * This function first searches for the item having the same order with the
+ * requested one in the tree. If such item can be found, the item will be cleaned
+ * by the configured policy.
  *
- * This function deletes the requested item from the tree and adjusts the tree structure.
- * It will fail when:
- *     1. The requested item cannot be found in the tree.
+ * @param self          The pointer to the SimpleTree structure
+ * @param item          The requested item
+ *
+ * @retval SUCC
+ * @retval ERR_NODATA   The target item cannot be found
  */
 int32_t SimTreeDelete(SimpleTree *self, Item item);
 
 /**
- * @param self          The pointer to the SimpleTree structure.
- * @param pItem         The pointer to the returned item.
+ * @brief Return the item with the maximum order of the tree.
+
+ * @param self          The pointer to the SimpleTree structure
+ * @param pItem         The pointer to the returned item
  *
- * @return              SUCC
- *                      ERR_NODATA
- *
- * This function returns the item with the maximum order of the tree.
- * It will fail when:
- *     1. The tree is empty.
+ * @retval SUCC
+ * @retval ERR_IDX      The tree is empty
  */
 int32_t SimTreeMaximum(SimpleTree *self, Item *pItem);
 
 /**
- * @param self          The pointer to the SimpleTree structure.
- * @param pItem         The pointer to the returned item.
+ * @brief Return the item with the minimum order of the tree.
  *
- * @return              SUCC
- *                      ERR_NODATA
+ * @param self          The pointer to the SimpleTree structure
+ * @param pItem         The pointer to the returned item
  *
- * This function returns the item with the minimum order of the tree.
- * It will fail when:
- *     1. The tree is empty.
+ * @retval SUCC
+ * @retval ERR_IDX      The tree is empty
  */
 int32_t SimTreeMinimum(SimpleTree *self, Item *pItem);
 
 /**
- * @param self         The pointer to the SimpleTree structure.
- * @param pItem        The pointer to the returned item.
+ * @brief Return the item which is the immediate successor of the requested item.
  *
- * @return             SUCC
- *                     ERR_NODATA
+ * @param self         The pointer to the SimpleTree structure
+ * @param itemIn       The requested item
+ * @param pItemOut     The pointer to the returned item
  *
- * This function returns the item which is the SUCCor of the requested one.
- * It will fail when:
- *     1. The SUCCor cannot be found.
+ * @retval SUCC
+ * @retval ERR_NODATA  The immediate successor cannot be found
  */
-int32_t SimTreeSuccessor(SimpleTree *self, Item *pItem);
+int32_t SimTreeSuccessor(SimpleTree *self, Item itemIn, Item *pItemOut);
 
 /**
- * @param self         The pointer to the SimpleTree structure.
- * @param pItem        The pointer to the returned item.
+ * @brief Return the item which is the immediate predecessor of the requested item.
  *
- * @return             SUCC
- *                     ERR_NODATA
+ * @param self         The pointer to the SimpleTree structure
+ * @param itemIn       The requested item
+ * @param pItemOut     The pointer to the returned item
  *
- * This function returns the item which is the predecessor of the requested one.
- * It will fail when:
- *     1. The predecessor cannot be found.
+ * @retval SUCC
+ * @retval ERR_NODATA  The immediate predecessor cannot be found
  */
-int32_t SimTreePredecessor(SimpleTree *self, Item *pItem);
+int32_t SimTreePredecessor(SimpleTree *self, Item itemIn, Item *pItemOut);
 
 /**
- * int32_t (*size) (SimpleTree *self)
+ * @brief Return the number of items stored in the tree.
  *
  * @param self          The pointer to the SimpleTree structure.
  *
- * @return              Tree size
- *
- * This function returns the size of the tree.
+ * @return              The number of stored items
  */
 int32_t SimTreeSize(SimpleTree *self);
 
 /**
- * void (*set_compare) (SimpleTree *self, int32_t (*pFunc) (Item, Item))
+ * @brief Set the user defined order comparison strategy for a pair of items.
  *
  * @param self          The pointer to the SimpleTree structure.
  * @param pFunc         The pointer to the user defined function.
@@ -155,10 +185,10 @@ int32_t SimTreeSize(SimpleTree *self);
 void SimTreeSetCompare(SimpleTree *self, int32_t (*pFunc) (Item, Item));
 
 /**
+ * @brief Set the user defined clean strategy for the resource hold by an item.
+ *
  * @param self          The pointer to the SimpleTree structure.
  * @param pFunc         The pointer to the user defined function.
- *
- * This function sets the user defined item deallocation strategy.
  */
 void SimTreeSetDestroy(SimpleTree *self, void (*pFunc) (Item));
 

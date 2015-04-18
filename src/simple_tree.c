@@ -26,91 +26,94 @@ struct _SimTreeData {
  *                  Definition for internal functions                        *
  *===========================================================================*/
 /**
- * Traverse all the nodes and release the allocated memory space.
+ * @brief Traverse all the nodes and clean the allocated resource.
  *
- * @param pData     The pointer to the tree private data.
+ * @param pData         The pointer to the tree private data
  */
 void _SimTreeDeinit(SimTreeData *pData);
 
 /**
- * Return the node with maximal order in the subtree rooted by the requested node.
+ * @brief Return the node with maximal order in the subtree rooted by the
+ * requested node.
  *
- * @param pCurr      The pointer to the requested node.
+ * @param pCurr         The pointer to the requested node
  *
- * @return           Non-NULL: The pointer to the target node.
- *                   NULL    : The subtree is empty.
+ * @return Non-NULL     The pointer to the returned node
+ * @return NULL         The subtree is empty
  */
 SimTreeNode* _SimTreeMaximal(SimTreeNode *pCurr);
 
 /**
- * Return the node with minimal order in the subtree rooted by the requested node.
+ * @brief Return the node with minimal order in the subtree rooted by the
+ * requested node.
  *
- * @param pCurr      The pointer to the requested node.
+ * @param pCurr         The pointer to the requested node
  *
- * @return           Non-NULL: The pointer to the target node.
- *                   NULL    : The subtree is empty.
+ * @return Non-NULL     The pointer to the target node
+ * @return NULL         The subtree is empty
  */
 SimTreeNode* _SimTreeMinimal(SimTreeNode *pCurr);
 
 /**
- * Return the SUCCor of the requested node.
+ * @brief Return the immediate successor of the requested node.
  *
- * @param pCurr      The pointer to the requested node.
+ * @param pCurr         The pointer to the requested node
  *
- * @return           Non-NULL: The pointer to the target node.
- *                   NULL    : No SUCCor can be found.
+ * @return Non-NULL     The pointer to the returned node
+ * @return NULL         The immediate successor cannot be found
  */
 SimTreeNode* _SimTreeSuccessor(SimTreeNode *pCurr);
 
 /**
- * Return the predecessor of the requested node.
+ * @brief Return the immediate predecessor of the requested node.
  *
- * @param pCurr      The pointer to the requested node.
+ * @param pCurr         The pointer to the requested node
  *
- * @return           Non-NULL: The pointer to the target node.
- *                   NULL    : No predecessor can be found.
+ * @return Non-NULL     The pointer to the returned node
+ * @return NULL         The immediate predecessor cannot be found
  */
 SimTreeNode* _SimTreePredecessor(SimTreeNode *pCurr);
 
 /**
- * Return the node containing the requested item.
+ * @brief Get the node which stores the item having the same order with the
+ * requested one.
  *
- * @param pData      The pointer to tree private data.
- * @param item       The pointer to the requested item.
+ * @param pData         The pointer to tree private data
+ * @param item          The pointer to the requested item
  *
- * @return           Non-NULL: The pointer to the target node.
- *                   NULL    : No matched node.
+ * @return Non-NULL     The pointer to the target node
+ * @return NULL         No matched node
  */
 SimTreeNode* _SimTreeSearch(SimTreeData *pData, Item item);
 
 /**
- * This function is the default item comparison strategy for a pair of tree nodes.
- * Note that it considers source and target items as primitive data and gives the
- * larger order to the one with larger value.
+ * @brief The default order comparison strategy for a pair of items.
  *
- * @param itemSrc       The source item.
- * @param itemTge       The target item.
+ * This function considers the source and target items as primitive data and
+ * gives the larger order to the item having the larger value.
  *
- * @return        > 0 : The source item goes after the target one.
- *                  0 : The source item equals to the target one.
- *                < 0 : The source item goes before the target one.
+ * @param itemSrc       The source item
+ * @param itemTge       The target item
+ *
+ * @retval 1            The source item has the larger order
+ * @retval 0            Both the items have the same order
+ * @retval -1           The source item has the smaller order
  */
 int32_t _SimTreeItemCompare(Item itemSrc, Item itemTge);
 
 /**
- * This function is the default deallocation strategy for an item.
+ * @brief The default clean strategy for the resource hold by an item.
  *
- * @param item         The requested item.
+ * @param item         The requested item
  */
 void _SimTreeItemDestroy(Item item);
 
 /**
- * This function is used for tree structure verification and is only built
- * for debug version.
+ * @brief The internal debug function to verify the tree structure invariant.
  *
- * @param pData         The pointer to the tree private data.
+ * @param pData         The pointer to the tree private data
  *
- * @return          true|false: Whether the tree has legal structure.
+ * @return true|false   Whether the tree has legal structure.
  */
 bool _SimTreeValidate(SimTreeData *pData);
 
@@ -194,8 +197,11 @@ int32_t SimTreeInsert(SimpleTree *self, Item item)
             cDirect = DIRECT_LEFT;
         }
         else {
+            /* Conflict with the already stored item. */
             free(pNew);
-            return ERR_DUPKEY;
+            self->pData->_pDestroy(pCurr->item);
+            pCurr->item = item;
+            return SUCC;
         }
     }
 
@@ -215,12 +221,12 @@ int32_t SimTreeInsert(SimpleTree *self, Item item)
     return SUCC;
 }
 
-int32_t SimTreeSearch(SimpleTree *self, Item *pItem)
+int32_t SimTreeSearch(SimpleTree *self, Item itemIn, Item *pItemOut)
 {
     SimTreeNode *pFind;
-    pFind = _SimTreeSearch(self->pData, *pItem);
+    pFind = _SimTreeSearch(self->pData, itemIn);
     if (pFind) {
-        *pItem = pFind->item;
+        *pItemOut = pFind->item;
         return SUCC;
     }
     return ERR_NODATA;
@@ -301,7 +307,7 @@ int32_t SimTreeMaximum(SimpleTree *self, Item *pItem)
         *pItem = pFind->item;
         return SUCC;
     }
-    return ERR_NODATA;
+    return ERR_IDX;
 }
 
 int32_t SimTreeMinimum(SimpleTree *self, Item *pItem)
@@ -311,24 +317,32 @@ int32_t SimTreeMinimum(SimpleTree *self, Item *pItem)
         *pItem = pFind->item;
         return SUCC;
     }
-    return ERR_NODATA;
+    return ERR_IDX;
 }
 
-int32_t SimTreeSuccessor(SimpleTree *self, Item *pItem)
+int32_t SimTreeSuccessor(SimpleTree *self, Item itemIn, Item *pItemOut)
 {
-    SimTreeNode *pFind = _SimTreeSUCCor(self->pData->_pRoot);
+    SimTreeNode *pCurr = _SimTreeSearch(self->pData, itemIn);
+    if (!pCurr)
+        return ERR_NODATA;
+
+    SimTreeNode *pFind = _SimTreeSuccessor(pCurr);
     if (pFind) {
-        *pItem = pFind->item;
+        *pItemOut = pFind->item;
         return SUCC;
     }
     return ERR_NODATA;
 }
 
-int32_t SimTreePredecessor(SimpleTree *self, Item *pItem)
+int32_t SimTreePredecessor(SimpleTree *self, Item itemIn, Item *pItemOut)
 {
-    SimTreeNode *pFind = _SimTreePredecessor(self->pData->_pRoot);
+    SimTreeNode *pCurr = _SimTreeSearch(self->pData, itemIn);
+    if (!pCurr)
+        return ERR_NODATA;
+
+    SimTreeNode *pFind = _SimTreePredecessor(pCurr);
     if (pFind) {
-        *pItem = pFind->item;
+        *pItemOut = pFind->item;
         return SUCC;
     }
     return ERR_NODATA;

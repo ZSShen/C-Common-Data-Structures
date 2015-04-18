@@ -4,7 +4,7 @@
 
 
 /*===========================================================================*
- *        Definition for the test cases of the primitive data suite          *
+ *        Definition for the test cases of the primitive input suite         *
  *===========================================================================*/
 void TestPrimPushBack();
 void TestPrimInsert();
@@ -71,7 +71,7 @@ int32_t main()
 
 
 /*===========================================================================*
- *      Implementation for the test cases of the primitive data suite        *
+ *      Implementation for the test cases of the primitive input suite       *
  *===========================================================================*/
 void TestPrimPushBack()
 {

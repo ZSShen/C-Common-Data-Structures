@@ -9,7 +9,7 @@ typedef const void* Item;
 /** VectorData is the data type for the container private information. */
 typedef struct _VectorData VectorData;
 
-/** Vector is the implementation for dynamic array. */
+/** The implementation for dynamic array. */
 typedef struct _Vector {
     /** The container private information */
     VectorData *pData;
@@ -160,7 +160,7 @@ int32_t VectorSet(Vector *self, Item item, int32_t iIdx);
  * @brief Get an item from the designated index of the vector.
  *
  * @param self          The pointer to the Vector structure
- * @param item          The pointer to the returned item
+ * @param pItem         The pointer to the returned item
  * @param iIdx          The designated index
  *
  * @retval SUCC

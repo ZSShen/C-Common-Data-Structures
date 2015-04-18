@@ -64,7 +64,6 @@ $(document).ready(function(){initNavTree('simple__tree_8h.html','');});
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
-<a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
@@ -77,116 +76,57 @@ $(document).ready(function(){initNavTree('simple__tree_8h.html','');});
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSimpleTree.html">SimpleTree</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The implementation for basic binary search tree.  <a href="structSimpleTree.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:aa90cac659d18e8ef6294c7ae337f6b58"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#aa90cac659d18e8ef6294c7ae337f6b58">SUCCESS</a>&#160;&#160;&#160;(0)</td></tr>
-<tr class="separator:aa90cac659d18e8ef6294c7ae337f6b58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a845e1da5e8a92b35853fd0b9a09b6e1e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#a845e1da5e8a92b35853fd0b9a09b6e1e">FAIL_NO_MEMORY</a>&#160;&#160;&#160;(-1)</td></tr>
-<tr class="separator:a845e1da5e8a92b35853fd0b9a09b6e1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad78ac5833a57b71fec0ec7755b80ae7e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#ad78ac5833a57b71fec0ec7755b80ae7e">FAIL_NO_DATA</a>&#160;&#160;&#160;(-2)</td></tr>
-<tr class="separator:ad78ac5833a57b71fec0ec7755b80ae7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab144fae0f44755b6c8c4cefef20a4112"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#ab144fae0f44755b6c8c4cefef20a4112">FAIL_DATA_CONFLICT</a>&#160;&#160;&#160;(-3)</td></tr>
-<tr class="separator:ab144fae0f44755b6c8c4cefef20a4112"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a2583da5c1c14184068bda8cf681d5bed"><td class="memItemLeft" align="right" valign="top">typedef const void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a></td></tr>
+<tr class="memdesc:a2583da5c1c14184068bda8cf681d5bed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Item is the data type for the container element.  <a href="#a2583da5c1c14184068bda8cf681d5bed">More...</a><br/></td></tr>
 <tr class="separator:a2583da5c1c14184068bda8cf681d5bed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ce45cf5d11b5a05f2a72fbbe67183df"><td class="memItemLeft" align="right" valign="top">typedef struct _SimTreeNode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#a3ce45cf5d11b5a05f2a72fbbe67183df">SimTreeNode</a></td></tr>
-<tr class="separator:a3ce45cf5d11b5a05f2a72fbbe67183df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade561e68da2347c9616c57a54790f581"><td class="memItemLeft" align="right" valign="top">typedef struct _SimTreeData&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#ade561e68da2347c9616c57a54790f581">SimTreeData</a></td></tr>
+<tr class="memdesc:ade561e68da2347c9616c57a54790f581"><td class="mdescLeft">&#160;</td><td class="mdescRight">SimTreeData is the data type for the container private information.  <a href="#ade561e68da2347c9616c57a54790f581">More...</a><br/></td></tr>
 <tr class="separator:ade561e68da2347c9616c57a54790f581"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a464772056a4bc22cb84951c7cd5f06a2"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#a464772056a4bc22cb84951c7cd5f06a2">SimTreeInit</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> **ppObj)</td></tr>
-<tr class="memdesc:a464772056a4bc22cb84951c7cd5f06a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor for <a class="el" href="structSimpleTree.html">SimpleTree</a>.  <a href="#a464772056a4bc22cb84951c7cd5f06a2">More...</a><br/></td></tr>
+<tr class="memdesc:a464772056a4bc22cb84951c7cd5f06a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor for <a class="el" href="structSimpleTree.html" title="The implementation for basic binary search tree. ">SimpleTree</a>.  <a href="#a464772056a4bc22cb84951c7cd5f06a2">More...</a><br/></td></tr>
 <tr class="separator:a464772056a4bc22cb84951c7cd5f06a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9573faaafd97c678341783863dfc2846"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#a9573faaafd97c678341783863dfc2846">SimTreeDeinit</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> **ppObj)</td></tr>
-<tr class="memdesc:a9573faaafd97c678341783863dfc2846"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor for <a class="el" href="structSimpleTree.html">SimpleTree</a>.  <a href="#a9573faaafd97c678341783863dfc2846">More...</a><br/></td></tr>
+<tr class="memdesc:a9573faaafd97c678341783863dfc2846"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor for <a class="el" href="structSimpleTree.html" title="The implementation for basic binary search tree. ">SimpleTree</a>.  <a href="#a9573faaafd97c678341783863dfc2846">More...</a><br/></td></tr>
 <tr class="separator:a9573faaafd97c678341783863dfc2846"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aacb272050870f9f6a488953694ed6c01"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#aacb272050870f9f6a488953694ed6c01">SimTreeInsert</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self, <a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item)</td></tr>
+<tr class="memdesc:aacb272050870f9f6a488953694ed6c01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert an item into the tree.  <a href="#aacb272050870f9f6a488953694ed6c01">More...</a><br/></td></tr>
 <tr class="separator:aacb272050870f9f6a488953694ed6c01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad39bfa40a83b05e517ee3d8a2423fa53"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#ad39bfa40a83b05e517ee3d8a2423fa53">SimTreeSearch</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self, <a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItem)</td></tr>
-<tr class="separator:ad39bfa40a83b05e517ee3d8a2423fa53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a26a654e5f784ff1fec73625a027ab0"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#a5a26a654e5f784ff1fec73625a027ab0">SimTreeSearch</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self, <a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> itemIn, <a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItemOut)</td></tr>
+<tr class="memdesc:a5a26a654e5f784ff1fec73625a027ab0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check for the existence of the item having the same order with the requested one.  <a href="#a5a26a654e5f784ff1fec73625a027ab0">More...</a><br/></td></tr>
+<tr class="separator:a5a26a654e5f784ff1fec73625a027ab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a81005308e1e094a41d6f8aee1235a3"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#a9a81005308e1e094a41d6f8aee1235a3">SimTreeDelete</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self, <a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item)</td></tr>
+<tr class="memdesc:a9a81005308e1e094a41d6f8aee1235a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the item having the same order with the requested one from the tree.  <a href="#a9a81005308e1e094a41d6f8aee1235a3">More...</a><br/></td></tr>
 <tr class="separator:a9a81005308e1e094a41d6f8aee1235a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e6a210c04cefec27d948949e72515d2"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#a2e6a210c04cefec27d948949e72515d2">SimTreeMaximum</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self, <a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItem)</td></tr>
+<tr class="memdesc:a2e6a210c04cefec27d948949e72515d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the item with the maximum order of the tree.  <a href="#a2e6a210c04cefec27d948949e72515d2">More...</a><br/></td></tr>
 <tr class="separator:a2e6a210c04cefec27d948949e72515d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12d9eb446ee0901adc45db968d62ad2f"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#a12d9eb446ee0901adc45db968d62ad2f">SimTreeMinimum</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self, <a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItem)</td></tr>
+<tr class="memdesc:a12d9eb446ee0901adc45db968d62ad2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the item with the minimum order of the tree.  <a href="#a12d9eb446ee0901adc45db968d62ad2f">More...</a><br/></td></tr>
 <tr class="separator:a12d9eb446ee0901adc45db968d62ad2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b95b69129ca2ea74b08f1253f06fa51"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#a5b95b69129ca2ea74b08f1253f06fa51">SimTreeSuccessor</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self, <a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItem)</td></tr>
-<tr class="separator:a5b95b69129ca2ea74b08f1253f06fa51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5828a0592561a107c80c0dec27d4f220"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#a5828a0592561a107c80c0dec27d4f220">SimTreePredecessor</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self, <a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItem)</td></tr>
-<tr class="separator:a5828a0592561a107c80c0dec27d4f220"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab6b8a2d61fd6a7272372fda104a8aaa4"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#ab6b8a2d61fd6a7272372fda104a8aaa4">SimTreeSize</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self)</td></tr>
-<tr class="memdesc:ab6b8a2d61fd6a7272372fda104a8aaa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">uint32_t (*size) (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self)  <a href="#ab6b8a2d61fd6a7272372fda104a8aaa4">More...</a><br/></td></tr>
-<tr class="separator:ab6b8a2d61fd6a7272372fda104a8aaa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e62206c0c68c0c4aa575da6e83c17df"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#a6e62206c0c68c0c4aa575da6e83c17df">SimTreeSuccessor</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self, <a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> itemIn, <a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItemOut)</td></tr>
+<tr class="memdesc:a6e62206c0c68c0c4aa575da6e83c17df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the item which is the immediate successor of the requested item.  <a href="#a6e62206c0c68c0c4aa575da6e83c17df">More...</a><br/></td></tr>
+<tr class="separator:a6e62206c0c68c0c4aa575da6e83c17df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e61e5f20ead969f2df3d697c46e68d1"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#a9e61e5f20ead969f2df3d697c46e68d1">SimTreePredecessor</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self, <a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> itemIn, <a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItemOut)</td></tr>
+<tr class="memdesc:a9e61e5f20ead969f2df3d697c46e68d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the item which is the immediate predecessor of the requested item.  <a href="#a9e61e5f20ead969f2df3d697c46e68d1">More...</a><br/></td></tr>
+<tr class="separator:a9e61e5f20ead969f2df3d697c46e68d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf9cdf9706dd9fd15c0d732beb548e43"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#abf9cdf9706dd9fd15c0d732beb548e43">SimTreeSize</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self)</td></tr>
+<tr class="memdesc:abf9cdf9706dd9fd15c0d732beb548e43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of items stored in the tree.  <a href="#abf9cdf9706dd9fd15c0d732beb548e43">More...</a><br/></td></tr>
+<tr class="separator:abf9cdf9706dd9fd15c0d732beb548e43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab84a143d708bd2038d8c352b57461e30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#ab84a143d708bd2038d8c352b57461e30">SimTreeSetCompare</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self, int32_t(*pFunc)(<a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>, <a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>))</td></tr>
-<tr class="memdesc:ab84a143d708bd2038d8c352b57461e30"><td class="mdescLeft">&#160;</td><td class="mdescRight">void (*set_compare) (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self, int32_t (*pFunc) (Item, Item))  <a href="#ab84a143d708bd2038d8c352b57461e30">More...</a><br/></td></tr>
+<tr class="memdesc:ab84a143d708bd2038d8c352b57461e30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the user defined order comparison strategy for a pair of items.  <a href="#ab84a143d708bd2038d8c352b57461e30">More...</a><br/></td></tr>
 <tr class="separator:ab84a143d708bd2038d8c352b57461e30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4730df30dbfcfdb5895f68a328e493ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simple__tree_8h.html#a4730df30dbfcfdb5895f68a328e493ac">SimTreeSetDestroy</a> (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self, void(*pFunc)(<a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>))</td></tr>
+<tr class="memdesc:a4730df30dbfcfdb5895f68a328e493ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the user defined clean strategy for the resource hold by an item.  <a href="#a4730df30dbfcfdb5895f68a328e493ac">More...</a><br/></td></tr>
 <tr class="separator:a4730df30dbfcfdb5895f68a328e493ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a class="anchor" id="aa90cac659d18e8ef6294c7ae337f6b58"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define SUCCESS&#160;&#160;&#160;(0)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="simple__tree_8h_source.html#l00010">10</a> of file <a class="el" href="simple__tree_8h_source.html">simple_tree.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a845e1da5e8a92b35853fd0b9a09b6e1e"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define FAIL_NO_MEMORY&#160;&#160;&#160;(-1)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="simple__tree_8h_source.html#l00011">11</a> of file <a class="el" href="simple__tree_8h_source.html">simple_tree.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ad78ac5833a57b71fec0ec7755b80ae7e"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define FAIL_NO_DATA&#160;&#160;&#160;(-2)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="simple__tree_8h_source.html#l00012">12</a> of file <a class="el" href="simple__tree_8h_source.html">simple_tree.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ab144fae0f44755b6c8c4cefef20a4112"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define FAIL_DATA_CONFLICT&#160;&#160;&#160;(-3)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="simple__tree_8h_source.html#l00013">13</a> of file <a class="el" href="simple__tree_8h_source.html">simple_tree.h</a>.</p>
-
-</div>
-</div>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a class="anchor" id="a2583da5c1c14184068bda8cf681d5bed"></a>
 <div class="memitem">
@@ -198,21 +138,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="simple__tree_8h_source.html#l00015">15</a> of file <a class="el" href="simple__tree_8h_source.html">simple_tree.h</a>.</p>
+<p>Item is the data type for the container element. </p>
 
-</div>
-</div>
-<a class="anchor" id="a3ce45cf5d11b5a05f2a72fbbe67183df"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef struct _SimTreeNode <a class="el" href="simple__tree_8h.html#a3ce45cf5d11b5a05f2a72fbbe67183df">SimTreeNode</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="simple__tree_8h_source.html#l00016">16</a> of file <a class="el" href="simple__tree_8h_source.html">simple_tree.h</a>.</p>
+<p>Definition at line <a class="el" href="simple__tree_8h_source.html#l00007">7</a> of file <a class="el" href="simple__tree_8h_source.html">simple_tree.h</a>.</p>
 
 </div>
 </div>
@@ -226,7 +154,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="simple__tree_8h_source.html#l00017">17</a> of file <a class="el" href="simple__tree_8h_source.html">simple_tree.h</a>.</p>
+<p>SimTreeData is the data type for the container private information. </p>
+
+<p>Definition at line <a class="el" href="simple__tree_8h_source.html#l00010">10</a> of file <a class="el" href="simple__tree_8h_source.html">simple_tree.h</a>.</p>
 
 </div>
 </div>
@@ -245,14 +175,20 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>The constructor for <a class="el" href="structSimpleTree.html">SimpleTree</a>. </p>
+<p>The constructor for <a class="el" href="structSimpleTree.html" title="The implementation for basic binary search tree. ">SimpleTree</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ppObj</td><td>The double pointer to the to be constructed tree.</td></tr>
+    <tr><td class="paramname">ppObj</td><td>The double pointer to the to be constructed tree</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>SUCCESS FAIL_NO_MEMORY </dd></dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">SUCC</td><td></td></tr>
+    <tr><td class="paramname">ERR_NOMEM</td><td>Insufficient memory for tree construction </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -270,10 +206,10 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>The destructor for <a class="el" href="structSimpleTree.html">SimpleTree</a>. </p>
+<p>The destructor for <a class="el" href="structSimpleTree.html" title="The implementation for basic binary search tree. ">SimpleTree</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ppObj</td><td>The double pointer to the to be destructed tree. </td></tr>
+    <tr><td class="paramname">ppObj</td><td>The double pointer to the to be destructed tree </td></tr>
   </table>
   </dd>
 </dl>
@@ -303,23 +239,28 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Insert an item into the tree. </p>
+<p>This function inserts the requested item into the proper position of the tree to maintain the structure invariant.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html">SimpleTree</a> structure. </td></tr>
+    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html" title="The implementation for basic binary search tree. ">SimpleTree</a> structure </td></tr>
     <tr><td class="paramname">item</td><td>The requested item.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>SUCCESS FAIL_NO_MEMORY FAIL_DATA_CONFLICT</dd></dl>
-<p>This function inserts the requested item into the proper location of the tree. It will fail when:</p>
-<ol type="1">
-<li>Insufficient memory space.</li>
-<li>The requested item conflicts with the one stored in the tree. </li>
-</ol>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">SUCC</td><td></td></tr>
+    <tr><td class="paramname">ERR_NOMEM</td><td>Insufficient memory for item insertion</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>If the order of the requested item is the same with a certain one already stored in the tree. The old item will be cleaned by the configured policy so that the requested one can take the position. </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ad39bfa40a83b05e517ee3d8a2423fa53"></a>
+<a class="anchor" id="a5a26a654e5f784ff1fec73625a027ab0"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -332,8 +273,14 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
+          <td class="paramname"><em>itemIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype"><a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *&#160;</td>
-          <td class="paramname"><em>pItem</em>&#160;</td>
+          <td class="paramname"><em>pItemOut</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -342,18 +289,24 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Check for the existence of the item having the same order with the requested one. </p>
+<p>This function checks if there is already an item having the same order with the requested one in the tree. If such item can be found, it will be returned by the third parameter. In other words, this function can be used to query the item existence. And it can also be to acquire the found item.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html">SimpleTree</a> structure. </td></tr>
-    <tr><td class="paramname">pItem</td><td>The pointer to the requested item.</td></tr>
+    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html" title="The implementation for basic binary search tree. ">SimpleTree</a> structure </td></tr>
+    <tr><td class="paramname">itemIn</td><td>The requested item </td></tr>
+    <tr><td class="paramname">pItemOut</td><td>The pointer to the returned item</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>SUCCESS FAIL_NO_DATA</dd></dl>
-<p>This function checks whether the tree has the requested item. If the input item can be found, it's content is replaced with the content of the item found in the tree. It will fail when:</p>
-<ol type="1">
-<li>The requested item cannot be found in the tree. </li>
-</ol>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">SUCC</td><td></td></tr>
+    <tr><td class="paramname">ERR_NODATA</td><td>The target item cannot be found </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -380,18 +333,23 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Delete the item having the same order with the requested one from the tree. </p>
+<p>This function first searches for the item having the same order with the requested one in the tree. If such item can be found, the item will be cleaned by the configured policy.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html">SimpleTree</a> structure. </td></tr>
-    <tr><td class="paramname">item</td><td>The requested item.</td></tr>
+    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html" title="The implementation for basic binary search tree. ">SimpleTree</a> structure </td></tr>
+    <tr><td class="paramname">item</td><td>The requested item</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>SUCCESS FAIL_NO_DATA</dd></dl>
-<p>This function deletes the requested item from the tree and adjusts the tree structure. It will fail when:</p>
-<ol type="1">
-<li>The requested item cannot be found in the tree. </li>
-</ol>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">SUCC</td><td></td></tr>
+    <tr><td class="paramname">ERR_NODATA</td><td>The target item cannot be found </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -418,18 +376,22 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Return the item with the maximum order of the tree. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html">SimpleTree</a> structure. </td></tr>
-    <tr><td class="paramname">pItem</td><td>The pointer to the returned item.</td></tr>
+    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html" title="The implementation for basic binary search tree. ">SimpleTree</a> structure </td></tr>
+    <tr><td class="paramname">pItem</td><td>The pointer to the returned item</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>SUCCESS FAIL_NO_DATA</dd></dl>
-<p>This function returns the item with the maximum order of the tree. It will fail when:</p>
-<ol type="1">
-<li>The tree is empty. </li>
-</ol>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">SUCC</td><td></td></tr>
+    <tr><td class="paramname">ERR_IDX</td><td>The tree is empty </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -456,22 +418,26 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Return the item with the minimum order of the tree. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html">SimpleTree</a> structure. </td></tr>
-    <tr><td class="paramname">pItem</td><td>The pointer to the returned item.</td></tr>
+    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html" title="The implementation for basic binary search tree. ">SimpleTree</a> structure </td></tr>
+    <tr><td class="paramname">pItem</td><td>The pointer to the returned item</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>SUCCESS FAIL_NO_DATA</dd></dl>
-<p>This function returns the item with the minimum order of the tree. It will fail when:</p>
-<ol type="1">
-<li>The tree is empty. </li>
-</ol>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">SUCC</td><td></td></tr>
+    <tr><td class="paramname">ERR_IDX</td><td>The tree is empty </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a class="anchor" id="a5b95b69129ca2ea74b08f1253f06fa51"></a>
+<a class="anchor" id="a6e62206c0c68c0c4aa575da6e83c17df"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -484,8 +450,14 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
+          <td class="paramname"><em>itemIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype"><a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *&#160;</td>
-          <td class="paramname"><em>pItem</em>&#160;</td>
+          <td class="paramname"><em>pItemOut</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -494,22 +466,27 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Return the item which is the immediate successor of the requested item. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html">SimpleTree</a> structure. </td></tr>
-    <tr><td class="paramname">pItem</td><td>The pointer to the returned item.</td></tr>
+    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html" title="The implementation for basic binary search tree. ">SimpleTree</a> structure </td></tr>
+    <tr><td class="paramname">itemIn</td><td>The requested item </td></tr>
+    <tr><td class="paramname">pItemOut</td><td>The pointer to the returned item</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>SUCCESS FAIL_NO_DATA</dd></dl>
-<p>This function returns the item which is the successor of the requested one. It will fail when:</p>
-<ol type="1">
-<li>The successor cannot be found. </li>
-</ol>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">SUCC</td><td></td></tr>
+    <tr><td class="paramname">ERR_NODATA</td><td>The immediate successor cannot be found </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a class="anchor" id="a5828a0592561a107c80c0dec27d4f220"></a>
+<a class="anchor" id="a9e61e5f20ead969f2df3d697c46e68d1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -522,8 +499,14 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
+          <td class="paramname"><em>itemIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype"><a class="el" href="simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *&#160;</td>
-          <td class="paramname"><em>pItem</em>&#160;</td>
+          <td class="paramname"><em>pItemOut</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -532,27 +515,32 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Return the item which is the immediate predecessor of the requested item. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html">SimpleTree</a> structure. </td></tr>
-    <tr><td class="paramname">pItem</td><td>The pointer to the returned item.</td></tr>
+    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html" title="The implementation for basic binary search tree. ">SimpleTree</a> structure </td></tr>
+    <tr><td class="paramname">itemIn</td><td>The requested item </td></tr>
+    <tr><td class="paramname">pItemOut</td><td>The pointer to the returned item</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>SUCCESS FAIL_NO_DATA</dd></dl>
-<p>This function returns the item which is the predecessor of the requested one. It will fail when:</p>
-<ol type="1">
-<li>The predecessor cannot be found. </li>
-</ol>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">SUCC</td><td></td></tr>
+    <tr><td class="paramname">ERR_NODATA</td><td>The immediate predecessor cannot be found </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a class="anchor" id="ab6b8a2d61fd6a7272372fda104a8aaa4"></a>
+<a class="anchor" id="abf9cdf9706dd9fd15c0d732beb548e43"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint32_t SimTreeSize </td>
+          <td class="memname">int32_t SimTreeSize </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structSimpleTree.html">SimpleTree</a> *&#160;</td>
           <td class="paramname"><em>self</em></td><td>)</td>
@@ -561,15 +549,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>uint32_t (*size) (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self) </p>
+<p>Return the number of items stored in the tree. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html">SimpleTree</a> structure.</td></tr>
+    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html" title="The implementation for basic binary search tree. ">SimpleTree</a> structure.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Tree size</dd></dl>
-<p>This function returns the size of the tree. </p>
+<dl class="section return"><dt>Returns</dt><dd>The number of stored items </dd></dl>
 
 </div>
 </div>
@@ -597,10 +584,10 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>void (*set_compare) (<a class="el" href="structSimpleTree.html">SimpleTree</a> *self, int32_t (*pFunc) (Item, Item)) </p>
+<p>Set the user defined order comparison strategy for a pair of items. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html">SimpleTree</a> structure. </td></tr>
+    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html" title="The implementation for basic binary search tree. ">SimpleTree</a> structure. </td></tr>
     <tr><td class="paramname">pFunc</td><td>The pointer to the user defined function.</td></tr>
   </table>
   </dd>
@@ -632,14 +619,15 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Set the user defined clean strategy for the resource hold by an item. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html">SimpleTree</a> structure. </td></tr>
-    <tr><td class="paramname">pFunc</td><td>The pointer to the user defined function.</td></tr>
+    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structSimpleTree.html" title="The implementation for basic binary search tree. ">SimpleTree</a> structure. </td></tr>
+    <tr><td class="paramname">pFunc</td><td>The pointer to the user defined function. </td></tr>
   </table>
   </dd>
 </dl>
-<p>This function sets the user defined item deallocation strategy. </p>
 
 </div>
 </div>
