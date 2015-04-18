@@ -8,6 +8,7 @@
  *===========================================================================*/
 void TestPrimInsertAndOrder();
 void TestPrimDeleteAndOrder();
+void TestPrimSearch();
 
 
 int32_t SuitePrimitive()
@@ -23,6 +24,10 @@ int32_t SuitePrimitive()
 
     pTest = CU_add_test(pSuite, "Item deletion and structure verification",
             TestPrimDeleteAndOrder);
+    if (!pTest)
+        return ERR_NOMEM;
+
+    pTest = CU_add_test(pSuite, "Item search", TestPrimSearch);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -205,6 +210,29 @@ void TestPrimDeleteAndOrder()
 
     /* Check the container size. */
     CU_ASSERT_EQUAL(pTree->size(pTree), 3);
+
+    SimTreeDeinit(&pTree);
+}
+
+void TestPrimSearch()
+{
+    SimpleTree *pTree;
+    CU_ASSERT(SimTreeInit(&pTree) == SUCC);
+
+    /* Search for the empty tree. */
+    Item item;
+    CU_ASSERT(pTree->search(pTree, (Item)0, &item) == ERR_NODATA);
+    CU_ASSERT_EQUAL(item, NULL);
+
+    /* Search for the real data. */
+    CU_ASSERT(pTree->insert(pTree, (Item)1) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)0) == SUCC);
+    CU_ASSERT(pTree->search(pTree, (Item)0, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)0);
+
+    CU_ASSERT(pTree->delete(pTree, (Item)0) == SUCC);
+    CU_ASSERT(pTree->search(pTree, (Item)0, &item) == ERR_NODATA);
+    CU_ASSERT_EQUAL(item, NULL);
 
     SimTreeDeinit(&pTree);
 }

@@ -92,7 +92,9 @@ int32_t SimTreeInsert(SimpleTree *self, Item item);
  * This function checks if there is already an item having the same order with
  * the requested one in the tree. If such item can be found, it will be returned
  * by the third parameter. In other words, this function can be used to query
- * the item existence. And it can also be to acquire the found item.
+ * the item existence and it can also be to acquire the found item. Otherwise,
+ * the no data error code is returned and the third parameter is updated with
+ * NULL value.
  *
  * @param self          The pointer to the SimpleTree structure
  * @param itemIn        The requested item

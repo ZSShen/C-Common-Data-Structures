@@ -229,6 +229,7 @@ int32_t SimTreeSearch(SimpleTree *self, Item itemIn, Item *pItemOut)
         *pItemOut = pFind->item;
         return SUCC;
     }
+    *pItemOut = NULL;
     return ERR_NODATA;
 }
 
