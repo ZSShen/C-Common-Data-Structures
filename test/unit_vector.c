@@ -1,4 +1,4 @@
-#include "vector.h"
+#include "array/vector.h"
 #include "CUnit/Util.h"
 #include "CUnit/Basic.h"
 

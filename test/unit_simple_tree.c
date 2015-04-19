@@ -1,4 +1,4 @@
-#include "simple_tree.h"
+#include "tree/simple_tree.h"
 #include "CUnit/Util.h"
 #include "CUnit/Basic.h"
 
