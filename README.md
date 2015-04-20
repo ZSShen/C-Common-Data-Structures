@@ -1,6 +1,5 @@
 LibCDS
 =============
-[Project Home Page] (http://zsshen.github.io/C-Common-Data-Structures/index.html)  
 
 Integration Test (Travis CI)  
 + [![Integration Test] (https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)  
