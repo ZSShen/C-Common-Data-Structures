@@ -1,3 +1,7 @@
+/**
+ * @file vector.h The dynamically growable array.
+ */
+
 #ifndef _VECTOR_H_
 #define _VECTOR_H_
 
@@ -14,44 +18,45 @@ typedef struct _Vector {
     /** The container private information */
     VectorData *pData;
 
-    /** Operator to push an item into the end of the vector.
+    /** The operator to push an item into the end of the vector.
         @see VectorPushBack */
     int32_t (*push_back) (struct _Vector*, Item);
 
-    /** Operator to insert an item into the designated index of the vector.
+    /** The operator to insert an item into the designated index of the vector.
         @see VectorInsert */
     int32_t (*insert) (struct _Vector*, Item, int32_t);
 
-    /** Operator to pop an item from the end of the vector.
+    /** The operator to pop an item from the end of the vector.
         @see VectorPopBack */
     int32_t (*pop_back) (struct _Vector*);
 
-    /** Operator to delete an item from the designated index of the vector.
+    /** The operator to delete an item from the designated index of the vector.
         @see VectorDelete */
     int32_t (*delete) (struct _Vector*, int32_t);
 
-    /** Operator to set the requested item at the designated index of the vector.
+    /** The operator to set the requested item at the designated index of the
+        vector.
         @see VectorSet */
     int32_t (*set) (struct _Vector*, Item, int32_t);
 
-    /** Operator to get an item from the designated index of the vector.
+    /** The operator to get an item from the designated index of the vector.
         @see VectorGet */
     int32_t (*get) (struct _Vector*, Item*, int32_t);
 
-    /** Operator to change the container capacity.
+    /** The operator to change the container capacity.
         @see VectorResize */
     int32_t (*resize) (struct _Vector*, int32_t);
 
-    /** Operator to return the number of stored items.
+    /** The operator to return the number of stored items.
         @see VectorSize */
     int32_t (*size) (struct _Vector*);
 
-    /** Operator to return the container capacity.
+    /** The operator to return the container capacity.
         @see VectorCapacity */
     int32_t (*capacity) (struct _Vector*);
 
-    /** Operator to set the user defined clean strategy for the resource hold
-        by an item
+    /** The operator to set the user defined clean strategy for the resource
+        hold by an item
         @see VectorSetDestroy */
     void (*set_destroy) (struct _Vector*, void (*) (Item));
 } Vector;

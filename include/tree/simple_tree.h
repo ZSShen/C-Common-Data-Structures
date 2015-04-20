@@ -1,3 +1,7 @@
+/**
+ * @file simple_tree.h The basic binary search tree.
+ */
+
 #ifndef _SIMPLE_TREE_H_
 #define _SIMPLE_TREE_H_
 
@@ -41,7 +45,7 @@ typedef struct _SimpleTree {
     int32_t (*successor) (struct _SimpleTree*, Item, Item*);
 
     /** The operator to get the immediate predecessor of the requested item.
-        @see SimTreePredecesor */
+        @see SimTreePredecessor */
     int32_t (*predecessor) (struct _SimpleTree*, Item, Item*);
 
     /** The operator to get the number of stored item.
