@@ -1,7 +1,9 @@
 LibCDS
 =============
-+ Integration Test (Travis CI)  
-[![Build Status](https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)] (https://travis-ci.org/ZSShen/C-Common-Data-Structures)  
+[Project Home Page] (http://zsshen.github.io/C-Common-Data-Structures/index.html)  
+
+Integration Test (Travis CI)  
++ [![Integration Test] (https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)  
 
 ##Objective
 LibCDS implements several kinds of classic containers by C. It offers uniform APIs for convenient container interaction.
