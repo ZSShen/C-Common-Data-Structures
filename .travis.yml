@@ -11,12 +11,16 @@ install:
     - sudo apt-get update -qq
     - sudo apt-get install -qq cmake python3-minimal
     - sudo apt-get install -qq valgrind
+    - sudo apt-get install -qq libcunit1-dev
 
 script:
-    - make all DEBUG=true COVERAGE=true
-    - make coverage DEBUG=true
+    - ./clean.py --rebuild
+    - cd build
+    - cmake .. -DCMAKE_BUILD_TYPE=Debug 
+    - make
+    - make run
 
 after_success:
-    - coveralls
+    #- coveralls
 
 
