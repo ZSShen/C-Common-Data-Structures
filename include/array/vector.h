@@ -7,9 +7,6 @@
 
 #include "../util.h"
 
-/** Item is the data type for the container element. */
-typedef const void* Item;
-
 /** VectorData is the data type for the container private information. */
 typedef struct _VectorData VectorData;
 

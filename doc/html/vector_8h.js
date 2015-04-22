@@ -1,7 +1,6 @@
 var vector_8h =
 [
     [ "Vector", "structVector.html", "structVector" ],
-    [ "Item", "vector_8h.html#a2583da5c1c14184068bda8cf681d5bed", null ],
     [ "VectorData", "vector_8h.html#ae7e1bc0ebd3e2d9616179a88c660aafe", null ],
     [ "VectorInit", "vector_8h.html#aefcc2ad103138eca7681152455eae87e", null ],
     [ "VectorDeinit", "vector_8h.html#a55d4d7d2f5dfee1f7b25fd7c92d22f27", null ],

@@ -1,7 +1,6 @@
 var simple__tree_8h =
 [
     [ "SimpleTree", "structSimpleTree.html", "structSimpleTree" ],
-    [ "Item", "simple__tree_8h.html#a2583da5c1c14184068bda8cf681d5bed", null ],
     [ "SimTreeData", "simple__tree_8h.html#ade561e68da2347c9616c57a54790f581", null ],
     [ "SimTreeInit", "simple__tree_8h.html#a464772056a4bc22cb84951c7cd5f06a2", null ],
     [ "SimTreeDeinit", "simple__tree_8h.html#a9573faaafd97c678341783863dfc2846", null ],

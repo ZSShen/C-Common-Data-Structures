@@ -23,4 +23,7 @@
 /** No entry can be found with the given key from the associative data structures. */
 #define ERR_NODATA      (-4)
 
+/** Item is the data type for the container element. */
+typedef const void* Item;
+
 #endif

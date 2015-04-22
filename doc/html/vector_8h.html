@@ -84,9 +84,6 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a2583da5c1c14184068bda8cf681d5bed"><td class="memItemLeft" align="right" valign="top">typedef const void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a></td></tr>
-<tr class="memdesc:a2583da5c1c14184068bda8cf681d5bed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Item is the data type for the container element.  <a href="#a2583da5c1c14184068bda8cf681d5bed">More...</a><br/></td></tr>
-<tr class="separator:a2583da5c1c14184068bda8cf681d5bed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7e1bc0ebd3e2d9616179a88c660aafe"><td class="memItemLeft" align="right" valign="top">typedef struct _VectorData&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#ae7e1bc0ebd3e2d9616179a88c660aafe">VectorData</a></td></tr>
 <tr class="memdesc:ae7e1bc0ebd3e2d9616179a88c660aafe"><td class="mdescLeft">&#160;</td><td class="mdescRight">VectorData is the data type for the container private information.  <a href="#ae7e1bc0ebd3e2d9616179a88c660aafe">More...</a><br/></td></tr>
 <tr class="separator:ae7e1bc0ebd3e2d9616179a88c660aafe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -99,10 +96,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a55d4d7d2f5dfee1f7b25fd7c92d22f27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#a55d4d7d2f5dfee1f7b25fd7c92d22f27">VectorDeinit</a> (<a class="el" href="structVector.html">Vector</a> **ppObj)</td></tr>
 <tr class="memdesc:a55d4d7d2f5dfee1f7b25fd7c92d22f27"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor for <a class="el" href="structVector.html" title="The implementation for dynamic array. ">Vector</a>.  <a href="#a55d4d7d2f5dfee1f7b25fd7c92d22f27">More...</a><br/></td></tr>
 <tr class="separator:a55d4d7d2f5dfee1f7b25fd7c92d22f27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c4fa1c894e411db9c05639c3062a985"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#a7c4fa1c894e411db9c05639c3062a985">VectorPushBack</a> (<a class="el" href="structVector.html">Vector</a> *self, <a class="el" href="vector_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item)</td></tr>
+<tr class="memitem:a7c4fa1c894e411db9c05639c3062a985"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#a7c4fa1c894e411db9c05639c3062a985">VectorPushBack</a> (<a class="el" href="structVector.html">Vector</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item)</td></tr>
 <tr class="memdesc:a7c4fa1c894e411db9c05639c3062a985"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push an item into the end of the vector.  <a href="#a7c4fa1c894e411db9c05639c3062a985">More...</a><br/></td></tr>
 <tr class="separator:a7c4fa1c894e411db9c05639c3062a985"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67e0f39d32d550ce592ace927d496c3b"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#a67e0f39d32d550ce592ace927d496c3b">VectorInsert</a> (<a class="el" href="structVector.html">Vector</a> *self, <a class="el" href="vector_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item, int32_t iIdx)</td></tr>
+<tr class="memitem:a67e0f39d32d550ce592ace927d496c3b"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#a67e0f39d32d550ce592ace927d496c3b">VectorInsert</a> (<a class="el" href="structVector.html">Vector</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item, int32_t iIdx)</td></tr>
 <tr class="memdesc:a67e0f39d32d550ce592ace927d496c3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert an item into the designated index of the vector.  <a href="#a67e0f39d32d550ce592ace927d496c3b">More...</a><br/></td></tr>
 <tr class="separator:a67e0f39d32d550ce592ace927d496c3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99ccfafe2c7578449c30ac36ee5ea85b"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#a99ccfafe2c7578449c30ac36ee5ea85b">VectorPopBack</a> (<a class="el" href="structVector.html">Vector</a> *self)</td></tr>
@@ -111,10 +108,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a8e3f2e20699db4db95b6b3eea78699f9"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#a8e3f2e20699db4db95b6b3eea78699f9">VectorDelete</a> (<a class="el" href="structVector.html">Vector</a> *self, int32_t iIdx)</td></tr>
 <tr class="memdesc:a8e3f2e20699db4db95b6b3eea78699f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete an item from the designated index of the vector.  <a href="#a8e3f2e20699db4db95b6b3eea78699f9">More...</a><br/></td></tr>
 <tr class="separator:a8e3f2e20699db4db95b6b3eea78699f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04e4098bc20098fba01e057db43549a3"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#a04e4098bc20098fba01e057db43549a3">VectorSet</a> (<a class="el" href="structVector.html">Vector</a> *self, <a class="el" href="vector_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item, int32_t iIdx)</td></tr>
+<tr class="memitem:a04e4098bc20098fba01e057db43549a3"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#a04e4098bc20098fba01e057db43549a3">VectorSet</a> (<a class="el" href="structVector.html">Vector</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item, int32_t iIdx)</td></tr>
 <tr class="memdesc:a04e4098bc20098fba01e057db43549a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the requested item at the designated index of the vector.  <a href="#a04e4098bc20098fba01e057db43549a3">More...</a><br/></td></tr>
 <tr class="separator:a04e4098bc20098fba01e057db43549a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad69c5de92277cdb34fd3a5476ef18e08"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#ad69c5de92277cdb34fd3a5476ef18e08">VectorGet</a> (<a class="el" href="structVector.html">Vector</a> *self, <a class="el" href="vector_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItem, int32_t iIdx)</td></tr>
+<tr class="memitem:ad69c5de92277cdb34fd3a5476ef18e08"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#ad69c5de92277cdb34fd3a5476ef18e08">VectorGet</a> (<a class="el" href="structVector.html">Vector</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItem, int32_t iIdx)</td></tr>
 <tr class="memdesc:ad69c5de92277cdb34fd3a5476ef18e08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an item from the designated index of the vector.  <a href="#ad69c5de92277cdb34fd3a5476ef18e08">More...</a><br/></td></tr>
 <tr class="separator:ad69c5de92277cdb34fd3a5476ef18e08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f8dc6d9ab0a790c66acec7340dcd118"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#a6f8dc6d9ab0a790c66acec7340dcd118">VectorResize</a> (<a class="el" href="structVector.html">Vector</a> *self, int32_t iCap)</td></tr>
@@ -126,7 +123,7 @@ Functions</h2></td></tr>
 <tr class="memitem:aebe9767f9216efa7efcd5d006ea47009"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#aebe9767f9216efa7efcd5d006ea47009">VectorCapacity</a> (<a class="el" href="structVector.html">Vector</a> *self)</td></tr>
 <tr class="memdesc:aebe9767f9216efa7efcd5d006ea47009"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the container capacity.  <a href="#aebe9767f9216efa7efcd5d006ea47009">More...</a><br/></td></tr>
 <tr class="separator:aebe9767f9216efa7efcd5d006ea47009"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa756476c3a7a4bcb79d3e2b4c559623e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#aa756476c3a7a4bcb79d3e2b4c559623e">VectorSetDestroy</a> (<a class="el" href="structVector.html">Vector</a> *self, void(*pFunc)(<a class="el" href="vector_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>))</td></tr>
+<tr class="memitem:aa756476c3a7a4bcb79d3e2b4c559623e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vector_8h.html#aa756476c3a7a4bcb79d3e2b4c559623e">VectorSetDestroy</a> (<a class="el" href="structVector.html">Vector</a> *self, void(*pFunc)(<a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>))</td></tr>
 <tr class="memdesc:aa756476c3a7a4bcb79d3e2b4c559623e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the user defined clean strategy for the resource hold by an item.  <a href="#aa756476c3a7a4bcb79d3e2b4c559623e">More...</a><br/></td></tr>
 <tr class="separator:aa756476c3a7a4bcb79d3e2b4c559623e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -135,22 +132,6 @@ Functions</h2></td></tr>
 
 <p>Definition in file <a class="el" href="vector_8h_source.html">vector.h</a>.</p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
-<a class="anchor" id="a2583da5c1c14184068bda8cf681d5bed"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef const void* <a class="el" href="vector_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Item is the data type for the container element. </p>
-
-<p>Definition at line <a class="el" href="vector_8h_source.html#l00011">11</a> of file <a class="el" href="vector_8h_source.html">vector.h</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="ae7e1bc0ebd3e2d9616179a88c660aafe"></a>
 <div class="memitem">
 <div class="memproto">
@@ -163,7 +144,7 @@ Functions</h2></td></tr>
 
 <p>VectorData is the data type for the container private information. </p>
 
-<p>Definition at line <a class="el" href="vector_8h_source.html#l00014">14</a> of file <a class="el" href="vector_8h_source.html">vector.h</a>.</p>
+<p>Definition at line <a class="el" href="vector_8h_source.html#l00011">11</a> of file <a class="el" href="vector_8h_source.html">vector.h</a>.</p>
 
 </div>
 </div>
@@ -236,7 +217,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="vector_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
           <td class="paramname"><em>item</em>&#160;</td>
         </tr>
         <tr>
@@ -279,7 +260,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="vector_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
           <td class="paramname"><em>item</em>, </td>
         </tr>
         <tr>
@@ -406,7 +387,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="vector_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
           <td class="paramname"><em>item</em>, </td>
         </tr>
         <tr>
@@ -457,7 +438,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="vector_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *&#160;</td>
           <td class="paramname"><em>pItem</em>, </td>
         </tr>
         <tr>
@@ -601,7 +582,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void(*)(<a class="el" href="vector_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>)&#160;</td>
+          <td class="paramtype">void(*)(<a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>)&#160;</td>
           <td class="paramname"><em>pFunc</em>&#160;</td>
         </tr>
         <tr>
