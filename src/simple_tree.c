@@ -488,7 +488,7 @@ bool _SimTreeValidate(SimTreeData *pData)
 {
     bool bLegal = true;
 
-    /* Simulate the stack and apply iterative in order tree traversal. */
+    /* Simulate the stack and apply iterative in-order tree traversal. */
     SimTreeNode **stack = (SimTreeNode**)malloc(sizeof(SimTreeNode*) * pData->_iSize);
     SimTreeNode *pCurr = pData->_pRoot;
     SimTreeNode *pPred = NULL;

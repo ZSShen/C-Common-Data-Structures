@@ -1,4 +1,4 @@
-#include "red_black_tree.h"
+#include "tree/balanced_tree.h"
 
 
 /*===========================================================================*
@@ -170,7 +170,8 @@ bool _BalTreeValidate(BalTreeData *pData);
  *===========================================================================*/
 void _BalTreeDeinit(BalTreeData *pData)
 {
-    if (!(pData->_pRoot))
+    BalTreeNode *pNull = pData->_pNull;
+    if (pData->_pRoot == pNull)
         return;
 
     /* Simulate the stack and apply iterative post-order tree traversal. */
@@ -182,9 +183,9 @@ void _BalTreeDeinit(BalTreeData *pData)
     while (iSize > 0) {
         BalTreeNode **ppCurr = stack[iSize - 1];
         BalTreeNode *pCurr = *ppCurr;
-        if (pCurr->pLeft)
+        if (pCurr->pLeft != pNull)
             stack[iSize++] = &(pCurr->pLeft);
-        else if (pCurr->pRight)
+        else if (pCurr->pRight != pNull)
             stack[iSize++] = &(pCurr->pRight);
         else {
             pData->_pDestroy(pCurr->item);
@@ -223,7 +224,7 @@ BalTreeNode* _BalTreeSuccessor(BalTreeNode *pNull, BalTreeNode *pCurr)
     if (pCurr != pNull) {
         /* Case 1: The minimal node in the non-null right subtree. */
         if (pCurr->pRight != pNull)
-            pCurr = _BalTreeMinimal(pCurr->pRight);
+            pCurr = _BalTreeMinimal(pNull, pCurr->pRight);
 
         /* Case 2: The ancestor which considers the designated node as the
            maximal node of its left subtree. */
@@ -241,7 +242,7 @@ BalTreeNode* _BalTreePredecessor(BalTreeNode *pNull, BalTreeNode *pCurr)
     if (pCurr != pNull) {
         /* Case 1: The maximal node in the non-null left subtree. */
         if (pCurr->pLeft != pNull)
-            pCurr = _BalTreeMaximal(pCurr->pLeft);
+            pCurr = _BalTreeMaximal(pNull, pCurr->pLeft);
 
         /* Case 2: The ancestor which considers the designated node as the
            minimal node of its right subtree. */
@@ -337,7 +338,7 @@ BalTreeNode* _BalTreeSearch(BalTreeData *pData, Item item)
 {
     int32_t iOrder;
     BalTreeNode *pCurr = pData->_pRoot;
-    while(pCurr) {
+    while(pCurr != pData->_pNull) {
         iOrder = pData->_pCompare(item, pCurr->item);
         if (iOrder == 0)
             break;
@@ -363,20 +364,21 @@ void _BalTreeItemDestroy(Item item) {}
 
 bool _BalTreeValidate(BalTreeData *pData)
 {
+    BalTreeNode *pNull = pData->_pNull;
     bool bLegal = true;
 
-    /* Simulate the stack and apply iterative in order tree traversal. */
+    /* Simulate the stack and apply iterative in-order tree traversal. */
     BalTreeNode **stack = (BalTreeNode**)malloc(sizeof(BalTreeNode*) * pData->_iSize);
     BalTreeNode *pCurr = pData->_pRoot;
-    BalTreeNode *pPred = NULL;
+    BalTreeNode *pPred = pNull;
     int32_t iSize = 0;
 
-    while (pCurr || (iSize > 0)) {
-        if (pCurr) {
+    while ((pCurr != pNull) || (iSize > 0)) {
+        if (pCurr != pNull) {
             stack[iSize++] = pCurr;
             pCurr = pCurr->pLeft;
         } else {
-            if (pPred) {
+            if (pPred != pNull) {
                 pCurr = stack[iSize - 1];
                 int32_t iOrder = pData->_pCompare(pPred->item, pCurr->item);
                 if (iOrder >= 0)

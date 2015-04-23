@@ -41,6 +41,7 @@ set(PATH_BIN "${CMAKE_CURRENT_SOURCE_DIR}/../bin/test")
 # List all the supported data structures.
 set(LIST_DS
     simple_tree                 # Basic Binary Search Tree
+    balanced_tree               # Balanced Binary Search Tree
     vector                      # Dynamic Array
 )
 
