@@ -166,6 +166,158 @@ bool _BalTreeValidate(BalTreeData *pData);
 
 
 /*===========================================================================*
+ *           Implementation for the exported member operations               *
+ *===========================================================================*/
+int32_t BalTreeInit(BalancedTree **ppObj)
+{
+    BalancedTree *pObj;
+    *ppObj = (BalancedTree*)malloc(sizeof(BalancedTree));
+    if (!(*ppObj))
+        return ERR_NOMEM;
+    pObj = *ppObj;
+
+    pObj->pData = (BalTreeData*)malloc(sizeof(BalTreeData));
+    if (!pObj->pData) {
+        free(*ppObj);
+        *ppObj = NULL;
+        return ERR_NOMEM;
+    }
+
+    /* Create the dummy node representing as the NULL pointer of the tree. */
+    BalTreeData *pData = pObj->pData;
+    pData->_pNull = (BalTreeNode*)malloc(sizeof(BalTreeNode));
+    if (!pData->_pNull) {
+        free(pObj->pData);
+        free(*ppObj);
+        *ppObj = NULL;
+        return ERR_NOMEM;
+    }
+    pData->_pNull->bColor = COLOR_BLACK;
+    pData->_pNull->item = NULL;
+    pData->_pNull->pParent = pData->_pNull;
+    pData->_pNull->pRight = pData->_pNull;
+    pData->_pNull->pLeft = pData->_pNull;
+
+    pObj->pData->_pRoot = pData->_pNull;
+    pObj->pData->_iSize = 0;
+    pObj->pData->_pCompare = _BalTreeItemCompare;
+    pObj->pData->_pDestroy = _BalTreeItemDestroy;
+
+    //pObj->insert = BalTreeInsert;
+    pObj->search = BalTreeSearch;
+    //pObj->delete = BalTreeDelete;
+    pObj->maximum = BalTreeMaximum;
+    pObj->minimum = BalTreeMinimum;
+    pObj->successor = BalTreeSuccessor;
+    pObj->predecessor = BalTreePredecessor;
+    pObj->size = BalTreeSize;
+    pObj->set_compare = BalTreeSetCompare;
+    pObj->set_destroy = BalTreeSetDestroy;
+
+    return SUCC;
+}
+
+void BalTreeDeinit(BalancedTree **ppObj)
+{
+    BalancedTree *pObj;
+    if (*ppObj) {
+        pObj = *ppObj;
+        if (pObj->pData) {
+            if (pObj->pData->_pNull) {
+                _BalTreeDeinit(pObj->pData);
+                free(pObj->pData->_pNull);
+                free(pObj->pData);
+            }
+        }
+        free(*ppObj);
+        *ppObj = NULL;
+    }
+    return;
+}
+
+int32_t BalTreeSearch(BalancedTree *self, Item itemIn, Item *pItemOut)
+{
+    BalTreeNode *pFind;
+    pFind = _BalTreeSearch(self->pData, itemIn);
+    if (pFind != self->pData->_pNull) {
+        *pItemOut = pFind->item;
+        return SUCC;
+    }
+    *pItemOut = NULL;
+    return ERR_NODATA;
+}
+
+int32_t BalTreeMaximum(BalancedTree *self, Item *pItem)
+{
+    BalTreeData *pData = self->pData;
+    BalTreeNode *pFind = _BalTreeMaximal(pData->_pNull, pData->_pRoot);
+    if (pFind != pData->_pNull) {
+        *pItem = pFind->item;
+        return SUCC;
+    }
+    return ERR_IDX;
+}
+
+int32_t BalTreeMinimum(BalancedTree *self, Item *pItem)
+{
+    BalTreeData *pData = self->pData;
+    BalTreeNode *pFind = _BalTreeMinimal(pData->_pNull, pData->_pRoot);
+    if (pFind != pData->_pNull) {
+        *pItem = pFind->item;
+        return SUCC;
+    }
+    return ERR_IDX;
+}
+
+int32_t BalTreeSuccessor(BalancedTree *self, Item itemIn, Item *pItemOut)
+{
+    BalTreeNode *pNull = self->pData->_pNull;
+    BalTreeNode *pCurr = _BalTreeSearch(self->pData, itemIn);
+    if (pCurr == pNull)
+        return ERR_NODATA;
+
+    BalTreeNode *pFind = _BalTreeSuccessor(pNull, pCurr);
+    if (pFind != pNull) {
+        *pItemOut = pFind->item;
+        return SUCC;
+    }
+    return ERR_NODATA;
+}
+
+int32_t BalTreePredecessor(BalancedTree *self, Item itemIn, Item *pItemOut)
+{
+    BalTreeNode *pNull = self->pData->_pNull;
+    BalTreeNode *pCurr = _BalTreeSearch(self->pData, itemIn);
+    if (pCurr == pNull)
+        return ERR_NODATA;
+
+    BalTreeNode *pFind = _BalTreePredecessor(pNull, pCurr);
+    if (pFind != pNull) {
+        *pItemOut = pFind->item;
+        return SUCC;
+    }
+    return ERR_NODATA;
+}
+
+int32_t BalTreeSize(BalancedTree *self)
+{
+    return self->pData->_iSize;
+}
+
+void BalTreeSetCompare(BalancedTree *self, int32_t (*pFunc) (Item, Item))
+{
+    self->pData->_pCompare = pFunc;
+    return;
+}
+
+void BalTreeSetDestroy(BalancedTree *self, void (*pFunc) (Item))
+{
+    self->pData->_pDestroy = pFunc;
+    return;
+}
+
+
+/*===========================================================================*
  *               Implementation for internal functions                       *
  *===========================================================================*/
 void _BalTreeDeinit(BalTreeData *pData)
