@@ -15,6 +15,7 @@ typedef struct _BalTreeNode {
 struct _BalTreeData {
     int32_t _iSize;
     BalTreeNode *_pRoot;
+    BalTreeNode *_pNull;
     int32_t (*_pCompare)(Item, Item);
     void (*_pDestroy)(Item);
 };
@@ -40,43 +41,47 @@ void _BalTreeDeinit(BalTreeData *pData);
  * @brief Return the node with maximal order in the subtree rooted by the
  * requested node.
  *
+ * @param pNull         The pointer to the dummy node
  * @param pCurr         The pointer to the requested node
  *
  * @return Non-NULL     The pointer to the returned node
  * @return NULL         The subtree is empty
  */
-BalTreeNode* _BalTreeMaximal(BalTreeNode *pCurr);
+BalTreeNode* _BalTreeMaximal(BalTreeNode *pNull, BalTreeNode *pCurr);
 
 /**
  * @brief Return the node with minimal order in the subtree rooted by the
  * requested node.
  *
+ * @param pNull         The pointer to the dummy node
  * @param pCurr         The pointer to the requested node
  *
  * @return Non-NULL     The pointer to the target node
  * @return NULL         The subtree is empty
  */
-BalTreeNode* _BalTreeMinimal(BalTreeNode *pCurr);
+BalTreeNode* _BalTreeMinimal(BalTreeNode *pNull, BalTreeNode *pCurr);
 
 /**
  * @brief Return the immediate successor of the requested node.
  *
+ * @param pNull         The pointer to the dummy node
  * @param pCurr         The pointer to the requested node
  *
  * @return Non-NULL     The pointer to the returned node
  * @return NULL         The immediate successor cannot be found
  */
-BalTreeNode* _BalTreeSuccessor(BalTreeNode *pCurr);
+BalTreeNode* _BalTreeSuccessor(BalTreeNode *pNull, BalTreeNode *pCurr);
 
 /**
  * @brief Return the immediate predecessor of the requested node.
  *
+ * @param pNull         The pointer to the dummy node
  * @param pCurr         The pointer to the requested node
  *
  * @return Non-NULL     The pointer to the returned node
  * @return NULL         The immediate predecessor cannot be found
  */
-BalTreeNode* _BalTreePredecessor(BalTreeNode *pCurr);
+BalTreeNode* _BalTreePredecessor(BalTreeNode *pNull, BalTreeNode *pCurr);
 
 /**
  * @brief Make the right rotation for the requested node.
@@ -163,4 +168,225 @@ bool _BalTreeValidate(BalTreeData *pData);
 /*===========================================================================*
  *               Implementation for internal functions                       *
  *===========================================================================*/
+void _BalTreeDeinit(BalTreeData *pData)
+{
+    if (!(pData->_pRoot))
+        return;
 
+    /* Simulate the stack and apply iterative post-order tree traversal. */
+    BalTreeNode ***stack = (BalTreeNode***)malloc(sizeof(BalTreeNode**) * pData->_iSize);
+    assert(stack != NULL);
+
+    int32_t iSize = 0;
+    stack[iSize++] = &(pData->_pRoot);
+    while (iSize > 0) {
+        BalTreeNode **ppCurr = stack[iSize - 1];
+        BalTreeNode *pCurr = *ppCurr;
+        if (pCurr->pLeft)
+            stack[iSize++] = &(pCurr->pLeft);
+        else if (pCurr->pRight)
+            stack[iSize++] = &(pCurr->pRight);
+        else {
+            pData->_pDestroy(pCurr->item);
+            free(pCurr);
+            *ppCurr = NULL;
+            iSize--;
+        }
+    }
+    free(stack);
+
+    return;
+}
+
+BalTreeNode* _BalTreeMinimal(BalTreeNode *pNull, BalTreeNode *pCurr)
+{
+    BalTreeNode *pParent = pNull;
+    while (pCurr != pNull) {
+        pParent = pCurr;
+        pCurr = pCurr->pLeft;
+    }
+    return pParent;
+}
+
+BalTreeNode* _BalTreeMaximal(BalTreeNode *pNull, BalTreeNode *pCurr)
+{
+    BalTreeNode *pParent = pNull;
+    while (pCurr != pNull) {
+        pParent = pCurr;
+        pCurr = pCurr->pRight;
+    }
+    return pParent;
+}
+
+BalTreeNode* _BalTreeSuccessor(BalTreeNode *pNull, BalTreeNode *pCurr)
+{
+    if (pCurr != pNull) {
+        /* Case 1: The minimal node in the non-null right subtree. */
+        if (pCurr->pRight != pNull)
+            pCurr = _BalTreeMinimal(pCurr->pRight);
+
+        /* Case 2: The ancestor which considers the designated node as the
+           maximal node of its left subtree. */
+        else {
+            while((pCurr->pParent != pNull) && (pCurr == pCurr->pParent->pRight))
+                pCurr = pCurr->pParent;
+            pCurr = pCurr->pParent;
+        }
+    }
+    return pCurr;
+}
+
+BalTreeNode* _BalTreePredecessor(BalTreeNode *pNull, BalTreeNode *pCurr)
+{
+    if (pCurr != pNull) {
+        /* Case 1: The maximal node in the non-null left subtree. */
+        if (pCurr->pLeft != pNull)
+            pCurr = _BalTreeMaximal(pCurr->pLeft);
+
+        /* Case 2: The ancestor which considers the designated node as the
+           minimal node of its right subtree. */
+        else {
+            while((pCurr->pParent != pNull) && (pCurr == pCurr->pParent->pLeft))
+                pCurr = pCurr->pParent;
+            pCurr = pCurr->pParent;
+        }
+    }
+    return pCurr;
+}
+
+void _RBTreeRightRotate(BalTreeData *pData, BalTreeNode *pCurr) {
+    BalTreeNode *pNull = pData->_pNull;
+    BalTreeNode *pChild = pCurr->pLeft;
+    /**
+     *  Right rotation for y
+     *     y          x
+     *    / \        / \
+     *   x   c  =>  a   y
+     *  / \            / \
+     * a   b          b   c
+     */
+
+    /* Let y link b as its left child.
+       If b is not dummy node, let b link y as its parent. */
+    pCurr->pLeft = pChild->pRight;
+    if (pChild->pRight != pNull)
+        pChild->pRight->pParent = pCurr;
+
+    /* Let x link y's parent as its parent.
+       If y's parent is not dummy node, let it link x as its child. */
+    pChild->pParent = pCurr->pParent;
+    if (pCurr->pParent != pNull) {
+        if (pCurr == pCurr->pParent->pLeft)
+            pCurr->pParent->pLeft = pChild;
+        else
+            pCurr->pParent->pRight = pChild;
+    } else
+        pData->_pRoot = pChild;
+
+    /* Let y link x as its parent.
+       And let x link y as its right child. */
+    pCurr->pParent = pChild;
+    pChild->pRight = pCurr;
+
+    return;
+}
+
+void _RBTreeLeftRotate(BalTreeData *pData, BalTreeNode *pCurr) {
+    BalTreeNode *pNull = pData->_pNull;
+    BalTreeNode *pChild = pCurr->pRight;
+    /**
+     *  Left rotation for x
+     *     x          y
+     *    / \        / \
+     *   a   y  =>  x   c
+     *      / \    / \
+     *     b   c  a   b
+     */
+
+    /* Let x link b as its right child.
+       If b is not dummy node, let b link x as its parent. */
+    pCurr->pRight = pChild->pLeft;
+    if (pChild->pLeft != pNull)
+        pChild->pLeft->pParent = pCurr;
+
+    /* Let y link x's parent as its parent.
+       If x's parent is not dummy node, let it link y as its child. */
+    pChild->pParent = pCurr->pParent;
+    if (pCurr->pParent != pNull) {
+        if (pCurr == pCurr->pParent->pLeft)
+            pCurr->pParent->pLeft = pChild;
+        else
+            pCurr->pParent->pRight = pChild;
+    } else
+        pData->_pRoot = pChild;
+
+    /* Let y link x as its parent.
+       And let x link y as its right child. */
+    pCurr->pParent = pChild;
+    pChild->pRight = pCurr;
+
+    /* Let x link y as its parent.
+       And let y link x as its left child. */
+    pCurr->pParent = pChild;
+    pChild->pLeft = pCurr;
+
+    return;
+}
+
+BalTreeNode* _BalTreeSearch(BalTreeData *pData, Item item)
+{
+    int32_t iOrder;
+    BalTreeNode *pCurr = pData->_pRoot;
+    while(pCurr) {
+        iOrder = pData->_pCompare(item, pCurr->item);
+        if (iOrder == 0)
+            break;
+        else {
+            if (iOrder > 0)
+                pCurr = pCurr->pRight;
+            else
+                pCurr = pCurr->pLeft;
+        }
+    }
+    return pCurr;
+}
+
+int32_t _BalTreeItemCompare(Item itemSrc, Item itemTge)
+{
+    if (itemSrc == itemTge)
+        return 0;
+    else
+        return (itemSrc > itemTge)? 1 : -1;
+}
+
+void _BalTreeItemDestroy(Item item) {}
+
+bool _BalTreeValidate(BalTreeData *pData)
+{
+    bool bLegal = true;
+
+    /* Simulate the stack and apply iterative in order tree traversal. */
+    BalTreeNode **stack = (BalTreeNode**)malloc(sizeof(BalTreeNode*) * pData->_iSize);
+    BalTreeNode *pCurr = pData->_pRoot;
+    BalTreeNode *pPred = NULL;
+    int32_t iSize = 0;
+
+    while (pCurr || (iSize > 0)) {
+        if (pCurr) {
+            stack[iSize++] = pCurr;
+            pCurr = pCurr->pLeft;
+        } else {
+            if (pPred) {
+                pCurr = stack[iSize - 1];
+                int32_t iOrder = pData->_pCompare(pPred->item, pCurr->item);
+                if (iOrder >= 0)
+                    bLegal = false;
+            }
+            pPred = stack[--iSize];
+            pCurr = pPred->pRight;
+        }
+    }
+    free(stack);
+
+    return bLegal;
+}

@@ -24,14 +24,14 @@ function(SUB_BUILD_ENTIRE)
     endforeach()
 
     # Build the integration library.
-    string(TOUPPER ${LIB_CDS} TGE_CDS)
-    set(REGEX_SRC "${CMAKE_CURRENT_SOURCE_DIR}/*.c")
-    file(GLOB_RECURSE LIST_SRC ${REGEX_SRC})
-    add_library(${TGE_CDS} ${LIB_TYPE} ${LIST_SRC})
-    set_target_properties(${TGE_CDS} PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY ${PATH_OUT}
-        OUTPUT_NAME ${LIB_CDS}
-    )
+    #string(TOUPPER ${LIB_CDS} TGE_CDS)
+    #set(REGEX_SRC "${CMAKE_CURRENT_SOURCE_DIR}/*.c")
+    #file(GLOB_RECURSE LIST_SRC ${REGEX_SRC})
+    #add_library(${TGE_CDS} ${LIB_TYPE} ${LIST_SRC})
+    #set_target_properties(${TGE_CDS} PROPERTIES
+    #    LIBRARY_OUTPUT_DIRECTORY ${PATH_OUT}
+    #    OUTPUT_NAME ${LIB_CDS}
+    #)
 endfunction()
 
 #==================================================================#
