@@ -235,6 +235,62 @@ void BalTreeDeinit(BalancedTree **ppObj)
     return;
 }
 
+int32_t BalTreeInsert(BalancedTree *self, Item item)
+{
+    int32_t iOrder;
+    int8_t cDirect;
+    BalTreeNode *pNew, *pCurr, *pParent;
+
+    pNew = (BalTreeNode*)malloc(sizeof(BalTreeNode));
+    if (!pNew)
+        return ERR_NOMEM;
+    BalTreeData *pData = self->pData;
+    pNew->item = item;
+    pNew->pParent = pData->_pNull;
+    pNew->pLeft = pData->_pNull;
+    pNew->pRight = pData->_pNull;
+
+    pParent = pData->_pNull;
+    pCurr = pData->_pRoot;
+    while (pCurr != pData->_pNull) {
+        pParent = pCurr;
+        iOrder = pData->_pCompare(item, pCurr->item);
+        if (iOrder > 0) {
+            pCurr = pCurr->pRight;
+            cDirect = DIRECT_RIGHT;
+        }
+        else if (iOrder < 0) {
+            pCurr = pCurr->pLeft;
+            cDirect = DIRECT_LEFT;
+        }
+        else {
+            /* Conflict with the already stored item. */
+            free(pNew);
+            pData->_pDestroy(pCurr->item);
+            pCurr->item = item;
+            return SUCC;
+        }
+    }
+
+    /* Arrive at the proper position. */
+    pNew->pParent = pParent;
+    if (pParent != pData->_pNull) {
+        if (cDirect == DIRECT_LEFT)
+            pParent->pLeft = pNew;
+        else
+            pParent->pRight = pNew;
+    } else
+        self->pData->_pRoot = pNew;
+
+    /* Increase the size. */
+    self->pData->_iSize++;
+
+    /* Maintain the balanced tree structure. */
+    _BalTreeInsertFixup(self->pData, pNew);
+
+    return SUCC;
+}
+
 int32_t BalTreeSearch(BalancedTree *self, Item itemIn, Item *pItemOut)
 {
     BalTreeNode *pFind;
@@ -483,6 +539,107 @@ void _RBTreeLeftRotate(BalTreeData *pData, BalTreeNode *pCurr) {
     pCurr->pParent = pChild;
     pChild->pLeft = pCurr;
 
+    return;
+}
+
+void _BalTreeInsertFixup(BalTreeData *pData, BalTreeNode *pCurr)
+{
+    BalTreeNode *pUncle;
+
+    /* Denote the current node as x. */
+    while (pCurr->pParent->bColor == COLOR_RED) {
+        /* x's parent is its grandparent's left child. */
+        if (pCurr->pParent == pCurr->pParent->pParent->pLeft) {
+            pUncle = pCurr->pParent->pParent->pRight;
+            /**
+             * Case 1: The color of x's uncle is also red.
+             * Set the colors of x's parent and x's uncle to black.
+             * Set the color of x's grandparent to red.
+             *
+             *       g(B)               g(R)
+             *      / \                / \
+             *     /   \              /   \
+             * (R)p     u(R)      (B)p     u(B)
+             *   / \   / \    =>    / \   / \
+             *  A   \ D   E        A   \ D   E
+             *    (R)x               (R)x
+             *      / \                / \
+             *     B   C              B   C
+             */
+            if (pUncle->bColor == COLOR_RED) {
+                pCurr->pParent->bColor = COLOR_BLACK;
+                pUncle->bColor = COLOR_BLACK;
+                pCurr->pParent->pParent->bColor = COLOR_RED;
+                pCurr = pCurr->pParent->pParent;
+            } else {
+                /**
+                 * Case 2: The color of x's uncle is black, and x is its parent's
+                 *         right child.
+                 * Make a left rotation for x's parent.
+                 *
+                 *        g(B)                g(B)
+                 *       / \                 / \
+                 *      /   \               /   \
+                 *  (R)p     u(B)       (R)x     u(B)
+                 *    / \   / \    =>     / \   / \
+                 *   A   \ D   E         /   C D   E
+                 *     (R)x          (R)p
+                 *       / \           / \
+                 *      B   C         A   B
+                 */
+                if (pCurr == pCurr->pParent->pRight) {
+                    pCurr = pCurr->pParent;
+                    _BalTreeLeftRotate(pData, pCurr);
+                }
+                /**
+                 * Case 3: The color of x's uncle is black, and x is its parent's
+                 *         left child.
+                 * Set the color of x's parent to black.
+                 * Set the color of x's grandparent to red.
+                 * Make a right rotation for x's grandparent.
+                 *
+                 *          g(B)               p(B)
+                 *         / \                / \
+                 *        /   \              /   \
+                 *    (R)p     u(B)      (R)x     g(R)
+                 *      / \   / \          / \   / \
+                 *     /   C D   E   =>   A   B /   \
+                 * (R)x                        C     u(B)
+                 *   / \                            / \
+                 *  A   B                          D   E
+                 */
+                pCurr->pParent->bColor = COLOR_BLACK;
+                pCurr->pParent->pParent->bColor = COLOR_RED;
+                _BalTreeRightRotate(pData, pCurr->pParent->pParent);
+            }
+        }
+        /* x's parent is its grandparent's right child. */
+        else {
+            pUncle = pCurr->pParent->pParent->pLeft;
+
+            /* Case 1: The color of x's uncle is also red. */
+            if (pUncle->bColor == COLOR_RED) {
+                pCurr->pParent->bColor = COLOR_BLACK;
+                pUncle->bColor = COLOR_BLACK;
+                pCurr->pParent->pParent->bColor = COLOR_RED;
+                pCurr = pCurr->pParent->pParent;
+            } else {
+                /* Case 2: The color of x's uncle is black, and x is its parent's
+                   left child. */
+                if (pCurr == pCurr->pParent->pLeft) {
+                    pCurr = pCurr->pParent;
+                    _BalTreeRightRotate(pData, pCurr);
+                }
+                /* Case 3: The color of x's uncle is black, and x is its parent's
+                   right child. */
+                pCurr->pParent->bColor = COLOR_BLACK;
+                pCurr->pParent->pParent->bColor = COLOR_RED;
+                _BalTreeLeftRotate(pData, pCurr->pParent->pParent);
+            }
+        }
+    }
+
+    pData->_pRoot->bColor = COLOR_BLACK;
     return;
 }
 
