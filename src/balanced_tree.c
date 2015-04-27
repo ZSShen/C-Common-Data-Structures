@@ -203,7 +203,7 @@ int32_t BalTreeInit(BalancedTree **ppObj)
     pObj->pData->_pCompare = _BalTreeItemCompare;
     pObj->pData->_pDestroy = _BalTreeItemDestroy;
 
-    //pObj->insert = BalTreeInsert;
+    pObj->insert = BalTreeInsert;
     pObj->search = BalTreeSearch;
     //pObj->delete = BalTreeDelete;
     pObj->maximum = BalTreeMaximum;
@@ -246,6 +246,7 @@ int32_t BalTreeInsert(BalancedTree *self, Item item)
         return ERR_NOMEM;
     BalTreeData *pData = self->pData;
     pNew->item = item;
+    pNew->bColor = COLOR_RED;
     pNew->pParent = pData->_pNull;
     pNew->pLeft = pData->_pNull;
     pNew->pRight = pData->_pNull;
@@ -397,8 +398,12 @@ void _BalTreeDeinit(BalTreeData *pData)
             stack[iSize++] = &(pCurr->pRight);
         else {
             pData->_pDestroy(pCurr->item);
+            BalTreeNode *pParent = pCurr->pParent;
+            if (pCurr == pParent->pLeft)
+                pParent->pLeft = pNull;
+            else
+                pParent->pRight = pNull;
             free(pCurr);
-            *ppCurr = NULL;
             iSize--;
         }
     }
@@ -463,11 +468,11 @@ BalTreeNode* _BalTreePredecessor(BalTreeNode *pNull, BalTreeNode *pCurr)
     return pCurr;
 }
 
-void _RBTreeRightRotate(BalTreeData *pData, BalTreeNode *pCurr) {
+void _BalTreeRightRotate(BalTreeData *pData, BalTreeNode *pCurr) {
     BalTreeNode *pNull = pData->_pNull;
     BalTreeNode *pChild = pCurr->pLeft;
     /**
-     *  Right rotation for y
+     *  Right rotation for the current node denoted as y
      *     y          x
      *    / \        / \
      *   x   c  =>  a   y
@@ -500,11 +505,11 @@ void _RBTreeRightRotate(BalTreeData *pData, BalTreeNode *pCurr) {
     return;
 }
 
-void _RBTreeLeftRotate(BalTreeData *pData, BalTreeNode *pCurr) {
+void _BalTreeLeftRotate(BalTreeData *pData, BalTreeNode *pCurr) {
     BalTreeNode *pNull = pData->_pNull;
     BalTreeNode *pChild = pCurr->pRight;
     /**
-     *  Left rotation for x
+     *  Left rotation for the current node denoted as x
      *     x          y
      *    / \        / \
      *   a   y  =>  x   c
@@ -528,11 +533,6 @@ void _RBTreeLeftRotate(BalTreeData *pData, BalTreeNode *pCurr) {
             pCurr->pParent->pRight = pChild;
     } else
         pData->_pRoot = pChild;
-
-    /* Let y link x as its parent.
-       And let x link y as its right child. */
-    pCurr->pParent = pChild;
-    pChild->pRight = pCurr;
 
     /* Let x link y as its parent.
        And let y link x as its left child. */
