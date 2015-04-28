@@ -304,6 +304,84 @@ int32_t BalTreeSearch(BalancedTree *self, Item itemIn, Item *pItemOut)
     return ERR_NODATA;
 }
 
+int32_t BalTreeDelete(BalancedTree *self, Item item) {
+    BalTreeNode *pCurr, *pChild, *pSucc;
+
+    pCurr = _BalTreeSearch(self->pData, item);
+    if (!pCurr)
+        return ERR_NODATA;
+
+    BalTreeData *pData = self->pData;
+    BalTreeNode *pNull = pData->_pNull;
+    bool bColor;
+    /* The specified node has no child. */
+    if ((pCurr->pLeft == pNull) && (pCurr->pRight == pNull)) {
+        if (pCurr->pParent != pNull) {
+            if (pCurr == pCurr->pParent->pLeft)
+                pCurr->pParent->pLeft = pNull;
+            else
+                pCurr->pParent->pRight = pNull;
+        } else
+            pData->_pRoot = pNull;
+
+        bColor = pCurr->bColor;
+        pChild = pNull;
+        pChild->pParent = pCurr->pParent;
+        pData->_pDestroy(pCurr->item);
+        free(pCurr);
+    } else {
+        /* The specified node has two children. */
+        if ((pCurr->pLeft != pNull) && (pCurr->pRight != pNull)) {
+            pSucc = _BalTreeSuccessor(pNull, pCurr);
+
+            pChild = pSucc->pLeft;
+            if (pChild == pNull)
+                pChild = pSucc->pRight;
+
+            pChild->pParent = pSucc->pParent;
+
+            if (pSucc == pSucc->pParent->pLeft)
+                pSucc->pParent->pLeft = pChild;
+            else
+                pSucc->pParent->pRight = pChild;
+
+            bColor = pSucc->bColor;
+            pData->_pDestroy(pCurr->item);
+            pCurr->item = pSucc->item;
+            free(pSucc);
+        }
+        /* The specified node has one child. */
+        else {
+            pChild = pCurr->pLeft;
+            if (pChild == pNull)
+                pChild = pCurr->pRight;
+
+            pChild->pParent = pCurr->pParent;
+
+            if (pCurr->pParent != pNull) {
+                if (pCurr == pCurr->pParent->pLeft)
+                    pCurr->pParent->pLeft = pChild;
+                else
+                    pCurr->pParent->pRight = pChild;
+            } else
+                pData->_pRoot = pChild;
+
+            bColor = pCurr->bColor;
+            pData->_pDestroy(pCurr->item);
+            free(pCurr);
+        }
+    }
+
+    /* Decrease the size. */
+    pData->_iSize--;
+
+    /* Maintain the balanced tree structure. */
+    if (bColor == COLOR_BLACK)
+        _RBTreeDeleteFixup(pData, pChild);
+
+    return SUCC;
+}
+
 int32_t BalTreeMaximum(BalancedTree *self, Item *pItem)
 {
     BalTreeData *pData = self->pData;
@@ -640,6 +718,138 @@ void _BalTreeInsertFixup(BalTreeData *pData, BalTreeNode *pCurr)
     }
 
     pData->_pRoot->bColor = COLOR_BLACK;
+    return;
+}
+
+void _BalTreeDeleteFixup(BalTreeData *pData, BalTreeNode *pCurr)
+{
+    BalTreeNode *pBrother;
+
+    /* Denote the current node as x. */
+    while ((pCurr != pData->_pRoot) && (pCurr->bColor == COLOR_BLACK)) {
+        /* x is its parent's left child. */
+        if (pCurr == pCurr->pParent->pLeft) {
+            pBrother = pCurr->pParent->pRight;
+            /**
+             * Case 1: The color of x's brother is red.
+             * Set the color of x's brother to black.
+             * Set the color of x's parent to red.
+             * Make a left rotation for x's parent.
+             *
+             *        p(B)                b(B)
+             *      /   \               /   \
+             *     x     b(R)  =>   (R)p     D
+             *    / \   / \           / \
+             *   A   B C   D         x   C
+             *                      / \
+             *                     A  B
+             */
+            if (pBrother->bColor == COLOR_RED) {
+                pBrother->bColor = COLOR_BLACK;
+                pCurr->pParent->bColor = COLOR_RED;
+                _BalTreeLeftRotate(pData, pCurr->pParent);
+                pBrother = pCurr->pParent->pRight;
+            }
+            /**
+             * Case 2: The color of x's brother is black, and both of its
+             *         children are also black.
+             * Set the color of x's brother to red.
+             *
+             *         p                  p
+             *       /   \              /   \
+             *      /     \            /     \
+             *     x       b(B)  =>   x       b(R)
+             *    / \     / \        / \     / \
+             *   A   B (B)y z(B)    A   B (B)y z(B)
+             */
+            if ((pBrother->pLeft->bColor == COLOR_BLACK) &&
+                (pBrother->pRight->bColor == COLOR_BLACK)) {
+                pBrother->bColor = COLOR_RED;
+                pCurr = pCurr->pParent;
+            } else {
+                /**
+                 * Case 3: The color of x's brother is black, and the colors of
+                 *         its left and right child are red and black respectively.
+                 * Set the color of x's brother to red.
+                 * Set the color of that brother's left child to black.
+                 * Make a right rotation for x's brother.
+                 *
+                 *         p                     p
+                 *       /   \                 /   \
+                 *      /     \               /     \
+                 *     x       b(B)          x       y(B)
+                 *    / \     / \     =>    / \     / \
+                 *   A   B (R)y z(B)       A   B   C   b(R)
+                 *           / \                      / \
+                 *          C   D                    D   z(B)
+                 */
+                if (pBrother->pRight->bColor == COLOR_BLACK) {
+                    pBrother->pLeft->bColor = COLOR_BLACK;
+                    pBrother->bColor = COLOR_RED;
+                    _BalTreeRightRotate(pData, pBrother);
+                    pBrother = pCurr->pParent->pRight;
+                }
+                /**
+                 * Case 4: The color of x's brother is black, and its right child
+                 *         is red.
+                 * Set the color of x's brother to the one of x's parent.
+                 * Set the color of x's parent to black.
+                 * Set the color of that brother's right child to black.
+                 * Make a left rotation for x's parent.
+                 *
+                 *       p(C')              b(C')
+                 *      /   \              /   \
+                 *     /     \            /     \
+                 *    x      b(B)   =>   p(B)   z(B)
+                 *   / \    / \         / \
+                 *  A   B  y   z(R)    x   y
+                 *                    / \
+                 *                   A   B
+                 */
+                pBrother->bColor = pCurr->pParent->bColor;
+                pCurr->pParent->bColor = COLOR_BLACK;
+                pBrother->pRight->bColor = COLOR_BLACK;
+                _BalTreeLeftRotate(pData, pCurr->pParent);
+                pCurr = pData->_pRoot;
+            }
+        }
+        /* x is its parent's right child */
+        else {
+            pBrother = pCurr->pParent->pLeft;
+            /* Case 1: The color of x's brother is red. */
+            if (pBrother->bColor == COLOR_RED) {
+                pBrother->bColor = COLOR_BLACK;
+                pCurr->pParent->bColor = COLOR_RED;
+                _BalTreeRightRotate(pData, pCurr->pParent);
+                pBrother = pCurr->pParent->pLeft;
+            }
+            /* Case 2: The color of x's brother is black, and both of its
+               children are also black. */
+            if ((pBrother->pLeft->bColor == COLOR_BLACK) &&
+                (pBrother->pRight->bColor == COLOR_BLACK)) {
+                pBrother->bColor = COLOR_RED;
+                pCurr = pCurr->pParent;
+            } else {
+                /* Case 3: The color of x's brother is black and the colors of its
+                   right and left child are red and black respectively. */
+                if (pBrother->pLeft->bColor == COLOR_BLACK) {
+                    pBrother->pRight->bColor = COLOR_BLACK;
+                    pBrother->bColor = COLOR_RED;
+                    _BalTreeLeftRotate(pData, pBrother);
+                    pBrother = pCurr->pParent->pLeft;
+                }
+                /* Case 4: The color of x's brother is black, and its left child
+                   is red. */
+                pBrother->bColor = pCurr->pParent->bColor;
+                pCurr->pParent->bColor = COLOR_BLACK;
+                pBrother->pLeft->bColor = COLOR_BLACK;
+                _BalTreeRightRotate(pData, pCurr->pParent);
+                pCurr = pData->_pRoot;
+            }
+        }
+    }
+
+    pCurr->bColor = COLOR_BLACK;
     return;
 }
 
