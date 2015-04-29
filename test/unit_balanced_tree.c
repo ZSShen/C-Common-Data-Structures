@@ -3,10 +3,18 @@
 #include "CUnit/Basic.h"
 
 
+#define SIZE_LARGE_TEST     10000
+int32_t aDataFst[SIZE_LARGE_TEST];
+int32_t aDataSnd[SIZE_LARGE_TEST];
+
+
 /*===========================================================================*
  *        Definition for the test cases of the primitive input suite         *
  *===========================================================================*/
-void TestPrimInsertAndOrder();
+void TestPrimInsertBase();
+void TestPrimInsertLarge();
+void TestPrimDeleteLarge();
+int32_t CompareItemPrimitive(const void*, const void*);
 
 
 int32_t SuitePrimitive()
@@ -16,7 +24,12 @@ int32_t SuitePrimitive()
         return ERR_NOMEM;
 
     CU_pTest pTest = CU_add_test(pSuite, "Item insertion and structure verification",
-                     TestPrimInsertAndOrder);
+                     TestPrimInsertBase);
+    if (!pTest)
+        return ERR_NOMEM;
+
+    pTest = CU_add_test(pSuite, "Bulk item insertion and structure verification",
+            TestPrimInsertLarge);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -30,6 +43,26 @@ int32_t main()
         return CU_get_error();
     assert(CU_get_registry() != NULL);
     assert(!CU_is_test_running());
+
+    /* Prepare the large dataset. */
+    srand(time(NULL));
+    int32_t idxFst = 0, idxSnd;
+    while (idxFst < SIZE_LARGE_TEST) {
+        int32_t iRand;
+        bool bDup = true;
+        do {
+            iRand = rand() % SIZE_LARGE_TEST;
+            for (idxSnd = 0 ; idxSnd < idxFst ; idxSnd++) {
+                if (iRand == aDataFst[idxSnd])
+                    break;
+            }
+            if (idxSnd == idxFst)
+                bDup = false;
+        } while (bDup);
+        aDataFst[idxFst] = iRand;
+        aDataSnd[idxFst] = iRand;
+        idxFst++;
+    }
 
     /* Prepare the test suite for primitive input. */
     if (SuitePrimitive() != SUCC) {
@@ -49,7 +82,7 @@ int32_t main()
 /*===========================================================================*
  *      Implementation for the test cases of the primitive input suite       *
  *===========================================================================*/
-void TestPrimInsertAndOrder()
+void TestPrimInsertBase()
 {
     BalancedTree *pTree;
     CU_ASSERT(BalTreeInit(&pTree) == SUCC);
@@ -129,3 +162,51 @@ void TestPrimInsertAndOrder()
     BalTreeDeinit(&pTree);
 }
 
+
+void TestPrimInsertLarge()
+{
+    BalancedTree *pTree;
+    CU_ASSERT(BalTreeInit(&pTree) == SUCC);
+
+    /* Bulk data insertion. */
+    int32_t idx;
+    for (idx = 0 ; idx < SIZE_LARGE_TEST ; idx++)
+        #if __x86_64__
+        CU_ASSERT(pTree->insert(pTree, (Item)(int64_t)aDataFst[idx]) == SUCC);
+        #else
+        CU_ASSERT(pTree->insert(pTree, (Item)aDataFst[idx]) == SUCC);
+        #endif
+
+    /* Check the item orders. */
+    qsort(aDataFst, SIZE_LARGE_TEST, sizeof(int32_t), CompareItemPrimitive);
+    for (idx = 1 ; idx < SIZE_LARGE_TEST - 1 ; idx++) {
+        Item itemIn, itemOut;
+        #if __x86_64__
+        itemIn = (Item)(int64_t)aDataFst[idx];
+        CU_ASSERT(pTree->predecessor(pTree, itemIn, &itemOut) == SUCC);
+        CU_ASSERT_EQUAL(itemOut, (Item)(int64_t)aDataFst[idx - 1]);
+        CU_ASSERT(pTree->successor(pTree, itemIn, &itemOut) == SUCC);
+        CU_ASSERT_EQUAL(itemOut, (Item)(int64_t)aDataFst[idx + 1]);
+        #else
+        itemIn = (Item)aDataFst[idx];
+        CU_ASSERT(pTree->predecessor(pTree, itemIn, &itemOut) == SUCC);
+        CU_ASSERT_EQUAL(itemOut, (Item)aDataFst[idx - 1]);
+        CU_ASSERT(pTree->successor(pTree, itemIn, &itemOut) == SUCC);
+        CU_ASSERT_EQUAL(itemOut, (Item)aDataFst[idx + 1]);
+        #endif
+    }
+
+    BalTreeDeinit(&pTree);
+}
+
+
+int32_t CompareItemPrimitive(const void *p_Src, const void *p_Tge)
+{
+    int32_t iSrc = *(int32_t*)p_Src;
+    int32_t iTge = *(int32_t*)p_Tge;
+
+    if (iSrc == iTge)
+        return 0;
+    else
+        return (iSrc > iTge)? 1 : -1;
+}

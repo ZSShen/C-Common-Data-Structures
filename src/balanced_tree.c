@@ -205,7 +205,7 @@ int32_t BalTreeInit(BalancedTree **ppObj)
 
     pObj->insert = BalTreeInsert;
     pObj->search = BalTreeSearch;
-    //pObj->delete = BalTreeDelete;
+    pObj->delete = BalTreeDelete;
     pObj->maximum = BalTreeMaximum;
     pObj->minimum = BalTreeMinimum;
     pObj->successor = BalTreeSuccessor;
