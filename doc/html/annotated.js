@@ -1,7 +1,6 @@
 var annotated =
 [
-    [ "RedBlackNode", "structRedBlackNode.html", "structRedBlackNode" ],
-    [ "RedBlackTree", "structRedBlackTree.html", "structRedBlackTree" ],
+    [ "BalancedTree", "structBalancedTree.html", "structBalancedTree" ],
     [ "SimpleTree", "structSimpleTree.html", "structSimpleTree" ],
     [ "Vector", "structVector.html", "structVector" ]
 ];

@@ -377,7 +377,7 @@ int32_t BalTreeDelete(BalancedTree *self, Item item) {
 
     /* Maintain the balanced tree structure. */
     if (bColor == COLOR_BLACK)
-        _RBTreeDeleteFixup(pData, pChild);
+        _BalTreeDeleteFixup(pData, pChild);
 
     return SUCC;
 }
