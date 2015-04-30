@@ -33,6 +33,11 @@ int32_t SuitePrimitive()
     if (!pTest)
         return ERR_NOMEM;
 
+    pTest = CU_add_test(pSuite, "Bulk item deletion and structure verification",
+            TestPrimDeleteLarge);
+    if (!pTest)
+        return ERR_NOMEM;
+
     return SUCC;
 }
 
@@ -193,6 +198,51 @@ void TestPrimInsertLarge()
         CU_ASSERT_EQUAL(itemOut, (Item)aDataFst[idx - 1]);
         CU_ASSERT(pTree->successor(pTree, itemIn, &itemOut) == SUCC);
         CU_ASSERT_EQUAL(itemOut, (Item)aDataFst[idx + 1]);
+        #endif
+    }
+
+    BalTreeDeinit(&pTree);
+}
+
+
+void TestPrimDeleteLarge()
+{
+    BalancedTree *pTree;
+    CU_ASSERT(BalTreeInit(&pTree) == SUCC);
+
+    /* Bulk data insertion. */
+    int32_t idx;
+    for (idx = 0 ; idx < SIZE_LARGE_TEST ; idx++)
+        #if __x86_64__
+        pTree->insert(pTree, (Item)(int64_t)aDataSnd[idx]);
+        #else
+        pTree->insert(pTree, (Item)aDataSnd[idx]) == SUCC);
+        #endif
+
+    /* Delete half of the data. */
+    for (idx = SIZE_LARGE_TEST/2 ; idx < SIZE_LARGE_TEST ; idx++)
+        #if __x86_64__
+        pTree->delete(pTree, (Item)(int64_t)aDataSnd[idx]);
+        #else
+        pTree->delete(pTree, (Item)aDataSnd[idx]) == SUCC);
+        #endif
+
+    /* Check the item orders. */
+    qsort(aDataSnd, SIZE_LARGE_TEST/2, sizeof(int32_t), CompareItemPrimitive);
+    for (idx = 1 ; idx < SIZE_LARGE_TEST/2 - 1 ; idx++) {
+        Item itemIn, itemOut;
+        #if __x86_64__
+        itemIn = (Item)(int64_t)aDataSnd[idx];
+        CU_ASSERT(pTree->predecessor(pTree, itemIn, &itemOut) == SUCC);
+        CU_ASSERT_EQUAL(itemOut, (Item)(int64_t)aDataSnd[idx - 1]);
+        CU_ASSERT(pTree->successor(pTree, itemIn, &itemOut) == SUCC);
+        CU_ASSERT_EQUAL(itemOut, (Item)(int64_t)aDataSnd[idx + 1]);
+        #else
+        itemIn = (Item)aDataSnd[idx];
+        CU_ASSERT(pTree->predecessor(pTree, itemIn, &itemOut) == SUCC);
+        CU_ASSERT_EQUAL(itemOut, (Item)aDataSnd[idx - 1]);
+        CU_ASSERT(pTree->successor(pTree, itemIn, &itemOut) == SUCC);
+        CU_ASSERT_EQUAL(itemOut, (Item)aDataSnd[idx + 1]);
         #endif
     }
 
