@@ -306,13 +306,13 @@ int32_t BalTreeSearch(BalancedTree *self, Item itemIn, Item *pItemOut)
 
 int32_t BalTreeDelete(BalancedTree *self, Item item) {
     BalTreeNode *pCurr, *pChild, *pSucc;
-
-    pCurr = _BalTreeSearch(self->pData, item);
-    if (!pCurr)
-        return ERR_NODATA;
-
     BalTreeData *pData = self->pData;
     BalTreeNode *pNull = pData->_pNull;
+
+    pCurr = _BalTreeSearch(self->pData, item);
+    if (pCurr == pNull)
+        return ERR_NODATA;
+
     bool bColor;
     /* The specified node has no child. */
     if ((pCurr->pLeft == pNull) && (pCurr->pRight == pNull)) {

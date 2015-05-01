@@ -14,6 +14,7 @@ int32_t aDataSnd[SIZE_LARGE_TEST];
 void TestPrimInsertBase();
 void TestPrimInsertLarge();
 void TestPrimDeleteLarge();
+void TestPrimSearchAndBoundary();
 int32_t CompareItemPrimitive(const void*, const void*);
 
 
@@ -23,7 +24,7 @@ int32_t SuitePrimitive()
     if (!pSuite)
         return ERR_NOMEM;
 
-    CU_pTest pTest = CU_add_test(pSuite, "Item insertion and structure verification",
+    CU_pTest pTest = CU_add_test(pSuite, "Basic item insertion and structure verification",
                      TestPrimInsertBase);
     if (!pTest)
         return ERR_NOMEM;
@@ -35,6 +36,11 @@ int32_t SuitePrimitive()
 
     pTest = CU_add_test(pSuite, "Bulk item deletion and structure verification",
             TestPrimDeleteLarge);
+    if (!pTest)
+        return ERR_NOMEM;
+
+    pTest = CU_add_test(pSuite, "Item search and boundary case handling",
+            TestPrimSearchAndBoundary);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -245,6 +251,41 @@ void TestPrimDeleteLarge()
         CU_ASSERT_EQUAL(itemOut, (Item)aDataSnd[idx + 1]);
         #endif
     }
+
+    BalTreeDeinit(&pTree);
+}
+
+
+void TestPrimSearchAndBoundary()
+{
+    BalancedTree *pTree;
+    CU_ASSERT(BalTreeInit(&pTree) == SUCC);
+
+    /* Search for the empty tree. */
+    Item item;
+    CU_ASSERT(pTree->search(pTree, (Item)0, &item) == ERR_NODATA);
+    CU_ASSERT_EQUAL(item, NULL);
+
+    /* Search for the real data. */
+    CU_ASSERT(pTree->insert(pTree, (Item)1) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)0) == SUCC);
+    CU_ASSERT(pTree->search(pTree, (Item)0, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)0);
+
+    CU_ASSERT(pTree->delete(pTree, (Item)0) == SUCC);
+    CU_ASSERT(pTree->search(pTree, (Item)0, &item) == ERR_NODATA);
+    CU_ASSERT_EQUAL(item, NULL);
+
+    /* Test boundary cases. */
+    CU_ASSERT(pTree->predecessor(pTree, (Item)0, &item) == ERR_NODATA);
+    CU_ASSERT(pTree->successor(pTree, (Item)0, &item) == ERR_NODATA);
+    CU_ASSERT(pTree->predecessor(pTree, (Item)1, &item) == ERR_NODATA);
+    CU_ASSERT(pTree->successor(pTree, (Item)1, &item) == ERR_NODATA);
+
+    CU_ASSERT(pTree->delete(pTree, (Item)1) == SUCC);
+    CU_ASSERT(pTree->maximum(pTree, &item) == ERR_IDX);
+    CU_ASSERT(pTree->minimum(pTree, &item) == ERR_IDX);
+    CU_ASSERT(pTree->delete(pTree, (Item)1) == ERR_NODATA);
 
     BalTreeDeinit(&pTree);
 }
