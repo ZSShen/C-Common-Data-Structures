@@ -38,7 +38,7 @@ void _SimTreeDeinit(SimTreeData *pData);
  *
  * @param pCurr         The pointer to the requested node
  *
- * @return Non-NULL     The pointer to the returned node
+ * @return pNode        The pointer to the returned node
  * @return NULL         The subtree is empty
  */
 SimTreeNode* _SimTreeMaximal(SimTreeNode *pCurr);
@@ -49,7 +49,7 @@ SimTreeNode* _SimTreeMaximal(SimTreeNode *pCurr);
  *
  * @param pCurr         The pointer to the requested node
  *
- * @return Non-NULL     The pointer to the target node
+ * @return pNode        The pointer to the target node
  * @return NULL         The subtree is empty
  */
 SimTreeNode* _SimTreeMinimal(SimTreeNode *pCurr);
@@ -59,7 +59,7 @@ SimTreeNode* _SimTreeMinimal(SimTreeNode *pCurr);
  *
  * @param pCurr         The pointer to the requested node
  *
- * @return Non-NULL     The pointer to the returned node
+ * @return pNode        The pointer to the returned node
  * @return NULL         The immediate successor cannot be found
  */
 SimTreeNode* _SimTreeSuccessor(SimTreeNode *pCurr);
@@ -69,7 +69,7 @@ SimTreeNode* _SimTreeSuccessor(SimTreeNode *pCurr);
  *
  * @param pCurr         The pointer to the requested node
  *
- * @return Non-NULL     The pointer to the returned node
+ * @return pNode        The pointer to the returned node
  * @return NULL         The immediate predecessor cannot be found
  */
 SimTreeNode* _SimTreePredecessor(SimTreeNode *pCurr);
@@ -81,7 +81,7 @@ SimTreeNode* _SimTreePredecessor(SimTreeNode *pCurr);
  * @param pData         The pointer to tree private data
  * @param item          The pointer to the requested item
  *
- * @return Non-NULL     The pointer to the target node
+ * @return pNode        The pointer to the found node
  * @return NULL         No matched node
  */
 SimTreeNode* _SimTreeSearch(SimTreeData *pData, Item item);
@@ -109,7 +109,7 @@ int32_t _SimTreeItemCompare(Item itemSrc, Item itemTge);
 void _SimTreeItemDestroy(Item item);
 
 /**
- * @brief The internal debug function to verify the tree structure invariant.
+ * @brief The internal debug function to verify the structure correctness.
  *
  * @param pData         The pointer to the tree private data
  *
