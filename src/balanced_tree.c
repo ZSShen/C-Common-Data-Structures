@@ -39,69 +39,69 @@ void _BalTreeDeinit(BalTreeData *pData);
 
 /**
  * @brief Return the node with maximal order in the subtree rooted by the
- * requested node.
+ * designated node.
  *
  * @param pNull         The pointer to the dummy node
- * @param pCurr         The pointer to the requested node
+ * @param pCurr         The pointer to the designated node
  *
- * @return Non-NULL     The pointer to the returned node
+ * @return pNode        The pointer to the returned node
  * @return NULL         The subtree is empty
  */
 BalTreeNode* _BalTreeMaximal(BalTreeNode *pNull, BalTreeNode *pCurr);
 
 /**
  * @brief Return the node with minimal order in the subtree rooted by the
- * requested node.
+ * designated node.
  *
  * @param pNull         The pointer to the dummy node
- * @param pCurr         The pointer to the requested node
+ * @param pCurr         The pointer to the designated node
  *
- * @return Non-NULL     The pointer to the target node
+ * @return pNode        The pointer to the target node
  * @return NULL         The subtree is empty
  */
 BalTreeNode* _BalTreeMinimal(BalTreeNode *pNull, BalTreeNode *pCurr);
 
 /**
- * @brief Return the immediate successor of the requested node.
+ * @brief Return the immediate successor of the designated node.
  *
  * @param pNull         The pointer to the dummy node
- * @param pCurr         The pointer to the requested node
+ * @param pCurr         The pointer to the designated node
  *
- * @return Non-NULL     The pointer to the returned node
+ * @return pNode        The pointer to the returned node
  * @return NULL         The immediate successor cannot be found
  */
 BalTreeNode* _BalTreeSuccessor(BalTreeNode *pNull, BalTreeNode *pCurr);
 
 /**
- * @brief Return the immediate predecessor of the requested node.
+ * @brief Return the immediate predecessor of the designated node.
  *
  * @param pNull         The pointer to the dummy node
- * @param pCurr         The pointer to the requested node
+ * @param pCurr         The pointer to the designated node
  *
- * @return Non-NULL     The pointer to the returned node
+ * @return pNode        The pointer to the returned node
  * @return NULL         The immediate predecessor cannot be found
  */
 BalTreeNode* _BalTreePredecessor(BalTreeNode *pNull, BalTreeNode *pCurr);
 
 /**
- * @brief Make the right rotation for the requested node.
+ * @brief Make the right rotation for the designated node.
  *
- * After rotation, the requested node will be the right child of its original
+ * After rotation, the designated node will be the right child of its original
  * left child.
  *
  * @param pData         The pointer to the tree private data
- * @param pCurr         The pointer to the requested node
+ * @param pCurr         The pointer to the designated node
  */
 void _BalTreeRightRotate(BalTreeData *pData, BalTreeNode *pCurr);
 
 /**
- * @brief Make the left rotation for the requested node.
+ * @brief Make the left rotation for the designated node.
  *
- * After rotation, the requested node will be the left child of its original
+ * After rotation, the designated node will be the left child of its original
  * right child.
  *
  * @param pData         The pointer to the tree private data
- * @param pCurr         The pointer to the requested node
+ * @param pCurr         The pointer to the designated node
  */
 void _BalTreeLeftRotate(BalTreeData *pData, BalTreeNode *pCurr);
 
@@ -109,7 +109,7 @@ void _BalTreeLeftRotate(BalTreeData *pData, BalTreeNode *pCurr);
  * @brief Maintain the balanced tree property after node insertion.
  *
  * @param pData         The pointer to the tree private data
- * @param pCurr         The pointer to the requested node
+ * @param pCurr         The pointer to the designated node
  */
 void _BalTreeInsertFixup(BalTreeData *pData, BalTreeNode *pCurr);
 
@@ -117,18 +117,18 @@ void _BalTreeInsertFixup(BalTreeData *pData, BalTreeNode *pCurr);
  * @brief Maintain the balanced tree property after node deletion.
  *
  * @param pData         The pointer to the tree private data
- * @param pCurr         The pointer to the requested node
+ * @param pCurr         The pointer to the designated node
  */
 void _BalTreeDeleteFixup(BalTreeData *pData, BalTreeNode *pCurr);
 
 /**
  * @brief Get the node which stores the item having the same order with the
- * requested one.
+ * designated one.
  *
  * @param pData         The pointer to tree private data
- * @param item          The pointer to the requested item
+ * @param item          The pointer to the designated item
  *
- * @return Non-NULL     The pointer to the target node
+ * @return pNode       The pointer to the found node
  * @return NULL         No matched node
  */
 BalTreeNode* _BalTreeSearch(BalTreeData *pData, Item item);
@@ -151,12 +151,12 @@ int32_t _BalTreeItemCompare(Item itemSrc, Item itemTge);
 /**
  * @brief The default clean strategy for the resource hold by an item.
  *
- * @param item         The requested item
+ * @param item         The designated item
  */
 void _BalTreeItemDestroy(Item item);
 
 /**
- * @brief The internal debug function to verify the tree structure invariant.
+ * @brief The internal debug function to verify the structure correctness.
  *
  * @param pData         The pointer to the tree private data
  *

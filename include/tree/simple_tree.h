@@ -187,10 +187,8 @@ int32_t SimTreeSize(SimpleTree *self);
 /**
  * @brief Set the user defined order comparison strategy for a pair of items.
  *
- * @param self          The pointer to the SimpleTree structure.
- * @param pFunc         The pointer to the user defined function.
- *
- * This function sets the user defined item comparison strategy.
+ * @param self          The pointer to the SimpleTree structure
+ * @param pFunc         The pointer to the user defined function
  */
 void SimTreeSetCompare(SimpleTree *self, int32_t (*pFunc) (Item, Item));
 

@@ -19,13 +19,13 @@ typedef struct _BalancedTree {
         @see BalTreeInsert */
     int32_t (*insert) (struct _BalancedTree*, Item);
 
-    /** The operator to check for the existence of the item having the same
-        order with the requested one.
+    /** The operator to search for the the item having the same order with the
+        designated one.
         @see BalTreeSearch */
     int32_t (*search) (struct _BalancedTree*, Item, Item*);
 
     /** The operator to delete the item having the same order with the
-        requested one.
+        designated one.
         @see BalTreeDelete */
     int32_t (*delete) (struct _BalancedTree*, Item);
 
@@ -37,11 +37,11 @@ typedef struct _BalancedTree {
         @see BalTreeMinimum */
     int32_t (*minimum) (struct _BalancedTree*, Item*);
 
-    /** The operator to get the immediate successor of the requested item.
+    /** The operator to get the immediate successor of the designated item.
         @see BalTreeSuccessor */
     int32_t (*successor) (struct _BalancedTree*, Item, Item*);
 
-    /** The operator to get the immediate predecessor of the requested item.
+    /** The operator to get the immediate predecessor of the designated item.
         @see BalTreePredecessor */
     int32_t (*predecessor) (struct _BalancedTree*, Item, Item*);
 
@@ -81,34 +81,31 @@ void BalTreeDeinit(BalancedTree **ppObj);
 /**
  * @brief Insert an item into the tree.
  *
- * This function inserts the requested item into the proper position of the
- * tree to maintain the structure invariant.
+ * This function inserts the designated item into the proper position of the
+ * tree to maintain the structure correctness.
  *
  * @param self          The pointer to the BalancedTree structure
- * @param item          The requested item.
+ * @param item          The designated item.
  *
  * @retval SUCC
  * @retval ERR_NOMEM    Insufficient memory for item insertion
  *
- * @note If the order of the requested item is the same with a certain one
- * already stored in the tree. The old item will be cleaned by the configured
- * policy so that the requested one can take the position.
+ * @note If the order of the designated item is the same with a certain one
+ * stored in the tree, the old item will be cleaned by the resource deallocation
+ * function so that the designated one can take the position.
  */
 int32_t BalTreeInsert(BalancedTree *self, Item item);
 
 /**
- * @brief Check for the existence of the item having the same order with the
- * requested one.
+ * @brief Search for the item having the same order with the designated one.
  *
- * This function checks if there is already an item having the same order with
- * the requested one in the tree. If such item can be found, it will be returned
- * by the third parameter. In other words, this function can be used to query
- * the item existence and it can also be to acquire the found item. Otherwise,
- * the no data error code is returned and the third parameter is updated with
- * NULL value.
+ * This function searches for an item having the same order with the designated
+ * one. If such item can be found, it will be returned by the third parameter.
+ * Otherwise, the error code is returned and the third parameter is returned
+ * with NULL value.
  *
- * @param self          The pointer to the BalancedTree structure
- * @param itemIn        The requested item
+ * @param self          The pointer to the SimpleTree structure
+ * @param itemIn        The designated item
  * @param pItemOut      The pointer to the returned item
  *
  * @retval SUCC
@@ -117,15 +114,15 @@ int32_t BalTreeInsert(BalancedTree *self, Item item);
 int32_t BalTreeSearch(BalancedTree *self, Item itemIn, Item *pItemOut);
 
 /**
- * @brief Delete the item having the same order with the requested one from the
- * tree.
+ * @brief Delete the item having the same order with the designated one from
+ *thetree.
  *
  * This function first searches for the item having the same order with the
- * requested one in the tree. If such item can be found, the item will be cleaned
- * by the configured policy.
+ * designated one. If such item can be found, the item will be cleaned by the
+ * resource deallocation function.
  *
- * @param self          The pointer to the BalancedTree structure
- * @param item          The requested item
+ * @param self          The pointer to the SimpleTree structure
+ * @param item          The designated item
  *
  * @retval SUCC
  * @retval ERR_NODATA   The target item cannot be found
@@ -155,10 +152,10 @@ int32_t BalTreeMaximum(BalancedTree *self, Item *pItem);
 int32_t BalTreeMinimum(BalancedTree *self, Item *pItem);
 
 /**
- * @brief Return the item which is the immediate successor of the requested item.
+ * @brief Return the item which is the immediate successor of the designated item.
  *
  * @param self         The pointer to the BalancedTree structure
- * @param itemIn       The requested item
+ * @param itemIn       The designated item
  * @param pItemOut     The pointer to the returned item
  *
  * @retval SUCC
@@ -167,10 +164,10 @@ int32_t BalTreeMinimum(BalancedTree *self, Item *pItem);
 int32_t BalTreeSuccessor(BalancedTree *self, Item itemIn, Item *pItemOut);
 
 /**
- * @brief Return the item which is the immediate predecessor of the requested item.
+ * @brief Return the item which is the immediate predecessor of the designated item.
  *
  * @param self         The pointer to the BalancedTree structure
- * @param itemIn       The requested item
+ * @param itemIn       The designated item
  * @param pItemOut     The pointer to the returned item
  *
  * @retval SUCC
@@ -181,7 +178,7 @@ int32_t BalTreePredecessor(BalancedTree *self, Item itemIn, Item *pItemOut);
 /**
  * @brief Return the number of items stored in the tree.
  *
- * @param self          The pointer to the BalancedTree structure.
+ * @param self          The pointer to the BalancedTree structure
  *
  * @return              The number of stored items
  */
@@ -190,18 +187,16 @@ int32_t BalTreeSize(BalancedTree *self);
 /**
  * @brief Set the user defined order comparison strategy for a pair of items.
  *
- * @param self          The pointer to the BalancedTree structure.
- * @param pFunc         The pointer to the user defined function.
- *
- * This function sets the user defined item comparison strategy.
+ * @param self          The pointer to the BalancedTree structure
+ * @param pFunc         The pointer to the user defined function
  */
 void BalTreeSetCompare(BalancedTree *self, int32_t (*pFunc) (Item, Item));
 
 /**
  * @brief Set the user defined clean strategy for the resource hold by an item.
  *
- * @param self          The pointer to the BalancedTree structure.
- * @param pFunc         The pointer to the user defined function.
+ * @param self          The pointer to the BalancedTree structure
+ * @param pFunc         The pointer to the user defined function
  */
 void BalTreeSetDestroy(BalancedTree *self, void (*pFunc) (Item));
 
