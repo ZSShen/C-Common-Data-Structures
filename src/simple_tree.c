@@ -34,9 +34,9 @@ void _SimTreeDeinit(SimTreeData *pData);
 
 /**
  * @brief Return the node with maximal order in the subtree rooted by the
- * requested node.
+ * designated node.
  *
- * @param pCurr         The pointer to the requested node
+ * @param pCurr         The pointer to the designated node
  *
  * @return pNode        The pointer to the returned node
  * @return NULL         The subtree is empty
@@ -45,9 +45,9 @@ SimTreeNode* _SimTreeMaximal(SimTreeNode *pCurr);
 
 /**
  * @brief Return the node with minimal order in the subtree rooted by the
- * requested node.
+ * designated node.
  *
- * @param pCurr         The pointer to the requested node
+ * @param pCurr         The pointer to the designated node
  *
  * @return pNode        The pointer to the target node
  * @return NULL         The subtree is empty
@@ -55,9 +55,9 @@ SimTreeNode* _SimTreeMaximal(SimTreeNode *pCurr);
 SimTreeNode* _SimTreeMinimal(SimTreeNode *pCurr);
 
 /**
- * @brief Return the immediate successor of the requested node.
+ * @brief Return the immediate successor of the designated node.
  *
- * @param pCurr         The pointer to the requested node
+ * @param pCurr         The pointer to the designated node
  *
  * @return pNode        The pointer to the returned node
  * @return NULL         The immediate successor cannot be found
@@ -65,9 +65,9 @@ SimTreeNode* _SimTreeMinimal(SimTreeNode *pCurr);
 SimTreeNode* _SimTreeSuccessor(SimTreeNode *pCurr);
 
 /**
- * @brief Return the immediate predecessor of the requested node.
+ * @brief Return the immediate predecessor of the designated node.
  *
- * @param pCurr         The pointer to the requested node
+ * @param pCurr         The pointer to the designated node
  *
  * @return pNode        The pointer to the returned node
  * @return NULL         The immediate predecessor cannot be found
@@ -76,10 +76,10 @@ SimTreeNode* _SimTreePredecessor(SimTreeNode *pCurr);
 
 /**
  * @brief Get the node which stores the item having the same order with the
- * requested one.
+ * designated one.
  *
  * @param pData         The pointer to tree private data
- * @param item          The pointer to the requested item
+ * @param item          The pointer to the designated item
  *
  * @return pNode        The pointer to the found node
  * @return NULL         No matched node
@@ -104,7 +104,7 @@ int32_t _SimTreeItemCompare(Item itemSrc, Item itemTge);
 /**
  * @brief The default clean strategy for the resource hold by an item.
  *
- * @param item         The requested item
+ * @param item         The designated item
  */
 void _SimTreeItemDestroy(Item item);
 
