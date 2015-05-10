@@ -30,11 +30,11 @@ typedef struct _DLinkedList {
 
 	int32_t (*set_at) (struct _DLinkedList*, Item, int32_t);
 
-	int32_t (*get_front) (struct _DLinkedList*, *Item);
+	int32_t (*get_front) (struct _DLinkedList*, Item*);
 
-	int32_t (*get_back) (struct _DLinkedList*, *Item);
+	int32_t (*get_back) (struct _DLinkedList*, Item*);
 
-	int32_t (*get_at) (struct _DLinkedList*, *Item, int32_t);
+	int32_t (*get_at) (struct _DLinkedList*, Item*, int32_t);
 
 	int32_t (*resize) (struct _DLinkedList*, int32_t);
 
@@ -49,6 +49,14 @@ typedef struct _DLinkedList {
 /*===========================================================================*
  *             Definition for the exported member operations                 *
  *===========================================================================*/
+/**
+ * @brief The constructor for DLinkedList.
+ *
+ * @param ppObj			The double pointer to the to be constructed list
+ *
+ * @retval SUCC
+ * @retval ERR_NOMEM	Insufficient memory for list construction
+ */
 int32_t DListInit(DLinkedList **ppObj);
 
 int32_t DListDeinit(DLinkedList **ppObj);
