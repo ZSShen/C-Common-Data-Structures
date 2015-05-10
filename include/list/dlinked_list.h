@@ -10,39 +10,39 @@
 typedef struct _DListData DListData;
 
 typedef struct _DLinkedList {
-	DListData *pData;
+    DListData *pData;
 
-	int32_t (*push_front) (struct _DLinkedList*, Item);
+    int32_t (*push_front) (struct _DLinkedList*, Item);
 
-	int32_t (*push_back) (struct _DLinkedList*, Item);
+    int32_t (*push_back) (struct _DLinkedList*, Item);
 
-	int32_t (*insert) (struct _DLinkedList*, Item, int32_t);
+    int32_t (*insert) (struct _DLinkedList*, Item, int32_t);
 
-	int32_t (*pop_front) (struct _DLinkedList*);
+    int32_t (*pop_front) (struct _DLinkedList*);
 
-	int32_t (*pop_back) (struct _DLinkedList*);
+    int32_t (*pop_back) (struct _DLinkedList*);
 
-	int32_t (*delete) (struct _DLinkedList*, int32_t);
+    int32_t (*delete) (struct _DLinkedList*, int32_t);
 
-	int32_t (*set_front) (struct _DLinkedList*, Item);
+    int32_t (*set_front) (struct _DLinkedList*, Item);
 
-	int32_t (*set_back) (struct _DLinkedList*, Item);
+    int32_t (*set_back) (struct _DLinkedList*, Item);
 
-	int32_t (*set_at) (struct _DLinkedList*, Item, int32_t);
+    int32_t (*set_at) (struct _DLinkedList*, Item, int32_t);
 
-	int32_t (*get_front) (struct _DLinkedList*, Item*);
+    int32_t (*get_front) (struct _DLinkedList*, Item*);
 
-	int32_t (*get_back) (struct _DLinkedList*, Item*);
+    int32_t (*get_back) (struct _DLinkedList*, Item*);
 
-	int32_t (*get_at) (struct _DLinkedList*, Item*, int32_t);
+    int32_t (*get_at) (struct _DLinkedList*, Item*, int32_t);
 
-	int32_t (*resize) (struct _DLinkedList*, int32_t);
+    int32_t (*resize) (struct _DLinkedList*, int32_t);
 
-	int32_t (*size) (struct _DLinkedList*);
+    int32_t (*size) (struct _DLinkedList*);
 
-	int32_t (*reverse) (struct _DLinkedList*);
+    int32_t (*reverse) (struct _DLinkedList*);
 
-	void (*set_destroy) (struct _DLinkedList*, void (*) (Item));
+    void (*set_destroy) (struct _DLinkedList*, void (*) (Item));
 } DLinkedList;
 
 
@@ -52,10 +52,10 @@ typedef struct _DLinkedList {
 /**
  * @brief The constructor for DLinkedList.
  *
- * @param ppObj			The double pointer to the to be constructed list
+ * @param ppObj         The double pointer to the to be constructed list
  *
  * @retval SUCC
- * @retval ERR_NOMEM	Insufficient memory for list construction
+ * @retval ERR_NOMEM    Insufficient memory for list construction
  */
 int32_t DListInit(DLinkedList **ppObj);
 

@@ -5,15 +5,15 @@
  *                  Hide the private data of the tree                        *
  *===========================================================================*/
  typedef struct _DListNode {
- 	Item item;
- 	struct _DListNode *pPrev;
- 	struct _DListNode *pNext;
+    Item item;
+    struct _DListNode *pPrev;
+    struct _DListNode *pNext;
  } DListNode;
 
 struct _DListData {
-	int32_t iSize_;
-	DListNode *pHead_;
-	void (*pDestroy_)(Item);
+    int32_t iSize_;
+    DListNode *pHead_;
+    void (*pDestroy_)(Item);
 };
 
 
@@ -33,45 +33,45 @@ void _DListItemDestroy(Item item);
  *===========================================================================*/
 int32_t DListInit(DLinkedList **ppObj)
 {
-	*ppObj = (DLinkedList*)malloc(sizeof(DLinkedList));
-	if (!(*ppObj))
-		return ERR_NOMEM;
-	DLinkedList *pObj = *ppObj;
+    *ppObj = (DLinkedList*)malloc(sizeof(DLinkedList));
+    if (!(*ppObj))
+        return ERR_NOMEM;
+    DLinkedList *pObj = *ppObj;
 
-	pObj->pData = (DListData*)malloc(sizeof(DListData));
-	if (!(pObj->pData)) {
-		free(*ppObj);
-		*ppObj = NULL;
-		return ERR_NOMEM;
-	}
-	DListData *pData = pObj->pData;
+    pObj->pData = (DListData*)malloc(sizeof(DListData));
+    if (!(pObj->pData)) {
+        free(*ppObj);
+        *ppObj = NULL;
+        return ERR_NOMEM;
+    }
+    DListData *pData = pObj->pData;
 
-	pData->iSize_ = 0;
-	pData->pHead_ = NULL;
-	pData->pDestroy_ = _DListItemDestroy;
+    pData->iSize_ = 0;
+    pData->pHead_ = NULL;
+    pData->pDestroy_ = _DListItemDestroy;
 
-	pObj->push_front = DListPushFront;
-	pObj->push_back = DListPushBack;
-	pObj->insert = DListInsert;
+    pObj->push_front = DListPushFront;
+    pObj->push_back = DListPushBack;
+    pObj->insert = DListInsert;
 
-	pObj->pop_front = DListPopFront;
-	pObj->pop_back = DListPopBack;
-	pObj->delete = DListDelete;
+    pObj->pop_front = DListPopFront;
+    pObj->pop_back = DListPopBack;
+    pObj->delete = DListDelete;
 
-	pObj->set_front = DListSetFront;
-	pObj->set_back = DListSetBack;
-	pObj->set_at = DListSetAt;
+    pObj->set_front = DListSetFront;
+    pObj->set_back = DListSetBack;
+    pObj->set_at = DListSetAt;
 
-	pObj->get_front = DListGetFront;
-	pObj->get_back = DListGetBack;
-	pObj->get_at = DListGetAt;
+    pObj->get_front = DListGetFront;
+    pObj->get_back = DListGetBack;
+    pObj->get_at = DListGetAt;
 
-	pObj->resize = DListResize;
-	pObj->size = DListSize;
-	pObj->reverse = DListReverse;
-	pObj->set_destroy = DListSetDestroy;
+    pObj->resize = DListResize;
+    pObj->size = DListSize;
+    pObj->reverse = DListReverse;
+    pObj->set_destroy = DListSetDestroy;
 
-	return SUCC;
+    return SUCC;
 }
 
 int32_t DListDeinit(DLinkedList **ppObj) {return 0;}
