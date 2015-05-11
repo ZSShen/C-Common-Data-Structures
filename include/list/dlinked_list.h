@@ -59,11 +59,35 @@ typedef struct _DLinkedList {
  */
 int32_t DListInit(DLinkedList **ppObj);
 
-int32_t DListDeinit(DLinkedList **ppObj);
+/**
+ * @brief The destructor for DLinkedList.
+ *
+ * @param ppObj         The double pointer to the to be destructed list
+ */
+void DListDeinit(DLinkedList **ppObj);
 
+/**
+ * @brief Push an item into the front-end of the list.
+ *
+ * @param ppObj         The pointer to the DLinkedList structure
+ * @param item          The designated item
+ *
+ * @retval SUCC
+ * @retval ERR_NOMEM    Insufficient memory space for list extension
+ */
 int32_t DListPushFront(DLinkedList *pObj, Item item);
 
+/**
+ * @brief Push an item into the back-end of the list.
+ *
+ * @param ppObj         The pointer to the DLinkedList structure
+ * @param item          The designated item
+ *
+ * @retval SUCC
+ * @retval ERR_NOMEM    Insufficient memory space for list extension
+ */
 int32_t DListPushBack(DLinkedList *pObj, Item item);
+
 
 int32_t DListInsert(DLinkedList *pObj, Item item, int32_t iIdx);
 

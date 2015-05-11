@@ -25,7 +25,7 @@ struct _DListData {
  *
  * @param pData         The pointer to the list private data
  */
- void _DListDeinit(DLinkedList *pData);
+ void _DListDeinit(DListData *pData);
 
 
 /**
@@ -34,6 +34,24 @@ struct _DListData {
  * @param item          The requested item
  */
 void _DListItemDestroy(Item item);
+
+
+#define NEW_NODE(pNew, item)                                                    \
+            do {                                                                \
+                pNew = (DListNode*)malloc(sizeof(DListNode));                   \
+                if (!pNew)                                                      \
+                    return ERR_NOMEM;                                           \
+                pNew->item = item;                                              \
+            } while (0);
+
+
+#define PUSH_NODE(pNew, pHead)                                                  \
+            do {                                                                \
+                pNew->pNext = pHead;                                            \
+                pNew->pPrev = pHead->pPrev;                                     \
+                pHead->pPrev->pNext = pNew;                                     \
+                pHead->pPrev = pNew;                                            \
+            } while (0);
 
 
 /*===========================================================================*
@@ -82,11 +100,58 @@ int32_t DListInit(DLinkedList **ppObj)
     return SUCC;
 }
 
-int32_t DListDeinit(DLinkedList **ppObj) {return 0;}
+void DListDeinit(DLinkedList **ppObj)
+{
+    if (!(*ppObj))
+        goto EXIT;
 
-int32_t DListPushFront(DLinkedList *pObj, Item item) {return 0;}
+    DListData *pData = (*ppObj)->pData;
+    if (!pData)
+        goto FREE_LIST;
 
-int32_t DListPushBack(DLinkedList *pObj, Item item) {return 0;}
+    _DListDeinit(pData);
+    free(pData);
+
+FREE_LIST:
+    free(*ppObj);
+    *ppObj = NULL;
+EXIT:
+    return;
+}
+
+int32_t DListPushFront(DLinkedList *pObj, Item item)
+{
+    DListNode *pNew;
+    NEW_NODE(pNew, item);
+
+    DListData *pData = pObj->pData;
+    if (!pData->pHead_)
+        pNew->pPrev = pNew->pNext = pNew;
+    else
+        PUSH_NODE(pNew, pData->pHead_);
+
+    pData->pHead_ = pNew;
+    pData->iSize_++;
+
+    return SUCC;
+}
+
+int32_t DListPushBack(DLinkedList *pObj, Item item)
+{
+    DListNode *pNew;
+    NEW_NODE(pNew, item);
+
+    DListData *pData = pObj->pData;
+    if (!pData->pHead_) {
+        pNew->pPrev = pNew->pNext = pNew;
+        pData->pHead_ = pNew;
+    } else
+        PUSH_NODE(pNew, pData->pHead_);
+
+    pData->iSize_++;
+
+    return SUCC;
+}
 
 int32_t DListInsert(DLinkedList *pObj, Item item, int32_t iIdx) {return 0;}
 
@@ -120,9 +185,15 @@ void DListSetDestroy(DLinkedList *pObj, void (*pFunc) (Item)) {}
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
- void _DListDeinit(DLinkedList *pData)
- {
-
- }
+void _DListDeinit(DListData *pData)
+{
+    DListNode *pCurr = pData->pHead_;
+    do {
+        DListNode *pPred = pCurr;
+        pCurr = pCurr->pNext;
+        free(pPred);
+    } while (pCurr != pData->pHead_);
+    return;
+}
 
 void _DListItemDestroy(Item item) {}
