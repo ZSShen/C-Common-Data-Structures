@@ -21,6 +21,14 @@ struct _DListData {
  *                  Definition for internal operations                       *
  *===========================================================================*/
 /**
+ * @brief Traverse all the nodes and clean the allocated resource.
+ *
+ * @param pData         The pointer to the list private data
+ */
+ void _DListDeinit(DLinkedList *pData);
+
+
+/**
  * @brief The default clean strategy for the resource hold by an item.
  *
  * @param item          The requested item
@@ -112,4 +120,9 @@ void DListSetDestroy(DLinkedList *pObj, void (*pFunc) (Item)) {}
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
+ void _DListDeinit(DLinkedList *pData)
+ {
+
+ }
+
 void _DListItemDestroy(Item item) {}
