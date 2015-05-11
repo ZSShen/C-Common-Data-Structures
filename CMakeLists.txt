@@ -16,9 +16,9 @@ add_subdirectory(${DIR_SRC})
 
 
 # Set the "make run" target.
-set(TARGET_RUN "run")
-set(SCRIPT "./auto.py")
-add_custom_target ( ${TARGET_RUN}
-    COMMAND ${SCRIPT}
-    WORKING_DIRECTORY ${DIR_TEST}
-)
+#set(TARGET_RUN "run")
+#set(SCRIPT "./auto.py")
+#add_custom_target ( ${TARGET_RUN}
+#    COMMAND ${SCRIPT}
+#    WORKING_DIRECTORY ${DIR_TEST}
+#)
