@@ -167,9 +167,29 @@ int32_t DListSetBack(DLinkedList *pObj, Item item) {return 0;}
 
 int32_t DListSetAt(DLinkedList *pObj, Item item, int32_t iIdx) {return 0;}
 
-int32_t DListGetFront(DLinkedList *pObj, Item *pItem) {return 0;}
+int32_t DListGetFront(DLinkedList *pObj, Item *pItem)
+{
+    DListData *pData = pObj->pData;
+    if (!pData->pHead_) {
+        *pItem = NULL;
+        return ERR_IDX;
+    }
 
-int32_t DListGetBack(DLinkedList *pObj, Item *pItem) {return 0;}
+    *pItem = pData->pHead_->item;
+    return SUCC;
+}
+
+int32_t DListGetBack(DLinkedList *pObj, Item *pItem)
+{
+    DListData *pData = pObj->pData;
+    if (!pData->pHead_) {
+        *pItem = NULL;
+        return ERR_IDX;
+    }
+
+    *pItem = pData->pHead_->pPrev->item;
+    return SUCC;
+}
 
 int32_t DListGetAt(DLinkedList *pObj, Item *pItem, int32_t iIdx) {return 0;}
 

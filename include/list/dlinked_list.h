@@ -7,13 +7,20 @@
 
 #include "../util.h"
 
+/** DListData is the data type for the container private information. */
 typedef struct _DListData DListData;
 
+/** The implementation for doubly linked list. */
 typedef struct _DLinkedList {
+    /** The container private information */
     DListData *pData;
 
+    /** Push an item into the front-end of the list.
+        @see DListPushFront */
     int32_t (*push_front) (struct _DLinkedList*, Item);
 
+    /** Push an item into the back-end of the list.
+        @see DListPushBack */
     int32_t (*push_back) (struct _DLinkedList*, Item);
 
     int32_t (*insert) (struct _DLinkedList*, Item, int32_t);
@@ -30,8 +37,12 @@ typedef struct _DLinkedList {
 
     int32_t (*set_at) (struct _DLinkedList*, Item, int32_t);
 
+    /** Get the item from the front-end of the list.
+        @see DListGetFront */
     int32_t (*get_front) (struct _DLinkedList*, Item*);
 
+    /** Get the item from the back-end of the list.
+        @see DListGetBack */
     int32_t (*get_back) (struct _DLinkedList*, Item*);
 
     int32_t (*get_at) (struct _DLinkedList*, Item*, int32_t);
@@ -103,8 +114,26 @@ int32_t DListSetBack(DLinkedList *pObj, Item item);
 
 int32_t DListSetAt(DLinkedList *pObj, Item item, int32_t iIdx);
 
+/**
+ * @brief Get the item from the front-end of the list.
+ *
+ * @param pObj          The pointer to the DLinkedList structure
+ * @param pItem         The pointer to the returned item
+ *
+ * @retval SUCC
+ * @retval ERR_IDX      Empty list
+ */
 int32_t DListGetFront(DLinkedList *pObj, Item *pItem);
 
+/**
+ * @brief Get the item from the back-end of the list.
+ *
+ * @param pObj          The pointer to the DLinkedList structure
+ * @param pItem         The pointer to the returned item
+ *
+ * @retval SUCC
+ * @retval ERR_IDX      Empty list
+ */
 int32_t DListGetBack(DLinkedList *pObj, Item *pItem);
 
 int32_t DListGetAt(DLinkedList *pObj, Item *pItem, int32_t iIdx);
