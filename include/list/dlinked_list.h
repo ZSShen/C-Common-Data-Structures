@@ -23,6 +23,8 @@ typedef struct _DLinkedList {
         @see DListPushBack */
     int32_t (*push_back) (struct _DLinkedList*, Item);
 
+    /** Insert an item into the designated index of the list.
+        @see DListInsert */
     int32_t (*insert) (struct _DLinkedList*, Item, int32_t);
 
     int32_t (*pop_front) (struct _DLinkedList*);
@@ -80,7 +82,7 @@ void DListDeinit(DLinkedList **ppObj);
 /**
  * @brief Push an item into the front-end of the list.
  *
- * @param ppObj         The pointer to the DLinkedList structure
+ * @param pObj          The pointer to the DLinkedList structure
  * @param item          The designated item
  *
  * @retval SUCC
@@ -91,7 +93,7 @@ int32_t DListPushFront(DLinkedList *pObj, Item item);
 /**
  * @brief Push an item into the back-end of the list.
  *
- * @param ppObj         The pointer to the DLinkedList structure
+ * @param pObj          The pointer to the DLinkedList structure
  * @param item          The designated item
  *
  * @retval SUCC
@@ -99,7 +101,27 @@ int32_t DListPushFront(DLinkedList *pObj, Item item);
  */
 int32_t DListPushBack(DLinkedList *pObj, Item item);
 
-
+/**
+ * @brief Insert an item into the designated index of the list.
+ *
+ * This function inserts the item into the designated index of the list and shifts
+ * the trailing items one position to the back-end. The index can be positive or
+ * negative, but its absolute value should be smaller than or equal to the list
+ * size. For postive indexing, the list traversal starts from the front-end to the
+ * back-end. And for the negative indexing, the traversal direction is reversed.
+ * For illustration, let N denote the list size. Then index 0 and N-1 point to the
+ * list head and tail respectively. And for negative indexing, index -1 and -N
+ * point to the list tail and head. But no matter which indexing method is applied,
+ * the list always grows from the front-end to the back-end.
+ *
+ * @param pObj          The pointer to the DLinkedList structure
+ * @param item          The designated item
+ * @param iIdx          The designated index
+ *
+ * @retval SUCC
+ * @retval ERR_NOMEM    Insufficient memory space for list extension
+ * @retval ERR_IDX      Out of range indexing
+ */
 int32_t DListInsert(DLinkedList *pObj, Item item, int32_t iIdx);
 
 int32_t DListPopFront(DLinkedList *pObj);

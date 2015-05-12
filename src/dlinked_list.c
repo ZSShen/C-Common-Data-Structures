@@ -54,6 +54,15 @@ void _DListItemDestroy(Item item);
             } while (0);
 
 
+#define INSERT_NODE(pNew, pTrack)                                               \
+            do {                                                                \
+                pNew->pNext = pTrack;                                           \
+                pNew->pPrev = pTrack->pPrev;                                    \
+                pTrack->pPrev->pNext = pNew;                                    \
+                pTrack->pPrev = pNew;                                           \
+            } while (0);
+
+
 /*===========================================================================*
  *         Implementation for the container supporting operations            *
  *===========================================================================*/
@@ -153,7 +162,45 @@ int32_t DListPushBack(DLinkedList *pObj, Item item)
     return SUCC;
 }
 
-int32_t DListInsert(DLinkedList *pObj, Item item, int32_t iIdx) {return 0;}
+int32_t DListInsert(DLinkedList *pObj, Item item, int32_t iIdx)
+{
+    DListData *pData = pObj->pData;
+
+    /* Rejct invalid index. */
+    if (abs(iIdx) > pData->iSize_)
+        return ERR_IDX;
+
+    DListNode *pNew;
+    NEW_NODE(pNew, item);
+    if (!pData->pHead_) {
+        pNew->pPrev = pNew->pNext = pNew;
+        pData->pHead_ = pNew;
+    } else {
+        int32_t i;
+        DListNode *pTrack = pData->pHead_;
+
+        /* Insert the node into proper position with forward indexing. */
+        if (iIdx >= 0) {
+            for (i = iIdx ; i > 0 ; i--)
+                pTrack = pTrack->pNext;
+            INSERT_NODE(pNew, pTrack);
+            if (iIdx == 0)
+                pData->pHead_ = pNew;
+        }
+        /* Insert the node into proper position with backward indexing. */
+        else {
+            for (i = 0 ; i > iIdx ; i--)
+                pTrack = pTrack->pPrev;
+            INSERT_NODE(pNew, pTrack);
+            if (-iIdx == pData->iSize_)
+                pData->pHead_ = pNew;
+        }
+    }
+
+    pData->iSize_++;
+
+    return SUCC;
+}
 
 int32_t DListPopFront(DLinkedList *pObj) {return 0;}
 
