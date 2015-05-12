@@ -47,6 +47,8 @@ typedef struct _DLinkedList {
         @see DListGetBack */
     int32_t (*get_back) (struct _DLinkedList*, Item*);
 
+    /** Get an item from the designated index of the list.
+        @see DListGetAt */
     int32_t (*get_at) (struct _DLinkedList*, Item*, int32_t);
 
     int32_t (*resize) (struct _DLinkedList*, int32_t);
@@ -107,12 +109,15 @@ int32_t DListPushBack(DLinkedList *pObj, Item item);
  * This function inserts the item into the designated index of the list and shifts
  * the trailing items one position to the back-end. The index can be positive or
  * negative, but its absolute value should be smaller than or equal to the list
- * size. For postive indexing, the list traversal starts from the front-end to the
- * back-end. And for the negative indexing, the traversal direction is reversed.
- * For illustration, let N denote the list size. Then index 0 and N-1 point to the
- * list head and tail respectively. And for negative indexing, index -1 and -N
- * point to the list tail and head. But no matter which indexing method is applied,
- * the list always grows from the front-end to the back-end.
+ * size.
+ * The operation supports both forward and backward indexing. For the former one,
+ * the list is traversed from the front-end to the back-end. And for later one,
+ * traversal direction is reversed.
+ * To illustrate the behavior, let N denote the list size. Thus for forward indexing
+ * , index 0 and index N-1 point to the head and tail. And for negative indexing,
+ * index -1 and index -N point to the list tail and head.
+ * But no matter which indexing method is applied, the list always grows from the
+ * front-end to the back-end.
  *
  * @param pObj          The pointer to the DLinkedList structure
  * @param item          The designated item
@@ -121,6 +126,9 @@ int32_t DListPushBack(DLinkedList *pObj, Item item);
  * @retval SUCC
  * @retval ERR_NOMEM    Insufficient memory space for list extension
  * @retval ERR_IDX      Out of range indexing
+ *
+ * @note The absolute value of the index should be smaller than or equal to the
+ * list size.
  */
 int32_t DListInsert(DLinkedList *pObj, Item item, int32_t iIdx);
 
@@ -144,6 +152,9 @@ int32_t DListSetAt(DLinkedList *pObj, Item item, int32_t iIdx);
  *
  * @retval SUCC
  * @retval ERR_IDX      Empty list
+ *
+ * @note If the exception occurs, the data pointed by pItem will also be updated
+ * with NULL.
  */
 int32_t DListGetFront(DLinkedList *pObj, Item *pItem);
 
@@ -155,9 +166,29 @@ int32_t DListGetFront(DLinkedList *pObj, Item *pItem);
  *
  * @retval SUCC
  * @retval ERR_IDX      Empty list
+ *
+ * @note If the exception occurs, the data pointed by pItem will also be updated
+ * with NULL.
  */
 int32_t DListGetBack(DLinkedList *pObj, Item *pItem);
 
+/**
+ * @brief Get an item from the designated index of the list.
+ *
+ * As insertion operation, both forward and backward indexing are accepted. Let
+ * N denote the list size and i denote the index.
+ * For forward indexing, inequality 0 <= i < N must be fitted.
+ * For backward indexing, inequality 0 < i <= -N must be fitted.
+ *
+ * @param pObj          The pointer to the DLinkedList structure
+ * @param pItem         The pointer to the returned item
+ *
+ * @retval SUCC
+ * @retval ERR_IDX      Out of range index
+ *
+ * @note If the exception occurs, the data pointed by pItem will also be updated
+ * with NULL.
+ */
 int32_t DListGetAt(DLinkedList *pObj, Item *pItem, int32_t iIdx);
 
 int32_t DListResize(DLinkedList *pObj, int32_t iSize);

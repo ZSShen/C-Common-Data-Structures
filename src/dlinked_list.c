@@ -179,7 +179,7 @@ int32_t DListInsert(DLinkedList *pObj, Item item, int32_t iIdx)
         int32_t i;
         DListNode *pTrack = pData->pHead_;
 
-        /* Insert the node into proper position with forward indexing. */
+        /* Insert the node into the proper position with forward indexing. */
         if (iIdx >= 0) {
             for (i = iIdx ; i > 0 ; i--)
                 pTrack = pTrack->pNext;
@@ -187,7 +187,7 @@ int32_t DListInsert(DLinkedList *pObj, Item item, int32_t iIdx)
             if (iIdx == 0)
                 pData->pHead_ = pNew;
         }
-        /* Insert the node into proper position with backward indexing. */
+        /* Insert the node into the proper position with backward indexing. */
         else {
             for (i = 0 ; i > iIdx ; i--)
                 pTrack = pTrack->pPrev;
@@ -238,7 +238,37 @@ int32_t DListGetBack(DLinkedList *pObj, Item *pItem)
     return SUCC;
 }
 
-int32_t DListGetAt(DLinkedList *pObj, Item *pItem, int32_t iIdx) {return 0;}
+int32_t DListGetAt(DLinkedList *pObj, Item *pItem, int32_t iIdx)
+{
+    DListData *pData = pObj->pData;
+    if (!pData->pHead_) {
+        *pItem = NULL;
+        return ERR_IDX;
+    }
+
+    /* Forward indexing to the target node. */
+    if (iIdx >= 0) {
+        if (iIdx >= pData->iSize_)
+            return ERR_IDX;
+        int i;
+        DListNode *pTrack = pData->pHead_;
+        for (i = 0 ; i < iIdx ; i++)
+            pTrack = pTrack->pNext;
+        *pItem = pTrack->item;
+    }
+    /* Backward indexing to the target node. */
+    else {
+        if (-iIdx > pData->iSize_)
+            return ERR_IDX;
+        int i;
+        DListNode *pTrack = pData->pHead_;
+        for (i = 0 ; i < -iIdx ; i++)
+            pTrack = pTrack->pPrev;
+        *pItem = pTrack->item;
+    }
+
+    return SUCC;
+}
 
 int32_t DListResize(DLinkedList *pObj, int32_t iSize) {return 0;}
 
