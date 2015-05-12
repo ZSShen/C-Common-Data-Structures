@@ -272,7 +272,10 @@ int32_t DListGetAt(DLinkedList *pObj, Item *pItem, int32_t iIdx)
 
 int32_t DListResize(DLinkedList *pObj, int32_t iSize) {return 0;}
 
-int32_t DListSize(DLinkedList *pObj) {return 0;}
+int32_t DListSize(DLinkedList *pObj)
+{
+    return pObj->pData->iSize_;
+}
 
 int32_t DListReverse(DLinkedList *pObj) {return 0;}
 
