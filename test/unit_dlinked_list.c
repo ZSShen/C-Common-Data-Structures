@@ -41,6 +41,11 @@ int32_t SuitePrimitive()
     if (!pTest)
         return ERR_NOMEM;
 
+    pTest = CU_add_test(pSuite, "Basic item removal starting from the back-end",
+            TestPrimPopBack);
+    if (!pTest)
+        return ERR_NOMEM;
+
     return SUCC;
 }
 
@@ -271,6 +276,46 @@ void TestPrimPopFront()
     CU_ASSERT_EQUAL(item, (Item)3);
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)3);
+
+    CU_ASSERT(pList->pop_front(pList) == SUCC);
+    CU_ASSERT(pList->get_front(pList, &item) == ERR_IDX);
+    CU_ASSERT(pList->get_back(pList, &item) == ERR_IDX);
+
+    /* Re-insert the item again to check if the list is well released in
+       the previous test. */
+    CU_ASSERT(pList->push_back(pList, (Item)777) == SUCC);
+    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)777);
+    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)777);
+    CU_ASSERT_EQUAL(pList->size(pList), 1);
+
+    DListDeinit(&pList);
+}
+
+void TestPrimPopBack()
+{
+    DLinkedList *pList;
+    CU_ASSERT(DListInit(&pList) == SUCC);
+
+    /* Prepare the initial items. */
+    CU_ASSERT(pList->push_back(pList, (Item)1) == SUCC);
+    CU_ASSERT(pList->push_back(pList, (Item)2) == SUCC);
+    CU_ASSERT(pList->push_back(pList, (Item)3) == SUCC);
+
+    /* Pop the items from the back-end and check the item sequence. */
+    Item item;
+    CU_ASSERT(pList->pop_back(pList) == SUCC);
+    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)1);
+    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)2);
+
+    CU_ASSERT(pList->pop_back(pList) == SUCC);
+    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)1);
+    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)1);
 
     CU_ASSERT(pList->pop_front(pList) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == ERR_IDX);
