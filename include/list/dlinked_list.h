@@ -132,10 +132,49 @@ int32_t DListPushBack(DLinkedList *pObj, Item item);
  */
 int32_t DListInsert(DLinkedList *pObj, Item item, int32_t iIdx);
 
+/**
+ * @brief Pop the item from the front-end of the list.
+ *
+ * This function removes the item from the front-end of the list, and the resource
+ * hold by the item will be cleaned by the configured item clean policy.
+ *
+ * @param pObj          The pointer to the DLinkedList structure
+ *
+ * @retval SUCC
+ * @retval ERR_IDX      Empty list
+ */
 int32_t DListPopFront(DLinkedList *pObj);
 
+/**
+ * @brief Pop the item from the back-end of the list.
+ *
+ * This function removes the item from the back-end of the list, and the resource
+ * hold by the item will be cleaned by the configured item clean policy.
+ *
+ * @param pObj          The pointer to the DLinkedList structure
+ *
+ * @retval SUCC
+ * @retval ERR_IDX      Empty list
+ */
 int32_t DListPopBack(DLinkedList *pObj);
 
+/**
+ * @brief Delete the item from the designated index of the list.
+ *
+ * This function removes the item from the designated index of the list and shifts
+ * the trailing items one position to the front-end. The resource hold by the item
+ * will be cleaned by the configured item clean policy.
+ * As insertion operation, both forward and backward indexing are accepted. Let
+ * N denote the list size and i denote the index.
+ * For forward indexing, inequality 0 <= i < N must be fitted.
+ * For backward indexing, inequality 0 < i <= -N must be fitted.
+ *
+ * @param pObj          The pointer to the DLinkedList structure
+ * @param iIdx          The designated index
+ *
+ * @retval SUCC
+ * @retval ERR_IDX      Out of range indexing
+ */
 int32_t DListDelete(DLinkedList *pObj, int32_t iIdx);
 
 int32_t DListSetFront(DLinkedList *pObj, Item item);
