@@ -283,11 +283,19 @@ void TestPrimPopFront()
     CU_ASSERT_EQUAL(item, (Item)2);
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)3);
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)2);
+    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)3);
 
     CU_ASSERT(pList->pop_front(pList) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)3);
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)3);
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)3);
+    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)3);
 
     CU_ASSERT(pList->pop_front(pList) == SUCC);
@@ -323,11 +331,19 @@ void TestPrimPopBack()
     CU_ASSERT_EQUAL(item, (Item)1);
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
+    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)2);
+    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)2);
 
     CU_ASSERT(pList->pop_back(pList) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)1);
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)1);
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)1);
+    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)1);
 
     CU_ASSERT(pList->pop_front(pList) == SUCC);
