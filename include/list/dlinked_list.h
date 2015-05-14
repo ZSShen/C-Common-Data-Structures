@@ -27,10 +27,16 @@ typedef struct _DLinkedList {
         @see DListInsert */
     int32_t (*insert) (struct _DLinkedList*, Item, int32_t);
 
+    /** Pop the item from the front-end of the list.
+        @see DListPopFront */
     int32_t (*pop_front) (struct _DLinkedList*);
 
+    /** Pop the item from the back-end of the list.
+        @see DListPopBack */
     int32_t (*pop_back) (struct _DLinkedList*);
 
+    /** Delete the item from the designated list of the list
+        @see DListDelete */
     int32_t (*delete) (struct _DLinkedList*, int32_t);
 
     int32_t (*set_front) (struct _DLinkedList*, Item);
