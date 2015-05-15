@@ -14,7 +14,7 @@ void TestPrimPopFront();
 void TestPrimPopBack();
 void TestPrimDeleteForward();
 void TestPrimDeleteBackward();
-
+void TestPrimSet();
 
 int32_t SuitePrimitive()
 {
@@ -56,6 +56,10 @@ int32_t SuitePrimitive()
 
     pTest = CU_add_test(pSuite, "Basic item removal via delete() with backward indexing",
             TestPrimDeleteBackward);
+    if (!pTest)
+        return ERR_NOMEM;
+
+    pTest = CU_add_test(pSuite, "Basic item replacement", TestPrimSet);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -472,6 +476,50 @@ void TestPrimDeleteBackward()
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)777);
     CU_ASSERT_EQUAL(pList->size(pList), 1);
+
+    DListDeinit(&pList);
+}
+
+void TestPrimSet()
+{
+    DLinkedList *pList;
+    CU_ASSERT(DListInit(&pList) == SUCC);
+
+    /* Prepare the initial items. */
+    CU_ASSERT(pList->push_back(pList, (Item)1) == SUCC);
+    CU_ASSERT(pList->push_back(pList, (Item)2) == SUCC);
+    CU_ASSERT(pList->push_back(pList, (Item)3) == SUCC);
+
+    /* Replace the item at the front-end and check the result. */
+    Item item;
+    CU_ASSERT(pList->set_front(pList, (Item)-1) == SUCC);
+    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)-1);
+
+    /* Replace the item at the back-end and check the result. */
+    CU_ASSERT(pList->set_back(pList, (Item)-3) == SUCC);
+    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)-3);
+
+    /* Replace the item at the designated index and check the result. */
+    CU_ASSERT(pList->set_at(pList, (Item)1, 0) == SUCC);
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)1);
+    CU_ASSERT(pList->set_at(pList, (Item)-1, -3) == SUCC);
+    CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)-1);
+    CU_ASSERT(pList->set_at(pList, (Item)3, 2) == SUCC);
+    CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)3);
+    CU_ASSERT(pList->set_at(pList, (Item)-3, -1) == SUCC);
+    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)-3);
+    CU_ASSERT(pList->set_at(pList, (Item)-2, 1) == SUCC);
+    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)-2);
+    CU_ASSERT(pList->set_at(pList, (Item)2, -2) == SUCC);
+    CU_ASSERT(pList->get_at(pList, &item, -2) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)2);
 
     DListDeinit(&pList);
 }

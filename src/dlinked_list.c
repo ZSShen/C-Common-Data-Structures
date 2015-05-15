@@ -175,7 +175,6 @@ int32_t DListInsert(DLinkedList *pObj, Item item, int32_t iIdx)
 {
     DListData *pData = pObj->pData;
 
-    /* Rejct invalid index. */
     if (abs(iIdx) > pData->iSize_)
         return ERR_IDX;
 
@@ -264,6 +263,7 @@ int32_t DListDelete(DLinkedList *pObj, int32_t iIdx)
     DListData *pData = pObj->pData;
     DListNode *pTrack, *pPred, *pSucc;
 
+    /* Delete the node at the designated index with forward indexing. */
     if (iIdx >= 0) {
         if (iIdx >= pData->iSize_)
             return ERR_IDX;
@@ -273,7 +273,9 @@ int32_t DListDelete(DLinkedList *pObj, int32_t iIdx)
             iIdx--;
         }
         LINK_NEIGHBOR(pTrack);
-    } else {
+    }
+    /* Delete the node at the designated index with backward indexing. */
+    else {
         if (-iIdx > pData->iSize_)
             return ERR_IDX;
         pTrack = pData->pHead_;
@@ -296,11 +298,64 @@ int32_t DListDelete(DLinkedList *pObj, int32_t iIdx)
     return SUCC;
 }
 
-int32_t DListSetFront(DLinkedList *pObj, Item item) {return 0;}
+int32_t DListSetFront(DLinkedList *pObj, Item item)
+{
+    DListData *pData = pObj->pData;
+    if (!pData->pHead_)
+        return ERR_IDX;
 
-int32_t DListSetBack(DLinkedList *pObj, Item item) {return 0;}
+    pData->pDestroy_(pData->pHead_->item);
+    pData->pHead_->item = item;
 
-int32_t DListSetAt(DLinkedList *pObj, Item item, int32_t iIdx) {return 0;}
+    return SUCC;
+}
+
+int32_t DListSetBack(DLinkedList *pObj, Item item)
+{
+    DListData *pData = pObj->pData;
+    if (!pData->pHead_)
+        return ERR_IDX;
+
+    DListNode *pTail = pData->pHead_->pPrev;
+    pData->pDestroy_(pTail->item);
+    pTail->item = item;
+
+    return SUCC;
+}
+
+int32_t DListSetAt(DLinkedList *pObj, Item item, int32_t iIdx)
+{
+    DListData *pData = pObj->pData;
+
+    /* Replace the node item at the designated index with forward indexing. */
+    if (iIdx >= 0) {
+        if (iIdx >= pData->iSize_)
+            return ERR_IDX;
+
+        DListNode *pTrack = pData->pHead_;
+        while (iIdx > 0) {
+            pTrack = pTrack->pNext;
+            iIdx--;
+        }
+        pData->pDestroy_(pTrack->item);
+        pTrack->item = item;
+    }
+    /* Replace the node item at the designated index with backward indexing. */
+    if (iIdx < 0) {
+        if (-iIdx > pData->iSize_)
+            return ERR_IDX;
+
+        DListNode *pTrack = pData->pHead_;
+        while (iIdx < 0) {
+            pTrack = pTrack->pPrev;
+            iIdx++;
+        }
+        pData->pDestroy_(pTrack->item);
+        pTrack->item = item;
+    }
+
+    return SUCC;
+}
 
 int32_t DListGetFront(DLinkedList *pObj, Item *pItem)
 {

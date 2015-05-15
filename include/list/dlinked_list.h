@@ -39,10 +39,16 @@ typedef struct _DLinkedList {
         @see DListDelete */
     int32_t (*delete) (struct _DLinkedList*, int32_t);
 
+    /** Put the item into the front-end of the list.
+        @see DListSetFront */
     int32_t (*set_front) (struct _DLinkedList*, Item);
 
+    /** Put the item into the back-end of the list.
+        @see DListSetBack */
     int32_t (*set_back) (struct _DLinkedList*, Item);
 
+    /** Put the item into the designated index of the list.
+        @see DListSetAt */
     int32_t (*set_at) (struct _DLinkedList*, Item, int32_t);
 
     /** Get the item from the front-end of the list.
@@ -170,8 +176,8 @@ int32_t DListPopBack(DLinkedList *pObj);
  * This function removes the item from the designated index of the list and shifts
  * the trailing items one position to the front-end. The resource hold by the item
  * will be cleaned by the configured item clean policy.
- * As insertion operation, both forward and backward indexing are accepted. Let
- * N denote the list size and i denote the index.
+ * The operation supports both forward and backward indexing. Let N denote the
+ * list size and i denote the index.
  * For forward indexing, inequality 0 <= i < N must be fitted.
  * For backward indexing, inequality 0 < i <= -N must be fitted.
  *
@@ -183,10 +189,51 @@ int32_t DListPopBack(DLinkedList *pObj);
  */
 int32_t DListDelete(DLinkedList *pObj, int32_t iIdx);
 
+/**
+ * @brief Put the item into the front-end of the list.
+ *
+ * This function first releases the resource hold by the item at the front-end,
+ * and then put the designated item into that position.
+ *
+ * @param pObj          The pointer to the DLinkedList structure
+ * @param item          The designated item
+ *
+ * @retval SUCC
+ * @retval ERR_IDX      Empty list
+ */
 int32_t DListSetFront(DLinkedList *pObj, Item item);
 
+/**
+ * @brief Put the item into the back-end of the list.
+ *
+ * This function first releases the resource hold by the item at the back-end,
+ * and then put the designated item into that position.
+ *
+ * @param pObj          The pointer to the DLinkedList structure
+ * @param item          The designated item
+ *
+ * @retval SUCC
+ * @retval ERR_IDX      Empty list
+ */
 int32_t DListSetBack(DLinkedList *pObj, Item item);
 
+/**
+ * @brief Put the item into the designated index of the list.
+ *
+ * This function first releases the resource hold by the item at the designated
+ * index, and then put the designated item into that position.
+ * The operation supports both forward and backward indexing. Let N denote the
+ * list size and i denote the index.
+ * For forward indexing, inequality 0 <= i < N must be fitted.
+ * For backward indexing, inequality 0 < i <= -N must be fitted.
+ *
+ * @param pObj          The pointer to the DLinkedList structure
+ * @param item          The designated item
+ * @param iIdx          The designated index
+ *
+ * @retval SUCC
+ * @retval ERR_IDX      Out of range index
+ */
 int32_t DListSetAt(DLinkedList *pObj, Item item, int32_t iIdx);
 
 /**
@@ -220,8 +267,8 @@ int32_t DListGetBack(DLinkedList *pObj, Item *pItem);
 /**
  * @brief Get an item from the designated index of the list.
  *
- * As insertion operation, both forward and backward indexing are accepted. Let
- * N denote the list size and i denote the index.
+ * The operation supports both forward and backward indexing. Let N denote the
+ * list size and i denote the index.
  * For forward indexing, inequality 0 <= i < N must be fitted.
  * For backward indexing, inequality 0 < i <= -N must be fitted.
  *
