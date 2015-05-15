@@ -65,10 +65,14 @@ typedef struct _DLinkedList {
 
     int32_t (*resize) (struct _DLinkedList*, int32_t);
 
+    /** Return the number of stored items.
+        @see DListSize */
     int32_t (*size) (struct _DLinkedList*);
 
     int32_t (*reverse) (struct _DLinkedList*);
 
+    /** Set the user defined item clean policy.
+        @see DListSetDestroy */
     void (*set_destroy) (struct _DLinkedList*, void (*) (Item));
 } DLinkedList;
 
@@ -96,24 +100,24 @@ void DListDeinit(DLinkedList **ppObj);
 /**
  * @brief Push an item into the front-end of the list.
  *
- * @param pObj          The pointer to the DLinkedList structure
+ * @param self          The pointer to the DLinkedList structure
  * @param item          The designated item
  *
  * @retval SUCC
  * @retval ERR_NOMEM    Insufficient memory space for list extension
  */
-int32_t DListPushFront(DLinkedList *pObj, Item item);
+int32_t DListPushFront(DLinkedList *self, Item item);
 
 /**
  * @brief Push an item into the back-end of the list.
  *
- * @param pObj          The pointer to the DLinkedList structure
+ * @param self          The pointer to the DLinkedList structure
  * @param item          The designated item
  *
  * @retval SUCC
  * @retval ERR_NOMEM    Insufficient memory space for list extension
  */
-int32_t DListPushBack(DLinkedList *pObj, Item item);
+int32_t DListPushBack(DLinkedList *self, Item item);
 
 /**
  * @brief Insert an item into the designated index of the list.
@@ -131,7 +135,7 @@ int32_t DListPushBack(DLinkedList *pObj, Item item);
  * But no matter which indexing method is applied, the list always grows from the
  * front-end to the back-end.
  *
- * @param pObj          The pointer to the DLinkedList structure
+ * @param self          The pointer to the DLinkedList structure
  * @param item          The designated item
  * @param iIdx          The designated index
  *
@@ -142,7 +146,7 @@ int32_t DListPushBack(DLinkedList *pObj, Item item);
  * @note The absolute value of the index should be smaller than or equal to the
  * list size.
  */
-int32_t DListInsert(DLinkedList *pObj, Item item, int32_t iIdx);
+int32_t DListInsert(DLinkedList *self, Item item, int32_t iIdx);
 
 /**
  * @brief Pop the item from the front-end of the list.
@@ -150,12 +154,12 @@ int32_t DListInsert(DLinkedList *pObj, Item item, int32_t iIdx);
  * This function removes the item from the front-end of the list, and the resource
  * hold by the item will be cleaned by the configured item clean policy.
  *
- * @param pObj          The pointer to the DLinkedList structure
+ * @param self          The pointer to the DLinkedList structure
  *
  * @retval SUCC
  * @retval ERR_IDX      Empty list
  */
-int32_t DListPopFront(DLinkedList *pObj);
+int32_t DListPopFront(DLinkedList *self);
 
 /**
  * @brief Pop the item from the back-end of the list.
@@ -163,12 +167,12 @@ int32_t DListPopFront(DLinkedList *pObj);
  * This function removes the item from the back-end of the list, and the resource
  * hold by the item will be cleaned by the configured item clean policy.
  *
- * @param pObj          The pointer to the DLinkedList structure
+ * @param self          The pointer to the DLinkedList structure
  *
  * @retval SUCC
  * @retval ERR_IDX      Empty list
  */
-int32_t DListPopBack(DLinkedList *pObj);
+int32_t DListPopBack(DLinkedList *self);
 
 /**
  * @brief Delete the item from the designated index of the list.
@@ -181,13 +185,13 @@ int32_t DListPopBack(DLinkedList *pObj);
  * For forward indexing, inequality 0 <= i < N must be fitted.
  * For backward indexing, inequality 0 < i <= -N must be fitted.
  *
- * @param pObj          The pointer to the DLinkedList structure
+ * @param self          The pointer to the DLinkedList structure
  * @param iIdx          The designated index
  *
  * @retval SUCC
  * @retval ERR_IDX      Out of range indexing
  */
-int32_t DListDelete(DLinkedList *pObj, int32_t iIdx);
+int32_t DListDelete(DLinkedList *self, int32_t iIdx);
 
 /**
  * @brief Put the item into the front-end of the list.
@@ -195,13 +199,13 @@ int32_t DListDelete(DLinkedList *pObj, int32_t iIdx);
  * This function first releases the resource hold by the item at the front-end,
  * and then put the designated item into that position.
  *
- * @param pObj          The pointer to the DLinkedList structure
+ * @param self          The pointer to the DLinkedList structure
  * @param item          The designated item
  *
  * @retval SUCC
  * @retval ERR_IDX      Empty list
  */
-int32_t DListSetFront(DLinkedList *pObj, Item item);
+int32_t DListSetFront(DLinkedList *self, Item item);
 
 /**
  * @brief Put the item into the back-end of the list.
@@ -209,13 +213,13 @@ int32_t DListSetFront(DLinkedList *pObj, Item item);
  * This function first releases the resource hold by the item at the back-end,
  * and then put the designated item into that position.
  *
- * @param pObj          The pointer to the DLinkedList structure
+ * @param self          The pointer to the DLinkedList structure
  * @param item          The designated item
  *
  * @retval SUCC
  * @retval ERR_IDX      Empty list
  */
-int32_t DListSetBack(DLinkedList *pObj, Item item);
+int32_t DListSetBack(DLinkedList *self, Item item);
 
 /**
  * @brief Put the item into the designated index of the list.
@@ -227,19 +231,19 @@ int32_t DListSetBack(DLinkedList *pObj, Item item);
  * For forward indexing, inequality 0 <= i < N must be fitted.
  * For backward indexing, inequality 0 < i <= -N must be fitted.
  *
- * @param pObj          The pointer to the DLinkedList structure
+ * @param self          The pointer to the DLinkedList structure
  * @param item          The designated item
  * @param iIdx          The designated index
  *
  * @retval SUCC
  * @retval ERR_IDX      Out of range index
  */
-int32_t DListSetAt(DLinkedList *pObj, Item item, int32_t iIdx);
+int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx);
 
 /**
  * @brief Get the item from the front-end of the list.
  *
- * @param pObj          The pointer to the DLinkedList structure
+ * @param self          The pointer to the DLinkedList structure
  * @param pItem         The pointer to the returned item
  *
  * @retval SUCC
@@ -248,12 +252,12 @@ int32_t DListSetAt(DLinkedList *pObj, Item item, int32_t iIdx);
  * @note If the exception occurs, the data pointed by pItem will also be updated
  * with NULL.
  */
-int32_t DListGetFront(DLinkedList *pObj, Item *pItem);
+int32_t DListGetFront(DLinkedList *self, Item *pItem);
 
 /**
  * @brief Get the item from the back-end of the list.
  *
- * @param pObj          The pointer to the DLinkedList structure
+ * @param self          The pointer to the DLinkedList structure
  * @param pItem         The pointer to the returned item
  *
  * @retval SUCC
@@ -262,7 +266,7 @@ int32_t DListGetFront(DLinkedList *pObj, Item *pItem);
  * @note If the exception occurs, the data pointed by pItem will also be updated
  * with NULL.
  */
-int32_t DListGetBack(DLinkedList *pObj, Item *pItem);
+int32_t DListGetBack(DLinkedList *self, Item *pItem);
 
 /**
  * @brief Get an item from the designated index of the list.
@@ -272,7 +276,7 @@ int32_t DListGetBack(DLinkedList *pObj, Item *pItem);
  * For forward indexing, inequality 0 <= i < N must be fitted.
  * For backward indexing, inequality 0 < i <= -N must be fitted.
  *
- * @param pObj          The pointer to the DLinkedList structure
+ * @param self          The pointer to the DLinkedList structure
  * @param pItem         The pointer to the returned item
  *
  * @retval SUCC
@@ -281,14 +285,27 @@ int32_t DListGetBack(DLinkedList *pObj, Item *pItem);
  * @note If the exception occurs, the data pointed by pItem will also be updated
  * with NULL.
  */
-int32_t DListGetAt(DLinkedList *pObj, Item *pItem, int32_t iIdx);
+int32_t DListGetAt(DLinkedList *self, Item *pItem, int32_t iIdx);
 
-int32_t DListResize(DLinkedList *pObj, int32_t iSize);
+int32_t DListResize(DLinkedList *self, int32_t iSize);
 
-int32_t DListSize(DLinkedList *pObj);
+/**
+ * @brief Return the number of stored items.
+ *
+ * @param self          The pointer to the DLinkedList structure
+ *
+ * @return              The number of stored item
+ */
+int32_t DListSize(DLinkedList *self);
 
-int32_t DListReverse(DLinkedList *pObj);
+int32_t DListReverse(DLinkedList *self);
 
-void DListSetDestroy(DLinkedList *pObj, void (*pFunc) (Item));
+/**
+ * @brief Set the user defined item clean policy.
+ *
+ * @param self          The pointer to the DLinkedList structure
+ * @param pFunc         The function pointer to the custom policy
+ */
+void DListSetDestroy(DLinkedList *self, void (*pFunc) (Item));
 
 #endif
