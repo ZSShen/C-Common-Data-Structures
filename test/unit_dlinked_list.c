@@ -15,6 +15,8 @@ void TestPrimPopBack();
 void TestPrimDeleteForward();
 void TestPrimDeleteBackward();
 void TestPrimSet();
+void TestReverse();
+
 
 int32_t SuitePrimitive()
 {
@@ -60,6 +62,10 @@ int32_t SuitePrimitive()
         return ERR_NOMEM;
 
     pTest = CU_add_test(pSuite, "Basic item replacement", TestPrimSet);
+    if (!pTest)
+        return ERR_NOMEM;
+
+    pTest = CU_add_test(pSuite, "List reversing", TestReverse);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -520,6 +526,55 @@ void TestPrimSet()
     CU_ASSERT(pList->set_at(pList, (Item)2, -2) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, -2) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
+
+    DListDeinit(&pList);
+}
+
+void TestReverse()
+{
+    DLinkedList *pList;
+    CU_ASSERT(DListInit(&pList) == SUCC);
+
+    /* Prepare the initial list. (1) */
+    CU_ASSERT(pList->push_back(pList, (Item)1) == SUCC);
+
+    /* Reverse and check the item sequence. */
+    Item item;
+    pList->reverse(pList);
+    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)1);
+    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)1);
+
+    /* Extend the list. (1)<-->(2) */
+    CU_ASSERT(pList->push_back(pList, (Item)2) == SUCC);
+    pList->reverse(pList);
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)2);
+    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)1);
+
+    /* Extend the list. (3)<-->(2)<-->(1) */
+    CU_ASSERT(pList->push_front(pList, (Item)3) == SUCC);
+    pList->reverse(pList);
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)1);
+    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)2);
+    CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)3);
+
+    /* Extend the list. (1)<-->(2)<-->(3)<-->(4) */
+    CU_ASSERT(pList->push_back(pList, (Item)4) == SUCC);
+    pList->reverse(pList);
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)4);
+    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)3);
+    CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)2);
+    CU_ASSERT(pList->get_at(pList, &item, 3) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)1);
 
     DListDeinit(&pList);
 }

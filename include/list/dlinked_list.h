@@ -69,7 +69,9 @@ typedef struct _DLinkedList {
         @see DListSize */
     int32_t (*size) (struct _DLinkedList*);
 
-    int32_t (*reverse) (struct _DLinkedList*);
+    /** Reverse the list.
+        @see DListReverse */
+    void (*reverse) (struct _DLinkedList*);
 
     /** Set the user defined item clean policy.
         @see DListSetDestroy */
@@ -298,7 +300,12 @@ int32_t DListResize(DLinkedList *self, int32_t iSize);
  */
 int32_t DListSize(DLinkedList *self);
 
-int32_t DListReverse(DLinkedList *self);
+/**
+ * @brief Reverse the list.
+ *
+ * @param self          The pointer to the DLinkedList structure
+ */
+void DListReverse(DLinkedList *self);
 
 /**
  * @brief Set the user defined item clean policy.

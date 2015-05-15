@@ -420,11 +420,30 @@ int32_t DListSize(DLinkedList *self)
     return self->pData->iSize_;
 }
 
-int32_t DListReverse(DLinkedList *self) {return 0;}
+void DListReverse(DLinkedList *self)
+{
+    DListData *pData = self->pData;
+    DListNode *pHead = pData->pHead_;
+    DListNode *pTail = pData->pHead_->pPrev;
+
+    int32_t iRge = pData->iSize_;
+    while (iRge > 1) {
+        Item itemHead = pHead->item;
+        Item itemTail = pTail->item;
+        pHead->item = itemTail;
+        pTail->item = itemHead;
+        pHead = pHead->pNext;
+        pTail = pTail->pPrev;
+        iRge -= 2;
+    }
+
+    return;
+}
 
 void DListSetDestroy(DLinkedList *self, void (*pFunc) (Item))
 {
     self->pData->pDestroy_ = pFunc;
+    return;
 }
 
 
