@@ -22,4 +22,3 @@ add_custom_target ( ${TARGET_RUN}
     COMMAND ${SCRIPT}
     WORKING_DIRECTORY ${DIR_TEST}
 )
-message(${DIR_TEST})

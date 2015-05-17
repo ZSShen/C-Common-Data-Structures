@@ -58,6 +58,7 @@ set(LIST_DS
     simple_tree                 # Basic Binary Search Tree
     balanced_tree               # Balanced Binary Search Tree
     vector                      # Dynamic Array
+    dlinked_list                # Doubly Linked List
 )
 
 # Determine the build type and prepare the C macro if necessary.
