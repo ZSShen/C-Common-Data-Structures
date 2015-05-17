@@ -63,8 +63,6 @@ typedef struct _DLinkedList {
         @see DListGetAt */
     int32_t (*get_at) (struct _DLinkedList*, Item*, int32_t);
 
-    int32_t (*resize) (struct _DLinkedList*, int32_t);
-
     /** Return the number of stored items.
         @see DListSize */
     int32_t (*size) (struct _DLinkedList*);
@@ -288,8 +286,6 @@ int32_t DListGetBack(DLinkedList *self, Item *pItem);
  * with NULL.
  */
 int32_t DListGetAt(DLinkedList *self, Item *pItem, int32_t iIdx);
-
-int32_t DListResize(DLinkedList *self, int32_t iSize);
 
 /**
  * @brief Return the number of stored items.

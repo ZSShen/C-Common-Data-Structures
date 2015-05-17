@@ -15,6 +15,8 @@ void TestPrimPopBack();
 void TestPrimDeleteForward();
 void TestPrimDeleteBackward();
 void TestPrimSet();
+
+void TestBoundary();
 void TestReverse();
 
 
@@ -66,6 +68,10 @@ int32_t SuitePrimitive()
         return ERR_NOMEM;
 
     pTest = CU_add_test(pSuite, "List reversing", TestReverse);
+    if (!pTest)
+        return ERR_NOMEM;
+
+    pTest = CU_add_test(pSuite, "Boundary test", TestBoundary);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -575,6 +581,38 @@ void TestReverse()
     CU_ASSERT_EQUAL(item, (Item)2);
     CU_ASSERT(pList->get_at(pList, &item, 3) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)1);
+
+    DListDeinit(&pList);
+}
+
+void TestBoundary()
+{
+    DLinkedList *pList;
+    CU_ASSERT(DListInit(&pList) == SUCC);
+
+    /* Initial boundary test. */
+    CU_ASSERT(pList->pop_front(pList) == ERR_IDX);
+    CU_ASSERT(pList->pop_back(pList) == ERR_IDX);
+
+    CU_ASSERT(pList->delete(pList, 0) == ERR_IDX);
+    CU_ASSERT(pList->delete(pList, -1) == ERR_IDX);
+    CU_ASSERT(pList->insert(pList, (Item)1, 1) == ERR_IDX);
+    CU_ASSERT(pList->insert(pList, (Item)1, -1) == ERR_IDX);
+
+    CU_ASSERT(pList->set_front(pList, (Item)1) == ERR_IDX);
+    CU_ASSERT(pList->set_back(pList, (Item)1) == ERR_IDX);
+    CU_ASSERT(pList->set_at(pList, (Item)1, 0) == ERR_IDX);
+    CU_ASSERT(pList->set_at(pList, (Item)1, -1) == ERR_IDX);
+
+    Item item;
+    CU_ASSERT(pList->get_front(pList, &item) == ERR_IDX);
+    CU_ASSERT_EQUAL(item, NULL);
+    CU_ASSERT(pList->get_back(pList, &item) == ERR_IDX);
+    CU_ASSERT_EQUAL(item, NULL);
+    CU_ASSERT(pList->get_at(pList, &item, 0) == ERR_IDX);
+    CU_ASSERT_EQUAL(item, NULL);
+    CU_ASSERT(pList->get_at(pList, &item, -1) == ERR_IDX);
+    CU_ASSERT_EQUAL(item, NULL);
 
     DListDeinit(&pList);
 }
