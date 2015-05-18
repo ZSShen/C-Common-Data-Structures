@@ -9,7 +9,7 @@ LibCDS implements several kinds of classic containers by C. It offers uniform AP
   + SimpleTree -- The basic binary search tree.  
   + BalancedTree -- The balanced binary search tree implemented with red black tree.  
 + List
-  + DoublyLinkedList -- The bi-directional linked list.
+  + DLinkedList -- The doubly linked list.
 + Array
   + Vector -- The dynamically growable array. 
 + Map
