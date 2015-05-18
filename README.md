@@ -8,7 +8,7 @@ Integration Test (Travis CI)
 LibCDS implements several kinds of classic containers by C. It offers uniform APIs for convenient container interaction.
 
 ##Container Category
-[API Reference Manual] (http://zsshen.github.io/C-Common-Data-Structures/doc/html/index.html)
+[API Reference Manual] (http://zsshen.github.io/C-Common-Data-Structures/html/index.html)
 + Tree
   + SimpleTree -- The basic binary search tree.
   + BalancedTree -- The balanced binary search tree implemented with red black tree.
