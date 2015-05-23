@@ -26,4 +26,16 @@
 /** Item is the data type for the container element. */
 typedef const void* Item;
 
+/** Key is the data type to index map-like containers. */
+typedef const void* Key;
+
+/** Value is the data type for the map-like element. */
+typedef Item Value;
+
+/** Pair is the data type to record an entry in the map-like containers. */
+typedef struct _Pair {
+	Key key;
+	Value value;
+} Pair;
+
 #endif
