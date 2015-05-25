@@ -59,6 +59,7 @@ set(LIST_DS
     balanced_tree               # Balanced Binary Search Tree
     vector                      # Dynamic Array
     dlinked_list                # Doubly Linked List
+    ordered_map                 # Ordered Map
 )
 
 # Determine the build type and prepare the C macro if necessary.

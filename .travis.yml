@@ -2,7 +2,7 @@ language: c
 
 compiler:
     - gcc
-    
+
 git:
   depth: 1
 
@@ -16,9 +16,9 @@ install:
 script:
     - ./clean.py --rebuild
     - cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=Debug 
+    - cmake .. -DCMAKE_BUILD_TYPE=Debug
     - make
-    - make run
+    #- make run
 
 after_success:
     #- coveralls

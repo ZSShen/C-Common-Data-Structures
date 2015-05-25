@@ -3,7 +3,7 @@
  */
 
 #ifndef _ORDERED_MAP_H_
-#define _ORDERED_MAP_H
+#define _ORDERED_MAP_H_
 
 #include "../util.h"
 
@@ -21,7 +21,7 @@ typedef struct _OrderedMap {
 
     /** Retrieve the value corresponding to the designated key from the map.
         @see OdrMapGet */
-    int32_t (*get) (struct _OrderedMap*, Key, Value*)
+    int32_t (*get) (struct _OrderedMap*, Key, Value*);
 
     /** Delete the map entry corresponding to the designated key.
         @see OdrMapRemove */
@@ -127,3 +127,5 @@ void OdrMapSetCompare(OrderedMap *self, int32_t (*pFunc) (Key, Key));
  * @param pFunc         The function pointer to the custom policy
  */
 void OdrMapSetDestroy(OrderedMap *self, void (*pFunc) (Value));
+
+#endif
