@@ -17,7 +17,7 @@ typedef struct _OrderedMap {
 
     /** Insert a key value pair into the map.
         @see OdrMapPut */
-    int32_t (*put) (struct _OrderedMap*, Pair);
+    int32_t (*put) (struct _OrderedMap*, Entry);
 
     /** Retrieve the value corresponding to the designated key from the map.
         @see OdrMapGet */
@@ -31,13 +31,13 @@ typedef struct _OrderedMap {
         @see OdrMapSize */
     int32_t (*size) (struct _OrderedMap*);
 
-    /** Set the user defined key comparison policy.
+    /** Set the user defined map entry comparison method.
         @see OdrMapSetCompare */
-    void (*set_compare) (struct _OrderedMap*, int32_t (*) (Key, Key));
+    int32_t (*set_compare) (struct _OrderedMap*, int32_t (*) (Entry, Entry));
 
-    /** Set the user defined value clean policy.
+    /** Set the user defined map entry clean method.
         @see OdrMapSetDestroy */
-    void (*set_destroy) (struct _OrderedMap*, void (*) (Value));
+    int32_t (*set_destroy) (struct _OrderedMap*, void (*) (Entry));
 } OrderedMap;
 
 
@@ -65,17 +65,18 @@ void OdrMapDeinit(OrderedMap **ppObj);
  * @brief Insert a key value pair into the map.
  *
  * @param self          The pointer to OrderedMap structure
- * @param pair          The key value pair
+ * @param ent           The pointer to the desiganted key value pair
  *
  * @retval SUCC
+ * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NOMEM    Insufficient memory for pair insertion
  *
  * @note If the order of the designated pair is the same with a certain one
- * stored in the map, the old item will be removed and its contained value is
- * cleaned by the configured policy so that the designated pair can take the
+ * stored in the map, the old pair will be removed and the contained value is
+ * cleaned by the configured method so that the designated pair can take the
  * position.
  */
-int32_t OdrMapPut(OrderedMap *self, Pair pair);
+int32_t OdrMapPut(OrderedMap *self, Entry ent);
 
 /**
  * @brief Retrieve the value corresponding to the designated key from the map.
@@ -85,20 +86,22 @@ int32_t OdrMapPut(OrderedMap *self, Pair pair);
  * @param pValue        The pointer to the returned value
  *
  * @retval SUCC
+ * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NODATA   No map entry can be found
  */
 int32_t OdrMapGet(OrderedMap *self, Key key, Value *pValue);
 
 /**
- * @brief Delete the map entry corresponding to the designated key.
+ * @brief Delete the key value pair corresponding to the designated key.
  *
- * This function deletes the map entry corresponding to the designated key and
- * also cleans the resoruce hold by the value of that entry.
+ * This function deletes the key value pair corresponding to the designated key
+ * and also cleans the resoruce hold by the value of that pair.
  *
  * @param self          The pointer to OrderedMap structure
  * @param key           The designated key
  *
  * @retval SUCC
+ * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NODATA   No map entry can be found
  */
 int32_t OdrMapRemove(OrderedMap *self, Key key);
@@ -108,24 +111,31 @@ int32_t OdrMapRemove(OrderedMap *self, Key key);
  *
  * @param self          The pointer to OrderedMap structure
  *
- * @return              The number of map entries
+ * @retval iSize        The number of map entries
+ * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t OdrMapSize(OrderedMap *self);
 
 /**
- * @brief Set the user defined key comparison policy.
+ * @brief Set the user defined key value pair comparison method.
  *
  * @param self          The pointer to OrderedMap structure
- * @param pFunc         The function pointer to the custom policy
+ * @param pFunc         The function pointer to the custom method
+ *
+ * @retval SUCC
+ * @retval ERR_NOINIT   Uninitialized container
  */
-void OdrMapSetCompare(OrderedMap *self, int32_t (*pFunc) (Key, Key));
+int32_t OdrMapSetCompare(OrderedMap *self, int32_t (*pFunc) (Entry, Entry));
 
 /**
- * @brief Set the user defined value clean policy.
+ * @brief Set the user defined value clean method.
  *
  * @param self          The pointer to OrderedMap structure
- * @param pFunc         The function pointer to the custom policy
+ * @param pFunc         The function pointer to the custom method
+ *
+ * @retval SUCC
+ * @retval ERR_NOINIT   Uninitialized container
  */
-void OdrMapSetDestroy(OrderedMap *self, void (*pFunc) (Value));
+int32_t OdrMapSetDestroy(OrderedMap *self, void (*pFunc) (Entry));
 
 #endif
