@@ -113,7 +113,10 @@ EXIT:
 
 int32_t OdrMapPut(OrderedMap *self, Entry ent)
 {
-    return SUCC;
+    CHECK_INIT(self);
+    BalancedTree *pTree = self->pData->pTree_;
+    int32_t iRtnCode = pTree->insert(pTree, (Item)ent);
+    return iRtnCode;
 }
 
 int32_t OdrMapGet(OrderedMap *self, Key key, Value *pValue)

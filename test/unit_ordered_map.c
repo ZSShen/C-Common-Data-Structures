@@ -4,9 +4,12 @@
 
 
 /*===========================================================================*
- *        Definition for the test cases of the primitive input suite         *
+ *        Definition for the test cases of the simple key value pair         *
  *===========================================================================*/
-void TestPrimPut();
+int32_t SimpleCompare(Entry, Entry);
+void SimpleDestroy(Entry);
+void TestSimplePut();
+void TestSimpleManipulate();
 
 
 int32_t SuitePrimitive()
@@ -16,7 +19,7 @@ int32_t SuitePrimitive()
         return ERR_NOMEM;
 
     CU_pTest pTest = CU_add_test(pSuite, "Basic key value pair insertion",
-                     TestPrimPut);
+                     TestSimpleManipulate);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -47,12 +50,49 @@ int32_t main()
 
 
 /*===========================================================================*
- *      Implementation for the test cases of the primitive input suite       *
+ *      Implementation for the test cases of the simple key value pair       *
  *===========================================================================*/
-void TestPrimPut()
+int32_t SimpleCompare(Entry entSrc, Entry entTge)
+{
+    Pair *pPairSrc = (Pair*)entSrc;
+    Pair *pPairTge = (Pair*)entTge;
+    if (pPairSrc->key == pPairTge->key)
+        return 0;
+    else {
+        if (pPairSrc->key > pPairTge->key)
+            return 1;
+        else
+            return -1;
+    }
+}
+
+void SimpleDestroy(Entry ent) { free((Pair*)ent); }
+
+void TestSimplePut(OrderedMap *pMap, Key key, Value value)
+{
+    Pair *pPair = (Pair*)malloc(sizeof(Pair));
+    pPair->key = key;
+    pPair->value = value;
+    CU_ASSERT(pMap->put(pMap, (Entry)pPair) == SUCC);
+}
+
+void TestSimpleManipulate()
 {
     OrderedMap *pMap;
     CU_ASSERT(OdrMapInit(&pMap) == SUCC);
+    CU_ASSERT(pMap->set_compare(pMap, SimpleCompare) == SUCC);
+    CU_ASSERT(pMap->set_destroy(pMap, SimpleDestroy) == SUCC);
+
+    int32_t iIdx;
+    #if __x86_64__
+    for (iIdx = 0 ; iIdx < 100 ; iIdx++)
+        TestSimplePut(pMap, (Key)(int64_t)iIdx, (Value)(int64_t)iIdx);
+
+    #else
+    for (iIdx = 0 ; iIdx < 100 ; iIdx++)
+    TestSimplePut(pMap, (Key)iIdx, (Value)iIdx;
+
+    #endif
 
     OdrMapDeinit(&pMap);
 }
