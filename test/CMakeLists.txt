@@ -44,6 +44,7 @@ set(LIST_DS
     balanced_tree               # Balanced Binary Search Tree
     vector                      # Dynamic Array
     dlinked_list                # Doubly linked list
+    ordered_map                 # Ordered Map
 )
 
 # Determine the build type and generate the corresponding library path.
