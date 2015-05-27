@@ -81,6 +81,11 @@ int32_t OdrMapPut(OrderedMap *self, Entry ent);
 /**
  * @brief Retrieve the value corresponding to the designated key from the map.
  *
+ * This function retrieves the value corresponding to the designated key from
+ * the map. If the key can be found, the value will be returned by the third
+ * parameter. Otherwise, the error code in returned and the third parameter is
+ * returned with NULL value.
+ *
  * @param self          The pointer to OrderedMap structure
  * @param key           The designated key
  * @param pValue        The pointer to the returned value

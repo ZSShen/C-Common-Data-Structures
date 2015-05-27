@@ -110,7 +110,6 @@ EXIT:
     return;
 }
 
-
 int32_t OdrMapPut(OrderedMap *self, Entry ent)
 {
     CHECK_INIT(self);
@@ -121,12 +120,25 @@ int32_t OdrMapPut(OrderedMap *self, Entry ent)
 
 int32_t OdrMapGet(OrderedMap *self, Key key, Value *pValue)
 {
-    return SUCC;
+    *pValue = NULL;
+    CHECK_INIT(self);
+
+    BalancedTree *pTree = self->pData->pTree_;
+    Pair pairIn = {key, NULL};
+    Pair *pPairOut;
+    int32_t iRtnCode = pTree->search(pTree, (Entry)&pairIn, (Entry*)&pPairOut);
+    if (iRtnCode == SUCC)
+        *pValue = pPairOut->value;
+    return iRtnCode;
 }
 
 int32_t OdrMapRemove(OrderedMap *self, Key key)
 {
-    return SUCC;
+    CHECK_INIT(self);
+    BalancedTree *pTree = self->pData->pTree_;
+    Pair pair = {key, NULL};
+    int32_t iRtnCode = pTree->delete(pTree, (Entry)&pair);
+    return iRtnCode;
 }
 
 int32_t OdrMapSize(OrderedMap *self)
