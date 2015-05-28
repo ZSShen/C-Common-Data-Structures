@@ -23,19 +23,19 @@ typedef struct _OrderedMap {
         @see OdrMapGet */
     int32_t (*get) (struct _OrderedMap*, Key, Value*);
 
-    /** Delete the map entry corresponding to the designated key.
+    /** Delete the key value pair corresponding to the designated key.
         @see OdrMapRemove */
     int32_t (*remove) (struct _OrderedMap*, Key);
 
-    /** Return the number of map entries.
+    /** Return the number of key value pairs.
         @see OdrMapSize */
     int32_t (*size) (struct _OrderedMap*);
 
-    /** Set the user defined map entry comparison method.
+    /** Set the user defined key value pair comparison method.
         @see OdrMapSetCompare */
     int32_t (*set_compare) (struct _OrderedMap*, int32_t (*) (Entry, Entry));
 
-    /** Set the user defined map entry clean method.
+    /** Set the user defined key value pair clean method.
         @see OdrMapSetDestroy */
     int32_t (*set_destroy) (struct _OrderedMap*, void (*) (Entry));
 } OrderedMap;
@@ -112,7 +112,7 @@ int32_t OdrMapGet(OrderedMap *self, Key key, Value *pValue);
 int32_t OdrMapRemove(OrderedMap *self, Key key);
 
 /**
- * @brief Return the number of map entries.
+ * @brief Return the number of key value pairs.
  *
  * @param self          The pointer to OrderedMap structure
  *
@@ -133,7 +133,7 @@ int32_t OdrMapSize(OrderedMap *self);
 int32_t OdrMapSetCompare(OrderedMap *self, int32_t (*pFunc) (Entry, Entry));
 
 /**
- * @brief Set the user defined value clean method.
+ * @brief Set the user defined key value pair clean method.
  *
  * @param self          The pointer to OrderedMap structure
  * @param pFunc         The function pointer to the custom method
