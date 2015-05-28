@@ -42,6 +42,7 @@ void TestAdvancedManipulate();
 void TestSimplePut(OrderedMap*, int32_t);
 void TestSimpleGetSucc(OrderedMap*, int32_t);
 void TestSimpleGetFail(OrderedMap*, int32_t);
+void TestAdvancedPut(OrderedMap*, int32_t);
 
 
 int32_t main()
@@ -240,7 +241,6 @@ void TestSimpleGetFail(OrderedMap *pMap, int32_t iIdx)
     CU_ASSERT_EQUAL(valueRetv, NULL);
 }
 
-
 void TestSimpleManipulate()
 {
     OrderedMap *pMap;
@@ -289,6 +289,46 @@ void AdvancedDestroy(Entry ent)
     free(pPair);
 }
 
+void TestAdvancedPut(OrderedMap *pMap, int32_t iIdx)
+{
+    Pair *pPair = (Pair*)malloc(sizeof(Pair));
+    if (!pPair)
+        return;
+
+    Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
+    if (!pEmploy)
+        return;
+    pEmploy->cYear = aNum[iIdx] / MASK_YEAR;
+    pEmploy->cLevel = aNum[iIdx] / MASK_LEVEL;
+    pEmploy->iId = aNum[iIdx];
+
+    pPair->key = aName[iIdx];
+    pPair->value = (Value)pEmploy;
+
+    CU_ASSERT(pMap->put(pMap, (Entry)pPair) == SUCC);
+}
+
+void TestAdvancedGetSucc(OrderedMap *pMap, int32_t iIdx)
+{
+    Key key = aName[iIdx];
+    Employ valuePred = {aNum[iIdx]/MASK_YEAR, aNum[iIdx]/MASK_LEVEL, aNum[iIdx]};
+    Value valueRetv;
+
+    CU_ASSERT(pMap->get(pMap, key, &valueRetv) == SUCC);
+    CU_ASSERT_EQUAL(valuePred.cYear, ((Employ*)valueRetv)->cYear);
+    CU_ASSERT_EQUAL(valuePred.cLevel, ((Employ*)valueRetv)->cLevel);
+    CU_ASSERT_EQUAL(valuePred.iId, ((Employ*)valueRetv)->iId);
+}
+
+void TestAdvancedGetFail(OrderedMap *pMap, int32_t iIdx)
+{
+    Key key = aName[iIdx];
+    Value valueRetv;
+
+    CU_ASSERT(pMap->get(pMap, key, &valueRetv) == ERR_NODATA);
+    CU_ASSERT_EQUAL(valueRetv, NULL);
+}
+
 void TestAdvancedManipulate()
 {
     OrderedMap *pMap;
@@ -296,6 +336,21 @@ void TestAdvancedManipulate()
     CU_ASSERT(pMap->set_compare(pMap, AdvancedCompare) == SUCC);
     CU_ASSERT(pMap->set_destroy(pMap, AdvancedDestroy) == SUCC);
     CU_ASSERT_EQUAL(pMap->size(pMap), 0);
+
+    int32_t iIdx;
+    for (iIdx = 0 ; iIdx < SIZE_MID_TEST ; iIdx++)
+        TestAdvancedPut(pMap, iIdx);
+    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
+        TestAdvancedGetSucc(pMap, iIdx);
+    CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST);
+
+    for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
+        CU_ASSERT(pMap->remove(pMap, (Key)aName[iIdx]) == SUCC);
+    for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
+        TestAdvancedGetFail(pMap, iIdx);
+    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
+        TestAdvancedGetSucc(pMap, iIdx);
+    CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST/2);
 
     OdrMapDeinit(&pMap);
 }
