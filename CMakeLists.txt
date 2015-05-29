@@ -11,8 +11,8 @@ set(DIR_TEST "${CMAKE_CURRENT_SOURCE_DIR}/test")
 add_subdirectory(${DIR_TEST})
 
 # Build the corresponding demo programs.
-#set(DIR_DEMO "${CMAKE_CURRENT_SOURCE_DIR}/demo")
-#add_subdirectory(${DIR_DEMO})
+set(DIR_DEMO "${CMAKE_CURRENT_SOURCE_DIR}/demo")
+add_subdirectory(${DIR_DEMO})
 
 
 # Set the "make run" target.
