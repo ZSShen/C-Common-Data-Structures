@@ -10,7 +10,13 @@ function(SUB_BUILD_SPECIFIC DS)
     set(PATH_SUB "${PATH_OUT}/sub")
     string(TOUPPER ${DS} TGE_DS)
 
-    add_library(${TGE_DS} ${LIB_TYPE} ${SRC_DS})
+    # Some advanced structures depend on the implementation of basic structures.
+    set(SRC_DEP_DS "")
+    if (DS STREQUAL "ordered_map")
+        set(SRC_DEP_DS "balanced_tree.c")
+    endif()
+
+    add_library(${TGE_DS} ${LIB_TYPE} ${SRC_DS} ${SRC_DEP_DS})
     set_target_properties(${TGE_DS} PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${PATH_SUB}
         OUTPUT_NAME ${DS}
@@ -59,6 +65,7 @@ set(LIST_DS
     balanced_tree               # Balanced Binary Search Tree
     vector                      # Dynamic Array
     dlinked_list                # Doubly Linked List
+    ordered_map                 # Ordered Map
 )
 
 # Determine the build type and prepare the C macro if necessary.
