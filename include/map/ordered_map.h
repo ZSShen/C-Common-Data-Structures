@@ -64,17 +64,17 @@ void OdrMapDeinit(OrderedMap **ppObj);
 /**
  * @brief Insert a key value pair into the map.
  *
+ * This function inserts a key value pair into the map. If the order of the
+ * designated pair is the same with a certain one stored in the map, the old pair
+ * will be removed and the contained value is cleaned by the configured method
+ * so that the designated pair can take the position.
+ *
  * @param self          The pointer to OrderedMap structure
  * @param ent           The pointer to the desiganted key value pair
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NOMEM    Insufficient memory for pair insertion
- *
- * @note If the order of the designated pair is the same with a certain one
- * stored in the map, the old pair will be removed and the contained value is
- * cleaned by the configured method so that the designated pair can take the
- * position.
  */
 int32_t OdrMapPut(OrderedMap *self, Entry ent);
 

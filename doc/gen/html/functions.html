@@ -58,10 +58,12 @@
       <li><a href="#index_d"><span>d</span></a></li>
       <li><a href="#index_g"><span>g</span></a></li>
       <li><a href="#index_i"><span>i</span></a></li>
+      <li><a href="#index_k"><span>k</span></a></li>
       <li><a href="#index_m"><span>m</span></a></li>
       <li><a href="#index_p"><span>p</span></a></li>
       <li><a href="#index_r"><span>r</span></a></li>
-      <li class="current"><a href="#index_s"><span>s</span></a></li>
+      <li><a href="#index_s"><span>s</span></a></li>
+      <li class="current"><a href="#index_v"><span>v</span></a></li>
     </ul>
   </div>
 </div><!-- top -->
@@ -101,7 +103,8 @@ $(document).ready(function(){initNavTree('functions.html','');});
 
 <h3><a class="anchor" id="index_g"></a>- g -</h3><ul>
 <li>get
-: <a class="el" href="structVector.html#a5ed5012dce5b27cb4e7b560af3c99497">Vector</a>
+: <a class="el" href="structOrderedMap.html#ab7793ca60aac9cab5749f894ad596003">OrderedMap</a>
+, <a class="el" href="structVector.html#a5ed5012dce5b27cb4e7b560af3c99497">Vector</a>
 </li>
 <li>get_at
 : <a class="el" href="structDLinkedList.html#a426a686c88b2f3ebb933e5a408d5e8c3">DLinkedList</a>
@@ -125,6 +128,13 @@ $(document).ready(function(){initNavTree('functions.html','');});
 </ul>
 
 
+<h3><a class="anchor" id="index_k"></a>- k -</h3><ul>
+<li>key
+: <a class="el" href="structPair.html#aa9f096ba0773753c5fdf1b51133f1b09">Pair</a>
+</li>
+</ul>
+
+
 <h3><a class="anchor" id="index_m"></a>- m -</h3><ul>
 <li>maximum
 : <a class="el" href="structBalancedTree.html#a21515b0934cd4e317bfc4291410cc955">BalancedTree</a>
@@ -141,6 +151,7 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>pData
 : <a class="el" href="structBalancedTree.html#a5db575df7f25b6d5a751a101aeaf9b2c">BalancedTree</a>
 , <a class="el" href="structDLinkedList.html#abcad07cf15e5eeda1a8adf4e46275610">DLinkedList</a>
+, <a class="el" href="structOrderedMap.html#a771ae83146e8e2963f35a9a3a397add4">OrderedMap</a>
 , <a class="el" href="structSimpleTree.html#ab428fd1423b915b7a4d25955b73bcb78">SimpleTree</a>
 , <a class="el" href="structVector.html#a35aae525dbdc881fb419a091a2fb2606">Vector</a>
 </li>
@@ -162,10 +173,16 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>push_front
 : <a class="el" href="structDLinkedList.html#a671561223355129e6545863e1528efb8">DLinkedList</a>
 </li>
+<li>put
+: <a class="el" href="structOrderedMap.html#aed185a41de977b3b675e8747427a3a0c">OrderedMap</a>
+</li>
 </ul>
 
 
 <h3><a class="anchor" id="index_r"></a>- r -</h3><ul>
+<li>remove
+: <a class="el" href="structOrderedMap.html#a775fc5eeffb2e68ecf334acb99ed27f7">OrderedMap</a>
+</li>
 <li>resize
 : <a class="el" href="structVector.html#a22553ac3a370b6e8328d182f25cef754">Vector</a>
 </li>
@@ -191,11 +208,13 @@ $(document).ready(function(){initNavTree('functions.html','');});
 </li>
 <li>set_compare
 : <a class="el" href="structBalancedTree.html#a300e8a245bce05f12876fcc0bc7b8b9a">BalancedTree</a>
+, <a class="el" href="structOrderedMap.html#aabb2c35a8c8ad97bc0de5d2a3d73bbef">OrderedMap</a>
 , <a class="el" href="structSimpleTree.html#a9a72d4511cdb8c35667d671184d6f228">SimpleTree</a>
 </li>
 <li>set_destroy
 : <a class="el" href="structBalancedTree.html#a6c027aeeab3c0e6819b38ef5d9495998">BalancedTree</a>
 , <a class="el" href="structDLinkedList.html#aad8620a2cdf9120d1f3cef5a3c5b5e37">DLinkedList</a>
+, <a class="el" href="structOrderedMap.html#a583eb1e240451f618ba1a362dd056134">OrderedMap</a>
 , <a class="el" href="structSimpleTree.html#a6ff96a7e47f14f7a6ee6e28748d7288b">SimpleTree</a>
 , <a class="el" href="structVector.html#a7c5d64f03bfa497bd10fd6dce505f8e7">Vector</a>
 </li>
@@ -205,12 +224,20 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>size
 : <a class="el" href="structBalancedTree.html#afe89397bdf236912f2c1a4db33e7d0e6">BalancedTree</a>
 , <a class="el" href="structDLinkedList.html#a5de1d12fbbbb39021974ecd99cbb1a5d">DLinkedList</a>
+, <a class="el" href="structOrderedMap.html#aedbe1efedcb3db33166f2cc46b8ee77d">OrderedMap</a>
 , <a class="el" href="structSimpleTree.html#a3875f93f1d4c26126655aae39a08913b">SimpleTree</a>
 , <a class="el" href="structVector.html#a3eb2a573613cac32770be7043b02f220">Vector</a>
 </li>
 <li>successor
 : <a class="el" href="structBalancedTree.html#ae20f2b13c97531a6f46a62bdbc87664f">BalancedTree</a>
 , <a class="el" href="structSimpleTree.html#a13fffae9159e386abf479c9ffd03b0af">SimpleTree</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_v"></a>- v -</h3><ul>
+<li>value
+: <a class="el" href="structPair.html#a129a6c5ea17c05081dffcb2d8e41a81a">Pair</a>
 </li>
 </ul>
 </div><!-- contents -->

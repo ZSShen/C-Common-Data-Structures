@@ -17,7 +17,7 @@ LibCDS implements several kinds of classic containers by C. It offers uniform AP
 + Array
   + Vector -- The dynamically growable array.
 + Map
-  + OrderedMap -- The key-value pair container leveraging balanced binary search tree.
+  + OrderedMap -- The ordered map to store key value pairs.
 + Heap
   + BinaryHeap -- The basic ordered heap.
   + BinomailHeap -- The advanced ordered heap.
