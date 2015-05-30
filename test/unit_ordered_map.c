@@ -36,6 +36,7 @@ void ReleaseTestData();
 int32_t AddSimpleSuite();
 int32_t AddAdvancedSuite();
 void TestSimpleManipulate();
+void TestBoundaryManipulate();
 void TestAdvancedManipulate();
 
 /* The functions to assist map operatoin testing. */
@@ -159,6 +160,10 @@ int32_t AddSimpleSuite()
     if (!pTest)
         return ERR_NOMEM;
 
+    pTest = CU_add_test(pSuite, "Boundary test", TestBoundaryManipulate);
+    if (!pTest)
+        return ERR_NOMEM;
+
     return SUCC;
 }
 
@@ -271,6 +276,43 @@ void TestSimpleManipulate()
     OdrMapDeinit(&pMap);
 }
 
+void TestBoundaryManipulate()
+{
+    OrderedMap *pMap;
+    CU_ASSERT(OdrMapInit(&pMap) == SUCC);
+    CU_ASSERT(pMap->set_compare(pMap, SimpleCompare) == SUCC);
+    CU_ASSERT(pMap->set_destroy(pMap, SimpleDestroy) == SUCC);
+
+    /* Get the unexisting key value pair. */
+    int32_t iIdx;
+    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
+        TestSimpleGetFail(pMap, iIdx);
+
+    /* Remove the unexisting key value pair. */
+    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
+        #if __x86_64__
+        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx]) == ERR_NODATA);
+        #else
+        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx]) == ERR_NODATA);
+        #endif
+
+    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
+        TestSimplePut(pMap, iIdx);
+
+    /* Get the unexisting key value pair. */
+    for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
+        TestSimpleGetFail(pMap, iIdx);
+
+    /* Remove the unexisting key value pair. */
+    for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
+        #if __x86_64__
+        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx]) == ERR_NODATA);
+        #else
+        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx]) == ERR_NODATA);
+        #endif
+
+    OdrMapDeinit(&pMap);
+}
 
 int32_t AdvancedCompare(Entry entSrc, Entry entTge)
 {

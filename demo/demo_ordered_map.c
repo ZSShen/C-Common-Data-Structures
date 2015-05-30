@@ -91,7 +91,7 @@ void usage_simple()
     pMap->put(pMap, (Entry)pPair);
 
     /*--------------------------------------------------*
-     * Retrive the value by specifying the key.         *
+     * Retrive the value by with the specified key.     *
      *--------------------------------------------------*/
     Value value;
     #if __x86_64__
@@ -103,7 +103,7 @@ void usage_simple()
     #endif
 
     /*--------------------------------------------------*
-     * Remove the key value pair by specifying the key. *
+     * Remove the key value pair with the specified key.*
      *--------------------------------------------------*/
     #if __x86_64__
         pMap->remove(pMap, (Key)(int64_t)2);
@@ -184,7 +184,7 @@ void usage_advanced()
     pMap->put(pMap, (Entry)pPair);
 
     /*--------------------------------------------------*
-     * Retrive the value by specifying the key.         *
+     * Retrive the value with the specified key.        *
      *--------------------------------------------------*/
     Value value;
     pMap->get(pMap, (Key)aName[0], &value);
@@ -193,7 +193,7 @@ void usage_advanced()
     assert(((Employ*)value)->cLevel == 100);
 
     /*--------------------------------------------------*
-     * Remove the key value pair by specifying the key. *
+     * Remove the key value pair with the specified key.*
      *--------------------------------------------------*/
     pMap->remove(pMap, (Key)aName[1]);
 
