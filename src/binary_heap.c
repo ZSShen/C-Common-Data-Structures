@@ -8,7 +8,6 @@
 struct _BinHeapData {
     Vector *pVector_;
     int32_t (*pCompare_) (Item, Item);
-    int32_t (*pDestroy_) (Item);
 };
 
 
@@ -25,14 +24,19 @@ struct _BinHeapData {
  * @retval 0            Both the items have the same order
  * @retval -1           The source item has the smaller order
  */
-int32_t _BinHeapCompare(Item itemSrc, Item itemTge);
+int32_t _BinHeapItemComp(Item itemSrc, Item itemTge);
 
 /**
- * @brief The default resource clean method for an item.
+ * @brief The default item clean method.
  *
  * @param item          The designated item
  */
-void _BinHeapDestroy(Item item);
+void _BinHeapItemDestroy(Item item);
+
+
+#define PARENT(idx)             (idx >> 1)
+#define LEFT(idx)               (idx << 1)
+#define RIGHT(idx)              (idx << 1 + 1)
 
 
 /*===========================================================================*
@@ -69,7 +73,8 @@ int32_t BinHeapInit(BinHeap **ppObj)
     pObj->set_destroy = BinHeapSetDestroy;
 
     Vector *pVector = pData->pVector_;
-    pVector->set_destroy(pVector, _BinHeapDestroy);
+    pVector->set_destroy(pVector, _BinHeapItemDestroy);
+    pData->pCompare_ = _BinHeapItemComp;
 
     return SUCC;
 }
@@ -99,6 +104,32 @@ EXIT:
 
 int32_t BinHeapPush(BinHeap *self, Item item)
 {
+    if (!self)
+        return ERR_NOINIT;
+
+    /* First, push the item into the tail-end of the heap. */
+    BinHeapData *pData = self->pData;
+    Vector *pVector = pData->pVector_;
+    int32_t iRtnCode = pVector->push_back(pVector, item);
+    if (iRtnCode != SUCC)
+        return iRtnCode;
+
+    /* Second, adjust the heap structure. */
+    int32_t iIdxCurr = pVector->size(pVector);
+    int32_t iIdxParent;
+    Item itemCurr, itemParent;
+    while (iIdxCurr > 1) {
+        iIdxParent = PARENT(iIdxCurr);
+        pVector->get(pVector, &itemCurr, iIdxCurr - 1);
+        pVector->get(pVector, &itemParent, iIdxParent - 1);
+        int32_t iOrder = pData->pCompare_(itemCurr, itemParent);
+        if (iOrder <= 0)
+            break;
+        pVector->set(pVector, itemCurr, iIdxParent - 1);
+        pVector->set(pVector, itemParent, iIdxCurr - 1);
+        iIdxCurr = iIdxParent;
+    }
+
     return SUCC;
 }
 
@@ -109,7 +140,11 @@ int32_t BinHeapPop(BinHeap *self)
 
 int32_t BinHeapTop(BinHeap *self, Item *pItem)
 {
-    return SUCC;
+    if (!self)
+        return ERR_NOINIT;
+    Vector *pVector = self->pData->pVector_;
+    int32_t iRtnCode = pVector->get(pVector, pItem, 0);
+    return iRtnCode;
 }
 
 int32_t BinHeapSize(BinHeap *self)
@@ -119,11 +154,18 @@ int32_t BinHeapSize(BinHeap *self)
 
 int32_t BinHeapSetCompare(BinHeap *self, int32_t (*pFunc) (Item, Item))
 {
+    if (!self)
+        return ERR_NOINIT;
+    self->pData->pCompare_ = pFunc;
     return SUCC;
 }
 
 int32_t BinHeapSetDestroy(BinHeap *self, void (*pFunc) (Item))
 {
+    if (!self)
+        return ERR_NOINIT;
+    Vector *pVector = self->pData->pVector_;
+    pVector->set_destroy(pVector, pFunc);
     return SUCC;
 }
 
@@ -131,11 +173,11 @@ int32_t BinHeapSetDestroy(BinHeap *self, void (*pFunc) (Item))
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
-int32_t _BinHeapCompare(Item itemSrc, Item itemTge)
+int32_t _BinHeapItemComp(Item itemSrc, Item itemTge)
 {
     if (itemSrc == itemTge)
         return 0;
     return (itemSrc > itemTge)? 1 : (-1);
 }
 
-void _BinHeapDestroy(Item item) {}
+void _BinHeapItemDestroy(Item item) {}
