@@ -108,6 +108,51 @@ void TestSimpleManipulate()
         idx++;
     }
 
+    /* Pop half of the items from the heap. */
+    idx = 1;
+    while (idx <= SIZE_MID_TEST / 2) {
+        CU_ASSERT(pHeap->pop(pHeap) == SUCC);
+        CU_ASSERT(pHeap->top(pHeap, &item) == SUCC);
+        #if __x86_64__
+        CU_ASSERT_EQUAL(item, (Item)(int64_t)aPrim[SIZE_MID_TEST - idx - 1]);
+        #else
+        CU_ASSERT_EQUAL(item, (Item)aPrim[SIZE_MID_TEST - idx - 1]);
+        #endif
+        idx++;
+    }
+
+    /* Check the heap size. */
+    int32_t iSize = pHeap->size(pHeap);
+    CU_ASSERT_EQUAL(iSize, SIZE_MID_TEST / 2);
+
+    /* Push the poped items into the heap again. */
+    idx = SIZE_MID_TEST / 2;
+    while (idx < SIZE_MID_TEST) {
+        #if __x86_64__
+        CU_ASSERT(pHeap->push(pHeap, (Item)(int64_t)aPrim[idx]) == SUCC);
+        CU_ASSERT(pHeap->top(pHeap, &item) == SUCC);
+        CU_ASSERT_EQUAL(item, (Item)(int64_t)aPrim[idx]);
+        #else
+        CU_ASSERT(pHeap->push(pHeap, (Item)aPrim[idx]) == SUCC);
+        CU_ASSERT(pHeap->top(pHeap, &item) == SUCC);
+        CU_ASSERT_EQUAL(item, aPrim[idx]);
+        #endif
+        idx++;
+    }
+
+    /* Pop all the items from the heap. */
+    idx = 1;
+    while (idx < SIZE_MID_TEST) {
+        CU_ASSERT(pHeap->pop(pHeap) == SUCC);
+        CU_ASSERT(pHeap->top(pHeap, &item) == SUCC);
+        #if __x86_64__
+        CU_ASSERT_EQUAL(item, (Item)(int64_t)aPrim[SIZE_MID_TEST - idx - 1]);
+        #else
+        CU_ASSERT_EQUAL(item, (Item)aPrim[SIZE_MID_TEST - idx - 1]);
+        #endif
+        idx++;
+    }
+
     BinHeapDeinit(&pHeap);
 }
 

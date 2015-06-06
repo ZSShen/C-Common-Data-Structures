@@ -36,7 +36,7 @@ void _BinHeapItemDestroy(Item item);
 
 #define PARENT(idx)             (idx >> 1)
 #define LEFT(idx)               (idx << 1)
-#define RIGHT(idx)              (idx << 1 + 1)
+#define RIGHT(idx)              ((idx << 1) + 1)
 
 
 /*===========================================================================*
@@ -117,12 +117,13 @@ int32_t BinHeapPush(BinHeap *self, Item item)
     /* Second, adjust the heap structure. */
     int32_t iIdxCurr = pVector->size(pVector);
     int32_t iIdxParent;
+    int32_t iOrder;
     Item itemCurr, itemParent;
     while (iIdxCurr > 1) {
         iIdxParent = PARENT(iIdxCurr);
         pVector->get(pVector, &itemCurr, iIdxCurr - 1);
         pVector->get(pVector, &itemParent, iIdxParent - 1);
-        int32_t iOrder = pData->pCompare_(itemCurr, itemParent);
+        iOrder = pData->pCompare_(itemCurr, itemParent);
         if (iOrder <= 0)
             break;
         pVector->set(pVector, itemCurr, iIdxParent - 1);
@@ -135,6 +136,56 @@ int32_t BinHeapPush(BinHeap *self, Item item)
 
 int32_t BinHeapPop(BinHeap *self)
 {
+    if (!self)
+        return ERR_NOINIT;
+
+    /* First, replace the top item with the one stored at the tail-end.  */
+    BinHeapData *pData = self->pData;
+    Vector *pVector = pData->pVector_;
+    int32_t iSize = pVector->size(pVector);
+    Item itemTop, itemCurr;
+    pVector->get(pVector, &itemTop, 0);
+    pVector->get(pVector, &itemCurr, iSize - 1);
+    pVector->set(pVector, itemTop, iSize - 1);
+    pVector->set(pVector, itemCurr, 0);
+    pVector->pop_back(pVector);
+
+    /* Second, adjust the heap structure. */
+    iSize--;
+    int32_t iIdxCurr = 1;
+    int32_t iIdxChildL, iIdxChildR, iIdxNext;
+    int32_t iOrder;
+    Item itemChildL, itemChildR, itemNext;
+    do {
+        iIdxChildL = LEFT(iIdxCurr);
+        if (iIdxChildL > iSize)
+            break;
+
+        iIdxNext = iIdxCurr;
+        pVector->get(pVector, &itemCurr, iIdxCurr - 1);
+        pVector->get(pVector, &itemChildL, iIdxChildL - 1);
+        iOrder = pData->pCompare_(itemChildL, itemCurr);
+        if (iOrder > 0)
+            iIdxNext = iIdxChildL;
+
+        iIdxChildR = RIGHT(iIdxCurr);
+        if (iIdxChildR <= iSize) {
+            pVector->get(pVector, &itemNext, iIdxNext - 1);
+            pVector->get(pVector, &itemChildR, iIdxChildR - 1);
+            iOrder = pData->pCompare_(itemChildR, itemNext);
+            if (iOrder > 0)
+                iIdxNext = iIdxChildR;
+        }
+
+        if (iIdxNext == iIdxCurr)
+            break;
+
+        pVector->get(pVector, &itemNext, iIdxNext - 1);
+        pVector->set(pVector, itemCurr, iIdxNext - 1);
+        pVector->set(pVector, itemNext, iIdxCurr - 1);
+        iIdxCurr = iIdxNext;
+    } while (1);
+
     return SUCC;
 }
 
@@ -149,7 +200,11 @@ int32_t BinHeapTop(BinHeap *self, Item *pItem)
 
 int32_t BinHeapSize(BinHeap *self)
 {
-    return 0;
+    if (!self)
+        return ERR_NOINIT;
+    Vector *pVector = self->pData->pVector_;
+    int32_t iSize = pVector->size(pVector);
+    return iSize;
 }
 
 int32_t BinHeapSetCompare(BinHeap *self, int32_t (*pFunc) (Item, Item))
