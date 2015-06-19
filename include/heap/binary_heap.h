@@ -47,7 +47,7 @@ typedef struct _BinHeap {
 /**
  * @brief The constructor for BinHeap.
  *
- * @param ppObj         The double pointer to the to be constructure heap
+ * @param ppObj         The double pointer to the to be constructed heap
  *
  * @retval SUCC
  * @retval ERR_NOMEM    Insufficient memory for heap construction
@@ -57,7 +57,7 @@ int32_t BinHeapInit(BinHeap **ppObj);
 /**
  * @brief The destructor for BinHeap.
  *
- * @param ppObj         The double pointer to the to be destructured heap
+ * @param ppObj         The double pointer to the to be destructed heap
  */
 void BinHeapDeinit(BinHeap **ppObj);
 

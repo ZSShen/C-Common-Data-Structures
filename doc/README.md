@@ -15,7 +15,6 @@ LibCDS implements several kinds of classic containers by C. It offers uniform AP
 + Map
   + OrderedMap -- The ordered map to store key value pairs.
 + Heap
-  + BinaryHeap -- The basic ordered heap.
-  + BinomailHeap -- The advanced ordered heap.
+  + BinHeap -- The ordered binary heap.
 + Queue
-  + PriorityQueue -- The priority queue leveraging ordered heap.
+  + PriorityQueue -- The priority queue implemented with binary heap.
