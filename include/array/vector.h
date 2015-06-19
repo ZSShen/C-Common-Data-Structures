@@ -15,47 +15,45 @@ typedef struct _Vector {
     /** The container private information */
     VectorData *pData;
 
-    /** The operator to push an item into the end of the vector.
+    /** Push an item to the tail of the vector.
         @see VectorPushBack */
     int32_t (*push_back) (struct _Vector*, Item);
 
-    /** The operator to insert an item into the designated index of the vector.
+    /** Insert an item to the designated index of the vector.
         @see VectorInsert */
     int32_t (*insert) (struct _Vector*, Item, int32_t);
 
-    /** The operator to pop an item from the end of the vector.
+    /** Pop an item from the tail of the vector.
         @see VectorPopBack */
-    int32_t (*pop_back) (struct _Vector*);
+    int32_t (*pop_back) (struct _Vector*, bool);
 
-    /** The operator to delete an item from the designated index of the vector.
+    /** Delete an item from the designated index of the vector.
         @see VectorDelete */
-    int32_t (*delete) (struct _Vector*, int32_t);
+    int32_t (*delete) (struct _Vector*, int32_t, bool);
 
-    /** The operator to set the requested item at the designated index of the
-        vector.
+    /** Set an item at the designated index of the vector.
         @see VectorSet */
-    int32_t (*set) (struct _Vector*, Item, int32_t);
+    int32_t (*set) (struct _Vector*, Item, int32_t, bool);
 
-    /** The operator to get an item from the designated index of the vector.
+    /** Get an item from the designated index of the vector.
         @see VectorGet */
     int32_t (*get) (struct _Vector*, Item*, int32_t);
 
-    /** The operator to change the container capacity.
+    /** Change the container capacity.
         @see VectorResize */
-    int32_t (*resize) (struct _Vector*, int32_t);
+    int32_t (*resize) (struct _Vector*, int32_t, bool);
 
-    /** The operator to return the number of stored items.
+    /** Return the number of stored items.
         @see VectorSize */
     int32_t (*size) (struct _Vector*);
 
-    /** The operator to return the container capacity.
+    /** Return the container capacity.
         @see VectorCapacity */
     int32_t (*capacity) (struct _Vector*);
 
-    /** The operator to set the user defined clean strategy for the resource
-        hold by an item
+    /** Set the user defined item clean method.
         @see VectorSetDestroy */
-    void (*set_destroy) (struct _Vector*, void (*) (Item));
+    int32_t (*set_destroy) (struct _Vector*, void (*) (Item));
 } Vector;
 
 
@@ -75,108 +73,122 @@ int32_t VectorInit(Vector **ppObj);
 /**
  * @brief The destructor for Vector.
  *
- * @param ppObj          The double pointer to the to be destructed vector
+ * If the knob is on, it also runs the resource clean method for all the items.
+ *
+ * @param ppObj         The double pointer to the to be destructed vector
+ * @param bClean        The knob to clean item resource
  */
-void VectorDeinit(Vector **ppObj);
+void VectorDeinit(Vector **ppObj, bool bClean);
 
 /**
- * @brief Push an item into the end of the vector.
+ * @brief Push an item to the tail of the vector.
  *
- * This function pushes the requested item into the end of the vector with the
- * corresponding vector size extension. If the internal storage is full, the space
- * reallocation is automatically triggered to store the newly pushed item.
+ * This function pushes an item to the tail of the vector with the corresponding
+ * vector size extension. If the storage is full, the space reallocation is
+ * automatically triggered to store the newly pushed item.
  *
  * @param self          The pointer to the Vector structure
- * @param item          The requested item
+ * @param item          The designated item
  *
  * @retval SUCC
- * @retval ERR_NOMEM    Insufficient memory for vector expansion
+ * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_NOMEM    Insufficient memory for vector extension
  */
 int32_t VectorPushBack(Vector *self, Item item);
 
 /**
- * @brief Insert an item into the designated index of the vector.
+ * @brief Insert an item to the designated index of the vector.
  *
- * This function inserts the requested item into the designated index of the
- * vector and shifts the trailing items one position to the end. Naturally,
- * the vector size is extended. And if the internal storage is full, the space
- * reallocation is automatically triggered to store the newly inserted item.
+ * This function inserts an item to the designated index of the vector and shifts
+ * the trailing items one position to the tail. Naturally, the vector size is extended.
+ * And if the storage is full, the space reallocation is automatically triggered
+ * to store the newly inserted item.
  *
  * @param self          The pointer to the Vector structure
- * @param item          The requested item
+ * @param item          The designated item
  * @param iIdx          The designated index
  *
  * @retval SUCC
- * @retval ERR_IDX      The index exceeding the range of the vector
+ * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_IDX      Illegal index
  *
  * @note The designated index should be equal to or smaller than the vector
  * size and should not be negative. If the index is equal to the vector size,
- * the operation is equivalent to push_back().
- *
+ * the effect is equivalent to push_back().
  */
 int32_t VectorInsert(Vector *self, Item item, int32_t iIdx);
 
 /**
- * @brief Pop an item from the end of the vector.
+ * @brief Pop an item from the tail of the vector.
  *
- * This function removes an item from the end of the vector and applies the
- * configured policy to clean the resource acquired by that item. Naturally,
- * the vector size is shrunk.
+ * This function removes an item from the tail of the vector. If the knob is on,
+ * it also runs the resource clean method for the removed item. Naturally, the
+ * vector size is shrunk.
  *
  * @param self          The pointer to the Vector structure
+ * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
- * @retval ERR_IDX      The vector is already empty
+ * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_IDX      Empty vector
  */
-int32_t VectorPopBack(Vector *self);
+int32_t VectorPopBack(Vector *self, bool bClean);
 
 /**
  * @brief Delete an item from the designated index of the vector.
  *
- * This function removes the item from the designated index of the vector and
- * shifts the trailing items one position to the head. The resource acquired
- * by the item will also be cleaned by the configured policy. And naturally, the
- * vector size is shrunk.
+ * This function removes an item from the designated index of the vector and shifts
+ * the trailing items one position to the head. If the knob is on, it also runs the
+ * resource clean method for the removed item. Naturally, the vector size is shrunk.
  *
  * @param self          The pointer to the Vector structure
  * @param iIdx          The designated index
+ * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
- * @retval ERR_IDX      The index exceeding the range of the vector
+ * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_IDX      Illegal index
  *
  * @note The designated index should be smaller than the vector size and
  * should not be negative. If the index is equal to the vector size minus one,
  * the operation is equivalent to pop_back().
  */
-int32_t VectorDelete(Vector *self, int32_t iIdx);
+int32_t VectorDelete(Vector *self, int32_t iIdx, bool bClean);
 
 /**
- * @brief Set the requested item at the designated index of the vector.
+ * @brief Set an item at the designated index of the vector.
  *
- * This function puts the requested item into the designated index of the
- * vector and cleans the previously stored item.
+ * This function replaces an item at the designated index of the vector. If the
+ * knob is on, it also runs the resource clean method for the replaced item.
  *
  * @param self          The pointer to the Vector structure
- * @param item          The requested item
+ * @param item          The designated item
  * @param iIdx          The designated index
+ * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
- * @retval ERR_IDX      The index exceeding the range of the vector
+ * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_IDX      Illegal index
  *
  * @note The designated index should be smaller than the vector size and should
  * not be negative.
  */
-int32_t VectorSet(Vector *self, Item item, int32_t iIdx);
+int32_t VectorSet(Vector *self, Item item, int32_t iIdx, bool bClean);
 
 /**
  * @brief Get an item from the designated index of the vector.
+ *
+ * This function retrieves an item from the designated index of the vector. If
+ * the index is illegal, the error code is returned and the second parameter is
+ * also updated with NULL.
  *
  * @param self          The pointer to the Vector structure
  * @param pItem         The pointer to the returned item
  * @param iIdx          The designated index
  *
  * @retval SUCC
- * @retval ERR_IDX      The index exceeding the range of the vector
+ * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_IDX      Illegal index
  *
  * @note The designated index should be smaller than the vector size and should
  * not be negative.
@@ -186,24 +198,28 @@ int32_t VectorGet(Vector *self, Item *pItem, int32_t iIdx);
 /**
  * @brief Change the container capacity.
  *
- * This function resizes the capacity of the internal storage. If the new
- * capacity is smaller than the old size. The trailing items will be cleaned.
+ * This function resizes the storage capacity. If the new capacity is smaller
+ * than the old size. The trailing items will be removed. If the knob is on, it
+ * also runs the resource clean method for the removed items.
  *
- * @param self         The pointer to the Vector structure
- * @param iCap         The designated capacity
+ * @param self          The pointer to the Vector structure
+ * @param iCap          The designated capacity
+ * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
- * @retval ERR_NOMEM   Insufficient memory for vector expansion
+ * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_NOMEM   Insufficient memory for vector extension
  *
  * @note The designated capacity should greater than zero.
  */
-int32_t VectorResize(Vector *self, int32_t iCap);
+int32_t VectorResize(Vector *self, int32_t iCap, bool bClean);
 
 /**
  * @brief Return the number of stored items.
  *
  * @param self          The pointer to the Vector structure
  *
+ * @retval ERR_NOINIT   Uninitialized container
  * @return              The number of stored items
  */
 int32_t VectorSize(Vector *self);
@@ -213,16 +229,19 @@ int32_t VectorSize(Vector *self);
  *
  * @param self          The pointer to the Vector structure
  *
+ * @retval ERR_NOINIT   Uninitialized container
  * @return              The container capacity
  */
 int32_t VectorCapacity(Vector *self);
 
 /**
- * @brief Set the user defined clean strategy for the resource hold by an item.
+ * @brief Set the user defined item clean method.
  *
  * @param self          The pointer to the Vector structure
  * @param pFunc         The pointer to the user defined function
+ *
+ * @retval ERR_NOINIT   Uninitialized container
  */
-void VectorSetDestroy(Vector *self, void (*pFunc) (Item));
+int32_t VectorSetDestroy(Vector *self, void (*pFunc) (Item));
 
 #endif
