@@ -45,6 +45,7 @@ set(LIST_DS
     vector                      # Dynamic Array
     dlinked_list                # Doubly Linked List
     ordered_map                 # Ordered Map
+    binary_heap                 # Binary Heap
 )
 
 # Determine the build type and generate the corresponding library path.
