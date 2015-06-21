@@ -4,7 +4,7 @@
 
 
 /*===========================================================================*
- *        Definition for the test cases of the primitive input suite         *
+ *              Test suite to manipulate primitive type input                *
  *===========================================================================*/
 void TestPrimPushBack();
 void TestPrimInsert();
@@ -16,31 +16,32 @@ void TestPrimResize();
 
 int32_t SuitePrimitive()
 {
-    CU_pSuite pSuite = CU_add_suite("Primitive Input", NULL, NULL);
+    CU_pSuite pSuite = CU_add_suite("Primitive Type Input", NULL, NULL);
     if (!pSuite)
         return ERR_NOMEM;
 
-    CU_pTest pTest = CU_add_test(pSuite, "Basic item appending", TestPrimPushBack);
+    CU_pTest pTest = CU_add_test(pSuite, "Item insertion via push_back().",
+                     TestPrimPushBack);
     if (!pTest)
         return ERR_NOMEM;
 
-    pTest = CU_add_test(pSuite, "Basic item insertion", TestPrimInsert);
+    pTest = CU_add_test(pSuite, "Item insertion via insert().", TestPrimInsert);
     if (!pTest)
         return ERR_NOMEM;
 
-    pTest = CU_add_test(pSuite, "Basic item replacement", TestPrimSet);
+    pTest = CU_add_test(pSuite, "Item replacement via set().", TestPrimSet);
     if (!pTest)
         return ERR_NOMEM;
 
-    pTest = CU_add_test(pSuite, "Basic item popping", TestPrimPopBack);
+    pTest = CU_add_test(pSuite, "Item deletion via pop_back().", TestPrimPopBack);
     if (!pTest)
         return ERR_NOMEM;
 
-    pTest = CU_add_test(pSuite, "Basic item deletion", TestPrimDelete);
+    pTest = CU_add_test(pSuite, "Item deletion via delete().", TestPrimDelete);
     if (!pTest)
         return ERR_NOMEM;
 
-    pTest = CU_add_test(pSuite, "Basic storage reallocation", TestPrimResize);
+    pTest = CU_add_test(pSuite, "Storage reallocation.", TestPrimResize);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -70,9 +71,6 @@ int32_t main()
 }
 
 
-/*===========================================================================*
- *      Implementation for the test cases of the primitive input suite       *
- *===========================================================================*/
 void TestPrimPushBack()
 {
     Vector *pVec;
@@ -84,7 +82,7 @@ void TestPrimPushBack()
     CU_ASSERT(pVec->push_back(pVec, (Item)3) == SUCC);
     CU_ASSERT(pVec->push_back(pVec, (Item)4) == SUCC);
 
-    /* Check the item insertion sequence. */
+    /* Check item insertion sequence. */
     Item item;
     CU_ASSERT(pVec->get(pVec, &item, 0) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)1);
@@ -95,15 +93,15 @@ void TestPrimPushBack()
     CU_ASSERT(pVec->get(pVec, &item, 3) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)4);
 
-    /* Check the vector storage. */
+    /* Check vector storage. */
     CU_ASSERT_EQUAL(pVec->size(pVec), 4);
     CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
 
-    /* Check for the illegal indexing. */
+    /* Check illegal indexing. */
     CU_ASSERT(pVec->get(pVec, &item, -1) == ERR_IDX);
     CU_ASSERT(pVec->get(pVec, &item, 4) == ERR_IDX);
 
-    VectorDeinit(&pVec);
+    VectorDeinit(&pVec, true);
 }
 
 void TestPrimInsert()
@@ -111,15 +109,15 @@ void TestPrimInsert()
     Vector *pVec;
     CU_ASSERT(VectorInit(&pVec) == SUCC);
 
-    /* Check the same behavior as push_back(). */
+    /* Append the items. */
     CU_ASSERT(pVec->insert(pVec, (Item)3, 0) == SUCC);
     CU_ASSERT(pVec->insert(pVec, (Item)4, 1) == SUCC);
 
-    /* Check the shift for trailing items. */
+    /* Trigger the shift of trailing items. */
     CU_ASSERT(pVec->insert(pVec, (Item)1, 0) == SUCC);
     CU_ASSERT(pVec->insert(pVec, (Item)2, 1) == SUCC);
 
-    /* Check the item insertion sequence. */
+    /* Check item insertion sequence. */
     Item item;
     CU_ASSERT(pVec->get(pVec, &item, 0) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)1);
@@ -130,15 +128,15 @@ void TestPrimInsert()
     CU_ASSERT(pVec->get(pVec, &item, 3) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)4);
 
-    /* Check the vector storage. */
+    /* Check vector storage. */
     CU_ASSERT_EQUAL(pVec->size(pVec), 4);
     CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
 
-    /* Check for the illegal indexing. */
+    /* Check illegal indexing. */
     CU_ASSERT(pVec->insert(pVec, (Item)-1, -1) == ERR_IDX);
     CU_ASSERT(pVec->insert(pVec, (Item)-1, 5) == ERR_IDX);
 
-    VectorDeinit(&pVec);
+    VectorDeinit(&pVec, true);
 }
 
 void TestPrimSet()
@@ -146,13 +144,12 @@ void TestPrimSet()
     Vector *pVec;
     CU_ASSERT(VectorInit(&pVec) == SUCC);
 
-    /* Prepare the initial items. */
     CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCC);
     CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCC);
 
-    /* Replace the existing items and check the behavior. */
-    CU_ASSERT(pVec->set(pVec, (Item)2, 0) == SUCC);
-    CU_ASSERT(pVec->set(pVec, (Item)3, 1) == SUCC);
+    /* Replace the existing items. */
+    CU_ASSERT(pVec->set(pVec, (Item)2, 0, true) == SUCC);
+    CU_ASSERT(pVec->set(pVec, (Item)3, 1, true) == SUCC);
 
     Item item;
     CU_ASSERT(pVec->get(pVec, &item, 0) == SUCC);
@@ -160,11 +157,11 @@ void TestPrimSet()
     CU_ASSERT(pVec->get(pVec, &item, 1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)3);
 
-    /* Check for the illegal indexing. */
-    CU_ASSERT(pVec->set(pVec, (Item)-1, -1) == ERR_IDX);
-    CU_ASSERT(pVec->set(pVec, (Item)-1, 2) == ERR_IDX);
+    /* Check illegal indexing. */
+    CU_ASSERT(pVec->set(pVec, (Item)-1, -1, true) == ERR_IDX);
+    CU_ASSERT(pVec->set(pVec, (Item)-1, 2, true) == ERR_IDX);
 
-    VectorDeinit(&pVec);
+    VectorDeinit(&pVec, true);
 }
 
 void TestPrimPopBack()
@@ -172,22 +169,21 @@ void TestPrimPopBack()
     Vector *pVec;
     CU_ASSERT(VectorInit(&pVec) == SUCC);
 
-    /* Prepare the initial items. */
     CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCC);
     CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCC);
 
     /* Pop all the items. */
-    CU_ASSERT(pVec->pop_back(pVec) == SUCC);
-    CU_ASSERT(pVec->pop_back(pVec) == SUCC);
+    CU_ASSERT(pVec->pop_back(pVec, true) == SUCC);
+    CU_ASSERT(pVec->pop_back(pVec, true) == SUCC);
 
-    /* Check the vector storage. */
+    /* Check vector storage. */
     CU_ASSERT_EQUAL(pVec->size(pVec), 0);
     CU_ASSERT_EQUAL(pVec->capacity(pVec), 2);
 
-    /* Check for illegal pop. */
-    CU_ASSERT(pVec->pop_back(pVec) == ERR_IDX);
+    /* Check illegal pop. */
+    CU_ASSERT(pVec->pop_back(pVec, true) == ERR_IDX);
 
-    VectorDeinit(&pVec);
+    VectorDeinit(&pVec, true);
 }
 
 void TestPrimDelete()
@@ -195,32 +191,31 @@ void TestPrimDelete()
     Vector *pVec;
     CU_ASSERT(VectorInit(&pVec) == SUCC);
 
-    /* Prepare the initial items. */
     CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCC);
     CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCC);
     CU_ASSERT(pVec->push_back(pVec, (Item)2) == SUCC);
     CU_ASSERT(pVec->push_back(pVec, (Item)3) == SUCC);
 
-    /* Delete the head and the tail items. */
-    CU_ASSERT(pVec->delete(pVec, 3) == SUCC);
-    CU_ASSERT(pVec->delete(pVec, 0) == SUCC);
+    /* Delete the head and tail. */
+    CU_ASSERT(pVec->delete(pVec, 3, true) == SUCC);
+    CU_ASSERT(pVec->delete(pVec, 0, true) == SUCC);
 
-    /* Check the item shifting sequence. */
+    /* Check item shifting sequence. */
     Item item;
     CU_ASSERT(pVec->get(pVec, &item, 0) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)1);
     CU_ASSERT(pVec->get(pVec, &item, 1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
 
-    /* Check the vector storage. */
+    /* Check vector storage. */
     CU_ASSERT_EQUAL(pVec->size(pVec), 2);
     CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
 
-    /* Check for illegal deletion. */
-    CU_ASSERT(pVec->delete(pVec, -1) == ERR_IDX);
-    CU_ASSERT(pVec->delete(pVec, 2) == ERR_IDX);
+    /* Check illegal deletion. */
+    CU_ASSERT(pVec->delete(pVec, -1, true) == ERR_IDX);
+    CU_ASSERT(pVec->delete(pVec, 2, true) == ERR_IDX);
 
-    VectorDeinit(&pVec);
+    VectorDeinit(&pVec, true);
 }
 
 void TestPrimResize()
@@ -228,29 +223,29 @@ void TestPrimResize()
     Vector *pVec;
     CU_ASSERT(VectorInit(&pVec) == SUCC);
 
-    /* Expand the internal capacity. */
-    CU_ASSERT(pVec->resize(pVec, 4) == SUCC);
+    /* Expand the capacity. */
+    CU_ASSERT(pVec->resize(pVec, 4, true) == SUCC);
     CU_ASSERT_EQUAL(pVec->size(pVec), 0);
     CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
 
-    /* Push items to fill the half of the storage.  */
+    /* Fill the half of the storage. */
     CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCC);
     CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCC);
     CU_ASSERT_EQUAL(pVec->size(pVec), 2);
     CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
 
-    /* Shrink a little storage. */
-    CU_ASSERT(pVec->resize(pVec, 3) == SUCC);
+    /* Shrink the storage. */
+    CU_ASSERT(pVec->resize(pVec, 3, true) == SUCC);
     CU_ASSERT_EQUAL(pVec->size(pVec), 2);
     CU_ASSERT_EQUAL(pVec->capacity(pVec), 3);
 
-    /* Further shrink the storage and trim the trailing items. */
-    CU_ASSERT(pVec->resize(pVec, 1) == SUCC);
+    /* Shrink the storage again and trim the trailing items. */
+    CU_ASSERT(pVec->resize(pVec, 1, true) == SUCC);
     Item item;
     CU_ASSERT(pVec->get(pVec, &item, 0) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)0);
     CU_ASSERT_EQUAL(pVec->size(pVec), 1);
     CU_ASSERT_EQUAL(pVec->capacity(pVec), 1);
 
-    VectorDeinit(&pVec);
+    VectorDeinit(&pVec, true);
 }
