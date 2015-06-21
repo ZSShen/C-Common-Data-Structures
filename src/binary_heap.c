@@ -79,7 +79,7 @@ int32_t BinHeapInit(BinHeap **ppObj)
     return SUCC;
 }
 
-void BinHeapDeinit(BinHeap **ppObj)
+void BinHeapDeinit(BinHeap **ppObj, bool bClean)
 {
     if (!(*ppObj))
         goto EXIT;
@@ -92,7 +92,7 @@ void BinHeapDeinit(BinHeap **ppObj)
     if (!(pData->pVector_))
         goto FREE_DATA;
 
-    VectorDeinit(&(pData->pVector_));
+    VectorDeinit(&(pData->pVector_), bClean);
 
 FREE_DATA:
     free(pObj->pData);
@@ -106,9 +106,9 @@ int32_t BinHeapPush(BinHeap *self, Item item)
 {
     if (!self)
         return ERR_NOINIT;
-
-    /* First, push the item into the tail-end of the heap. */
     BinHeapData *pData = self->pData;
+
+    /* First, push item to the bottom of the heap. */
     Vector *pVector = pData->pVector_;
     int32_t iRtnCode = pVector->push_back(pVector, item);
     if (iRtnCode != SUCC)
@@ -126,29 +126,29 @@ int32_t BinHeapPush(BinHeap *self, Item item)
         iOrder = pData->pCompare_(itemCurr, itemParent);
         if (iOrder <= 0)
             break;
-        pVector->set(pVector, itemCurr, iIdxParent - 1);
-        pVector->set(pVector, itemParent, iIdxCurr - 1);
+        pVector->set(pVector, itemCurr, iIdxParent - 1, false);
+        pVector->set(pVector, itemParent, iIdxCurr - 1, false);
         iIdxCurr = iIdxParent;
     }
 
     return SUCC;
 }
 
-int32_t BinHeapPop(BinHeap *self)
+int32_t BinHeapPop(BinHeap *self, bool bClean)
 {
     if (!self)
         return ERR_NOINIT;
-
-    /* First, replace the top item with the one stored at the tail-end.  */
     BinHeapData *pData = self->pData;
+
+    /* First, replace the top item with the one stored at the bottom. */
     Vector *pVector = pData->pVector_;
     int32_t iSize = pVector->size(pVector);
     Item itemTop, itemCurr;
     pVector->get(pVector, &itemTop, 0);
     pVector->get(pVector, &itemCurr, iSize - 1);
-    pVector->set(pVector, itemTop, iSize - 1);
-    pVector->set(pVector, itemCurr, 0);
-    pVector->pop_back(pVector);
+    pVector->set(pVector, itemTop, iSize - 1, false);
+    pVector->set(pVector, itemCurr, 0, false);
+    pVector->pop_back(pVector, bClean);
 
     /* Second, adjust the heap structure. */
     iSize--;
@@ -181,8 +181,8 @@ int32_t BinHeapPop(BinHeap *self)
             break;
 
         pVector->get(pVector, &itemNext, iIdxNext - 1);
-        pVector->set(pVector, itemCurr, iIdxNext - 1);
-        pVector->set(pVector, itemNext, iIdxCurr - 1);
+        pVector->set(pVector, itemCurr, iIdxNext - 1, false);
+        pVector->set(pVector, itemNext, iIdxCurr - 1, false);
         iIdxCurr = iIdxNext;
     } while (1);
 

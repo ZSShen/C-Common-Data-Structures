@@ -15,19 +15,19 @@ typedef struct _BinHeap {
     /** The container private information */
     BinHeapData *pData;
 
-    /** Insert an item into the heap.
+    /** Push an item onto the heap.
         @see BinHeapPush */
     int32_t (*push) (struct _BinHeap*, Item);
 
-    /** Retrieve the item from the top of the heap.
+    /** Retrieve item from top of the heap.
         @see BinHeapTop */
     int32_t (*top) (struct _BinHeap*, Item*);
 
-    /** Delete the item from the top of the heap.
+    /** Delete item from top of the heap.
         @see BinHeapPop */
-    int32_t (*pop) (struct _BinHeap*);
+    int32_t (*pop) (struct _BinHeap*, bool);
 
-    /** Return the number of items.
+    /** Return the number of stored items.
         @see BinHeapSize */
     int32_t (*size) (struct _BinHeap*);
 
@@ -57,48 +57,49 @@ int32_t BinHeapInit(BinHeap **ppObj);
 /**
  * @brief The destructor for BinHeap.
  *
+ * If the knob is on, it also runs the resource clean method for all the items.
+ *
  * @param ppObj         The double pointer to the to be destructed heap
+ * @param bClean        The knob to clean item resource
  */
-void BinHeapDeinit(BinHeap **ppObj);
+void BinHeapDeinit(BinHeap **ppObj, bool bClean);
 
 /**
- * @brief Insert an item into the heap.
+ * @brief Push an item onto the heap.
  *
- * This function inserts an item into the proper position of the heap. If the
- * order of the designated item is the same with a certain one stored in the
- * heap, the old item will be removed and the allocated resource is cleaned by
- * the configured method so that the designated item can take the position.
+ * This function pushes an item onto the heap with the corresponding heap size
+ * extension.
  *
  * @param self          The pointer to BinHeap structure
  * @param item          The designated item
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NOMEM    Insufficient memory for item insertion
+ * @retval ERR_NOMEM    Insufficient memory for heap extension
  */
 int32_t BinHeapPush(BinHeap *self, Item item);
 
 /**
- * @brief Delete the item from the top of the heap.
+ * @brief Delete item from top of the heap.
  *
- * This function deletes the item from the top of the heap and maintains the
- * heap property. The resource allocated for the deleted item is cleaned by
- * the configured method.
+ * This function deletes item from top of the heap. If the knob is on, it also
+ * runs the resource clean method for the deleted item.
  *
  * @param self          The pointer to BinHeap structure
+ * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty heap
  */
-int32_t BinHeapPop(BinHeap *self);
+int32_t BinHeapPop(BinHeap *self, bool bClean);
 
 /**
- * @brief Retrieve the item from the top of the heap.
+ * @brief Retrieve item from top of the heap.
  *
- * This function retrieves the item from the top of the heap. If the heap is not
- * empty, the item is returned by the second parameter. Otherwise, the error code
- * is returned and the second parameter is returned with NULL value.
+ * This function retrieves item from top of the heap. If the heap is not empty,
+ * the item is returned by the second parameter. Otherwise, the error code is
+ * returned and the second parameter is updated with NULL.
  *
  * @param self          The pointer to BinHeap structure
  * @param pItem         The pointer to the returned item
@@ -110,7 +111,7 @@ int32_t BinHeapPop(BinHeap *self);
 int32_t BinHeapTop(BinHeap *self, Item *pItem);
 
 /**
- * @brief Return the number of items.
+ * @brief Return the number of stored items.
  *
  * @param self          The pointer to BinHeap structure
  *
@@ -125,8 +126,8 @@ int32_t BinHeapSize(BinHeap *self);
  * @param self          The pointer to BinHeap structure
  * @param pFunc         The function pointer to the custom method
  *
- * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
+ * @retval SUCC
  */
 int32_t BinHeapSetCompare(BinHeap *self, int32_t (*pFunc) (Item, Item));
 
