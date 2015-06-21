@@ -1,12 +1,12 @@
 #include "cds.h"
 
 
-/* The example for primitive data manipulation. */
+/* The example to manipulate primitive type input. */
 int32_t simple_compare(Item, Item);
 void usage_simple();
 
 
-/* The example for non-primitive data manipulation. */
+/* The example to mainpulate non-primitive type input. */
 typedef struct Employ_ {
     int8_t cYear;
     int8_t cLevel;
@@ -67,7 +67,7 @@ void usage_simple()
     #else
         assert(item == 4);
     #endif
-    pHeap->pop(pHeap);
+    pHeap->pop(pHeap, true);
 
     pHeap->top(pHeap, &item);
     #if __x86_64__
@@ -75,7 +75,7 @@ void usage_simple()
     #else
         assert(item == 3);
     #endif
-    pHeap->pop(pHeap);
+    pHeap->pop(pHeap, true);
 
     pHeap->top(pHeap, &item);
     #if __x86_64__
@@ -83,12 +83,12 @@ void usage_simple()
     #else
         assert(item == 2);
     #endif
-    pHeap->pop(pHeap);
+    pHeap->pop(pHeap, true);
 
     iSize = pHeap->size(pHeap);
     assert(iSize == 1);
 
-    BinHeapDeinit(&pHeap);
+    BinHeapDeinit(&pHeap, true);
     return;
 }
 
@@ -159,19 +159,19 @@ void usage_advanced()
     Item item;
     pHeap->top(pHeap, &item);
     assert(((Employ*)item)->cLevel == 1);
-    pHeap->pop(pHeap);
+    pHeap->pop(pHeap, true);
 
     pHeap->top(pHeap, &item);
     assert(((Employ*)item)->cLevel == 2);
-    pHeap->pop(pHeap);
+    pHeap->pop(pHeap, true);
 
     pHeap->top(pHeap, &item);
     assert(((Employ*)item)->cLevel == 3);
-    pHeap->pop(pHeap);
+    pHeap->pop(pHeap, true);
 
     iSize = pHeap->size(pHeap);
     assert(iSize == 1);
 
-    BinHeapDeinit(&pHeap);
+    BinHeapDeinit(&pHeap, true);
     return;
 }

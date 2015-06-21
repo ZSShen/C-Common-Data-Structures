@@ -24,11 +24,11 @@ void ReleaseTestData();
 
 /* The item comparison methods. */
 int32_t CompPrimMax(Item, Item);
-int32_t CompNoPrimMin(Item, Item);
+int32_t CompNonPrimMin(Item, Item);
 
 
 /* The item clean methods. */
-void CleanNoPrim(Item);
+void CleanNonPrim(Item);
 
 
 /* The functions to register simple and advanced test suites. */
@@ -113,12 +113,12 @@ void ReleaseTestData()
 
 int32_t AddSimpleSuite()
 {
-    CU_pSuite pSuite = CU_add_suite("Simple Test Suite", NULL, NULL);
+    CU_pSuite pSuite = CU_add_suite("Primitive Input Type", NULL, NULL);
     if (!pSuite)
         return ERR_NOMEM;
 
-    CU_pTest pTest = CU_add_test(pSuite, "Primitive item manipulation",
-                     TestSimpleManipulate);
+    char *szMsg = "Order Examination with sequence of push(), pop(), and top() operations.";
+    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestSimpleManipulate);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -128,12 +128,12 @@ int32_t AddSimpleSuite()
 
 int32_t AddAdvancedSuit()
 {
-    CU_pSuite pSuite = CU_add_suite("Advanced Test Suite", NULL, NULL);
+    CU_pSuite pSuite = CU_add_suite("Non-Primitive Input Type", NULL, NULL);
     if (!pSuite)
         return ERR_NOMEM;
 
-    CU_pTest pTest = CU_add_test(pSuite, "Non-primitive item manipulation",
-                     TestAdvancedManipulate);
+    char *szMsg = "Order Examination with sequence of push(), pop(), and top() operations.";
+    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestAdvancedManipulate);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -149,7 +149,7 @@ void TestSimpleManipulate()
     /* Build the maximum heap. */
     CU_ASSERT(pHeap->set_compare(pHeap, CompPrimMax) == SUCC);
 
-    /* Push items into the heap. */
+    /* Push items onto the heap. */
     int32_t idx = 0;
     Item item;
     while (idx < SIZE_MID_TEST) {
@@ -168,7 +168,7 @@ void TestSimpleManipulate()
     /* Pop half of the items from the heap. */
     idx = 1;
     while (idx <= SIZE_MID_TEST / 2) {
-        CU_ASSERT(pHeap->pop(pHeap) == SUCC);
+        CU_ASSERT(pHeap->pop(pHeap, true) == SUCC);
         CU_ASSERT(pHeap->top(pHeap, &item) == SUCC);
         #if __x86_64__
         CU_ASSERT_EQUAL(item, (Item)(int64_t)aPrim[SIZE_MID_TEST - idx - 1]);
@@ -178,11 +178,11 @@ void TestSimpleManipulate()
         idx++;
     }
 
-    /* Check the heap size. */
+    /* Check heap size. */
     int32_t iSize = pHeap->size(pHeap);
     CU_ASSERT_EQUAL(iSize, SIZE_MID_TEST / 2);
 
-    /* Push the poped items into the heap again. */
+    /* Push the poped items onto the heap again. */
     idx = SIZE_MID_TEST / 2;
     while (idx < SIZE_MID_TEST) {
         #if __x86_64__
@@ -200,7 +200,7 @@ void TestSimpleManipulate()
     /* Pop all the items from the heap. */
     idx = 1;
     while (idx < SIZE_MID_TEST) {
-        CU_ASSERT(pHeap->pop(pHeap) == SUCC);
+        CU_ASSERT(pHeap->pop(pHeap, true) == SUCC);
         CU_ASSERT(pHeap->top(pHeap, &item) == SUCC);
         #if __x86_64__
         CU_ASSERT_EQUAL(item, (Item)(int64_t)aPrim[SIZE_MID_TEST - idx - 1]);
@@ -210,7 +210,7 @@ void TestSimpleManipulate()
         idx++;
     }
 
-    BinHeapDeinit(&pHeap);
+    BinHeapDeinit(&pHeap, true);
 }
 
 
@@ -220,7 +220,7 @@ void TestAdvancedManipulate()
     CU_ASSERT(BinHeapInit(&pHeap) == SUCC);
 
     /* Build the minimum heap. */
-    CU_ASSERT(pHeap->set_compare(pHeap, CompNoPrimMin) == SUCC);
+    CU_ASSERT(pHeap->set_compare(pHeap, CompNonPrimMin) == SUCC);
 
     /* Push items into the heap. */
     int32_t idx = 0;
@@ -235,7 +235,7 @@ void TestAdvancedManipulate()
     /* Pop half of the items from the heap. */
     idx = 1;
     while (idx <= SIZE_MID_TEST / 2) {
-        CU_ASSERT(pHeap->pop(pHeap) == SUCC);
+        CU_ASSERT(pHeap->pop(pHeap, true) == SUCC);
         CU_ASSERT(pHeap->top(pHeap, &item) == SUCC);
         CU_ASSERT_EQUAL(((Employ*)item)->iId, aNoPrim[SIZE_MID_TEST - idx - 1]->iId);
         idx++;
@@ -257,13 +257,13 @@ void TestAdvancedManipulate()
     /* Pop all the items from the heap. */
     idx = 1;
     while (idx < SIZE_MID_TEST) {
-        CU_ASSERT(pHeap->pop(pHeap) == SUCC);
+        CU_ASSERT(pHeap->pop(pHeap, true) == SUCC);
         CU_ASSERT(pHeap->top(pHeap, &item) == SUCC);
         CU_ASSERT_EQUAL(((Employ*)item)->iId, aNoPrim[SIZE_MID_TEST - idx - 1]->iId);
         idx++;
     }
 
-    BinHeapDeinit(&pHeap);
+    BinHeapDeinit(&pHeap, true);
 }
 
 
@@ -275,7 +275,7 @@ int32_t CompPrimMax(Item itemSrc, Item itemTge)
 }
 
 
-int32_t CompNoPrimMin(Item itemSrc, Item itemTge)
+int32_t CompNonPrimMin(Item itemSrc, Item itemTge)
 {
     Employ *pEmpSrc = (Employ*)itemSrc;
     Employ *pEmpTge = (Employ*)itemTge;
@@ -286,7 +286,7 @@ int32_t CompNoPrimMin(Item itemSrc, Item itemTge)
 }
 
 
-void CleanNoPrim(Item item)
+void CleanNonPrim(Item item)
 {
     free((Employ*)item);
 }
