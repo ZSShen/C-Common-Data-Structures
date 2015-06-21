@@ -1,7 +1,7 @@
 #include "cds.h"
 
 
-/* The example usage for primitive input manipulation. */
+/* The example to manipulate primitive type input. */
 void usage_primitive();
 
 
@@ -29,7 +29,11 @@ void usage_primitive()
     pVec->insert(pVec, (Item)10, 0);
     pVec->insert(pVec, (Item)20, 1);
 
-    /* Acquire the item with direct indexing. */
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [10] | [20] | [30] | [40]           *
+     *---------------------------------------------------------------*/
+
+    /* Retrieve the item with direct indexing. */
     Item item;
     pVec->get(pVec, &item, 0);
     assert(item == (Item)10);
@@ -37,20 +41,27 @@ void usage_primitive()
     assert(item == (Item)40);
 
     /* Replace the item with direct indexing. */
-    pVec->set(pVec, (Item)100, 0);
-    pVec->set(pVec, (Item)400, 3);
+    pVec->set(pVec, (Item)100, 0, true);
+    pVec->set(pVec, (Item)400, 3, true);
 
-    /* Query the storage capacity. */
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [100] | [20] | [30] | [400]         *
+     *---------------------------------------------------------------*/
+
+    /* Retrieve the storage capacity. */
     int32_t iSize = pVec->size(pVec);
     assert(iSize == 4);
     int32_t iCap = pVec->capacity(pVec);
     assert(iCap == 4);
 
     /* Delete the item at the designated index. */
-    pVec->delete(pVec, 3);
-    pVec->delete(pVec, 0);
+    pVec->delete(pVec, 3, true);
+    pVec->delete(pVec, 0, true);
 
-    /* Take care for 32/64 architecture. */
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [20] | [30]                         *
+     *---------------------------------------------------------------*/
+
     int32_t iNum = 0;
 #if __x86_64__
     pVec->get(pVec, &item, 0);
@@ -64,18 +75,18 @@ void usage_primitive()
     iNum += (int32_t)item;
 #endif
 
-    /* Resize the vector. */
-    pVec->resize(pVec, iNum);
+    /* Resize the storage. */
+    pVec->resize(pVec, iNum, true);
 
     /* Pop the item. */
-    pVec->pop_back(pVec);
-    pVec->pop_back(pVec);
+    pVec->pop_back(pVec, true);
+    pVec->pop_back(pVec, true);
 
     iSize = pVec->size(pVec);
     assert(iSize == 0);
     iCap = pVec->capacity(pVec);
     assert(iCap == 50);
 
-    VectorDeinit(&pVec);
+    VectorDeinit(&pVec, true);
     return;
 }
