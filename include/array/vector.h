@@ -238,7 +238,7 @@ int32_t VectorCapacity(Vector *self);
  * @brief Set the user defined item clean method.
  *
  * @param self          The pointer to the Vector structure
- * @param pFunc         The pointer to the user defined function
+ * @param pFunc         The function pointer to the custom method
  *
  * @retval ERR_NOINIT   Uninitialized container
  */

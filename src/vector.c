@@ -260,6 +260,7 @@ int32_t VectorSetDestroy(Vector *self, void (*pFunc) (Item))
     if (!self)
         return ERR_NOINIT;
     self->pData->pDestroy_ = pFunc;
+    return SUCC;
 }
 
 
