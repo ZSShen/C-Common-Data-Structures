@@ -126,19 +126,19 @@ int32_t SimTreeSearch(SimpleTree *self, Item itemIn, Item *pItemOut);
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NODATA   The target item cannot be found
+ * @retval ERR_NODATA   Non-existent item
  */
 int32_t SimTreeDelete(SimpleTree *self, Item item, bool bClean);
 
 /**
  * @brief Return the item having the maximum order of the tree.
-
+ *
  * @param self          The pointer to the SimpleTree structure
  * @param pItem         The pointer to the returned item
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      The tree is empty
+ * @retval ERR_IDX      Empty tree
  */
 int32_t SimTreeMaximum(SimpleTree *self, Item *pItem);
 
@@ -150,7 +150,7 @@ int32_t SimTreeMaximum(SimpleTree *self, Item *pItem);
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      The tree is empty
+ * @retval ERR_IDX      Empty tree
  */
 int32_t SimTreeMinimum(SimpleTree *self, Item *pItem);
 
@@ -163,7 +163,7 @@ int32_t SimTreeMinimum(SimpleTree *self, Item *pItem);
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NODATA   The immediate successor cannot be found
+ * @retval ERR_NODATA   Non-existent immediate successor
  */
 int32_t SimTreeSuccessor(SimpleTree *self, Item itemIn, Item *pItemOut);
 
@@ -176,7 +176,7 @@ int32_t SimTreeSuccessor(SimpleTree *self, Item itemIn, Item *pItemOut);
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NODATA   The immediate predecessor cannot be found
+ * @retval ERR_NODATA   Non-existent immediate predecessor
  */
 int32_t SimTreePredecessor(SimpleTree *self, Item itemIn, Item *pItemOut);
 

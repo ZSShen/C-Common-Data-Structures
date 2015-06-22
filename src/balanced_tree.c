@@ -16,8 +16,8 @@ struct _BalTreeData {
     int32_t _iSize;
     BalTreeNode *_pRoot;
     BalTreeNode *_pNull;
-    int32_t (*_pCompare)(Item, Item);
-    void (*_pDestroy)(Item);
+    int32_t (*_pCompare) (Item, Item);
+    void (*_pDestroy) (Item);
 };
 
 #define DIRECT_LEFT      (0)
@@ -33,58 +33,53 @@ struct _BalTreeData {
 /**
  * @brief Traverse all the nodes and clean the allocated resource.
  *
+ * If the knob is on, it also runs the resource clean method for all the items.
+ *
  * @param pData         The pointer to the tree private data
+ * @param bClean        The knob to clean item resource
  */
-void _BalTreeDeinit(BalTreeData *pData);
+void _BalTreeDeinit(BalTreeData *pData, bool bClean);
 
 /**
- * @brief Return the node with maximal order in the subtree rooted by the
+ * @brief Return the node having the maximal order in the subtree rooted by the
  * designated node.
  *
- * @param pNull         The pointer to the dummy node
  * @param pCurr         The pointer to the designated node
  *
- * @return pNode        The pointer to the returned node
- * @return NULL         The subtree is empty
+ * @return              The pointer to the returned node or NULL
  */
 BalTreeNode* _BalTreeMaximal(BalTreeNode *pNull, BalTreeNode *pCurr);
 
 /**
- * @brief Return the node with minimal order in the subtree rooted by the
+ * @brief Return the node having the minimal order in the subtree rooted by the
  * designated node.
  *
- * @param pNull         The pointer to the dummy node
  * @param pCurr         The pointer to the designated node
  *
- * @return pNode        The pointer to the target node
- * @return NULL         The subtree is empty
+ * @return              The pointer to the returned node or NULL
  */
 BalTreeNode* _BalTreeMinimal(BalTreeNode *pNull, BalTreeNode *pCurr);
 
 /**
  * @brief Return the immediate successor of the designated node.
  *
- * @param pNull         The pointer to the dummy node
  * @param pCurr         The pointer to the designated node
  *
- * @return pNode        The pointer to the returned node
- * @return NULL         The immediate successor cannot be found
+ * @return              The pointer to the returned node or NULL
  */
 BalTreeNode* _BalTreeSuccessor(BalTreeNode *pNull, BalTreeNode *pCurr);
 
 /**
  * @brief Return the immediate predecessor of the designated node.
  *
- * @param pNull         The pointer to the dummy node
  * @param pCurr         The pointer to the designated node
  *
- * @return pNode        The pointer to the returned node
- * @return NULL         The immediate predecessor cannot be found
+ * @return              The pointer to the returned node or NULL
  */
 BalTreeNode* _BalTreePredecessor(BalTreeNode *pNull, BalTreeNode *pCurr);
 
 /**
- * @brief Make the right rotation for the designated node.
+ * @brief Make right rotation for the subtree rooted by the designated node.
  *
  * After rotation, the designated node will be the right child of its original
  * left child.
@@ -95,7 +90,7 @@ BalTreeNode* _BalTreePredecessor(BalTreeNode *pNull, BalTreeNode *pCurr);
 void _BalTreeRightRotate(BalTreeData *pData, BalTreeNode *pCurr);
 
 /**
- * @brief Make the left rotation for the designated node.
+ * @brief Make left rotation for the subtree rooted by the designated node.
  *
  * After rotation, the designated node will be the left child of its original
  * right child.
@@ -128,16 +123,12 @@ void _BalTreeDeleteFixup(BalTreeData *pData, BalTreeNode *pCurr);
  * @param pData         The pointer to tree private data
  * @param item          The pointer to the designated item
  *
- * @return pNode       The pointer to the found node
- * @return NULL         No matched node
+ * @return              The pointer to the returned node or NULL
  */
 BalTreeNode* _BalTreeSearch(BalTreeData *pData, Item item);
 
 /**
- * @brief The default order comparison strategy for a pair of items.
- *
- * This function considers the source and target items as primitive data and
- * gives the larger order to the item having the larger value.
+ * @brief The default order comparison method for a pair of items.
  *
  * @param itemSrc       The source item
  * @param itemTge       The target item
@@ -149,7 +140,7 @@ BalTreeNode* _BalTreeSearch(BalTreeData *pData, Item item);
 int32_t _BalTreeItemCompare(Item itemSrc, Item itemTge);
 
 /**
- * @brief The default clean strategy for the resource hold by an item.
+ * @brief The default item clean method.
  *
  * @param item         The designated item
  */
@@ -160,7 +151,7 @@ void _BalTreeItemDestroy(Item item);
  *
  * @param pData         The pointer to the tree private data
  *
- * @return true|false   Whether the tree has legal structure.
+ * @return              Whether the tree has legal structure
  */
 bool _BalTreeValidate(BalTreeData *pData);
 
@@ -217,14 +208,14 @@ int32_t BalTreeInit(BalancedTree **ppObj)
     return SUCC;
 }
 
-void BalTreeDeinit(BalancedTree **ppObj)
+void BalTreeDeinit(BalancedTree **ppObj, bool bClean)
 {
     BalancedTree *pObj;
     if (*ppObj) {
         pObj = *ppObj;
         if (pObj->pData) {
             if (pObj->pData->_pNull) {
-                _BalTreeDeinit(pObj->pData);
+                _BalTreeDeinit(pObj->pData, bClean);
                 free(pObj->pData->_pNull);
                 free(pObj->pData);
             }
@@ -235,8 +226,11 @@ void BalTreeDeinit(BalancedTree **ppObj)
     return;
 }
 
-int32_t BalTreeInsert(BalancedTree *self, Item item)
+int32_t BalTreeInsert(BalancedTree *self, Item item, bool bClean)
 {
+    if (!self)
+        return ERR_NOINIT;
+
     int32_t iOrder;
     int8_t cDirect;
     BalTreeNode *pNew, *pCurr, *pParent;
@@ -267,7 +261,8 @@ int32_t BalTreeInsert(BalancedTree *self, Item item)
         else {
             /* Conflict with the already stored item. */
             free(pNew);
-            pData->_pDestroy(pCurr->item);
+            if (bClean)
+                pData->_pDestroy(pCurr->item);
             pCurr->item = item;
             return SUCC;
         }
@@ -294,6 +289,9 @@ int32_t BalTreeInsert(BalancedTree *self, Item item)
 
 int32_t BalTreeSearch(BalancedTree *self, Item itemIn, Item *pItemOut)
 {
+    if (!self)
+        return ERR_NOINIT;
+
     BalTreeNode *pFind;
     pFind = _BalTreeSearch(self->pData, itemIn);
     if (pFind != self->pData->_pNull) {
@@ -304,7 +302,11 @@ int32_t BalTreeSearch(BalancedTree *self, Item itemIn, Item *pItemOut)
     return ERR_NODATA;
 }
 
-int32_t BalTreeDelete(BalancedTree *self, Item item) {
+int32_t BalTreeDelete(BalancedTree *self, Item item, bool bClean)
+{
+    if (!self)
+        return ERR_NOINIT;
+
     BalTreeNode *pCurr, *pChild, *pSucc;
     BalTreeData *pData = self->pData;
     BalTreeNode *pNull = pData->_pNull;
@@ -327,7 +329,8 @@ int32_t BalTreeDelete(BalancedTree *self, Item item) {
         bColor = pCurr->bColor;
         pChild = pNull;
         pChild->pParent = pCurr->pParent;
-        pData->_pDestroy(pCurr->item);
+        if (bClean)
+            pData->_pDestroy(pCurr->item);
         free(pCurr);
     } else {
         /* The specified node has two children. */
@@ -346,7 +349,8 @@ int32_t BalTreeDelete(BalancedTree *self, Item item) {
                 pSucc->pParent->pRight = pChild;
 
             bColor = pSucc->bColor;
-            pData->_pDestroy(pCurr->item);
+            if (bClean)
+                pData->_pDestroy(pCurr->item);
             pCurr->item = pSucc->item;
             free(pSucc);
         }
@@ -367,7 +371,8 @@ int32_t BalTreeDelete(BalancedTree *self, Item item) {
                 pData->_pRoot = pChild;
 
             bColor = pCurr->bColor;
-            pData->_pDestroy(pCurr->item);
+            if (bClean)
+                pData->_pDestroy(pCurr->item);
             free(pCurr);
         }
     }
@@ -384,6 +389,9 @@ int32_t BalTreeDelete(BalancedTree *self, Item item) {
 
 int32_t BalTreeMaximum(BalancedTree *self, Item *pItem)
 {
+    if (!self)
+        return ERR_NOINIT;
+
     BalTreeData *pData = self->pData;
     BalTreeNode *pFind = _BalTreeMaximal(pData->_pNull, pData->_pRoot);
     if (pFind != pData->_pNull) {
@@ -395,6 +403,9 @@ int32_t BalTreeMaximum(BalancedTree *self, Item *pItem)
 
 int32_t BalTreeMinimum(BalancedTree *self, Item *pItem)
 {
+    if (!self)
+        return ERR_NOINIT;
+
     BalTreeData *pData = self->pData;
     BalTreeNode *pFind = _BalTreeMinimal(pData->_pNull, pData->_pRoot);
     if (pFind != pData->_pNull) {
@@ -406,6 +417,9 @@ int32_t BalTreeMinimum(BalancedTree *self, Item *pItem)
 
 int32_t BalTreeSuccessor(BalancedTree *self, Item itemIn, Item *pItemOut)
 {
+    if (!self)
+        return ERR_NOINIT;
+
     BalTreeNode *pNull = self->pData->_pNull;
     BalTreeNode *pCurr = _BalTreeSearch(self->pData, itemIn);
     if (pCurr == pNull)
@@ -421,6 +435,9 @@ int32_t BalTreeSuccessor(BalancedTree *self, Item itemIn, Item *pItemOut)
 
 int32_t BalTreePredecessor(BalancedTree *self, Item itemIn, Item *pItemOut)
 {
+    if (!self)
+        return ERR_NOINIT;
+
     BalTreeNode *pNull = self->pData->_pNull;
     BalTreeNode *pCurr = _BalTreeSearch(self->pData, itemIn);
     if (pCurr == pNull)
@@ -436,26 +453,32 @@ int32_t BalTreePredecessor(BalancedTree *self, Item itemIn, Item *pItemOut)
 
 int32_t BalTreeSize(BalancedTree *self)
 {
+    if (!self)
+        return ERR_NOINIT;
     return self->pData->_iSize;
 }
 
-void BalTreeSetCompare(BalancedTree *self, int32_t (*pFunc) (Item, Item))
+int32_t BalTreeSetCompare(BalancedTree *self, int32_t (*pFunc) (Item, Item))
 {
+    if (!self)
+        return ERR_NOINIT;
     self->pData->_pCompare = pFunc;
-    return;
+    return SUCC;
 }
 
-void BalTreeSetDestroy(BalancedTree *self, void (*pFunc) (Item))
+int32_t BalTreeSetDestroy(BalancedTree *self, void (*pFunc) (Item))
 {
+    if (!self)
+        return ERR_NOINIT;
     self->pData->_pDestroy = pFunc;
-    return;
+    return SUCC;
 }
 
 
 /*===========================================================================*
  *               Implementation for internal functions                       *
  *===========================================================================*/
-void _BalTreeDeinit(BalTreeData *pData)
+void _BalTreeDeinit(BalTreeData *pData, bool bClean)
 {
     BalTreeNode *pNull = pData->_pNull;
     if (pData->_pRoot == pNull)
@@ -475,7 +498,8 @@ void _BalTreeDeinit(BalTreeData *pData)
         else if (pCurr->pRight != pNull)
             stack[iSize++] = &(pCurr->pRight);
         else {
-            pData->_pDestroy(pCurr->item);
+            if (bClean)
+                pData->_pDestroy(pCurr->item);
             BalTreeNode *pParent = pCurr->pParent;
             if (pCurr == pParent->pLeft)
                 pParent->pLeft = pNull;
@@ -875,8 +899,7 @@ int32_t _BalTreeItemCompare(Item itemSrc, Item itemTge)
 {
     if (itemSrc == itemTge)
         return 0;
-    else
-        return (itemSrc > itemTge)? 1 : -1;
+    return (itemSrc > itemTge)? 1 : -1;
 }
 
 void _BalTreeItemDestroy(Item item) {}
