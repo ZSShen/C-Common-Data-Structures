@@ -68,7 +68,7 @@ void usage_simple()
         pPair->key = (Key)1;
         pPair->value = (Key)-1;
     #endif
-    pMap->put(pMap, (Entry)pPair);
+    pMap->put(pMap, (Entry)pPair, true);
 
     pPair = (Pair*)malloc(sizeof(Pair));
     #if __x86_64__
@@ -78,7 +78,7 @@ void usage_simple()
         pPair->key = (Key)3;
         pPair->value = (Key)-3;
     #endif
-    pMap->put(pMap, (Entry)pPair);
+    pMap->put(pMap, (Entry)pPair, true);
 
     pPair = (Pair*)malloc(sizeof(Pair));
     #if __x86_64__
@@ -88,7 +88,7 @@ void usage_simple()
         pPair->key = (Key)2;
         pPair->value = (Key)-2;
     #endif
-    pMap->put(pMap, (Entry)pPair);
+    pMap->put(pMap, (Entry)pPair, true);
 
     /*--------------------------------------------------*
      * Retrive the value by with the specified key.     *
@@ -106,15 +106,15 @@ void usage_simple()
      * Remove the key value pair with the specified key.*
      *--------------------------------------------------*/
     #if __x86_64__
-        pMap->remove(pMap, (Key)(int64_t)2);
+        pMap->remove(pMap, (Key)(int64_t)2, true);
     #else
-        pMap->remove(pMap, (Key)2);
+        pMap->remove(pMap, (Key)2, true);
     #endif
 
     int32_t iSize = pMap->size(pMap);
     assert(iSize == 2);
 
-    OdrMapDeinit(&pMap);
+    OdrMapDeinit(&pMap, true);
     return;
 }
 
@@ -125,9 +125,9 @@ int32_t advanced_compare(Entry entSrc, Entry entTge)
     Pair *pPairTge = (Pair*)entTge;
 
     int32_t iOrder = strcmp(pPairSrc->key, pPairTge->key);
-    if (iOrder != 0)
-        return (iOrder > 0)? 1 : (-1);
-    return 0;
+    if (iOrder == 0)
+        return 0;
+    return (iOrder > 0)? 1 : (-1);
 }
 
 void advanced_destroy(Entry ent)
@@ -163,7 +163,7 @@ void usage_advanced()
     Pair *pPair = (Pair*)malloc(sizeof(Pair));
     pPair->key = (Key)aName[0];
     pPair->value = (Value)pEmploy;
-    pMap->put(pMap, (Entry)pPair);
+    pMap->put(pMap, (Entry)pPair, true);
 
     pEmploy = (Employ*)malloc(sizeof(Employ));
     pEmploy->iId = 2;
@@ -172,7 +172,7 @@ void usage_advanced()
     pPair = (Pair*)malloc(sizeof(Pair));
     pPair->key = (Key)aName[1];
     pPair->value = (Value)pEmploy;
-    pMap->put(pMap, (Entry)pPair);
+    pMap->put(pMap, (Entry)pPair, true);
 
     pEmploy = (Employ*)malloc(sizeof(Employ));
     pEmploy->iId = 3;
@@ -181,7 +181,7 @@ void usage_advanced()
     pPair = (Pair*)malloc(sizeof(Pair));
     pPair->key = (Key)aName[2];
     pPair->value = (Value)pEmploy;
-    pMap->put(pMap, (Entry)pPair);
+    pMap->put(pMap, (Entry)pPair, true);
 
     /*--------------------------------------------------*
      * Retrive the value with the specified key.        *
@@ -195,11 +195,11 @@ void usage_advanced()
     /*--------------------------------------------------*
      * Remove the key value pair with the specified key.*
      *--------------------------------------------------*/
-    pMap->remove(pMap, (Key)aName[1]);
+    pMap->remove(pMap, (Key)aName[1], true);
 
     int32_t iSize = pMap->size(pMap);
     assert(iSize == 2);
 
-    OdrMapDeinit(&pMap);
+    OdrMapDeinit(&pMap, true);
     return;
 }

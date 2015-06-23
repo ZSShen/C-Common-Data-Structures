@@ -28,7 +28,7 @@ int32_t AdvancedCompare(Entry, Entry);
 void SimpleDestroy(Entry);
 void AdvancedDestroy(Entry);
 
-/* The functions to prepare and release the test data. */
+/* The functions to prepare and release test data. */
 int32_t PrepareTestData();
 void ReleaseTestData();
 
@@ -151,12 +151,12 @@ void ReleaseTestData()
 
 int32_t AddSimpleSuite()
 {
-    CU_pSuite pSuite = CU_add_suite("Basic Test Suite", NULL, NULL);
+    CU_pSuite pSuite = CU_add_suite("Simple key value pair", NULL, NULL);
     if (!pSuite)
         return ERR_NOMEM;
 
-    CU_pTest pTest = CU_add_test(pSuite, "Basic key value pair manipulation",
-                     TestSimpleManipulate);
+    char *szMsg = "Data manipulation with sequence of put(), get(), and remove() operations.";
+    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestSimpleManipulate);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -169,12 +169,12 @@ int32_t AddSimpleSuite()
 
 int32_t AddAdvancedSuite()
 {
-    CU_pSuite pSuite = CU_add_suite("Advanced Test Suite", NULL, NULL);
+    CU_pSuite pSuite = CU_add_suite("Advanced key value pair", NULL, NULL);
     if (!pSuite)
         return ERR_NOMEM;
 
-    CU_pTest pTest = CU_add_test(pSuite, "Advanced key value pair manipulation",
-                     TestAdvancedManipulate);
+    char *szMsg = "Data manipulation with sequence of put(), get(), and remove() operations.";
+    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestAdvancedManipulate);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -188,12 +188,7 @@ int32_t SimpleCompare(Entry entSrc, Entry entTge)
     Pair *pPairTge = (Pair*)entTge;
     if (pPairSrc->key == pPairTge->key)
         return 0;
-    else {
-        if (pPairSrc->key > pPairTge->key)
-            return 1;
-        else
-            return -1;
-    }
+    return (pPairSrc->key > pPairTge->key)? 1 : (-1);
 }
 
 void SimpleDestroy(Entry ent)
@@ -215,7 +210,7 @@ void TestSimplePut(OrderedMap *pMap, int32_t iIdx)
         pPair->key = (Key)aNum[iIdx];
         pPair->value = (Value)aNum[iIdx];
     #endif
-    CU_ASSERT(pMap->put(pMap, (Entry)pPair) == SUCC);
+    CU_ASSERT(pMap->put(pMap, (Entry)pPair, true) == SUCC);
 }
 
 void TestSimpleGetSucc(OrderedMap *pMap, int32_t iIdx)
@@ -263,9 +258,9 @@ void TestSimpleManipulate()
 
     for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
         #if __x86_64__
-        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx]) == SUCC);
+        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx], true) == SUCC);
         #else
-        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx]) == SUCC);
+        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx], true) == SUCC);
         #endif
     for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
         TestSimpleGetFail(pMap, iIdx);
@@ -273,7 +268,7 @@ void TestSimpleManipulate()
         TestSimpleGetSucc(pMap, iIdx);
     CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST/2);
 
-    OdrMapDeinit(&pMap);
+    OdrMapDeinit(&pMap, true);
 }
 
 void TestBoundaryManipulate()
@@ -291,9 +286,9 @@ void TestBoundaryManipulate()
     /* Remove the unexisting key value pair. */
     for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
         #if __x86_64__
-        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx]) == ERR_NODATA);
+        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx], true) == ERR_NODATA);
         #else
-        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx]) == ERR_NODATA);
+        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx], true) == ERR_NODATA);
         #endif
 
     for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
@@ -306,12 +301,12 @@ void TestBoundaryManipulate()
     /* Remove the unexisting key value pair. */
     for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
         #if __x86_64__
-        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx]) == ERR_NODATA);
+        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx], true) == ERR_NODATA);
         #else
-        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx]) == ERR_NODATA);
+        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx], true) == ERR_NODATA);
         #endif
 
-    OdrMapDeinit(&pMap);
+    OdrMapDeinit(&pMap, true);
 }
 
 int32_t AdvancedCompare(Entry entSrc, Entry entTge)
@@ -319,9 +314,9 @@ int32_t AdvancedCompare(Entry entSrc, Entry entTge)
     Pair *pPairSrc = (Pair*)entSrc;
     Pair *pPairTge = (Pair*)entTge;
     int32_t iOrder = strcmp(pPairSrc->key, pPairTge->key);
-    if (iOrder != 0)
-        return (iOrder > 0)? 1 : (-1);
-    return 0;
+    if (iOrder == 0)
+        return 0;
+    return (iOrder > 0)? 1 : (-1);
 }
 
 void AdvancedDestroy(Entry ent)
@@ -347,7 +342,7 @@ void TestAdvancedPut(OrderedMap *pMap, int32_t iIdx)
     pPair->key = aName[iIdx];
     pPair->value = (Value)pEmploy;
 
-    CU_ASSERT(pMap->put(pMap, (Entry)pPair) == SUCC);
+    CU_ASSERT(pMap->put(pMap, (Entry)pPair, true) == SUCC);
 }
 
 void TestAdvancedGetSucc(OrderedMap *pMap, int32_t iIdx)
@@ -387,12 +382,12 @@ void TestAdvancedManipulate()
     CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST);
 
     for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
-        CU_ASSERT(pMap->remove(pMap, (Key)aName[iIdx]) == SUCC);
+        CU_ASSERT(pMap->remove(pMap, (Key)aName[iIdx], true) == SUCC);
     for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
         TestAdvancedGetFail(pMap, iIdx);
     for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
         TestAdvancedGetSucc(pMap, iIdx);
     CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST/2);
 
-    OdrMapDeinit(&pMap);
+    OdrMapDeinit(&pMap, true);
 }
