@@ -17,17 +17,17 @@ typedef struct _OrderedMap {
 
     /** Insert a key value pair into the map.
         @see OdrMapPut */
-    int32_t (*put) (struct _OrderedMap*, Entry);
+    int32_t (*put) (struct _OrderedMap*, Entry, bool);
 
-    /** Retrieve the value corresponding to the designated key from the map.
+    /** Retrieve the value corresponding to the designated key.
         @see OdrMapGet */
     int32_t (*get) (struct _OrderedMap*, Key, Value*);
 
     /** Delete the key value pair corresponding to the designated key.
         @see OdrMapRemove */
-    int32_t (*remove) (struct _OrderedMap*, Key);
+    int32_t (*remove) (struct _OrderedMap*, Key, bool);
 
-    /** Return the number of key value pairs.
+    /** Return the number of stored key value pairs.
         @see OdrMapSize */
     int32_t (*size) (struct _OrderedMap*);
 
@@ -57,34 +57,38 @@ int32_t OdrMapInit(OrderedMap **ppObj);
 /**
  * @brief The destructor for OrderedMap.
  *
+ * If the knob is on, it also runs the resource clean method for all the items.
+ *
  * @param ppObj         The double pointer to the to be destructed map
+ * @param bClean        The knob to clean item resource
  */
-void OdrMapDeinit(OrderedMap **ppObj);
+void OdrMapDeinit(OrderedMap **ppObj, bool bClean);
 
 /**
  * @brief Insert a key value pair into the map.
  *
  * This function inserts a key value pair into the map. If the order of the
- * designated pair is the same with a certain one stored in the map, the old pair
- * will be removed and the contained value is cleaned by the configured method
- * so that the designated pair can take the position.
+ * designated pair is the same with a certain one stored in the map, that pair
+ * will be replaced. Also, if the knob is on, it runs the resource clean method
+ * for the replaced pair.
  *
  * @param self          The pointer to OrderedMap structure
  * @param ent           The pointer to the desiganted key value pair
+ * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NOMEM    Insufficient memory for pair insertion
  */
-int32_t OdrMapPut(OrderedMap *self, Entry ent);
+int32_t OdrMapPut(OrderedMap *self, Entry ent, bool bClean);
 
 /**
- * @brief Retrieve the value corresponding to the designated key from the map.
+ * @brief Retrieve the value corresponding to the designated key.
  *
  * This function retrieves the value corresponding to the designated key from
  * the map. If the key can be found, the value will be returned by the third
  * parameter. Otherwise, the error code in returned and the third parameter is
- * returned with NULL value.
+ * updated with NULL.
  *
  * @param self          The pointer to OrderedMap structure
  * @param key           The designated key
@@ -99,24 +103,25 @@ int32_t OdrMapGet(OrderedMap *self, Key key, Value *pValue);
 /**
  * @brief Delete the key value pair corresponding to the designated key.
  *
- * This function deletes the key value pair corresponding to the designated key
- * and also cleans the resoruce hold by the value of that pair.
+ * This function deletes the key value pair corresponding to the designated key.
+ * If the knob is on, it also runs the resource clean method for the deleted pair.
  *
  * @param self          The pointer to OrderedMap structure
  * @param key           The designated key
+ * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NODATA   No map entry can be found
  */
-int32_t OdrMapRemove(OrderedMap *self, Key key);
+int32_t OdrMapRemove(OrderedMap *self, Key key, bool bClean);
 
 /**
- * @brief Return the number of key value pairs.
+ * @brief Return the number of stored key value pairs.
  *
  * @param self          The pointer to OrderedMap structure
  *
- * @retval iSize        The number of map entries
+ * @return              The number of stored pairs
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t OdrMapSize(OrderedMap *self);

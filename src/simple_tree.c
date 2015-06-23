@@ -108,7 +108,7 @@ void _SimTreeItemDestroy(Item item);
  *
  * @param pData         The pointer to the tree private data
  *
- * @return              Whether the tree has legal structure.
+ * @return              Whether the tree has legal structure
  */
 bool _SimTreeValidate(SimTreeData *pData);
 

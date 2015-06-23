@@ -86,7 +86,7 @@ int32_t OdrMapInit(OrderedMap **ppObj)
     return SUCC;
 }
 
-void OdrMapDeinit(OrderedMap **ppObj)
+void OdrMapDeinit(OrderedMap **ppObj, bool bClean)
 {
     if (!(*ppObj))
         goto EXIT;
@@ -99,7 +99,7 @@ void OdrMapDeinit(OrderedMap **ppObj)
     if (!(pData->pTree_))
         goto FREE_DATA;
 
-    BalTreeDeinit(&(pData->pTree_));
+    BalTreeDeinit(&(pData->pTree_), bClean);
 
 FREE_DATA:
     free(pObj->pData);
@@ -110,11 +110,11 @@ EXIT:
     return;
 }
 
-int32_t OdrMapPut(OrderedMap *self, Entry ent)
+int32_t OdrMapPut(OrderedMap *self, Entry ent, bool bClean)
 {
     CHECK_INIT(self);
     BalancedTree *pTree = self->pData->pTree_;
-    int32_t iRtnCode = pTree->insert(pTree, (Item)ent);
+    int32_t iRtnCode = pTree->insert(pTree, (Item)ent, bClean);
     return iRtnCode;
 }
 
@@ -132,12 +132,12 @@ int32_t OdrMapGet(OrderedMap *self, Key key, Value *pValue)
     return iRtnCode;
 }
 
-int32_t OdrMapRemove(OrderedMap *self, Key key)
+int32_t OdrMapRemove(OrderedMap *self, Key key, bool bClean)
 {
     CHECK_INIT(self);
     BalancedTree *pTree = self->pData->pTree_;
     Pair pair = {key, NULL};
-    int32_t iRtnCode = pTree->delete(pTree, (Entry)&pair);
+    int32_t iRtnCode = pTree->delete(pTree, (Entry)&pair, bClean);
     return iRtnCode;
 }
 
@@ -175,12 +175,7 @@ int32_t _OdrMapCompare(Entry entSrc, Entry entTge)
     Pair *pPairTge = (Pair*)entTge;
     if (pPairSrc->key == pPairTge->key)
         return 0;
-    else {
-        if (pPairSrc->key > pPairTge->key)
-            return 1;
-        else
-            return -1;
-    }
+    return (pPairSrc->key > pPairTge->key)? 1 : (-1);
 }
 
 void _OdrMapDestroy(Entry ent)
