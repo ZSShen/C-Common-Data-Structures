@@ -47,15 +47,15 @@ void usage_primitive()
      pList->get_at(pList, &item, -3);
 
      /* Replace the item at the list front-end. */
-     pList->set_front(pList, (Item)-1);
+     pList->set_front(pList, (Item)-1, true);
 
      /* Replace the item at the list back-end. */
-     pList->set_back(pList, (Item)-5);
+     pList->set_back(pList, (Item)-5, true);
 
      /* Replace the items at the designated indices. */
-     pList->set_at(pList, (Item)-2, -4);
-     pList->set_at(pList, (Item)-4, -2);
-     pList->set_at(pList, (Item)-3, 2);
+     pList->set_at(pList, (Item)-2, -4, true);
+     pList->set_at(pList, (Item)-4, -2, true);
+     pList->set_at(pList, (Item)-3, 2, true);
 
      /* Reverse the list. */
      pList->reverse(pList);
@@ -64,18 +64,18 @@ void usage_primitive()
      * Now the list should be: (-5)<-->(-4)<-->(-3)<-->(-2)<-->(-1)  *
      *---------------------------------------------------------------*/
     /* Delete the item from the list front-end. */
-     pList->pop_front(pList);
+     pList->pop_front(pList, true);
 
     /* Delete the item from the list back-end. */
-    pList->pop_back(pList);
+    pList->pop_back(pList, true);
 
     /* Delete the item from the designated indicies. */
-    pList->delete(pList, 1);
-    pList->delete(pList, -1);
+    pList->delete(pList, 1, true);
+    pList->delete(pList, -1, true);
 
     /* Get the list size. And the remaining item should be (-4). */
     int32_t iSize = pList->size(pList);
 
-    DListDeinit(&pList);
+    DListDeinit(&pList, true);
     return;
 }

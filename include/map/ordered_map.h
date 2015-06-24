@@ -78,7 +78,7 @@ void OdrMapDeinit(OrderedMap **ppObj, bool bClean);
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NOMEM    Insufficient memory for pair insertion
+ * @retval ERR_NOMEM    Insufficient memory for map extension
  */
 int32_t OdrMapPut(OrderedMap *self, Entry ent, bool bClean);
 

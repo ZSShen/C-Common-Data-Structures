@@ -13,7 +13,7 @@
 struct _DListData {
     int32_t iSize_;
     DListNode *pHead_;
-    void (*pDestroy_)(Item);
+    void (*pDestroy_) (Item);
 };
 
 
@@ -23,18 +23,28 @@ struct _DListData {
 /**
  * @brief Traverse all the nodes and clean the allocated resource.
  *
+ * If the knob is on, it also runs the resource clean method for all the items.
+ *
  * @param pData         The pointer to the list private data
+ * @param bClean        The knob to clean item resource
  */
- void _DListDeinit(DListData *pData);
-
+ void _DListDeinit(DListData *pData, bool bClean);
 
 /**
- * @brief The default clean strategy for the resource hold by an item.
+ * @brief The default item clean method.
  *
- * @param item          The requested item
+ * @param item          The designated item
  */
 void _DListItemDestroy(Item item);
 
+
+#define CHECK_INIT(self)                                                        \
+            do {                                                                \
+                if (!self)                                                      \
+                    return ERR_NOINIT;                                          \
+                if (!(self->pData))                                             \
+                    return ERR_NOINIT;                                          \
+            } while (0);
 
 #define NEW_NODE(pNew, item)                                                    \
             do {                                                                \
@@ -44,7 +54,6 @@ void _DListItemDestroy(Item item);
                 pNew->item = item;                                              \
             } while (0);
 
-
 #define PUSH_NODE(pNew, pHead)                                                  \
             do {                                                                \
                 pNew->pNext = pHead;                                            \
@@ -53,7 +62,6 @@ void _DListItemDestroy(Item item);
                 pHead->pPrev = pNew;                                            \
             } while (0);
 
-
 #define INSERT_NODE(pNew, pTrack)                                               \
             do {                                                                \
                 pNew->pNext = pTrack;                                           \
@@ -61,7 +69,6 @@ void _DListItemDestroy(Item item);
                 pTrack->pPrev->pNext = pNew;                                    \
                 pTrack->pPrev = pNew;                                           \
             } while (0);
-
 
 #define LINK_NEIGHBOR(pTrack)                                                   \
             do {                                                                \
@@ -117,7 +124,7 @@ int32_t DListInit(DLinkedList **ppObj)
     return SUCC;
 }
 
-void DListDeinit(DLinkedList **ppObj)
+void DListDeinit(DLinkedList **ppObj, bool bClean)
 {
     if (!(*ppObj))
         goto EXIT;
@@ -126,7 +133,7 @@ void DListDeinit(DLinkedList **ppObj)
     if (!pData)
         goto FREE_LIST;
 
-    _DListDeinit(pData);
+    _DListDeinit(pData, bClean);
     free(pData);
 
 FREE_LIST:
@@ -138,6 +145,8 @@ EXIT:
 
 int32_t DListPushFront(DLinkedList *self, Item item)
 {
+    CHECK_INIT(self);
+
     DListNode *pNew;
     NEW_NODE(pNew, item);
 
@@ -155,6 +164,8 @@ int32_t DListPushFront(DLinkedList *self, Item item)
 
 int32_t DListPushBack(DLinkedList *self, Item item)
 {
+    CHECK_INIT(self);
+
     DListNode *pNew;
     NEW_NODE(pNew, item);
 
@@ -172,8 +183,9 @@ int32_t DListPushBack(DLinkedList *self, Item item)
 
 int32_t DListInsert(DLinkedList *self, Item item, int32_t iIdx)
 {
-    DListData *pData = self->pData;
+    CHECK_INIT(self);
 
+    DListData *pData = self->pData;
     if (abs(iIdx) > pData->iSize_)
         return ERR_IDX;
 
@@ -186,7 +198,7 @@ int32_t DListInsert(DLinkedList *self, Item item, int32_t iIdx)
         int32_t i;
         DListNode *pTrack = pData->pHead_;
 
-        /* Insert the node into the proper position with forward indexing. */
+        /* Insert node to the proper position with forward indexing. */
         if (iIdx >= 0) {
             for (i = iIdx ; i > 0 ; i--)
                 pTrack = pTrack->pNext;
@@ -194,7 +206,7 @@ int32_t DListInsert(DLinkedList *self, Item item, int32_t iIdx)
             if (iIdx == 0)
                 pData->pHead_ = pNew;
         }
-        /* Insert the node into the proper position with backward indexing. */
+        /* Insert node to the proper position with backward indexing. */
         else {
             for (i = 0 ; i > iIdx ; i--)
                 pTrack = pTrack->pPrev;
@@ -209,22 +221,26 @@ int32_t DListInsert(DLinkedList *self, Item item, int32_t iIdx)
     return SUCC;
 }
 
-int32_t DListPopFront(DLinkedList *self)
+int32_t DListPopFront(DLinkedList *self, bool bClean)
 {
+    CHECK_INIT(self);
+
     DListData *pData = self->pData;
     if (!pData->pHead_)
         return ERR_IDX;
 
     DListNode *pHead = pData->pHead_;
     if (pHead == pHead->pPrev) {
-        pData->pDestroy_(pHead->item);
+        if (bClean)
+            pData->pDestroy_(pHead->item);
         free(pHead);
         pData->pHead_ = NULL;
     } else {
         pHead->pPrev->pNext = pHead->pNext;
         pHead->pNext->pPrev = pHead->pPrev;
         pData->pHead_ = pHead->pNext;
-        pData->pDestroy_(pHead->item);
+        if (bClean)
+            pData->pDestroy_(pHead->item);
         free(pHead);
     }
 
@@ -233,22 +249,26 @@ int32_t DListPopFront(DLinkedList *self)
     return SUCC;
 }
 
-int32_t DListPopBack(DLinkedList *self)
+int32_t DListPopBack(DLinkedList *self, bool bClean)
 {
+    CHECK_INIT(self);
+
     DListData *pData = self->pData;
     if (!pData->pHead_)
         return ERR_IDX;
 
     DListNode *pHead = pData->pHead_;
     if (pHead == pHead->pNext) {
-        pData->pDestroy_(pHead->item);
+        if (bClean)
+            pData->pDestroy_(pHead->item);
         free(pHead);
         pData->pHead_ = NULL;
     } else {
         DListNode *pTail = pHead->pPrev;
         pTail->pPrev->pNext = pHead;
         pHead->pPrev = pTail->pPrev;
-        pData->pDestroy_(pTail->item);
+        if (bClean)
+            pData->pDestroy_(pTail->item);
         free(pTail);
     }
 
@@ -257,12 +277,14 @@ int32_t DListPopBack(DLinkedList *self)
     return SUCC;
 }
 
-int32_t DListDelete(DLinkedList *self, int32_t iIdx)
+int32_t DListDelete(DLinkedList *self, int32_t iIdx, bool bClean)
 {
+    CHECK_INIT(self);
+
     DListData *pData = self->pData;
     DListNode *pTrack, *pPred, *pSucc;
 
-    /* Delete the node at the designated index with forward indexing. */
+    /* Delete node from the designated index with forward indexing. */
     if (iIdx >= 0) {
         if (iIdx >= pData->iSize_)
             return ERR_IDX;
@@ -273,7 +295,7 @@ int32_t DListDelete(DLinkedList *self, int32_t iIdx)
         }
         LINK_NEIGHBOR(pTrack);
     }
-    /* Delete the node at the designated index with backward indexing. */
+    /* Delete node from the designated index with backward indexing. */
     else {
         if (-iIdx > pData->iSize_)
             return ERR_IDX;
@@ -291,42 +313,53 @@ int32_t DListDelete(DLinkedList *self, int32_t iIdx)
         if (pTrack == pData->pHead_)
             pData->pHead_ = pSucc;
     }
+
+    if (bClean)
+        pData->pDestroy_(pTrack);
     free(pTrack);
+
     pData->iSize_--;
 
     return SUCC;
 }
 
-int32_t DListSetFront(DLinkedList *self, Item item)
+int32_t DListSetFront(DLinkedList *self, Item item, bool bClean)
 {
+    CHECK_INIT(self);
+
     DListData *pData = self->pData;
     if (!pData->pHead_)
         return ERR_IDX;
 
-    pData->pDestroy_(pData->pHead_->item);
+    if (bClean)
+        pData->pDestroy_(pData->pHead_->item);
     pData->pHead_->item = item;
 
     return SUCC;
 }
 
-int32_t DListSetBack(DLinkedList *self, Item item)
+int32_t DListSetBack(DLinkedList *self, Item item, bool bClean)
 {
+    CHECK_INIT(self);
+
     DListData *pData = self->pData;
     if (!pData->pHead_)
         return ERR_IDX;
 
     DListNode *pTail = pData->pHead_->pPrev;
-    pData->pDestroy_(pTail->item);
+    if (bClean)
+        pData->pDestroy_(pTail->item);
     pTail->item = item;
 
     return SUCC;
 }
 
-int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx)
+int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx, bool bClean)
 {
-    DListData *pData = self->pData;
+    CHECK_INIT(self);
 
-    /* Replace the node item at the designated index with forward indexing. */
+    /* Replace item at the designated index with forward indexing. */
+    DListData *pData = self->pData;
     if (iIdx >= 0) {
         if (iIdx >= pData->iSize_)
             return ERR_IDX;
@@ -336,10 +369,11 @@ int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx)
             pTrack = pTrack->pNext;
             iIdx--;
         }
-        pData->pDestroy_(pTrack->item);
+        if (bClean)
+            pData->pDestroy_(pTrack->item);
         pTrack->item = item;
     }
-    /* Replace the node item at the designated index with backward indexing. */
+    /* Replace item at the designated index with backward indexing. */
     if (iIdx < 0) {
         if (-iIdx > pData->iSize_)
             return ERR_IDX;
@@ -349,7 +383,8 @@ int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx)
             pTrack = pTrack->pPrev;
             iIdx++;
         }
-        pData->pDestroy_(pTrack->item);
+        if (bClean)
+            pData->pDestroy_(pTrack->item);
         pTrack->item = item;
     }
 
@@ -358,6 +393,8 @@ int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx)
 
 int32_t DListGetFront(DLinkedList *self, Item *pItem)
 {
+    CHECK_INIT(self);
+
     DListData *pData = self->pData;
     if (!pData->pHead_) {
         *pItem = NULL;
@@ -370,6 +407,8 @@ int32_t DListGetFront(DLinkedList *self, Item *pItem)
 
 int32_t DListGetBack(DLinkedList *self, Item *pItem)
 {
+    CHECK_INIT(self);
+
     DListData *pData = self->pData;
     if (!pData->pHead_) {
         *pItem = NULL;
@@ -382,9 +421,10 @@ int32_t DListGetBack(DLinkedList *self, Item *pItem)
 
 int32_t DListGetAt(DLinkedList *self, Item *pItem, int32_t iIdx)
 {
-    DListData *pData = self->pData;
+    CHECK_INIT(self);
 
     /* Forward indexing to the target node. */
+    DListData *pData = self->pData;
     if (iIdx >= 0) {
         if (iIdx >= pData->iSize_) {
             *pItem = NULL;
@@ -414,11 +454,14 @@ int32_t DListGetAt(DLinkedList *self, Item *pItem, int32_t iIdx)
 
 int32_t DListSize(DLinkedList *self)
 {
+    CHECK_INIT(self);
     return self->pData->iSize_;
 }
 
-void DListReverse(DLinkedList *self)
+int32_t DListReverse(DLinkedList *self)
 {
+    CHECK_INIT(self);
+
     DListData *pData = self->pData;
     DListNode *pHead = pData->pHead_;
     DListNode *pTail = pData->pHead_->pPrev;
@@ -437,8 +480,9 @@ void DListReverse(DLinkedList *self)
     return;
 }
 
-void DListSetDestroy(DLinkedList *self, void (*pFunc) (Item))
+int32_t DListSetDestroy(DLinkedList *self, void (*pFunc) (Item))
 {
+    CHECK_INIT(self);
     self->pData->pDestroy_ = pFunc;
     return;
 }
@@ -447,14 +491,15 @@ void DListSetDestroy(DLinkedList *self, void (*pFunc) (Item))
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
-void _DListDeinit(DListData *pData)
+void _DListDeinit(DListData *pData, bool bClean)
 {
     DListNode *pCurr = pData->pHead_;
     if (pCurr) {
         do {
             DListNode *pPred = pCurr;
             pCurr = pCurr->pNext;
-            free(pPred);
+            if (bClean)
+                free(pPred);
         } while (pCurr != pData->pHead_);
     }
     return;
