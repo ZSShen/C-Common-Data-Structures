@@ -43,6 +43,15 @@ void _VectorItemDestroy(Item item);
 int32_t _VectorReisze(VectorData *pData, int32_t iSizeNew, bool bClean);
 
 
+#define CHECK_INIT(self)                                                        \
+            do {                                                                \
+                if (!self)                                                      \
+                    return ERR_NOINIT;                                          \
+                if (!(self->pData))                                             \
+                    return ERR_NOINIT;                                          \
+            } while (0);
+
+
 /*===========================================================================*
  *         Implementation for the container supporting operations            *
  *===========================================================================*/
@@ -117,8 +126,7 @@ EXIT:
 
 int32_t VectorPushBack(Vector *self, Item item)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     VectorData *pData = self->pData;
 
     /* If the internal array is full, extend it to double capacity. */
@@ -135,8 +143,7 @@ int32_t VectorPushBack(Vector *self, Item item)
 
 int32_t VectorInsert(Vector *self, Item item, int32_t iIdx)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     VectorData *pData = self->pData;
 
     /* Check for illegal index. */
@@ -163,8 +170,7 @@ int32_t VectorInsert(Vector *self, Item item, int32_t iIdx)
 
 int32_t VectorPopBack(Vector *self, bool bClean)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     VectorData *pData = self->pData;
 
     if (pData->iSize_ == 0)
@@ -180,8 +186,7 @@ int32_t VectorPopBack(Vector *self, bool bClean)
 
 int32_t VectorDelete(Vector *self, int32_t iIdx, bool bClean)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     VectorData *pData = self->pData;
 
     /* Check for illegal index. */
@@ -204,29 +209,25 @@ int32_t VectorDelete(Vector *self, int32_t iIdx, bool bClean)
 
 int32_t VectorResize(Vector *self, int32_t iSize, bool bClean)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     return _VectorReisze(self->pData, iSize, bClean);
 }
 
 int32_t VectorSize(Vector *self)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     return self->pData->iSize_;
 }
 
 int32_t VectorCapacity(Vector *self)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     return self->pData->iCapacity_;
 }
 
 int32_t VectorSet(Vector *self, Item item, int32_t iIdx, bool bClean)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     VectorData *pData = self->pData;
 
     /* Check for illegal index. */
@@ -243,8 +244,7 @@ int32_t VectorSet(Vector *self, Item item, int32_t iIdx, bool bClean)
 
 int32_t VectorGet(Vector *self, Item *pItem, int32_t iIdx)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     VectorData *pData = self->pData;
 
     /* Check for illegal index. */
@@ -257,8 +257,7 @@ int32_t VectorGet(Vector *self, Item *pItem, int32_t iIdx)
 
 int32_t VectorSetDestroy(Vector *self, void (*pFunc) (Item))
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     self->pData->pDestroy_ = pFunc;
     return SUCC;
 }
@@ -271,9 +270,8 @@ void _VectorItemDestroy(Item item) {}
 
 int32_t _VectorReisze(VectorData *pData, int32_t iSizeNew, bool bClean)
 {
-    /* Remove the trailing items if:
-       1. The new capacity is smaller than the old size.
-       2. The clean knob is on. */
+    /* Remove the trailing items if the new capacity is smaller than the old size.
+       Clean the resource hold by the removed items if the clen knob is on. */
     if ((iSizeNew < pData->iSize_) && bClean) {
         int32_t iIdx = iSizeNew;
         while (iIdx < pData->iSize_) {

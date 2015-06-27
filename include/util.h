@@ -12,7 +12,7 @@
 #define SUCC            (0)
 
 /** The data structure is not initialized. */
-#define ERR_NOINIT 		(-1)
+#define ERR_NOINIT      (-1)
 
 /** Insufficient memory for data structure expansion or reallocation. */
 #define ERR_NOMEM       (-2)
@@ -41,8 +41,8 @@ typedef const void* Entry;
 
 /** Pair is the real key value pair stored in the map-like containers. */
 typedef struct _Pair {
-	Key key;
-	Value value;
+    Key key;
+    Value value;
 } Pair;
 
 #endif

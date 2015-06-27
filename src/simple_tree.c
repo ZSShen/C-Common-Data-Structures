@@ -113,6 +113,15 @@ void _SimTreeItemDestroy(Item item);
 bool _SimTreeValidate(SimTreeData *pData);
 
 
+#define CHECK_INIT(self)                                                        \
+            do {                                                                \
+                if (!self)                                                      \
+                    return ERR_NOINIT;                                          \
+                if (!(self->pData))                                             \
+                    return ERR_NOINIT;                                          \
+            } while (0);
+
+
 /*===========================================================================*
  *           Implementation for the exported member operations               *
  *===========================================================================*/
@@ -166,13 +175,11 @@ void SimTreeDeinit(SimpleTree **ppObj, bool bClean)
 
 int32_t SimTreeInsert(SimpleTree *self, Item item, bool bClean)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
 
     int32_t iOrder;
     int8_t cDirect;
     SimTreeNode *pNew, *pCurr, *pParent;
-
     pNew = (SimTreeNode*)malloc(sizeof(SimTreeNode));
     if (!pNew)
         return ERR_NOMEM;
@@ -222,8 +229,7 @@ int32_t SimTreeInsert(SimpleTree *self, Item item, bool bClean)
 
 int32_t SimTreeSearch(SimpleTree *self, Item itemIn, Item *pItemOut)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
 
     SimTreeNode *pFind;
     pFind = _SimTreeSearch(self->pData, itemIn);
@@ -237,11 +243,9 @@ int32_t SimTreeSearch(SimpleTree *self, Item itemIn, Item *pItemOut)
 
 int32_t SimTreeDelete(SimpleTree *self, Item item, bool bClean)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
 
     SimTreeNode *pCurr, *pChild, *pSucc, *pParent;
-
     pCurr = _SimTreeSearch(self->pData, item);
     if (!pCurr)
         return ERR_NODATA;
@@ -311,8 +315,7 @@ int32_t SimTreeDelete(SimpleTree *self, Item item, bool bClean)
 
 int32_t SimTreeMaximum(SimpleTree *self, Item *pItem)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
 
     SimTreeNode *pFind = _SimTreeMaximal(self->pData->_pRoot);
     if (pFind) {
@@ -324,8 +327,7 @@ int32_t SimTreeMaximum(SimpleTree *self, Item *pItem)
 
 int32_t SimTreeMinimum(SimpleTree *self, Item *pItem)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
 
     SimTreeNode *pFind = _SimTreeMinimal(self->pData->_pRoot);
     if (pFind) {
@@ -337,8 +339,7 @@ int32_t SimTreeMinimum(SimpleTree *self, Item *pItem)
 
 int32_t SimTreeSuccessor(SimpleTree *self, Item itemIn, Item *pItemOut)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
 
     SimTreeNode *pCurr = _SimTreeSearch(self->pData, itemIn);
     if (!pCurr)
@@ -354,8 +355,7 @@ int32_t SimTreeSuccessor(SimpleTree *self, Item itemIn, Item *pItemOut)
 
 int32_t SimTreePredecessor(SimpleTree *self, Item itemIn, Item *pItemOut)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
 
     SimTreeNode *pCurr = _SimTreeSearch(self->pData, itemIn);
     if (!pCurr)
@@ -371,23 +371,20 @@ int32_t SimTreePredecessor(SimpleTree *self, Item itemIn, Item *pItemOut)
 
 int32_t SimTreeSize(SimpleTree *self)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     return self->pData->_iSize;
 }
 
 int32_t SimTreeSetCompare(SimpleTree *self, int32_t (*pFunc) (Item, Item))
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     self->pData->_pCompare = pFunc;
     return SUCC;
 }
 
 int32_t SimTreeSetDestroy(SimpleTree *self, void (*pFunc) (Item))
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     self->pData->_pDestroy = pFunc;
     return SUCC;
 }

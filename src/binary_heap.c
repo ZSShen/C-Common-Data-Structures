@@ -38,6 +38,16 @@ void _BinHeapItemDestroy(Item item);
 #define LEFT(idx)               (idx << 1)
 #define RIGHT(idx)              ((idx << 1) + 1)
 
+#define CHECK_INIT(self)                                                        \
+            do {                                                                \
+                if (!self)                                                      \
+                    return ERR_NOINIT;                                          \
+                if (!(self->pData))                                             \
+                    return ERR_NOINIT;                                          \
+                if (!(self->pData->pVector_))                                   \
+                    return ERR_NOINIT;                                          \
+            } while (0);
+
 
 /*===========================================================================*
  *         Implementation for the container supporting operations            *
@@ -104,8 +114,7 @@ EXIT:
 
 int32_t BinHeapPush(BinHeap *self, Item item)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     BinHeapData *pData = self->pData;
 
     /* First, push item to the bottom of the heap. */
@@ -136,8 +145,7 @@ int32_t BinHeapPush(BinHeap *self, Item item)
 
 int32_t BinHeapPop(BinHeap *self, bool bClean)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     BinHeapData *pData = self->pData;
 
     /* First, replace the top item with the one stored at the bottom. */
@@ -191,8 +199,7 @@ int32_t BinHeapPop(BinHeap *self, bool bClean)
 
 int32_t BinHeapTop(BinHeap *self, Item *pItem)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     Vector *pVector = self->pData->pVector_;
     int32_t iRtnCode = pVector->get(pVector, pItem, 0);
     return iRtnCode;
@@ -200,8 +207,7 @@ int32_t BinHeapTop(BinHeap *self, Item *pItem)
 
 int32_t BinHeapSize(BinHeap *self)
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     Vector *pVector = self->pData->pVector_;
     int32_t iSize = pVector->size(pVector);
     return iSize;
@@ -209,16 +215,14 @@ int32_t BinHeapSize(BinHeap *self)
 
 int32_t BinHeapSetCompare(BinHeap *self, int32_t (*pFunc) (Item, Item))
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     self->pData->pCompare_ = pFunc;
     return SUCC;
 }
 
 int32_t BinHeapSetDestroy(BinHeap *self, void (*pFunc) (Item))
 {
-    if (!self)
-        return ERR_NOINIT;
+    CHECK_INIT(self);
     Vector *pVector = self->pData->pVector_;
     pVector->set_destroy(pVector, pFunc);
     return SUCC;
