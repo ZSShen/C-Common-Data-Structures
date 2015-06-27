@@ -5,3 +5,4 @@
 #include "list/dlinked_list.h"
 #include "map/ordered_map.h"
 #include "heap/binary_heap.h"
+#include "queue/priority_queue.h"

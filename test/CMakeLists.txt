@@ -46,6 +46,7 @@ set(LIST_DS
     dlinked_list                # Doubly linked list
     ordered_map                 # Ordered Map
     binary_heap                 # Binary Heap
+    priority_queue              # Priority Queue
 )
 
 # Determine the build type and generate the corresponding library path.
