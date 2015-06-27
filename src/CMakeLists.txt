@@ -16,6 +16,8 @@ function(SUB_BUILD_SPECIFIC DS)
         set(SRC_DEP_DS "balanced_tree.c")
     elseif (DS STREQUAL "binary_heap")
         set(SRC_DEP_DS "vector.c")
+    elseif (DS STREQUAL "priority_queue")
+        set(SRC_DEP_DS "binary_heap.c")
     endif()
 
     add_library(${TGE_DS} ${LIB_TYPE} ${SRC_DS} ${SRC_DEP_DS})
@@ -69,6 +71,7 @@ set(LIST_DS
     dlinked_list                # Doubly Linked List
     ordered_map                 # Ordered Map
     binary_heap                 # Binary Heap
+    priority_queue              # Priority Queue
 )
 
 # Determine the build type and prepare the C macro if necessary.
