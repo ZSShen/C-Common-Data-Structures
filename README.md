@@ -63,7 +63,7 @@ If we try to patch a certain data structure or add a new one, we can apply the f
 - `CMAKE_BUILD_TYPE`
   + Release - For performance optimized binary. Library output folder is `./lib/release/`.
   + Debug - For debug information added binary. Library output folder is `./lib/debug/`.
-  + Note that for demo program and unit test. The output folders are always in `./bin/demo/` and `./bin/test/`.
+  + Note that for demo program and unit test, the output folders are always in `./bin/demo/` and `./bin/test/`.
 
 For examples:
 - For debug version of vector
@@ -73,12 +73,12 @@ $ make
 ```
 - For debug version of ordered map
 ``` sh
-$ cmake .. --DBUILD_SOURCE=ordered_map  --DCMAKE_BUILD_TYPE=Release
+$ cmake .. --DBUILD_SOURCE=ordered_map  --DCMAKE_BUILD_TYPE=Debug
 $ make
 ```
 - For debug version of all the data structures
 ``` sh
-$ cmake .. --DCMAKE_BUILD_TYPE=Release
+$ cmake .. --DCMAKE_BUILD_TYPE=Debug
 $ make
 ```
 
