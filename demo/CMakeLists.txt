@@ -39,15 +39,14 @@ set(PATH_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../lib")
 set(PATH_BIN "${CMAKE_CURRENT_SOURCE_DIR}/../bin/demo")
 
 # List all the supported data structures.
-set(LIST_DS
-    simple_tree                 # Basic Binary Search Tree
-    balanced_tree               # Balanced Binary Search Tree
-    vector                      # Dynamic Array
-    dlinked_list                # Doubly Linked List
-    ordered_map                 # Ordered Map
-    binary_heap                 # Binary Heap
-    priority_queue              # Priority Queue
-)
+set(REGEX_SRC "${CMAKE_CURRENT_SOURCE_DIR}/*.c")
+FILE(GLOB_RECURSE LIST_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${REGEX_SRC})
+set(LIST_DS)
+foreach(SRC ${LIST_SRC})
+    STRING(REGEX REPLACE ".c$" "" DS ${SRC})
+    STRING(REGEX REPLACE "^demo_" "" DS ${DS})
+    set(LIST_DS ${LIST_DS} ${DS})
+endforeach()
 
 # Determine the build type and generate the corresponding library path.
 if (CMAKE_BUILD_TYPE STREQUAL OPT_BUILD_DEBUG)
@@ -60,10 +59,11 @@ else()
     return()
 endif()
 
-# By default, we build the demo programs for all the data structures. But we can
-# still use the command argument to build the one for specific structure.
 include_directories(${PATH_INC})
 link_directories(${PATH_LIB})
+
+# By default, we build the libraries for all the data structures. But we can
+# use the command option to build the one for a specific structure.
 if (BUILD_SOURCE)
     if (";${LIST_DS};" MATCHES ";${BUILD_SOURCE};")
         SUB_BUILD_SPECIFIC(${BUILD_SOURCE})
