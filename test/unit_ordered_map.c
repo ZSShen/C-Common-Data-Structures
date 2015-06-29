@@ -239,6 +239,7 @@ void TestSimpleGetFail(OrderedMap *pMap, int32_t iIdx)
     #endif
     CU_ASSERT(pMap->get(pMap, key, &valueRetv) == ERR_NODATA);
     CU_ASSERT_EQUAL(valueRetv, NULL);
+    CU_ASSERT(pMap->get(pMap, key, NULL) == ERR_ARG);
 }
 
 void TestSimpleManipulate()
