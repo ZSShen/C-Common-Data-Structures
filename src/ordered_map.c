@@ -56,7 +56,7 @@ int32_t OdrMapInit(OrderedMap **ppObj)
         return ERR_NOMEM;
     OrderedMap *pObj = *ppObj;
 
-    pObj->pData = (OMapData*)malloc(sizeof(OrderedMap));
+    pObj->pData = (OMapData*)malloc(sizeof(OMapData));
     if (!(pObj->pData)) {
         free(*ppObj);
         *ppObj = NULL;
@@ -65,7 +65,7 @@ int32_t OdrMapInit(OrderedMap **ppObj)
     OMapData *pData = pObj->pData;
 
     int32_t iRtnCode = BalTreeInit(&(pData->pTree_));
-    if (!(pData->pTree_)) {
+    if (iRtnCode != SUCC) {
         free(pObj->pData);
         free(*ppObj);
         *ppObj = NULL;
@@ -120,6 +120,8 @@ int32_t OdrMapPut(OrderedMap *self, Entry ent, bool bClean)
 
 int32_t OdrMapGet(OrderedMap *self, Key key, Value *pValue)
 {
+    if (!pValue)
+        return ERR_ARG; 
     *pValue = NULL;
     CHECK_INIT(self);
 

@@ -26,6 +26,9 @@
 /** No entry can be found with the given key from the associative data structures. */
 #define ERR_NODATA      (-5)
 
+/** Invalid argument to the interface. */
+#define ERR_ARG         (-6)
+
 /** Item is the data type for the container element. */
 typedef const void* Item;
 
