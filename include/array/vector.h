@@ -25,15 +25,15 @@ typedef struct _Vector {
 
     /** Pop an item from the tail of the vector.
         @see VectorPopBack */
-    int32_t (*pop_back) (struct _Vector*, bool);
+    int32_t (*pop_back) (struct _Vector*);
 
     /** Delete an item from the designated index of the vector.
         @see VectorDelete */
-    int32_t (*delete) (struct _Vector*, int32_t, bool);
+    int32_t (*delete) (struct _Vector*, int32_t);
 
     /** Set an item at the designated index of the vector.
         @see VectorSet */
-    int32_t (*set) (struct _Vector*, Item, int32_t, bool);
+    int32_t (*set) (struct _Vector*, Item, int32_t);
 
     /** Get an item from the designated index of the vector.
         @see VectorGet */
@@ -41,7 +41,7 @@ typedef struct _Vector {
 
     /** Change the container capacity.
         @see VectorResize */
-    int32_t (*resize) (struct _Vector*, int32_t, bool);
+    int32_t (*resize) (struct _Vector*, int32_t);
 
     /** Return the number of stored items.
         @see VectorSize */
@@ -73,12 +73,12 @@ int32_t VectorInit(Vector **ppObj);
 /**
  * @brief The destructor for Vector.
  *
- * If the knob is on, it also runs the resource clean method for all the items.
+ * If user defined destroy func is set, it also runs the resource clean method 
+ * for all the items.
  *
  * @param ppObj         The double pointer to the to be destructed vector
- * @param bClean        The knob to clean item resource
  */
-void VectorDeinit(Vector **ppObj, bool bClean);
+void VectorDeinit(Vector **ppObj);
 
 /**
  * @brief Push an item to the tail of the vector.
@@ -121,29 +121,28 @@ int32_t VectorInsert(Vector *self, Item item, int32_t iIdx);
 /**
  * @brief Pop an item from the tail of the vector.
  *
- * This function removes an item from the tail of the vector. If the knob is on,
- * it also runs the resource clean method for the removed item. Naturally, the
- * vector size is shrunk.
+ * This function removes an item from the tail of the vector. If user defined
+ * destroy func is set, it also runs the resource clean method for the removed 
+ * item. Naturally, the vector size is shrunk.
  *
  * @param self          The pointer to the Vector structure
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty vector
  */
-int32_t VectorPopBack(Vector *self, bool bClean);
+int32_t VectorPopBack(Vector *self);
 
 /**
  * @brief Delete an item from the designated index of the vector.
  *
  * This function removes an item from the designated index of the vector and shifts
- * the trailing items one position to the head. If the knob is on, it also runs the
- * resource clean method for the removed item. Naturally, the vector size is shrunk.
+ * the trailing items one position to the head. If user defined destroy func is
+ * set, it also runs the resource clean method for the removed item. Naturally, 
+ * the vector size is shrunk.
  *
  * @param self          The pointer to the Vector structure
  * @param iIdx          The designated index
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
@@ -153,18 +152,18 @@ int32_t VectorPopBack(Vector *self, bool bClean);
  * should not be negative. If the index is equal to the vector size minus one,
  * the operation is equivalent to pop_back().
  */
-int32_t VectorDelete(Vector *self, int32_t iIdx, bool bClean);
+int32_t VectorDelete(Vector *self, int32_t iIdx);
 
 /**
  * @brief Set an item at the designated index of the vector.
  *
- * This function replaces an item at the designated index of the vector. If the
- * knob is on, it also runs the resource clean method for the replaced item.
+ * This function replaces an item at the designated index of the vector. If 
+ * user defined destroy func is set, it also runs the resource clean method 
+ * for the replaced item.
  *
  * @param self          The pointer to the Vector structure
  * @param item          The designated item
  * @param iIdx          The designated index
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
@@ -173,7 +172,7 @@ int32_t VectorDelete(Vector *self, int32_t iIdx, bool bClean);
  * @note The designated index should be smaller than the vector size and should
  * not be negative.
  */
-int32_t VectorSet(Vector *self, Item item, int32_t iIdx, bool bClean);
+int32_t VectorSet(Vector *self, Item item, int32_t iIdx);
 
 /**
  * @brief Get an item from the designated index of the vector.
@@ -199,12 +198,12 @@ int32_t VectorGet(Vector *self, Item *pItem, int32_t iIdx);
  * @brief Change the container capacity.
  *
  * This function resizes the storage capacity. If the new capacity is smaller
- * than the old size. The trailing items will be removed. If the knob is on, it
- * also runs the resource clean method for the removed items.
+ * than the old size. The trailing items will be removed. If user defined 
+ * destroy func is set, it also runs the resource clean method for the removed 
+ * items.
  *
  * @param self          The pointer to the Vector structure
  * @param iCap          The designated capacity
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
@@ -212,7 +211,7 @@ int32_t VectorGet(Vector *self, Item *pItem, int32_t iIdx);
  *
  * @note The designated capacity should greater than zero.
  */
-int32_t VectorResize(Vector *self, int32_t iCap, bool bClean);
+int32_t VectorResize(Vector *self, int32_t iCap);
 
 /**
  * @brief Return the number of stored items.

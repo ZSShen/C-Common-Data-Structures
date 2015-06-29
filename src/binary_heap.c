@@ -102,7 +102,7 @@ void BinHeapDeinit(BinHeap **ppObj, bool bClean)
     if (!(pData->pVector_))
         goto FREE_DATA;
 
-    VectorDeinit(&(pData->pVector_), bClean);
+    VectorDeinit(&(pData->pVector_));
 
 FREE_DATA:
     free(pObj->pData);
@@ -135,8 +135,8 @@ int32_t BinHeapPush(BinHeap *self, Item item)
         iOrder = pData->pCompare_(itemCurr, itemParent);
         if (iOrder <= 0)
             break;
-        pVector->set(pVector, itemCurr, iIdxParent - 1, false);
-        pVector->set(pVector, itemParent, iIdxCurr - 1, false);
+        pVector->set(pVector, itemCurr, iIdxParent - 1);
+        pVector->set(pVector, itemParent, iIdxCurr - 1);
         iIdxCurr = iIdxParent;
     }
 
@@ -154,9 +154,9 @@ int32_t BinHeapPop(BinHeap *self, bool bClean)
     Item itemTop, itemCurr;
     pVector->get(pVector, &itemTop, 0);
     pVector->get(pVector, &itemCurr, iSize - 1);
-    pVector->set(pVector, itemTop, iSize - 1, false);
-    pVector->set(pVector, itemCurr, 0, false);
-    pVector->pop_back(pVector, bClean);
+    pVector->set(pVector, itemTop, iSize - 1);
+    pVector->set(pVector, itemCurr, 0);
+    pVector->pop_back(pVector);
 
     /* Second, adjust the heap structure. */
     iSize--;
@@ -189,8 +189,8 @@ int32_t BinHeapPop(BinHeap *self, bool bClean)
             break;
 
         pVector->get(pVector, &itemNext, iIdxNext - 1);
-        pVector->set(pVector, itemCurr, iIdxNext - 1, false);
-        pVector->set(pVector, itemNext, iIdxCurr - 1, false);
+        pVector->set(pVector, itemCurr, iIdxNext - 1);
+        pVector->set(pVector, itemNext, iIdxCurr - 1);
         iIdxCurr = iIdxNext;
     } while (1);
 
