@@ -68,17 +68,17 @@ If we try to patch a certain data structure or add a new one, we can apply the f
 For examples:
 - For debug version of vector
 ``` sh
-$ cmake .. --DBUILD_SOURCE=vector  --DCMAKE_BUILD_TYPE=Debug
+$ cmake .. -DBUILD_SOURCE=vector  -DCMAKE_BUILD_TYPE=Debug
 $ make
 ```
 - For debug version of ordered map
 ``` sh
-$ cmake .. --DBUILD_SOURCE=ordered_map  --DCMAKE_BUILD_TYPE=Debug
+$ cmake .. -DBUILD_SOURCE=ordered_map  -DCMAKE_BUILD_TYPE=Debug
 $ make
 ```
 - For debug version of all the data structures
 ``` sh
-$ cmake .. --DCMAKE_BUILD_TYPE=Debug
+$ cmake .. -DCMAKE_BUILD_TYPE=Debug
 $ make
 ```
 
