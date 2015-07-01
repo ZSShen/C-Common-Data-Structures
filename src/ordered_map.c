@@ -121,7 +121,7 @@ int32_t OdrMapPut(OrderedMap *self, Entry ent, bool bClean)
 int32_t OdrMapGet(OrderedMap *self, Key key, Value *pValue)
 {
     if (!pValue)
-        return ERR_ARG; 
+        return ERR_GET; 
     *pValue = NULL;
     CHECK_INIT(self);
 
