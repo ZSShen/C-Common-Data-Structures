@@ -17,7 +17,7 @@ void usage_primitive()
 {
     Vector *pVec;
 
-    int32_t rc = VectorInit(&pVec);
+    int32_t rc = VectorInit(&pVec, 4);
     if (rc != SUCC)
         return;
 

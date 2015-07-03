@@ -8,6 +8,8 @@
 struct _BinHeapData {
     Vector *pVector_;
     int32_t (*pCompare_) (Item, Item);
+    // Used for swap by BinHeapPop()
+    void (*pDestroy_) (Item);
 };
 
 
@@ -67,7 +69,7 @@ int32_t BinHeapInit(BinHeap **ppObj)
     }
     BinHeapData *pData = pObj->pData;
 
-    int32_t iRtnCode = VectorInit(&(pData->pVector_));
+    int32_t iRtnCode = VectorInit(&(pData->pVector_), 0);
     if (iRtnCode != SUCC) {
         free(pObj->pData);
         free(*ppObj);
@@ -85,6 +87,7 @@ int32_t BinHeapInit(BinHeap **ppObj)
     Vector *pVector = pData->pVector_;
     pVector->set_destroy(pVector, _BinHeapItemDestroy);
     pData->pCompare_ = _BinHeapItemComp;
+    pData->pDestroy_ = NULL;
 
     return SUCC;
 }
@@ -152,11 +155,15 @@ int32_t BinHeapPop(BinHeap *self, bool bClean)
     Vector *pVector = pData->pVector_;
     int32_t iSize = pVector->size(pVector);
     Item itemTop, itemCurr;
+    if (pData->pDestroy_)
+        pVector->set_destroy(pVector, _BinHeapItemDestroy);
     pVector->get(pVector, &itemTop, 0);
     pVector->get(pVector, &itemCurr, iSize - 1);
     pVector->set(pVector, itemTop, iSize - 1);
     pVector->set(pVector, itemCurr, 0);
     pVector->pop_back(pVector);
+    if (pData->pDestroy_)
+        pVector->set_destroy(pVector, pData->pDestroy_);
 
     /* Second, adjust the heap structure. */
     iSize--;
@@ -225,6 +232,7 @@ int32_t BinHeapSetDestroy(BinHeap *self, void (*pFunc) (Item))
     CHECK_INIT(self);
     Vector *pVector = self->pData->pVector_;
     pVector->set_destroy(pVector, pFunc);
+    self->pData->pDestroy_ = pFunc;
     return SUCC;
 }
 
