@@ -9,6 +9,7 @@ struct _VectorData {
     int32_t iCapacity_;
     Item *aItem_;
     void (*pDestroy_) (Item);
+    bool bUserDestroy_;
 };
 
 #define DEFAULT_CAPACITY    (1)
@@ -55,7 +56,8 @@ int32_t _VectorReisze(VectorData *pData, int32_t iSizeNew);
 /*===========================================================================*
  *         Implementation for the container supporting operations            *
  *===========================================================================*/
-int32_t VectorInit(Vector **ppObj)
+
+int32_t VectorInit(Vector **ppObj, int32_t iCap)
 {
     Vector *pObj;
     *ppObj = (Vector*)malloc(sizeof(Vector));
@@ -72,7 +74,8 @@ int32_t VectorInit(Vector **ppObj)
     }
     pData = pObj->pData;
 
-    pData->aItem_ = (Item*)malloc(sizeof(Item) * DEFAULT_CAPACITY);
+    iCap = (iCap <= 0) ? DEFAULT_CAPACITY : iCap;
+    pData->aItem_ = (Item*)malloc(sizeof(Item) * iCap);
     if (!(pData->aItem_)) {
         free(pObj->pData);
         free(*ppObj);
@@ -80,8 +83,9 @@ int32_t VectorInit(Vector **ppObj)
         return ERR_NOMEM;
     }
     pData->iSize_ = 0;
-    pData->iCapacity_ = DEFAULT_CAPACITY;
+    pData->iCapacity_ = iCap;
     pData->pDestroy_ = _VectorItemDestroy;
+    pData->bUserDestroy_ = false;
 
     pObj->push_back = VectorPushBack;
     pObj->pop_back = VectorPopBack;
@@ -110,7 +114,8 @@ void VectorDeinit(Vector **ppObj)
 
     int32_t iIdx;
     for (iIdx = 0 ; iIdx < pData->iSize_ ; iIdx++)
-        pData->pDestroy_(aItem[iIdx]);
+        if (pData->bUserDestroy_)
+            pData->pDestroy_(aItem[iIdx]);
 
     free(pData->aItem_);
 FREE_INTERNAL:
@@ -176,7 +181,8 @@ int32_t VectorPopBack(Vector *self)
 
     pData->iSize_--;
     Item item = pData->aItem_[pData->iSize_];
-    pData->pDestroy_(item);
+    if (pData->bUserDestroy_)
+        pData->pDestroy_(item);
     return SUCC;
 }
 
@@ -191,7 +197,8 @@ int32_t VectorDelete(Vector *self, int32_t iIdx)
 
     Item *aItem = pData->aItem_;
 
-    pData->pDestroy_(aItem[iIdx]);
+    if (pData->bUserDestroy_)
+        pData->pDestroy_(aItem[iIdx]);
 
     /* Shift the trailing items if necessary. */
     int32_t iShftSize = pData->iSize_ - iIdx - 1;
@@ -230,7 +237,8 @@ int32_t VectorSet(Vector *self, Item item, int32_t iIdx)
         return ERR_IDX;
 
     Item *aItem = pData->aItem_;
-    pData->pDestroy_(aItem[iIdx]);
+    if (pData->bUserDestroy_)
+        pData->pDestroy_(aItem[iIdx]);
 
     aItem[iIdx] = item;
     return SUCC;
@@ -253,6 +261,7 @@ int32_t VectorSetDestroy(Vector *self, void (*pFunc) (Item))
 {
     CHECK_INIT(self);
     self->pData->pDestroy_ = pFunc;
+    self->pData->bUserDestroy_ = true;
     return SUCC;
 }
 
@@ -270,7 +279,8 @@ int32_t _VectorReisze(VectorData *pData, int32_t iSizeNew)
     if ((iSizeNew < pData->iSize_)) {
         int32_t iIdx = iSizeNew;
         while (iIdx < pData->iSize_) {
-            pData->pDestroy_(pData->aItem_[iIdx]);
+            if (pData->bUserDestroy_)
+                pData->pDestroy_(pData->aItem_[iIdx]);
             iIdx++;
         }
         pData->iSize_ = iSizeNew;

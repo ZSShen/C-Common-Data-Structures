@@ -64,11 +64,14 @@ typedef struct _Vector {
  * @brief The constructor for Vector.
  *
  * @param ppObj         The double pointer to the to be constructed vector
+ * @param iCap          The designated capacity
  *
  * @retval SUCC
  * @retval ERR_NOMEM    Insufficient memory for vector construction
+ *
+ * @note iCap <= 0 for default capacity.
  */
-int32_t VectorInit(Vector **ppObj);
+int32_t VectorInit(Vector **ppObj, int32_t iCap);
 
 /**
  * @brief The destructor for Vector.

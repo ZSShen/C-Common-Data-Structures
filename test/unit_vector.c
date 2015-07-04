@@ -74,7 +74,7 @@ int32_t main()
 void TestPrimPushBack()
 {
     Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec) == SUCC);
+    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
 
     /* Append the items. */
     CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCC);
@@ -107,7 +107,7 @@ void TestPrimPushBack()
 void TestPrimInsert()
 {
     Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec) == SUCC);
+    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
 
     /* Append the items. */
     CU_ASSERT(pVec->insert(pVec, (Item)3, 0) == SUCC);
@@ -142,7 +142,7 @@ void TestPrimInsert()
 void TestPrimSet()
 {
     Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec) == SUCC);
+    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
 
     CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCC);
     CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCC);
@@ -167,7 +167,7 @@ void TestPrimSet()
 void TestPrimPopBack()
 {
     Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec) == SUCC);
+    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
 
     CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCC);
     CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCC);
@@ -189,7 +189,7 @@ void TestPrimPopBack()
 void TestPrimDelete()
 {
     Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec) == SUCC);
+    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
 
     CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCC);
     CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCC);
@@ -221,7 +221,7 @@ void TestPrimDelete()
 void TestPrimResize()
 {
     Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec) == SUCC);
+    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
 
     /* Expand the capacity. */
     CU_ASSERT(pVec->resize(pVec, 4) == SUCC);
