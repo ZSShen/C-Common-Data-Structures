@@ -51,7 +51,7 @@ typedef struct _Vector {
         @see VectorCapacity */
     int32_t (*capacity) (struct _Vector*);
 
-    /** Set the user defined item clean method.
+    /** Set the custom resource clean method.
         @see VectorSetDestroy */
     int32_t (*set_destroy) (struct _Vector*, void (*) (Item));
 } Vector;
@@ -76,8 +76,8 @@ int32_t VectorInit(Vector **ppObj, int32_t iCap);
 /**
  * @brief The destructor for Vector.
  *
- * If user defined destroy func is set, it also runs the resource clean method 
- * for all the items.
+ * If the custom resource clean method is set, it also runs the clean method for
+ * all the items.
  *
  * @param ppObj         The double pointer to the to be destructed vector
  */
@@ -124,8 +124,8 @@ int32_t VectorInsert(Vector *self, Item item, int32_t iIdx);
 /**
  * @brief Pop an item from the tail of the vector.
  *
- * This function removes an item from the tail of the vector. If user defined
- * destroy func is set, it also runs the resource clean method for the removed 
+ * This function removes an item from the tail of the vector. If the custom
+ * resource clean method is set, it also runs the clean method for the removed
  * item. Naturally, the vector size is shrunk.
  *
  * @param self          The pointer to the Vector structure
@@ -140,8 +140,8 @@ int32_t VectorPopBack(Vector *self);
  * @brief Delete an item from the designated index of the vector.
  *
  * This function removes an item from the designated index of the vector and shifts
- * the trailing items one position to the head. If user defined destroy func is
- * set, it also runs the resource clean method for the removed item. Naturally, 
+ * the trailing items one position to the head. If the custom resource clean
+ * method is set, it also runs the clean method for the removed item. Naturally,
  * the vector size is shrunk.
  *
  * @param self          The pointer to the Vector structure
@@ -160,9 +160,9 @@ int32_t VectorDelete(Vector *self, int32_t iIdx);
 /**
  * @brief Set an item at the designated index of the vector.
  *
- * This function replaces an item at the designated index of the vector. If 
- * user defined destroy func is set, it also runs the resource clean method 
- * for the replaced item.
+ * This function replaces an item at the designated index of the vector. If the
+ * custom resource clean method is set, it also runs the clean method for the
+ * replaced item.
  *
  * @param self          The pointer to the Vector structure
  * @param item          The designated item
@@ -201,9 +201,8 @@ int32_t VectorGet(Vector *self, Item *pItem, int32_t iIdx);
  * @brief Change the container capacity.
  *
  * This function resizes the storage capacity. If the new capacity is smaller
- * than the old size. The trailing items will be removed. If user defined 
- * destroy func is set, it also runs the resource clean method for the removed 
- * items.
+ * than the old size. The trailing items will be removed. If the custom resource
+ * clean method is set, it also runs the clean method for the removed items.
  *
  * @param self          The pointer to the Vector structure
  * @param iCap          The designated capacity
@@ -237,7 +236,7 @@ int32_t VectorSize(Vector *self);
 int32_t VectorCapacity(Vector *self);
 
 /**
- * @brief Set the user defined item clean method.
+ * @brief Set the custom resource clean method.
  *
  * @param self          The pointer to the Vector structure
  * @param pFunc         The function pointer to the custom method
