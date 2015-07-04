@@ -168,7 +168,7 @@ void TestSimpleManipulate()
     /* Pop half of the items from the heap. */
     idx = 1;
     while (idx <= SIZE_MID_TEST / 2) {
-        CU_ASSERT(pHeap->pop(pHeap, true) == SUCC);
+        CU_ASSERT(pHeap->pop(pHeap) == SUCC);
         CU_ASSERT(pHeap->top(pHeap, &item) == SUCC);
         #if __x86_64__
         CU_ASSERT_EQUAL(item, (Item)(int64_t)aPrim[SIZE_MID_TEST - idx - 1]);
@@ -200,7 +200,7 @@ void TestSimpleManipulate()
     /* Pop all the items from the heap. */
     idx = 1;
     while (idx < SIZE_MID_TEST) {
-        CU_ASSERT(pHeap->pop(pHeap, true) == SUCC);
+        CU_ASSERT(pHeap->pop(pHeap) == SUCC);
         CU_ASSERT(pHeap->top(pHeap, &item) == SUCC);
         #if __x86_64__
         CU_ASSERT_EQUAL(item, (Item)(int64_t)aPrim[SIZE_MID_TEST - idx - 1]);
@@ -210,7 +210,7 @@ void TestSimpleManipulate()
         idx++;
     }
 
-    BinHeapDeinit(&pHeap, true);
+    BinHeapDeinit(&pHeap);
 }
 
 
@@ -235,7 +235,7 @@ void TestAdvancedManipulate()
     /* Pop half of the items from the heap. */
     idx = 1;
     while (idx <= SIZE_MID_TEST / 2) {
-        CU_ASSERT(pHeap->pop(pHeap, true) == SUCC);
+        CU_ASSERT(pHeap->pop(pHeap) == SUCC);
         CU_ASSERT(pHeap->top(pHeap, &item) == SUCC);
         CU_ASSERT_EQUAL(((Employ*)item)->iId, aNoPrim[SIZE_MID_TEST - idx - 1]->iId);
         idx++;
@@ -257,13 +257,13 @@ void TestAdvancedManipulate()
     /* Pop all the items from the heap. */
     idx = 1;
     while (idx < SIZE_MID_TEST) {
-        CU_ASSERT(pHeap->pop(pHeap, true) == SUCC);
+        CU_ASSERT(pHeap->pop(pHeap) == SUCC);
         CU_ASSERT(pHeap->top(pHeap, &item) == SUCC);
         CU_ASSERT_EQUAL(((Employ*)item)->iId, aNoPrim[SIZE_MID_TEST - idx - 1]->iId);
         idx++;
     }
 
-    BinHeapDeinit(&pHeap, true);
+    BinHeapDeinit(&pHeap);
 }
 
 
