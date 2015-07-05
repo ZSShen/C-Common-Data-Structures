@@ -67,7 +67,7 @@ void usage_simple()
     #else
         assert(item == 4);
     #endif
-    pQueue->pop(pQueue, true);
+    pQueue->pop(pQueue);
 
     pQueue->top(pQueue, &item);
     #if __x86_64__
@@ -75,7 +75,7 @@ void usage_simple()
     #else
         assert(item == 3);
     #endif
-    pQueue->pop(pQueue, true);
+    pQueue->pop(pQueue);
 
     pQueue->top(pQueue, &item);
     #if __x86_64__
@@ -83,12 +83,12 @@ void usage_simple()
     #else
         assert(item == 2);
     #endif
-    pQueue->pop(pQueue, true);
+    pQueue->pop(pQueue);
 
     iSize = pQueue->size(pQueue);
     assert(iSize == 1);
 
-    PrioQueueDeinit(&pQueue, true);
+    PrioQueueDeinit(&pQueue);
     return;
 }
 
@@ -159,19 +159,19 @@ void usage_advanced()
     Item item;
     pQueue->top(pQueue, &item);
     assert(((Employ*)item)->cLevel == 1);
-    pQueue->pop(pQueue, true);
+    pQueue->pop(pQueue);
 
     pQueue->top(pQueue, &item);
     assert(((Employ*)item)->cLevel == 2);
-    pQueue->pop(pQueue, true);
+    pQueue->pop(pQueue);
 
     pQueue->top(pQueue, &item);
     assert(((Employ*)item)->cLevel == 3);
-    pQueue->pop(pQueue, true);
+    pQueue->pop(pQueue);
 
     iSize = pQueue->size(pQueue);
     assert(iSize == 1);
 
-    PrioQueueDeinit(&pQueue, true);
+    PrioQueueDeinit(&pQueue);
     return;
 }

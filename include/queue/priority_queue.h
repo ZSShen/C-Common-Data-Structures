@@ -25,17 +25,17 @@ typedef struct _PrioQueue {
 
     /** Delete item from top of the queue.
         @see PrioQueuePop */
-    int32_t (*pop) (struct _PrioQueue*, bool);
+    int32_t (*pop) (struct _PrioQueue*);
 
     /** Return the number of stored items.
         @see PrioQueueSize */
     int32_t (*size) (struct _PrioQueue*);
 
-    /** Set the user defined item comparison method.
+    /** Set the custom item comparison method.
         @see PrioQueueSetCompare */
     int32_t (*set_compare) (struct _PrioQueue*, int32_t (*) (Item, Item));
 
-    /** Set the user defined item clean method.
+    /** Set the custom resource clean method.
         @see PrioQueueSetDestroy */
     int32_t (*set_destroy) (struct _PrioQueue*, void (*) (Item));
 } PrioQueue;
@@ -57,12 +57,13 @@ int32_t PrioQueueInit(PrioQueue **ppObj);
 /**
  * @brief The destructor for PrioQueue.
  *
- * If the knob is on, it also runs the resource clean method for all the items.
+ * If the custom resource clean method is set, it also runs the clean method
+ * for all the items.
  *
  * @param ppObj         The double pointer to the to be destructed queue
  * @param bClean        The knob to clean item resource
  */
-void PrioQueueDeinit(PrioQueue **ppObj, bool bClean);
+void PrioQueueDeinit(PrioQueue **ppObj);
 
 /**
  * @brief Push an item onto the queue.
@@ -82,17 +83,16 @@ int32_t PrioQueuePush(PrioQueue *self, Item item);
 /**
  * @brief Delete item from top of the queue.
  *
- * This function deletes item from top of the queue. If the knob is on, it also
- * runs the resource clean method for the deleted item.
+ * This function deletes item from top of the queue. If the custom resource clean
+ * method is set, it also runs the clean method for the deleted item.
  *
  * @param self          The pointer to PrioQueue structure
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty queue
  */
-int32_t PrioQueuePop(PrioQueue *self, bool bClean);
+int32_t PrioQueuePop(PrioQueue *self);
 
 /**
  * @brief Retrieve item from top of the queue.
@@ -121,7 +121,7 @@ int32_t PrioQueueTop(PrioQueue *self, Item *pItem);
 int32_t PrioQueueSize(PrioQueue *self);
 
 /**
- * @brief Set the user defined item comparison method.
+ * @brief Set the custom item comparison method.
  *
  * @param self          The pointer to PrioQueue structure
  * @param pFunc         The function pointer to the custom method
@@ -132,7 +132,7 @@ int32_t PrioQueueSize(PrioQueue *self);
 int32_t PrioQueueSetCompare(PrioQueue *self, int32_t (*pFunc) (Item, Item));
 
 /**
- * @brief Set the user defined item clean method.
+ * @brief Set the custom resource clean method.
  *
  * @param self          The pointer to PrioQueue structure
  * @param pFunc         The function pointer to the custom method

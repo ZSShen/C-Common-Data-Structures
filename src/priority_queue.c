@@ -7,7 +7,6 @@
  *===========================================================================*/
 struct _PrioQueueData {
     BinHeap *pHeap_;
-    int32_t (*pCompare_) (Item, Item);
 };
 
 
@@ -85,7 +84,7 @@ int32_t PrioQueueInit(PrioQueue **ppObj)
     return SUCC;
 }
 
-void PrioQueueDeinit(PrioQueue **ppObj, bool bClean)
+void PrioQueueDeinit(PrioQueue **ppObj)
 {
     if (!(*ppObj))
         goto EXIT;
@@ -98,7 +97,7 @@ void PrioQueueDeinit(PrioQueue **ppObj, bool bClean)
     if (!(pData->pHeap_))
         goto FREE_DATA;
 
-    BinHeapDeinit(&(pData->pHeap_), bClean);
+    BinHeapDeinit(&(pData->pHeap_));
 
 FREE_DATA:
     free(pObj->pData);
@@ -116,11 +115,11 @@ int32_t PrioQueuePush(PrioQueue *self, Item item)
     return iRtnCode;
 }
 
-int32_t PrioQueuePop(PrioQueue *self, bool bClean)
+int32_t PrioQueuePop(PrioQueue *self)
 {
     CHECK_INIT(self);
     BinHeap *pHeap = self->pData->pHeap_;
-    int32_t iRtnCode = pHeap->pop(pHeap, bClean);
+    int32_t iRtnCode = pHeap->pop(pHeap);
     return iRtnCode;
 }
 

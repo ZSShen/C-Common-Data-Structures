@@ -168,7 +168,7 @@ void TestSimpleManipulate()
     /* Pop half of the items from the queue. */
     idx = 1;
     while (idx <= SIZE_MID_TEST / 2) {
-        CU_ASSERT(pQueue->pop(pQueue, true) == SUCC);
+        CU_ASSERT(pQueue->pop(pQueue) == SUCC);
         CU_ASSERT(pQueue->top(pQueue, &item) == SUCC);
         #if __x86_64__
         CU_ASSERT_EQUAL(item, (Item)(int64_t)aPrim[SIZE_MID_TEST - idx - 1]);
@@ -200,7 +200,7 @@ void TestSimpleManipulate()
     /* Pop all the items from the queue. */
     idx = 1;
     while (idx < SIZE_MID_TEST) {
-        CU_ASSERT(pQueue->pop(pQueue, true) == SUCC);
+        CU_ASSERT(pQueue->pop(pQueue) == SUCC);
         CU_ASSERT(pQueue->top(pQueue, &item) == SUCC);
         #if __x86_64__
         CU_ASSERT_EQUAL(item, (Item)(int64_t)aPrim[SIZE_MID_TEST - idx - 1]);
@@ -210,7 +210,7 @@ void TestSimpleManipulate()
         idx++;
     }
 
-    PrioQueueDeinit(&pQueue, true);
+    PrioQueueDeinit(&pQueue);
 }
 
 
@@ -235,7 +235,7 @@ void TestAdvancedManipulate()
     /* Pop half of the items from the queue. */
     idx = 1;
     while (idx <= SIZE_MID_TEST / 2) {
-        CU_ASSERT(pQueue->pop(pQueue, true) == SUCC);
+        CU_ASSERT(pQueue->pop(pQueue) == SUCC);
         CU_ASSERT(pQueue->top(pQueue, &item) == SUCC);
         CU_ASSERT_EQUAL(((Employ*)item)->iId, aNoPrim[SIZE_MID_TEST - idx - 1]->iId);
         idx++;
@@ -257,13 +257,13 @@ void TestAdvancedManipulate()
     /* Pop all the items from the queue. */
     idx = 1;
     while (idx < SIZE_MID_TEST) {
-        CU_ASSERT(pQueue->pop(pQueue, true) == SUCC);
+        CU_ASSERT(pQueue->pop(pQueue) == SUCC);
         CU_ASSERT(pQueue->top(pQueue, &item) == SUCC);
         CU_ASSERT_EQUAL(((Employ*)item)->iId, aNoPrim[SIZE_MID_TEST - idx - 1]->iId);
         idx++;
     }
 
-    PrioQueueDeinit(&pQueue, true);
+    PrioQueueDeinit(&pQueue);
 }
 
 
