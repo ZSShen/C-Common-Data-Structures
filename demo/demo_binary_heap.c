@@ -67,7 +67,7 @@ void usage_simple()
     #else
         assert(item == 4);
     #endif
-    pHeap->pop(pHeap, true);
+    pHeap->pop(pHeap);
 
     pHeap->top(pHeap, &item);
     #if __x86_64__
@@ -75,7 +75,7 @@ void usage_simple()
     #else
         assert(item == 3);
     #endif
-    pHeap->pop(pHeap, true);
+    pHeap->pop(pHeap);
 
     pHeap->top(pHeap, &item);
     #if __x86_64__
@@ -83,12 +83,12 @@ void usage_simple()
     #else
         assert(item == 2);
     #endif
-    pHeap->pop(pHeap, true);
+    pHeap->pop(pHeap);
 
     iSize = pHeap->size(pHeap);
     assert(iSize == 1);
 
-    BinHeapDeinit(&pHeap, true);
+    BinHeapDeinit(&pHeap);
     return;
 }
 
@@ -159,19 +159,19 @@ void usage_advanced()
     Item item;
     pHeap->top(pHeap, &item);
     assert(((Employ*)item)->cLevel == 1);
-    pHeap->pop(pHeap, true);
+    pHeap->pop(pHeap);
 
     pHeap->top(pHeap, &item);
     assert(((Employ*)item)->cLevel == 2);
-    pHeap->pop(pHeap, true);
+    pHeap->pop(pHeap);
 
     pHeap->top(pHeap, &item);
     assert(((Employ*)item)->cLevel == 3);
-    pHeap->pop(pHeap, true);
+    pHeap->pop(pHeap);
 
     iSize = pHeap->size(pHeap);
     assert(iSize == 1);
 
-    BinHeapDeinit(&pHeap, true);
+    BinHeapDeinit(&pHeap);
     return;
 }

@@ -8,6 +8,7 @@
 struct _BinHeapData {
     Vector *pVector_;
     int32_t (*pCompare_) (Item, Item);
+    void (*pDestroy_) (Item);
 };
 
 
@@ -67,7 +68,7 @@ int32_t BinHeapInit(BinHeap **ppObj)
     }
     BinHeapData *pData = pObj->pData;
 
-    int32_t iRtnCode = VectorInit(&(pData->pVector_));
+    int32_t iRtnCode = VectorInit(&(pData->pVector_), 0);
     if (iRtnCode != SUCC) {
         free(pObj->pData);
         free(*ppObj);
@@ -85,11 +86,12 @@ int32_t BinHeapInit(BinHeap **ppObj)
     Vector *pVector = pData->pVector_;
     pVector->set_destroy(pVector, _BinHeapItemDestroy);
     pData->pCompare_ = _BinHeapItemComp;
+    pData->pDestroy_ = NULL;
 
     return SUCC;
 }
 
-void BinHeapDeinit(BinHeap **ppObj, bool bClean)
+void BinHeapDeinit(BinHeap **ppObj)
 {
     if (!(*ppObj))
         goto EXIT;
@@ -102,7 +104,7 @@ void BinHeapDeinit(BinHeap **ppObj, bool bClean)
     if (!(pData->pVector_))
         goto FREE_DATA;
 
-    VectorDeinit(&(pData->pVector_), bClean);
+    VectorDeinit(&(pData->pVector_));
 
 FREE_DATA:
     free(pObj->pData);
@@ -128,6 +130,8 @@ int32_t BinHeapPush(BinHeap *self, Item item)
     int32_t iIdxParent;
     int32_t iOrder;
     Item itemCurr, itemParent;
+    if (pData->pDestroy_)
+        pVector->set_destroy(pVector, _BinHeapItemDestroy);
     while (iIdxCurr > 1) {
         iIdxParent = PARENT(iIdxCurr);
         pVector->get(pVector, &itemCurr, iIdxCurr - 1);
@@ -135,15 +139,17 @@ int32_t BinHeapPush(BinHeap *self, Item item)
         iOrder = pData->pCompare_(itemCurr, itemParent);
         if (iOrder <= 0)
             break;
-        pVector->set(pVector, itemCurr, iIdxParent - 1, false);
-        pVector->set(pVector, itemParent, iIdxCurr - 1, false);
+        pVector->set(pVector, itemCurr, iIdxParent - 1);
+        pVector->set(pVector, itemParent, iIdxCurr - 1);
         iIdxCurr = iIdxParent;
     }
+    if (pData->pDestroy_)
+        pVector->set_destroy(pVector, pData->pDestroy_);
 
     return SUCC;
 }
 
-int32_t BinHeapPop(BinHeap *self, bool bClean)
+int32_t BinHeapPop(BinHeap *self)
 {
     CHECK_INIT(self);
     BinHeapData *pData = self->pData;
@@ -154,9 +160,13 @@ int32_t BinHeapPop(BinHeap *self, bool bClean)
     Item itemTop, itemCurr;
     pVector->get(pVector, &itemTop, 0);
     pVector->get(pVector, &itemCurr, iSize - 1);
-    pVector->set(pVector, itemTop, iSize - 1, false);
-    pVector->set(pVector, itemCurr, 0, false);
-    pVector->pop_back(pVector, bClean);
+    if (pData->pDestroy_)
+        pVector->set_destroy(pVector, _BinHeapItemDestroy);
+    pVector->set(pVector, itemTop, iSize - 1);
+    pVector->set(pVector, itemCurr, 0);
+    if (pData->pDestroy_)
+        pVector->set_destroy(pVector, pData->pDestroy_);
+    pVector->pop_back(pVector);
 
     /* Second, adjust the heap structure. */
     iSize--;
@@ -164,6 +174,8 @@ int32_t BinHeapPop(BinHeap *self, bool bClean)
     int32_t iIdxChildL, iIdxChildR, iIdxNext;
     int32_t iOrder;
     Item itemChildL, itemChildR, itemNext;
+    if (pData->pDestroy_)
+        pVector->set_destroy(pVector, _BinHeapItemDestroy);
     do {
         iIdxChildL = LEFT(iIdxCurr);
         if (iIdxChildL > iSize)
@@ -189,10 +201,12 @@ int32_t BinHeapPop(BinHeap *self, bool bClean)
             break;
 
         pVector->get(pVector, &itemNext, iIdxNext - 1);
-        pVector->set(pVector, itemCurr, iIdxNext - 1, false);
-        pVector->set(pVector, itemNext, iIdxCurr - 1, false);
+        pVector->set(pVector, itemCurr, iIdxNext - 1);
+        pVector->set(pVector, itemNext, iIdxCurr - 1);
         iIdxCurr = iIdxNext;
     } while (1);
+    if (pData->pDestroy_)
+        pVector->set_destroy(pVector, pData->pDestroy_);
 
     return SUCC;
 }
@@ -225,6 +239,7 @@ int32_t BinHeapSetDestroy(BinHeap *self, void (*pFunc) (Item))
     CHECK_INIT(self);
     Vector *pVector = self->pData->pVector_;
     pVector->set_destroy(pVector, pFunc);
+    self->pData->pDestroy_ = pFunc;
     return SUCC;
 }
 

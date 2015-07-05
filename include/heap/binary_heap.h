@@ -25,7 +25,7 @@ typedef struct _BinHeap {
 
     /** Delete item from top of the heap.
         @see BinHeapPop */
-    int32_t (*pop) (struct _BinHeap*, bool);
+    int32_t (*pop) (struct _BinHeap*);
 
     /** Return the number of stored items.
         @see BinHeapSize */
@@ -35,7 +35,7 @@ typedef struct _BinHeap {
         @see BinHeapSetCompare */
     int32_t (*set_compare) (struct _BinHeap*, int32_t (*) (Item, Item));
 
-    /** Set the user defined item clean method.
+    /** Set the custom resource clean method.
         @see BinHeapSetDestroy */
     int32_t (*set_destroy) (struct _BinHeap*, void (*) (Item));
 } BinHeap;
@@ -57,12 +57,12 @@ int32_t BinHeapInit(BinHeap **ppObj);
 /**
  * @brief The destructor for BinHeap.
  *
- * If the knob is on, it also runs the resource clean method for all the items.
+ * If the custom resource clean method is set, it also runs the clean method for
+ * all the items.
  *
  * @param ppObj         The double pointer to the to be destructed heap
- * @param bClean        The knob to clean item resource
  */
-void BinHeapDeinit(BinHeap **ppObj, bool bClean);
+void BinHeapDeinit(BinHeap **ppObj);
 
 /**
  * @brief Push an item onto the heap.
@@ -82,17 +82,17 @@ int32_t BinHeapPush(BinHeap *self, Item item);
 /**
  * @brief Delete item from top of the heap.
  *
- * This function deletes item from top of the heap. If the knob is on, it also
- * runs the resource clean method for the deleted item.
+ * This function deletes item from top of the heap. If the custom
+ * resource clean method is set, it also runs the clean method
+ * for the deleted item.
  *
  * @param self          The pointer to BinHeap structure
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty heap
  */
-int32_t BinHeapPop(BinHeap *self, bool bClean);
+int32_t BinHeapPop(BinHeap *self);
 
 /**
  * @brief Retrieve item from top of the heap.
@@ -132,7 +132,7 @@ int32_t BinHeapSize(BinHeap *self);
 int32_t BinHeapSetCompare(BinHeap *self, int32_t (*pFunc) (Item, Item));
 
 /**
- * @brief Set the user defined item clean method.
+ * @brief Set the custom resource clean method.
  *
  * @param self          The pointer to BinHeap structure
  * @param pFunc         The function pointer to the custom method
