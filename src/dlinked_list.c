@@ -23,12 +23,12 @@ struct _DListData {
 /**
  * @brief Traverse all the nodes and clean the allocated resource.
  *
- * If the knob is on, it also runs the resource clean method for all the items.
+ * If the custom resource clean method is set, it also runs the resource clean
+ * method for all the items.
  *
  * @param pData         The pointer to the list private data
- * @param bClean        The knob to clean item resource
  */
- void _DListDeinit(DListData *pData, bool bClean);
+ void _DListDeinit(DListData *pData);
 
 /**
  * @brief The default item clean method.
@@ -124,7 +124,7 @@ int32_t DListInit(DLinkedList **ppObj)
     return SUCC;
 }
 
-void DListDeinit(DLinkedList **ppObj, bool bClean)
+void DListDeinit(DLinkedList **ppObj)
 {
     if (!(*ppObj))
         goto EXIT;
@@ -133,7 +133,7 @@ void DListDeinit(DLinkedList **ppObj, bool bClean)
     if (!pData)
         goto FREE_LIST;
 
-    _DListDeinit(pData, bClean);
+    _DListDeinit(pData);
     free(pData);
 
 FREE_LIST:
@@ -221,7 +221,7 @@ int32_t DListInsert(DLinkedList *self, Item item, int32_t iIdx)
     return SUCC;
 }
 
-int32_t DListPopFront(DLinkedList *self, bool bClean)
+int32_t DListPopFront(DLinkedList *self)
 {
     CHECK_INIT(self);
 
@@ -231,16 +231,14 @@ int32_t DListPopFront(DLinkedList *self, bool bClean)
 
     DListNode *pHead = pData->pHead_;
     if (pHead == pHead->pPrev) {
-        if (bClean)
-            pData->pDestroy_(pHead->item);
+        pData->pDestroy_(pHead->item);
         free(pHead);
         pData->pHead_ = NULL;
     } else {
         pHead->pPrev->pNext = pHead->pNext;
         pHead->pNext->pPrev = pHead->pPrev;
         pData->pHead_ = pHead->pNext;
-        if (bClean)
-            pData->pDestroy_(pHead->item);
+        pData->pDestroy_(pHead->item);
         free(pHead);
     }
 
@@ -249,7 +247,7 @@ int32_t DListPopFront(DLinkedList *self, bool bClean)
     return SUCC;
 }
 
-int32_t DListPopBack(DLinkedList *self, bool bClean)
+int32_t DListPopBack(DLinkedList *self)
 {
     CHECK_INIT(self);
 
@@ -259,16 +257,14 @@ int32_t DListPopBack(DLinkedList *self, bool bClean)
 
     DListNode *pHead = pData->pHead_;
     if (pHead == pHead->pNext) {
-        if (bClean)
-            pData->pDestroy_(pHead->item);
+        pData->pDestroy_(pHead->item);
         free(pHead);
         pData->pHead_ = NULL;
     } else {
         DListNode *pTail = pHead->pPrev;
         pTail->pPrev->pNext = pHead;
         pHead->pPrev = pTail->pPrev;
-        if (bClean)
-            pData->pDestroy_(pTail->item);
+        pData->pDestroy_(pTail->item);
         free(pTail);
     }
 
@@ -277,7 +273,7 @@ int32_t DListPopBack(DLinkedList *self, bool bClean)
     return SUCC;
 }
 
-int32_t DListDelete(DLinkedList *self, int32_t iIdx, bool bClean)
+int32_t DListDelete(DLinkedList *self, int32_t iIdx)
 {
     CHECK_INIT(self);
 
@@ -314,8 +310,7 @@ int32_t DListDelete(DLinkedList *self, int32_t iIdx, bool bClean)
             pData->pHead_ = pSucc;
     }
 
-    if (bClean)
-        pData->pDestroy_(pTrack);
+    pData->pDestroy_(pTrack);
     free(pTrack);
 
     pData->iSize_--;
@@ -323,7 +318,7 @@ int32_t DListDelete(DLinkedList *self, int32_t iIdx, bool bClean)
     return SUCC;
 }
 
-int32_t DListSetFront(DLinkedList *self, Item item, bool bClean)
+int32_t DListSetFront(DLinkedList *self, Item item)
 {
     CHECK_INIT(self);
 
@@ -331,14 +326,13 @@ int32_t DListSetFront(DLinkedList *self, Item item, bool bClean)
     if (!pData->pHead_)
         return ERR_IDX;
 
-    if (bClean)
-        pData->pDestroy_(pData->pHead_->item);
+    pData->pDestroy_(pData->pHead_->item);
     pData->pHead_->item = item;
 
     return SUCC;
 }
 
-int32_t DListSetBack(DLinkedList *self, Item item, bool bClean)
+int32_t DListSetBack(DLinkedList *self, Item item)
 {
     CHECK_INIT(self);
 
@@ -347,14 +341,13 @@ int32_t DListSetBack(DLinkedList *self, Item item, bool bClean)
         return ERR_IDX;
 
     DListNode *pTail = pData->pHead_->pPrev;
-    if (bClean)
-        pData->pDestroy_(pTail->item);
+    pData->pDestroy_(pTail->item);
     pTail->item = item;
 
     return SUCC;
 }
 
-int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx, bool bClean)
+int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx)
 {
     CHECK_INIT(self);
 
@@ -369,8 +362,7 @@ int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx, bool bClean)
             pTrack = pTrack->pNext;
             iIdx--;
         }
-        if (bClean)
-            pData->pDestroy_(pTrack->item);
+        pData->pDestroy_(pTrack->item);
         pTrack->item = item;
     }
     /* Replace item at the designated index with backward indexing. */
@@ -383,8 +375,7 @@ int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx, bool bClean)
             pTrack = pTrack->pPrev;
             iIdx++;
         }
-        if (bClean)
-            pData->pDestroy_(pTrack->item);
+        pData->pDestroy_(pTrack->item);
         pTrack->item = item;
     }
 
@@ -491,15 +482,14 @@ int32_t DListSetDestroy(DLinkedList *self, void (*pFunc) (Item))
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
-void _DListDeinit(DListData *pData, bool bClean)
+void _DListDeinit(DListData *pData)
 {
     DListNode *pCurr = pData->pHead_;
     if (pCurr) {
         do {
             DListNode *pPred = pCurr;
             pCurr = pCurr->pNext;
-            if (bClean)
-                free(pPred);
+            pData->pDestroy_(pPred);
         } while (pCurr != pData->pHead_);
     }
     return;

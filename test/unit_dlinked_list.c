@@ -142,7 +142,7 @@ void TestPrimPushFront()
     /* Check list size. */
     CU_ASSERT_EQUAL(pList->size(pList), 4);
 
-    DListDeinit(&pList, true);
+    DListDeinit(&pList);
 }
 
 void TestPrimPushBack()
@@ -184,7 +184,7 @@ void TestPrimPushBack()
     /* Check list size. */
     CU_ASSERT_EQUAL(pList->size(pList), 4);
 
-    DListDeinit(&pList, true);
+    DListDeinit(&pList);
 }
 
 void TestPrimInsertForward()
@@ -231,7 +231,7 @@ void TestPrimInsertForward()
     /* Check list size. */
     CU_ASSERT_EQUAL(pList->size(pList), 5);
 
-    DListDeinit(&pList, true);
+    DListDeinit(&pList);
 }
 
 void TestPrimInsertBackward()
@@ -278,7 +278,7 @@ void TestPrimInsertBackward()
     /* Check list size. */
     CU_ASSERT_EQUAL(pList->size(pList), 5);
 
-    DListDeinit(&pList, true);
+    DListDeinit(&pList);
 }
 
 void TestPrimPopFront()
@@ -293,7 +293,7 @@ void TestPrimPopFront()
 
     /* Pop items from the head and check the remaining item sequence. */
     Item item;
-    CU_ASSERT(pList->pop_front(pList, true) == SUCC);
+    CU_ASSERT(pList->pop_front(pList) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
@@ -303,7 +303,7 @@ void TestPrimPopFront()
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)3);
 
-    CU_ASSERT(pList->pop_front(pList, true) == SUCC);
+    CU_ASSERT(pList->pop_front(pList) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)3);
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
@@ -313,7 +313,7 @@ void TestPrimPopFront()
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)3);
 
-    CU_ASSERT(pList->pop_front(pList, true) == SUCC);
+    CU_ASSERT(pList->pop_front(pList) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == ERR_IDX);
     CU_ASSERT(pList->get_back(pList, &item) == ERR_IDX);
 
@@ -326,7 +326,7 @@ void TestPrimPopFront()
     CU_ASSERT_EQUAL(item, (Item)777);
     CU_ASSERT_EQUAL(pList->size(pList), 1);
 
-    DListDeinit(&pList, true);
+    DListDeinit(&pList);
 }
 
 void TestPrimPopBack()
@@ -341,7 +341,7 @@ void TestPrimPopBack()
 
     /* Pop items from the tail and check the remaining item sequence. */
     Item item;
-    CU_ASSERT(pList->pop_back(pList, true) == SUCC);
+    CU_ASSERT(pList->pop_back(pList) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)1);
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
@@ -351,7 +351,7 @@ void TestPrimPopBack()
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
 
-    CU_ASSERT(pList->pop_back(pList, true) == SUCC);
+    CU_ASSERT(pList->pop_back(pList) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)1);
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
@@ -361,7 +361,7 @@ void TestPrimPopBack()
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)1);
 
-    CU_ASSERT(pList->pop_front(pList, true) == SUCC);
+    CU_ASSERT(pList->pop_front(pList) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == ERR_IDX);
     CU_ASSERT(pList->get_back(pList, &item) == ERR_IDX);
 
@@ -374,7 +374,7 @@ void TestPrimPopBack()
     CU_ASSERT_EQUAL(item, (Item)777);
     CU_ASSERT_EQUAL(pList->size(pList), 1);
 
-    DListDeinit(&pList, true);
+    DListDeinit(&pList);
 }
 
 void TestPrimDeleteForward()
@@ -392,7 +392,7 @@ void TestPrimDeleteForward()
     /* Remove items from the designated index and check the remaining
        item sequence. */
     Item item;
-    CU_ASSERT(pList->delete(pList, 0, true) == SUCC);
+    CU_ASSERT(pList->delete(pList, 0) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
     CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
@@ -400,7 +400,7 @@ void TestPrimDeleteForward()
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)5);
 
-    CU_ASSERT(pList->delete(pList, 1, true) == SUCC);
+    CU_ASSERT(pList->delete(pList, 1) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
     CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
@@ -410,7 +410,7 @@ void TestPrimDeleteForward()
     CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
 
-    CU_ASSERT(pList->delete(pList, 2, true) == SUCC);
+    CU_ASSERT(pList->delete(pList, 2) == SUCC);
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)4);
     CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
@@ -418,8 +418,8 @@ void TestPrimDeleteForward()
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)4);
 
-    CU_ASSERT(pList->delete(pList, 0, true) == SUCC);
-    CU_ASSERT(pList->delete(pList, 0, true) == SUCC);
+    CU_ASSERT(pList->delete(pList, 0) == SUCC);
+    CU_ASSERT(pList->delete(pList, 0) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, 0) == ERR_IDX);
 
     /* Re-insert the item again to check if the list is well handled in
@@ -431,7 +431,7 @@ void TestPrimDeleteForward()
     CU_ASSERT_EQUAL(item, (Item)777);
     CU_ASSERT_EQUAL(pList->size(pList), 1);
 
-    DListDeinit(&pList, true);
+    DListDeinit(&pList);
 }
 
 void TestPrimDeleteBackward()
@@ -449,7 +449,7 @@ void TestPrimDeleteBackward()
     /* Remove items from the designated index and check the remaining
        item sequence. */
     Item item;
-    CU_ASSERT(pList->delete(pList, -5, true) == SUCC);
+    CU_ASSERT(pList->delete(pList, -5) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
     CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
@@ -457,7 +457,7 @@ void TestPrimDeleteBackward()
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)5);
 
-    CU_ASSERT(pList->delete(pList, -3, true) == SUCC);
+    CU_ASSERT(pList->delete(pList, -3) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
     CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
@@ -467,7 +467,7 @@ void TestPrimDeleteBackward()
     CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
 
-    CU_ASSERT(pList->delete(pList, -1, true) == SUCC);
+    CU_ASSERT(pList->delete(pList, -1) == SUCC);
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)4);
     CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
@@ -475,8 +475,8 @@ void TestPrimDeleteBackward()
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)4);
 
-    CU_ASSERT(pList->delete(pList, 0, true) == SUCC);
-    CU_ASSERT(pList->delete(pList, 0, true) == SUCC);
+    CU_ASSERT(pList->delete(pList, 0) == SUCC);
+    CU_ASSERT(pList->delete(pList, 0) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, 0) == ERR_IDX);
 
     /* Re-insert the item again to check if the list is well handled in
@@ -488,7 +488,7 @@ void TestPrimDeleteBackward()
     CU_ASSERT_EQUAL(item, (Item)777);
     CU_ASSERT_EQUAL(pList->size(pList), 1);
 
-    DListDeinit(&pList, true);
+    DListDeinit(&pList);
 }
 
 void TestPrimSet()
@@ -503,36 +503,36 @@ void TestPrimSet()
 
     /* Replace item at the head and check the result. */
     Item item;
-    CU_ASSERT(pList->set_front(pList, (Item)-1, true) == SUCC);
+    CU_ASSERT(pList->set_front(pList, (Item)-1) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)-1);
 
     /* Replace item at the tail and check the result. */
-    CU_ASSERT(pList->set_back(pList, (Item)-3, true) == SUCC);
+    CU_ASSERT(pList->set_back(pList, (Item)-3) == SUCC);
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)-3);
 
     /* Replace item at the designated index and check the result. */
-    CU_ASSERT(pList->set_at(pList, (Item)1, 0, true) == SUCC);
+    CU_ASSERT(pList->set_at(pList, (Item)1, 0) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->set_at(pList, (Item)-1, -3, true) == SUCC);
+    CU_ASSERT(pList->set_at(pList, (Item)-1, -3) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)-1);
-    CU_ASSERT(pList->set_at(pList, (Item)3, 2, true) == SUCC);
+    CU_ASSERT(pList->set_at(pList, (Item)3, 2) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->set_at(pList, (Item)-3, -1, true) == SUCC);
+    CU_ASSERT(pList->set_at(pList, (Item)-3, -1) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)-3);
-    CU_ASSERT(pList->set_at(pList, (Item)-2, 1, true) == SUCC);
+    CU_ASSERT(pList->set_at(pList, (Item)-2, 1) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)-2);
-    CU_ASSERT(pList->set_at(pList, (Item)2, -2, true) == SUCC);
+    CU_ASSERT(pList->set_at(pList, (Item)2, -2) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, -2) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
 
-    DListDeinit(&pList, true);
+    DListDeinit(&pList);
 }
 
 void TestReverse()
@@ -581,7 +581,7 @@ void TestReverse()
     CU_ASSERT(pList->get_at(pList, &item, 3) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)1);
 
-    DListDeinit(&pList, true);
+    DListDeinit(&pList);
 }
 
 void TestBoundary()
@@ -590,18 +590,18 @@ void TestBoundary()
     CU_ASSERT(DListInit(&pList) == SUCC);
 
     /* Initial boundary test. */
-    CU_ASSERT(pList->pop_front(pList, true) == ERR_IDX);
-    CU_ASSERT(pList->pop_back(pList, true) == ERR_IDX);
+    CU_ASSERT(pList->pop_front(pList) == ERR_IDX);
+    CU_ASSERT(pList->pop_back(pList) == ERR_IDX);
 
-    CU_ASSERT(pList->delete(pList, 0, true) == ERR_IDX);
-    CU_ASSERT(pList->delete(pList, -1, true) == ERR_IDX);
+    CU_ASSERT(pList->delete(pList, 0) == ERR_IDX);
+    CU_ASSERT(pList->delete(pList, -1) == ERR_IDX);
     CU_ASSERT(pList->insert(pList, (Item)1, 1) == ERR_IDX);
     CU_ASSERT(pList->insert(pList, (Item)1, -1) == ERR_IDX);
 
-    CU_ASSERT(pList->set_front(pList, (Item)1, true) == ERR_IDX);
-    CU_ASSERT(pList->set_back(pList, (Item)1, true) == ERR_IDX);
-    CU_ASSERT(pList->set_at(pList, (Item)1, 0, true) == ERR_IDX);
-    CU_ASSERT(pList->set_at(pList, (Item)1, -1, true) == ERR_IDX);
+    CU_ASSERT(pList->set_front(pList, (Item)1) == ERR_IDX);
+    CU_ASSERT(pList->set_back(pList, (Item)1) == ERR_IDX);
+    CU_ASSERT(pList->set_at(pList, (Item)1, 0) == ERR_IDX);
+    CU_ASSERT(pList->set_at(pList, (Item)1, -1) == ERR_IDX);
 
     Item item;
     CU_ASSERT(pList->get_front(pList, &item) == ERR_IDX);
@@ -613,5 +613,5 @@ void TestBoundary()
     CU_ASSERT(pList->get_at(pList, &item, -1) == ERR_IDX);
     CU_ASSERT_EQUAL(item, NULL);
 
-    DListDeinit(&pList, true);
+    DListDeinit(&pList);
 }
