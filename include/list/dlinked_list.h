@@ -29,27 +29,27 @@ typedef struct _DLinkedList {
 
     /** Pop an item from the head of the list.
         @see DListPopFront */
-    int32_t (*pop_front) (struct _DLinkedList*, bool);
+    int32_t (*pop_front) (struct _DLinkedList*);
 
     /** Pop an item from the tail of the list.
         @see DListPopBack */
-    int32_t (*pop_back) (struct _DLinkedList*, bool);
+    int32_t (*pop_back) (struct _DLinkedList*);
 
     /** Delete an item from the designated index of the list
         @see DListDelete */
-    int32_t (*delete) (struct _DLinkedList*, int32_t, bool);
+    int32_t (*delete) (struct _DLinkedList*, int32_t);
 
     /** Set an item at the head of the list.
         @see DListSetFront */
-    int32_t (*set_front) (struct _DLinkedList*, Item, bool);
+    int32_t (*set_front) (struct _DLinkedList*, Item);
 
     /** Set an item at the tail of the list.
         @see DListSetBack */
-    int32_t (*set_back) (struct _DLinkedList*, Item, bool);
+    int32_t (*set_back) (struct _DLinkedList*, Item);
 
     /** Set an item at the designated index of the list.
         @see DListSetAt */
-    int32_t (*set_at) (struct _DLinkedList*, Item, int32_t, bool);
+    int32_t (*set_at) (struct _DLinkedList*, Item, int32_t);
 
     /** Get an item from the head of the list.
         @see DListGetFront */
@@ -93,12 +93,12 @@ int32_t DListInit(DLinkedList **ppObj);
 /**
  * @brief The destructor for DLinkedList.
  *
- * If the knob is on, it also runs the resource clean method for all the items.
+ * If the custom resource clean method is set, it also runs the resource clean
+ * method for all the items.
  *
  * @param ppObj         The double pointer to the to be destructed list
- * @param bClean        The knob to clean item resource
  */
-void DListDeinit(DLinkedList **ppObj, bool bClean);
+void DListDeinit(DLinkedList **ppObj);
 
 /**
  * @brief Push an item to the head of the list.
@@ -157,39 +157,39 @@ int32_t DListInsert(DLinkedList *self, Item item, int32_t iIdx);
 /**
  * @brief Pop an item from the head of the list.
  *
- * This function removes an item from the head of the list. If the knob is on,
- * it also runs the resource clean method for the removed item.
+ * This function removes an item from the head of the list. If the custom
+ * resource clean method is set, it also runs the resource clean method for the
+ * removed item.
  *
  * @param self          The pointer to the DLinkedList structure
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty list
  */
-int32_t DListPopFront(DLinkedList *self, bool bClean);
+int32_t DListPopFront(DLinkedList *self);
 
 /**
  * @brief Pop an item from the tail of the list.
  *
- * This function removes an item from the tail of the list. If the knob is on,
- * it also runs the resource clean method for the removed item.
+ * This function removes an item from the tail of the list. If the custom
+ * resource clean method is set, it also runs the resource clean method for the
+ * removed item.
  *
  * @param self          The pointer to the DLinkedList structure
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty list
  */
-int32_t DListPopBack(DLinkedList *self, bool bClean);
+int32_t DListPopBack(DLinkedList *self);
 
 /**
  * @brief Remove an item from the designated index of the list.
  *
  * This function removes an item from the designated index of the list and shifts
- * the trailing items one position to the head. If the knob is on, it also runs
- * the resource clean method for the removed item.
+ * the trailing items one position to the head. If the custom resource clean
+ * method is set, it also runs the resource clean method for the removed item.
  * The operation supports both forward and backward indexing. Let N denote the
  * list size and i denote the index.
  * For forward indexing, inequality 0 <= i < N must be fitted.
@@ -197,52 +197,51 @@ int32_t DListPopBack(DLinkedList *self, bool bClean);
  *
  * @param self          The pointer to the DLinkedList structure
  * @param iIdx          The designated index
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Out of range indexing
  */
-int32_t DListDelete(DLinkedList *self, int32_t iIdx, bool bClean);
+int32_t DListDelete(DLinkedList *self, int32_t iIdx);
 
 /**
  * @brief Set an item at the head of the list.
  *
- * This function replaces the head item with the designated one. If the knob is
- * on, it also runs the resource clean method for the replaced item.
+ * This function replaces the head item with the designated one. If the custom
+ * resource clean method is set, it also runs the resource clean method for the
+ * replaced item.
  *
  * @param self          The pointer to the DLinkedList structure
  * @param item          The designated item
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty list
  */
-int32_t DListSetFront(DLinkedList *self, Item item, bool bClean);
+int32_t DListSetFront(DLinkedList *self, Item item);
 
 /**
  * @brief Set an item at the tail of the list.
  *
- * This function replaces the tail item with the designated one. If the knob is
- * on, it also runs the resource clean method for the replaced item.
+ * This function replaces the tail item with the designated one. If the custom
+ * resource clean method is set, it also runs the resource clean method for the
+ * replaced item.
  *
  * @param self          The pointer to the DLinkedList structure
  * @param item          The designated item
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty list
  */
-int32_t DListSetBack(DLinkedList *self, Item item, bool bClean);
+int32_t DListSetBack(DLinkedList *self, Item item);
 
 /**
  * @brief Replace an item at the designated index of the list.
  *
  * This function replaces the item at the designated index with the designated
- * one. If the knob is on, it also runs the resource clean method for the replaced
- * item.
+ * one. If the custom resource clean method is set, it also runs the resource
+ * clean method for the replaced item.
  * The operation supports both forward and backward indexing. Let N denote the
  * list size and i denote the index.
  * For forward indexing, inequality 0 <= i < N must be fitted.
@@ -251,13 +250,12 @@ int32_t DListSetBack(DLinkedList *self, Item item, bool bClean);
  * @param self          The pointer to the DLinkedList structure
  * @param item          The designated item
  * @param iIdx          The designated index
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Out of range index
  */
-int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx, bool bClean);
+int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx);
 
 /**
  * @brief Get an item from the head of the list.
