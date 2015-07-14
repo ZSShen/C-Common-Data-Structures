@@ -71,7 +71,7 @@ typedef struct _DLinkedList {
         @see DListReverse */
     int32_t (*reverse) (struct _DLinkedList*);
 
-    /** Set the user defined item clean method.
+    /** Set the custom item resource clean method.
         @see DListSetDestroy */
     int32_t (*set_destroy) (struct _DLinkedList*, void (*) (Item));
 } DLinkedList;
@@ -266,6 +266,7 @@ int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx);
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty list
+ * @retval ERR_GET      Invalid parameter to store returned item
  *
  * @note If the exception occurs, the second parameter will be updated with NULL.
  */
@@ -280,6 +281,7 @@ int32_t DListGetFront(DLinkedList *self, Item *pItem);
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty list
+ * @retval ERR_GET      Invalid parameter to store returned item
  *
  * @note If the exception occurs, the second parameter will be updated with NULL.
  */
@@ -300,6 +302,7 @@ int32_t DListGetBack(DLinkedList *self, Item *pItem);
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Out of range index
+ * @retval ERR_GET      Invalid parameter to store returned item
  *
  * @note If the exception occurs, the second parameter will be updated with NULL.
  */
@@ -320,16 +323,18 @@ int32_t DListSize(DLinkedList *self);
  *
  * @param self          The pointer to the DLinkedList structure
  *
+ * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t DListReverse(DLinkedList *self);
 
 /**
- * @brief Set the user defined item clean method.
+ * @brief Set the custom item resource clean method.
  *
  * @param self          The pointer to the DLinkedList structure
  * @param pFunc         The function pointer to the custom method
  *
+ * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t DListSetDestroy(DLinkedList *self, void (*pFunc) (Item));

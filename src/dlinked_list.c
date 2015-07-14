@@ -31,7 +31,7 @@ struct _DListData {
  void _DListDeinit(DListData *pData);
 
 /**
- * @brief The default item clean method.
+ * @brief The default item resource clean method.
  *
  * @param item          The designated item
  */
@@ -385,6 +385,8 @@ int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx)
 int32_t DListGetFront(DLinkedList *self, Item *pItem)
 {
     CHECK_INIT(self);
+    if (!pItem)
+        return ERR_GET;
 
     DListData *pData = self->pData;
     if (!pData->pHead_) {
@@ -399,6 +401,8 @@ int32_t DListGetFront(DLinkedList *self, Item *pItem)
 int32_t DListGetBack(DLinkedList *self, Item *pItem)
 {
     CHECK_INIT(self);
+    if (!pItem)
+        return ERR_GET;
 
     DListData *pData = self->pData;
     if (!pData->pHead_) {
@@ -413,6 +417,8 @@ int32_t DListGetBack(DLinkedList *self, Item *pItem)
 int32_t DListGetAt(DLinkedList *self, Item *pItem, int32_t iIdx)
 {
     CHECK_INIT(self);
+    if (!pItem)
+        return ERR_GET;
 
     /* Forward indexing to the target node. */
     DListData *pData = self->pData;
@@ -468,14 +474,14 @@ int32_t DListReverse(DLinkedList *self)
         iRge -= 2;
     }
 
-    return;
+    return SUCC;
 }
 
 int32_t DListSetDestroy(DLinkedList *self, void (*pFunc) (Item))
 {
     CHECK_INIT(self);
     self->pData->pDestroy_ = pFunc;
-    return;
+    return SUCC;
 }
 
 
@@ -489,7 +495,8 @@ void _DListDeinit(DListData *pData)
         do {
             DListNode *pPred = pCurr;
             pCurr = pCurr->pNext;
-            pData->pDestroy_(pPred);
+            pData->pDestroy_(pPred->item);
+            free(pPred);
         } while (pCurr != pData->pHead_);
     }
     return;
