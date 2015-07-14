@@ -70,13 +70,13 @@ void TestPrimInsertAndOrder()
      *     / \     / \
      *   (1) (3) (5) (7)
      */
-    CU_ASSERT(pTree->insert(pTree, (Item)4, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)2, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)3, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)1, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)6, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)5, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)7, true) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)4) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)2) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)3) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)1) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)6) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)5) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)7) == SUCC);
 
     /* Check structure correctness. */
     Item item;
@@ -109,7 +109,7 @@ void TestPrimInsertAndOrder()
     /* Check container size. */
     CU_ASSERT_EQUAL(pTree->size(pTree), 7);
 
-    SimTreeDeinit(&pTree, true);
+    SimTreeDeinit(&pTree);
 }
 
 void TestPrimDeleteAndOrder()
@@ -127,18 +127,18 @@ void TestPrimDeleteAndOrder()
      *   /         \
      * (0)         (6)
      */
-    CU_ASSERT(pTree->insert(pTree, (Item)4, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)2, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)3, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)1, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)0, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)7, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)5, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)6, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)8, true) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)4) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)2) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)3) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)1) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)0) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)7) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)5) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)6) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)8) == SUCC);
 
     /* Check structure correctness. */
-    CU_ASSERT(pTree->delete(pTree, (Item)4, true) == SUCC);
+    CU_ASSERT(pTree->delete(pTree, (Item)4) == SUCC);
     /**
      * The new structure of the trimmed tree.
      *         (5)
@@ -155,7 +155,7 @@ void TestPrimDeleteAndOrder()
     CU_ASSERT(pTree->successor(pTree, (Item)5, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)6);
 
-    CU_ASSERT(pTree->delete(pTree, (Item)5, true) == SUCC);
+    CU_ASSERT(pTree->delete(pTree, (Item)5) == SUCC);
     CU_ASSERT(pTree->predecessor(pTree, (Item)7, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)6);
     CU_ASSERT(pTree->predecessor(pTree, (Item)6, &item) == SUCC);
@@ -163,7 +163,7 @@ void TestPrimDeleteAndOrder()
     CU_ASSERT(pTree->successor(pTree, (Item)6, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)7);
 
-    CU_ASSERT(pTree->delete(pTree, (Item)6, true) == SUCC);
+    CU_ASSERT(pTree->delete(pTree, (Item)6) == SUCC);
     /**
      * The new structure of the trimmed tree.
      *         (7)
@@ -177,9 +177,9 @@ void TestPrimDeleteAndOrder()
     CU_ASSERT(pTree->successor(pTree, (Item)7, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)8);
 
-    CU_ASSERT(pTree->delete(pTree, (Item)8, true) == SUCC);
+    CU_ASSERT(pTree->delete(pTree, (Item)8) == SUCC);
 
-    CU_ASSERT(pTree->delete(pTree, (Item)7, true) == SUCC);
+    CU_ASSERT(pTree->delete(pTree, (Item)7) == SUCC);
     /**
      * The new structure of the trimmed tree.
      *        (2)
@@ -193,7 +193,7 @@ void TestPrimDeleteAndOrder()
     CU_ASSERT(pTree->minimum(pTree, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)0);
 
-    CU_ASSERT(pTree->delete(pTree, (Item)1, true) == SUCC);
+    CU_ASSERT(pTree->delete(pTree, (Item)1) == SUCC);
     /**
      * The new structure of the trimmed tree.
      *        (2)
@@ -208,7 +208,7 @@ void TestPrimDeleteAndOrder()
     /* Check the container size. */
     CU_ASSERT_EQUAL(pTree->size(pTree), 3);
 
-    SimTreeDeinit(&pTree, true);
+    SimTreeDeinit(&pTree);
 }
 
 void TestPrimSearch()
@@ -222,14 +222,14 @@ void TestPrimSearch()
     CU_ASSERT_EQUAL(item, NULL);
 
     /* Search for the real data. */
-    CU_ASSERT(pTree->insert(pTree, (Item)1, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)0, true) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)1) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)0) == SUCC);
     CU_ASSERT(pTree->search(pTree, (Item)0, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)0);
 
-    CU_ASSERT(pTree->delete(pTree, (Item)0, true) == SUCC);
+    CU_ASSERT(pTree->delete(pTree, (Item)0) == SUCC);
     CU_ASSERT(pTree->search(pTree, (Item)0, &item) == ERR_NODATA);
     CU_ASSERT_EQUAL(item, NULL);
 
-    SimTreeDeinit(&pTree, true);
+    SimTreeDeinit(&pTree);
 }

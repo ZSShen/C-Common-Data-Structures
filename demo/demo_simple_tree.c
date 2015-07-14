@@ -22,14 +22,14 @@ void usage_primitive()
         return;
 
     /* Insert items into the tree. */
-    pTree->insert(pTree, (Item)2, true);
-    pTree->insert(pTree, (Item)3, true);
-    pTree->insert(pTree, (Item)1, true);
+    pTree->insert(pTree, (Item)2);
+    pTree->insert(pTree, (Item)3);
+    pTree->insert(pTree, (Item)1);
 
     /* Delete items from the tree. */
-    rc = pTree->delete(pTree, (Item)2, true);
+    rc = pTree->delete(pTree, (Item)2);
     assert(rc == SUCC);
-    rc = pTree->delete(pTree, (Item)2, true);
+    rc = pTree->delete(pTree, (Item)2);
     assert(rc == ERR_NODATA);
 
     /* Search items from the tree. */
@@ -57,6 +57,6 @@ void usage_primitive()
 
     assert(pTree->size(pTree) == 2);
 
-    SimTreeDeinit(&pTree, true);
+    SimTreeDeinit(&pTree);
     return;
 }

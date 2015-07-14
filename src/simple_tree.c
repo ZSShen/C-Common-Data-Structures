@@ -324,6 +324,8 @@ int32_t SimTreeDelete(SimpleTree *self, Item item)
 int32_t SimTreeMaximum(SimpleTree *self, Item *pItem)
 {
     CHECK_INIT(self);
+    if (!pItem)
+        return ERR_GET;
 
     SimTreeNode *pFind = _SimTreeMaximal(self->pData->pRoot_);
     if (pFind) {
@@ -336,6 +338,8 @@ int32_t SimTreeMaximum(SimpleTree *self, Item *pItem)
 int32_t SimTreeMinimum(SimpleTree *self, Item *pItem)
 {
     CHECK_INIT(self);
+    if (!pItem)
+        return ERR_GET;
 
     SimTreeNode *pFind = _SimTreeMinimal(self->pData->pRoot_);
     if (pFind) {
@@ -348,6 +352,8 @@ int32_t SimTreeMinimum(SimpleTree *self, Item *pItem)
 int32_t SimTreeSuccessor(SimpleTree *self, Item itemIn, Item *pItemOut)
 {
     CHECK_INIT(self);
+    if (!pItemOut)
+        return ERR_GET;
 
     SimTreeNode *pCurr = _SimTreeSearch(self->pData, itemIn);
     if (!pCurr)
@@ -364,6 +370,8 @@ int32_t SimTreeSuccessor(SimpleTree *self, Item itemIn, Item *pItemOut)
 int32_t SimTreePredecessor(SimpleTree *self, Item itemIn, Item *pItemOut)
 {
     CHECK_INIT(self);
+    if (!pItemOut)
+        return ERR_GET;
 
     SimTreeNode *pCurr = _SimTreeSearch(self->pData, itemIn);
     if (!pCurr)

@@ -17,7 +17,7 @@ typedef struct _SimpleTree {
 
     /** Insert an item into the tree.
         @see SimTreeInsert */
-    int32_t (*insert) (struct _SimpleTree*, Item, bool);
+    int32_t (*insert) (struct _SimpleTree*, Item);
 
     /** Search for the item having the same order with the designated one.
         @see SimTreeSearch */
@@ -25,7 +25,7 @@ typedef struct _SimpleTree {
 
     /** Delete the item having the same order with the designated one.
         @see SimTreeDelete */
-    int32_t (*delete) (struct _SimpleTree*, Item, bool);
+    int32_t (*delete) (struct _SimpleTree*, Item);
 
     /** Get the item having the maximum order of the tree.
         @see SimTreeMaximum */
@@ -70,30 +70,29 @@ int32_t SimTreeInit(SimpleTree **ppObj);
 /**
  * @brief The destructor for SimpleTree.
  *
- * If the knob is on, it also runs the resource clean method for all the items.
+ * If the custom resource clean method is set, it also runs the clean method for
+ * all the items.
  *
  * @param ppObj         The double pointer to the to be destructed tree
- * @param bClean        The knob to clean item resource
  */
-void SimTreeDeinit(SimpleTree **ppObj, bool bClean);
+void SimTreeDeinit(SimpleTree **ppObj);
 
 /**
  * @brief Insert an item into the tree.
  *
  * This function inserts an item into the tree. If the order of the designated
  * item is the same with a certain one stored in the tree, that item will be
- * replaced. Also, if the knob is on, it runs the resource clean method for the
- * replaced item.
+ * replaced. Also, if the custom resource clean method is set, it also runs the
+ * clean method for the replaced item.
  *
  * @param self          The pointer to the SimpleTree structure
  * @param item          The designated item
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NOMEM    Insufficient memory for tree extension
  */
-int32_t SimTreeInsert(SimpleTree *self, Item item, bool bClean);
+int32_t SimTreeInsert(SimpleTree *self, Item item);
 
 /**
  * @brief Search for the item having the same order with the designated one.
@@ -110,6 +109,7 @@ int32_t SimTreeInsert(SimpleTree *self, Item item, bool bClean);
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NODATA   Non-existent item
+ * @retval ERR_GET      Invalid parameter to store returned item
  */
 int32_t SimTreeSearch(SimpleTree *self, Item itemIn, Item *pItemOut);
 
@@ -118,17 +118,17 @@ int32_t SimTreeSearch(SimpleTree *self, Item itemIn, Item *pItemOut);
  *
  * This function first searches for the item having the same order with the
  * designated one. If such item can be found, it will be removed. Also, if the
- * knob is on, the function runs the resource clean method for the removed item.
+ * custom resource clean method is set, it also runs the clean method for the
+ * removed item.
  *
  * @param self          The pointer to the SimpleTree structure
  * @param item          The designated item
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NODATA   Non-existent item
  */
-int32_t SimTreeDelete(SimpleTree *self, Item item, bool bClean);
+int32_t SimTreeDelete(SimpleTree *self, Item item);
 
 /**
  * @brief Return the item having the maximum order of the tree.
@@ -139,6 +139,7 @@ int32_t SimTreeDelete(SimpleTree *self, Item item, bool bClean);
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty tree
+ * @retval ERR_GET      Invalid parameter to store returned item
  */
 int32_t SimTreeMaximum(SimpleTree *self, Item *pItem);
 
@@ -151,6 +152,7 @@ int32_t SimTreeMaximum(SimpleTree *self, Item *pItem);
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty tree
+ * @retval ERR_GET      Invalid parameter to store returned item
  */
 int32_t SimTreeMinimum(SimpleTree *self, Item *pItem);
 
@@ -164,6 +166,7 @@ int32_t SimTreeMinimum(SimpleTree *self, Item *pItem);
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NODATA   Non-existent immediate successor
+ * @retval ERR_GET      Invalid parameter to store returned item
  */
 int32_t SimTreeSuccessor(SimpleTree *self, Item itemIn, Item *pItemOut);
 
@@ -177,6 +180,7 @@ int32_t SimTreeSuccessor(SimpleTree *self, Item itemIn, Item *pItemOut);
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NODATA   Non-existent immediate predecessor
+ * @retval ERR_GET      Invalid parameter to store returned item
  */
 int32_t SimTreePredecessor(SimpleTree *self, Item itemIn, Item *pItemOut);
 
@@ -191,21 +195,23 @@ int32_t SimTreePredecessor(SimpleTree *self, Item itemIn, Item *pItemOut);
 int32_t SimTreeSize(SimpleTree *self);
 
 /**
- * @brief Set the user defined item comparison method.
+ * @brief Set the custom item comparison method.
  *
  * @param self          The pointer to the SimpleTree structure
  * @param pFunc         The function pointer to the custom method
  *
+ * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t SimTreeSetCompare(SimpleTree *self, int32_t (*pFunc) (Item, Item));
 
 /**
- * @brief Set the user defined item clean method.
+ * @brief Set the custom resource item clean method.
  *
  * @param self          The pointer to the SimpleTree structure
  * @param pFunc         The function pointer to the custom method
  *
+ * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t SimTreeSetDestroy(SimpleTree *self, void (*pFunc) (Item));
