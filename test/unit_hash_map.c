@@ -236,9 +236,7 @@ void TestSimpleManipulate()
 {
     HashMap *pMap;
     CU_ASSERT(HashMapInit(&pMap, 0) == SUCC);
-    /* comment until dlist fixed
     CU_ASSERT(pMap->set_destroy(pMap, SimpleDestroy) == SUCC);
-    */
     CU_ASSERT_EQUAL(pMap->size(pMap), 0);
 
     int32_t iIdx;
@@ -268,9 +266,7 @@ void TestBoundaryManipulate()
 {
     HashMap *pMap;
     CU_ASSERT(HashMapInit(&pMap, 0) == SUCC);
-    /* comment until dlist fixed
     CU_ASSERT(pMap->set_destroy(pMap, SimpleDestroy) == SUCC);
-    */
 
     /* Get the unexisting key value pair. */
     int32_t iIdx;
@@ -350,9 +346,7 @@ void TestAdvancedManipulate()
 {
     HashMap *pMap;
     CU_ASSERT(HashMapInit(&pMap, 0) == SUCC);
-    /* comment until dlist fixed
     CU_ASSERT(pMap->set_destroy(pMap, AdvancedDestroy) == SUCC);
-    */
     CU_ASSERT_EQUAL(pMap->size(pMap), 0);
 
     int32_t iIdx;
