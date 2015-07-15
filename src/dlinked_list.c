@@ -317,7 +317,7 @@ int32_t DListDelete(DLinkedList *self, int32_t iIdx)
     }
 
     if (pData->bUserDestroy_)
-        pData->pDestroy_(pTrack);
+        pData->pDestroy_(pTrack->item);
     free(pTrack);
 
     pData->iSize_--;
