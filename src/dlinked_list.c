@@ -4,13 +4,14 @@
 /*===========================================================================*
  *                  Hide the private data of the tree                        *
  *===========================================================================*/
- typedef struct _DListNode {
-    Item item;
-    struct _DListNode *pPrev;
-    struct _DListNode *pNext;
- } DListNode;
+typedef struct _DListNode {
+   Item item;
+   struct _DListNode *pPrev;
+   struct _DListNode *pNext;
+} DListNode;
 
 struct _DListData {
+    bool bUserDestroy_;
     int32_t iSize_;
     DListNode *pHead_;
     void (*pDestroy_) (Item);
@@ -97,6 +98,7 @@ int32_t DListInit(DLinkedList **ppObj)
     }
     DListData *pData = pObj->pData;
 
+    pData->bUserDestroy_ = false;
     pData->iSize_ = 0;
     pData->pHead_ = NULL;
     pData->pDestroy_ = _DListItemDestroy;
@@ -231,14 +233,16 @@ int32_t DListPopFront(DLinkedList *self)
 
     DListNode *pHead = pData->pHead_;
     if (pHead == pHead->pPrev) {
-        pData->pDestroy_(pHead->item);
+        if (pData->bUserDestroy_)
+            pData->pDestroy_(pHead->item);
         free(pHead);
         pData->pHead_ = NULL;
     } else {
         pHead->pPrev->pNext = pHead->pNext;
         pHead->pNext->pPrev = pHead->pPrev;
         pData->pHead_ = pHead->pNext;
-        pData->pDestroy_(pHead->item);
+        if (pData->bUserDestroy_)
+            pData->pDestroy_(pHead->item);
         free(pHead);
     }
 
@@ -257,14 +261,16 @@ int32_t DListPopBack(DLinkedList *self)
 
     DListNode *pHead = pData->pHead_;
     if (pHead == pHead->pNext) {
-        pData->pDestroy_(pHead->item);
+        if (pData->bUserDestroy_)
+            pData->pDestroy_(pHead->item);
         free(pHead);
         pData->pHead_ = NULL;
     } else {
         DListNode *pTail = pHead->pPrev;
         pTail->pPrev->pNext = pHead;
         pHead->pPrev = pTail->pPrev;
-        pData->pDestroy_(pTail->item);
+        if (pData->bUserDestroy_)
+            pData->pDestroy_(pTail->item);
         free(pTail);
     }
 
@@ -310,7 +316,8 @@ int32_t DListDelete(DLinkedList *self, int32_t iIdx)
             pData->pHead_ = pSucc;
     }
 
-    pData->pDestroy_(pTrack);
+    if (pData->bUserDestroy_)
+        pData->pDestroy_(pTrack);
     free(pTrack);
 
     pData->iSize_--;
@@ -326,7 +333,8 @@ int32_t DListSetFront(DLinkedList *self, Item item)
     if (!pData->pHead_)
         return ERR_IDX;
 
-    pData->pDestroy_(pData->pHead_->item);
+    if (pData->bUserDestroy_)
+        pData->pDestroy_(pData->pHead_->item);
     pData->pHead_->item = item;
 
     return SUCC;
@@ -341,7 +349,8 @@ int32_t DListSetBack(DLinkedList *self, Item item)
         return ERR_IDX;
 
     DListNode *pTail = pData->pHead_->pPrev;
-    pData->pDestroy_(pTail->item);
+    if (pData->bUserDestroy_)
+        pData->pDestroy_(pTail->item);
     pTail->item = item;
 
     return SUCC;
@@ -362,7 +371,8 @@ int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx)
             pTrack = pTrack->pNext;
             iIdx--;
         }
-        pData->pDestroy_(pTrack->item);
+        if (pData->bUserDestroy_)
+            pData->pDestroy_(pTrack->item);
         pTrack->item = item;
     }
     /* Replace item at the designated index with backward indexing. */
@@ -375,7 +385,8 @@ int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx)
             pTrack = pTrack->pPrev;
             iIdx++;
         }
-        pData->pDestroy_(pTrack->item);
+        if (pData->bUserDestroy_)
+            pData->pDestroy_(pTrack->item);
         pTrack->item = item;
     }
 
@@ -480,6 +491,7 @@ int32_t DListReverse(DLinkedList *self)
 int32_t DListSetDestroy(DLinkedList *self, void (*pFunc) (Item))
 {
     CHECK_INIT(self);
+    self->pData->bUserDestroy_ = true;
     self->pData->pDestroy_ = pFunc;
     return SUCC;
 }
@@ -495,7 +507,8 @@ void _DListDeinit(DListData *pData)
         do {
             DListNode *pPred = pCurr;
             pCurr = pCurr->pNext;
-            pData->pDestroy_(pPred->item);
+            if (pData->bUserDestroy_)
+                pData->pDestroy_(pPred->item);
             free(pPred);
         } while (pCurr != pData->pHead_);
     }
