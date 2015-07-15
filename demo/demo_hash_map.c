@@ -46,10 +46,8 @@ void usage_simple()
     /*--------------------------------------------------*
      * Set the comparison and resource clean methods.   *
      *--------------------------------------------------*/
-    /* comment until dlist fixed
     iRtnCode = pMap->set_destroy(pMap, simple_destroy);
     assert(iRtnCode == SUCC);
-    */
 
     /*--------------------------------------------------*
      * Insert key value pairs into the map.             *
@@ -131,10 +129,8 @@ void usage_advanced()
     /*--------------------------------------------------*
      * Set the comparison and resource clean methods.   *
      *--------------------------------------------------*/
-    /* comment until dlist fixed
     iRtnCode = pMap->set_destroy(pMap, advanced_destroy);
     assert(iRtnCode == SUCC);
-    */
 
     /*--------------------------------------------------*
      * Insert key value pairs into the map.             *
