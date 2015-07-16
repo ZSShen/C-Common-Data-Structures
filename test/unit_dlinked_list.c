@@ -3,9 +3,15 @@
 #include "CUnit/Basic.h"
 
 
-/*===========================================================================*
- *              Test suite to manipulate primitive type input                *
- *===========================================================================*/
+#define SIZE_NAME_BUF       (4)
+
+typedef struct Employ_ {
+    int32_t iId;
+    char *szName;
+} Employ;
+
+
+/* The function to register primitive test suites for algorithm verification. */
 void TestPrimPushFront();
 void TestPrimPushBack();
 void TestPrimInsertForward();
@@ -16,6 +22,14 @@ void TestPrimDeleteForward();
 void TestPrimDeleteBackward();
 void TestPrimSet();
 
+/* The function to register non-primitive test suites for resource management
+   verification. */
+void TestNonPrimPop();
+void TestNonPrimDelete();
+void TestNonPrimSet();
+void NonPrimDestroy(Item);
+
+/* The function to register common test suites. */
 void TestBoundary();
 void TestReverse();
 
@@ -77,6 +91,29 @@ int32_t SuitePrimitive()
     return SUCC;
 }
 
+int32_t SuiteNonPrimitive()
+{
+    CU_pSuite pSuite = CU_add_suite("NonPrimitive Type Input", NULL, NULL);
+    if (!pSuite)
+        return ERR_NOMEM;
+
+    char *szMsg = "Item removal via sequence of pop_front() and pop_back().";
+    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestNonPrimPop);
+    if (!pTest)
+        return ERR_NOMEM;
+
+    szMsg = "Item removal via sequence of delete().";
+    pTest = CU_add_test(pSuite, szMsg, TestNonPrimDelete);
+    if (!pTest)
+        return ERR_NOMEM;
+
+    szMsg = "Item replacement via sequence of set_at(), set_front(), and set_back().";
+    pTest = CU_add_test(pSuite, szMsg, TestNonPrimSet);
+    if (!pTest)
+        return ERR_NOMEM;
+
+    return SUCC;
+}
 
 int32_t main()
 {
@@ -87,6 +124,12 @@ int32_t main()
 
     /* Prepare the test suite for primitive input. */
     if (SuitePrimitive() != SUCC) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    /* Prepare the test suite for non-primitive input. */
+    if (SuiteNonPrimitive() != SUCC) {
         CU_cleanup_registry();
         return CU_get_error();
     }
@@ -531,6 +574,281 @@ void TestPrimSet()
     CU_ASSERT(pList->set_at(pList, (Item)2, -2) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, -2) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
+
+    DListDeinit(&pList);
+}
+
+void NonPrimDestroy(Item item)
+{
+    Employ *pEmploy = (Employ*)item;
+    free(pEmploy->szName);
+    free(pEmploy);
+}
+
+void TestNonPrimPop()
+{
+    DLinkedList *pList;
+    CU_ASSERT(DListInit(&pList) == SUCC);
+    CU_ASSERT(pList->set_destroy(pList, NonPrimDestroy) == SUCC);
+
+    /* Prepare initial items. */
+    Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 1;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'a';
+    pEmploy->szName[1] = 'b';
+    pEmploy->szName[2] = 'c';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 2;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'd';
+    pEmploy->szName[1] = 'e';
+    pEmploy->szName[2] = 'f';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 3;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'g';
+    pEmploy->szName[1] = 'h';
+    pEmploy->szName[2] = 'i';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 4;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'j';
+    pEmploy->szName[1] = 'k';
+    pEmploy->szName[2] = 'l';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    /* Pop item from the head and check the remaining item sequence. */
+    Item item;
+    CU_ASSERT(pList->pop_front(pList) == SUCC);
+    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
+
+    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "jkl") == 0);
+
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
+
+    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "jkl") == 0) ;
+
+    /* Pop item from the tail and check the remaining item sequence. */
+    CU_ASSERT(pList->pop_back(pList) == SUCC);
+    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
+
+    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "ghi") == 0);
+
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
+
+    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "ghi") == 0) ;
+
+    /* Check the resource management at list head. */
+    CU_ASSERT(pList->pop_front(pList) == SUCC);
+    CU_ASSERT(pList->pop_front(pList) == SUCC);
+
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 1;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'a';
+    pEmploy->szName[1] = 'b';
+    pEmploy->szName[2] = 'c';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    CU_ASSERT(pList->pop_back(pList) == SUCC);
+
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 1;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'a';
+    pEmploy->szName[1] = 'b';
+    pEmploy->szName[2] = 'c';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    DListDeinit(&pList);
+}
+
+void TestNonPrimDelete()
+{
+    DLinkedList *pList;
+    CU_ASSERT(DListInit(&pList) == SUCC);
+    CU_ASSERT(pList->set_destroy(pList, NonPrimDestroy) == SUCC);
+
+    /* Prepare initial items. */
+    Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 1;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'a';
+    pEmploy->szName[1] = 'b';
+    pEmploy->szName[2] = 'c';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 2;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'd';
+    pEmploy->szName[1] = 'e';
+    pEmploy->szName[2] = 'f';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 3;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'g';
+    pEmploy->szName[1] = 'h';
+    pEmploy->szName[2] = 'i';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 4;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'j';
+    pEmploy->szName[1] = 'k';
+    pEmploy->szName[2] = 'l';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 5;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'm';
+    pEmploy->szName[1] = 'n';
+    pEmploy->szName[2] = 'o';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    /* Remove items from the designated index and check the remaining
+       item sequence. */
+    Item item;
+    CU_ASSERT(pList->delete(pList, 0) == SUCC);
+    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
+    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "mno") == 0);
+    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "mno") == 0);
+
+    CU_ASSERT(pList->delete(pList, 1) == SUCC);
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
+    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "jkl") == 0);
+    CU_ASSERT(pList->get_at(pList, &item, -2) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "jkl") == 0);
+    CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
+
+    CU_ASSERT(pList->delete(pList, 2) == SUCC);
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
+    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "jkl") == 0);
+
+    DListDeinit(&pList);
+}
+
+void TestNonPrimSet()
+{
+    DLinkedList *pList;
+    CU_ASSERT(DListInit(&pList) == SUCC);
+    CU_ASSERT(pList->set_destroy(pList, NonPrimDestroy) == SUCC);
+
+    /* Prepare initial items. */
+    Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 1;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'a';
+    pEmploy->szName[1] = 'b';
+    pEmploy->szName[2] = 'c';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 2;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'd';
+    pEmploy->szName[1] = 'e';
+    pEmploy->szName[2] = 'f';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 3;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'g';
+    pEmploy->szName[1] = 'h';
+    pEmploy->szName[2] = 'i';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    /* Replace item at the head and check the result. */
+    Item item;
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 4;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'j';
+    pEmploy->szName[1] = 'k';
+    pEmploy->szName[2] = 'l';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->set_front(pList, (Item)pEmploy) == SUCC);
+    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "jkl") == 0);
+
+    /* Replace item at the tail and check the result. */
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 5;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'm';
+    pEmploy->szName[1] = 'n';
+    pEmploy->szName[2] = 'o';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->set_back(pList, (Item)pEmploy) == SUCC);
+    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "mno") == 0);
+
+    /* Replace item at the designated index and check the result. */
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 6;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'p';
+    pEmploy->szName[1] = 'q';
+    pEmploy->szName[2] = 'r';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->set_at(pList, (Item)pEmploy, 0) == SUCC);
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "pqr") == 0);
+
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 7;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 's';
+    pEmploy->szName[1] = 't';
+    pEmploy->szName[2] = 'u';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->set_at(pList, (Item)pEmploy, -3) == SUCC);
+    CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
+    CU_ASSERT(strcmp(((Employ*)item)->szName, "stu") == 0);
 
     DListDeinit(&pList);
 }
