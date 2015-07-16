@@ -3,6 +3,7 @@
 #include "tree/simple_tree.h"
 #include "tree/balanced_tree.h"
 #include "list/dlinked_list.h"
+#include "map/hash_map.h"
 #include "map/ordered_map.h"
 #include "heap/binary_heap.h"
 #include "queue/priority_queue.h"

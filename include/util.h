@@ -29,6 +29,10 @@
 /** Invalid argument to store the returned data from getter operation. */
 #define ERR_GET         (-6)
 
+/** Invalid argument to specify the key size. */
+#define ERR_KEYSIZE     (-7)
+
+
 /** Item is the data type for the container element. */
 typedef const void* Item;
 
