@@ -2,53 +2,65 @@
 #include "array/vector.h"
 #include "list/dlinked_list.h"
 
-#define DEFAULT_CAPACITY    (32)
 
 /*===========================================================================*
- *                  Hide the private data                        *
+ *                        The container private data                         *
  *===========================================================================*/
 struct _HashMapData {
-    Vector *pBuckets_;
+    int32_t iSize_;
+    Vector *vecBucket_;
     uint32_t (*pHash_) (Key, size_t);
 };
+
+#define DEFAULT_COUNT    (32)
 
 
 /*===========================================================================*
  *                  Definition for internal operations                       *
  *===========================================================================*/
 /**
- * @brief               The resource clean method dlist in buckets
+ * @brief               The resource clean method for each table bucket
  *
- * @param ent           The pointer to the dlist
+ * @param item          The pointer to the designated bucket
  */
-static void _BucketsDestroy(Entry ent);
+static void _HashMapCleanBucket(Item item);
 
 /**
  * @brief               The default hash function
  *
- * @param key           The pointer to key
- * @param len           The legnth of key
+ * Name: Google MurmurHash 3
+ * Site: https://code.google.com/p/smhasher/wiki/MurmurHash3
  *
- * @return              The hash value of key
+ * @param key           The designated key
+ * @param sizeKey       The key size
+ *
+ * @return              The hash value of the key
  */
-static uint32_t _Hash(Key key, size_t len);
+static uint32_t _HashMapHasher(Key key, size_t sizeKey);
 
 
-#define CHECK_INIT(self)                    \
-    do {                                    \
-        if (!self)                          \
-        return ERR_NOINIT;                  \
-        if (!(self->pData))                 \
-        return ERR_NOINIT;                  \
-        if (!(self->pData->pBuckets_))      \
-        return ERR_NOINIT;                  \
-    } while (0);
+#define FREE_MAP_DATA()                                                         \
+            do {                                                                \
+                free(pObj->pData);                                              \
+                free(*ppObj);                                                   \
+                *ppObj = NULL;                                                  \
+            } while (0);
+
+#define CHECK_INIT(self)                                                        \
+            do {                                                                \
+                if (!self)                                                      \
+                    return ERR_NOINIT;                                          \
+                if (!(self->pData))                                             \
+                    return ERR_NOINIT;                                          \
+                if (!(self->pData->vecBucket_))                                 \
+                    return ERR_NOINIT;                                          \
+            } while (0);
 
 
 /*===========================================================================*
  *         Implementation for the container supporting operations            *
  *===========================================================================*/
-int32_t HashMapInit(HashMap **ppObj, int32_t size)
+int32_t HashMapInit(HashMap **ppObj, uint32_t uiCount)
 {
     *ppObj = (HashMap*)malloc(sizeof(HashMap));
     if (!(*ppObj))
@@ -63,41 +75,35 @@ int32_t HashMapInit(HashMap **ppObj, int32_t size)
     }
     HashMapData *pData = pObj->pData;
 
-    int32_t BucketSize = (size <= 0) ? DEFAULT_CAPACITY: size;
-    pData->pHash_ = _Hash;
-    int32_t iRtnCode; 
-    iRtnCode = VectorInit(&(pData->pBuckets_), BucketSize);
+    uiCount = (uiCount == 0)? DEFAULT_COUNT : uiCount;
+    pData->iSize_ = 0;
+    pData->pHash_ = _HashMapHasher;
+    int32_t iRtnCode = VectorInit(&(pData->vecBucket_), uiCount);
     if (iRtnCode != SUCC) {
-        free(pObj->pData);
-        free(*ppObj);
-        *ppObj = NULL;
+        FREE_MAP_DATA();
         return ERR_NOMEM;
     }
 
-    Vector *Buckets = pData->pBuckets_;
-    Buckets->set_destroy(Buckets, _BucketsDestroy);
+    Vector *vecBucket = pData->vecBucket_;
+    vecBucket->set_destroy(vecBucket, _HashMapCleanBucket);
 
-    int32_t cap = VectorCapacity(Buckets);
-    int32_t idx = 0;
-    while (idx < cap) {
-        DLinkedList *link;
-        iRtnCode = DListInit(&link);
+    int32_t iCap = vecBucket->capacity(vecBucket);
+    int32_t iIdx = 0;
+    while (iIdx < iCap) {
+        DLinkedList *list;
+        iRtnCode = DListInit(&list);
         if (iRtnCode != SUCC) {
-            VectorDeinit(&Buckets);
-            free(pObj->pData);
-            free(*ppObj);
-            *ppObj = NULL;
+            VectorDeinit(&vecBucket);
+            FREE_MAP_DATA();
             return iRtnCode;
         }
-        iRtnCode = Buckets->insert(Buckets, (Item)link, idx);
+        iRtnCode = vecBucket->insert(vecBucket, (Item)list, iIdx);
         if (iRtnCode != SUCC) {
-            VectorDeinit(&Buckets);
-            free(pObj->pData);
-            free(*ppObj);
-            *ppObj = NULL;
+            VectorDeinit(&vecBucket);
+            FREE_MAP_DATA();
             return iRtnCode;
         }
-        ++idx;
+        iIdx++;
     }
 
     pObj->put = HashMapPut;
@@ -120,9 +126,12 @@ void HashMapDeinit(HashMap **ppObj)
         goto FREE_MAP;
 
     HashMapData *pData = pObj->pData;
-    if (pData->pBuckets_)
-        VectorDeinit(&(pData->pBuckets_));
+    if (!(pData->vecBucket_))
+        goto FREE_DATA;
 
+    VectorDeinit(&(pData->vecBucket_));
+
+FREE_DATA:
     free(pObj->pData);
 FREE_MAP:
     free(*ppObj);
@@ -131,141 +140,140 @@ EXIT:
     return;
 }
 
-int32_t HashMapPut(HashMap *self, Entry ent, size_t key_size)
+int32_t HashMapPut(HashMap *self, Entry ent, size_t sizeKey)
 {
-    CHECK_INIT(self);
-    if (key_size <= 0)
+    if (sizeKey == 0)
         return ERR_KEYSIZE;
-    int32_t iRtnCode;
-    Pair *pairIn = (Pair *)ent;
-    uint32_t idx = self->pData->pHash_(pairIn->key, key_size);
-    DLinkedList *list;
-    Vector *Buckets = self->pData->pBuckets_;
-    int32_t BucketsSize = Buckets->size(Buckets);
-    if (BucketsSize == ERR_NOINIT)
-        return ERR_NOINIT;
-    idx = idx % BucketsSize;
-    if ((iRtnCode = Buckets->get(Buckets, (Item *)&list, idx)) != SUCC)
-        return iRtnCode;
-    int32_t list_size = list->size (list);
-    Pair *pariComp;
-    //find duplicate entry and delete it
-    for (idx = 0; idx < list_size; ++idx) {
-        if ((iRtnCode = list->get_at(list, (Item *)&pariComp, idx)) != SUCC)
-            return iRtnCode;
-        if (!memcmp(pairIn->key, pariComp->key, key_size)) {
-            if ((iRtnCode = list->delete(list, idx)) != SUCC)
-                return iRtnCode;
+    CHECK_INIT(self);
+    HashMapData *pData = self->pData;
+
+    /* Resolve the bucket index with modulo arithmetics. */
+    Pair *pairIn = (Pair*)ent;
+    Vector *vecBucket = pData->vecBucket_;
+    int32_t iSize = vecBucket->size(vecBucket);
+    uint32_t uiValue = pData->pHash_(pairIn->key, sizeKey);
+    int32_t iIdx = (int32_t)uiValue;
+    iIdx = iIdx % iSize;
+    iIdx = (iIdx < 0)? iIdx + iSize : iIdx;
+
+    /* Retrieve the slot list of the located bucket. */
+    DLinkedList *listSlot;
+    vecBucket->get(vecBucket, (Item*)&listSlot, iIdx);
+
+    /* Replace the existing duplicated entry. */
+    Pair *pairDup;
+    iSize = listSlot->size(listSlot);
+    for (iIdx = 0 ; iIdx < iSize ; iIdx++) {
+        listSlot->get_at(listSlot, (Item*)&pairDup, iIdx);
+        if (memcmp(pairIn->key, pairDup->key, sizeKey) == 0) {
+            listSlot->delete(listSlot, iIdx);
+            pData->iSize_--;
             break;
         }
     }
-    return list->push_back(list, ent);
+
+    /* Insert the new entry into the slot list. */
+    int32_t iRtnCode = listSlot->push_back(listSlot, ent);
+    if (iRtnCode == SUCC)
+        pData->iSize_++;
+    return iRtnCode;
 }
 
-int32_t HashMapGet(HashMap *self, Key key, size_t key_size, Value *pValue)
+int32_t HashMapGet(HashMap *self, Key key, size_t sizeKey, Value *pValue)
 {
     if (!pValue)
         return ERR_GET;
-    if (key_size <= 0)
+    if (sizeKey == 0)
         return ERR_KEYSIZE;
     *pValue = NULL;
     CHECK_INIT(self);
 
-    int32_t iRtnCode;
-    Pair pairIn = {key, NULL};
-    uint32_t idx = self->pData->pHash_(pairIn.key, key_size);
-    DLinkedList *list;
-    Vector *Buckets = self->pData->pBuckets_;
-    int32_t BucketsSize = Buckets->size(Buckets);
-    if (BucketsSize == ERR_NOINIT)
-        return ERR_NOINIT;
-    idx = idx % BucketsSize;
-    if ((iRtnCode = Buckets->get(Buckets, (Item *)&list, idx)) != SUCC)
-        return iRtnCode;
-    int32_t list_size = list->size (list);
+    /* Resolve the bucket index with modulo arithmetics. */
+    Vector *vecBucket = self->pData->vecBucket_;
+    int32_t iSize = vecBucket->size(vecBucket);
+    uint32_t uiValue = self->pData->pHash_(key, sizeKey);
+    int32_t iIdx = (int32_t)uiValue;
+    iIdx = iIdx % iSize;
+    iIdx = (iIdx < 0)? iIdx + iSize : iIdx;
+
+    /* Retrieve the slot list of the located bucket. */
+    DLinkedList *listSlot;
+    vecBucket->get(vecBucket, (Item*)&listSlot, iIdx);
+
+    /* Retrieve the value corresponding to the designated key. */
     Pair *pPairOut;
-    for (idx = 0; idx < list_size; ++idx) {
-        if ((iRtnCode = list->get_at(list, (Item *)&pPairOut, idx)) != SUCC)
-            return iRtnCode;
-        if (!memcmp(pairIn.key, pPairOut->key, key_size)) {
+    iSize = listSlot->size(listSlot);
+    for (iIdx = 0 ; iIdx < iSize ; iIdx++) {
+        listSlot->get_at(listSlot, (Item*)&pPairOut, iIdx);
+        if (memcmp(key, pPairOut->key, sizeKey) == 0) {
             *pValue = pPairOut->value;
             return SUCC;
         }
     }
+
     return ERR_NODATA;
 }
 
-int32_t HashMapRemove(HashMap *self, Key key, size_t key_size)
+int32_t HashMapRemove(HashMap *self, Key key, size_t sizeKey)
 {
-    CHECK_INIT(self);
-    if (key_size <= 0)
+    if (sizeKey == 0)
         return ERR_KEYSIZE;
+    CHECK_INIT(self);
+    HashMapData *pData = self->pData;
 
-    int32_t iRtnCode;
-    Pair pairIn = {key, NULL};
-    uint32_t idx = self->pData->pHash_(pairIn.key, key_size);
-    DLinkedList *list;
-    Vector *Buckets = self->pData->pBuckets_;
-    int32_t BucketsSize = Buckets->size(Buckets);
-    if (BucketsSize == ERR_NOINIT)
-        return ERR_NOINIT;
-    idx = idx % BucketsSize;
-    if ((iRtnCode = Buckets->get(Buckets, (Item *)&list, idx)) != SUCC)
-        return iRtnCode;
-    int32_t list_size = list->size(list);
-    Pair *pPairOut;
-    for (idx = 0; idx < list_size; ++idx) {
-        if ((iRtnCode = list->get_at(list, (Item *)&pPairOut, idx)) != SUCC)
-            return iRtnCode;
-        if (!memcmp(pairIn.key, pPairOut->key, key_size)) {
-            return list->delete(list, idx);
+    /* Resolve the bucket index with modulo arithmetics. */
+    Vector *vecBucket = pData->vecBucket_;
+    int32_t iSize = vecBucket->size(vecBucket);
+    uint32_t uiValue = pData->pHash_(key, sizeKey);
+    int32_t iIdx = (int32_t)uiValue;
+    iIdx = iIdx % iSize;
+    iIdx = (iIdx < 0)? iIdx + iSize : iIdx;
+
+    /* Retrieve the slot list of the located bucket. */
+    DLinkedList *listSlot;
+    vecBucket->get(vecBucket, (Item*)&listSlot, iIdx);
+
+    /* Remove the key value pair having the designated key. */
+    Pair *pairDel;
+    iSize = listSlot->size(listSlot);
+    for (iIdx = 0 ; iIdx < iSize ; iIdx++) {
+        listSlot->get_at(listSlot, (Item*)&pairDel, iIdx);
+        if (memcmp(key, pairDel->key, sizeKey) == 0) {
+            listSlot->delete(listSlot, iIdx);
+            pData->iSize_--;
+            return SUCC;
         }
     }
+
     return ERR_NODATA;
 }
 
 int32_t HashMapSize(HashMap *self)
 {
     CHECK_INIT(self);
-
-    int32_t iRtnCode;
-    int32_t size = 0;
-    DLinkedList *list;
-    Vector *Buckets = self->pData->pBuckets_;
-    int32_t BucketsSize = Buckets->size(Buckets);
-    if (BucketsSize == ERR_NOINIT)
-        return ERR_NOINIT;
-    int32_t idx;
-    for (idx = 0; idx < BucketsSize; ++idx) {
-        if ((iRtnCode = Buckets->get(Buckets, (Item *)&list, idx)) != SUCC)
-            return iRtnCode;
-        size += list->size(list) ;
-    }
-    return size;
+    return self->pData->iSize_;
 }
 
 int32_t HashMapSetDestroy(HashMap *self, void (*pFunc) (Entry))
 {
     CHECK_INIT(self);
 
-    int32_t iRtnCode;
-    int32_t size = 0;
-    DLinkedList *list;
-    Vector *Buckets = self->pData->pBuckets_;
-    int32_t BucketsSize = Buckets->size(Buckets);
-    if (BucketsSize == ERR_NOINIT)
-        return ERR_NOINIT;
-    int32_t idx;
-    for (idx = 0; idx < BucketsSize; ++idx) {
-        if ((iRtnCode = Buckets->get(Buckets, (Item *)&list, idx)) != SUCC)
-            return iRtnCode;
-        if ((iRtnCode = list->set_destroy(list, pFunc)) != SUCC)
-            return iRtnCode;
+    Vector *vecBucket = self->pData->vecBucket_;
+    int32_t iSize = vecBucket->size(vecBucket);
+
+    DLinkedList *listSlot;
+    int32_t iIdx = 0;
+    while (iIdx < iSize) {
+        vecBucket->get(vecBucket, (Item*)&listSlot, iIdx);
+        listSlot->set_destroy(listSlot, pFunc);
+        iIdx++;
     }
+
     return SUCC;
 }
 
-int32_t HashMapSetHash(HashMap *self, uint32_t (*pFunc) (Key, size_t)) {
+int32_t HashMapSetHash(HashMap *self, uint32_t (*pFunc) (Key, size_t))
+{
     CHECK_INIT(self);
     self->pData->pHash_ = pFunc;
     return SUCC;
@@ -274,26 +282,23 @@ int32_t HashMapSetHash(HashMap *self, uint32_t (*pFunc) (Key, size_t)) {
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
-static void _BucketsDestroy(Entry ent)
+static void _HashMapCleanBucket(Item item)
 {
-    DLinkedList *list = (DLinkedList *) ent;
+    DLinkedList *list = (DLinkedList*)item;
     DListDeinit(&list);
 }
 
-/* Google MurmurHash 3 
- * https://code.google.com/p/smhasher/wiki/MurmurHash3
- */
-static uint32_t _Hash(Key key, size_t len)
+static uint32_t _HashMapHasher(Key key, size_t sizeKey)
 {
-    if (key == NULL || len == 0)
+    if (key == NULL || sizeKey == 0)
         return 0;
 
     const uint32_t c1 = 0xcc9e2d51;
     const uint32_t c2 = 0x1b873593;
 
-    const int nblocks = len / 4;
-    const uint32_t *blocks = (const uint32_t *) (key);
-    const uint8_t *tail = (const uint8_t *) (key + (nblocks * 4));
+    const int nblocks = sizeKey / 4;
+    const uint32_t *blocks = (const uint32_t*) (key);
+    const uint8_t *tail = (const uint8_t*) (key + (nblocks * 4));
 
     uint32_t h = 0;
 
@@ -312,7 +317,7 @@ static uint32_t _Hash(Key key, size_t len)
     }
 
     k = 0;
-    switch (len & 3) {
+    switch (sizeKey & 3) {
         case 3:
             k ^= tail[2] << 16;
         case 2:
@@ -325,7 +330,7 @@ static uint32_t _Hash(Key key, size_t len)
             h ^= k;
     };
 
-    h ^= len;
+    h ^= sizeKey;
 
     h ^= h >> 16;
     h *= 0x85ebca6b;

@@ -182,8 +182,8 @@ int32_t AddAdvancedSuite()
 void SimpleDestroy(Entry ent)
 {
     Pair *pPair = (Pair *)ent;
-    free((int32_t *)pPair->key);
-    free((int32_t *)pPair->value);
+    free((int32_t*)pPair->key);
+    free((int32_t*)pPair->value);
     free((Pair*)ent);
 }
 
@@ -194,10 +194,10 @@ void TestSimplePut(HashMap *pMap, int32_t iIdx)
     if (!pPair)
         return;
 
-    int32_t *key = (int32_t *)malloc(sizeof(int32_t));
+    int32_t *key = (int32_t*)malloc(sizeof(int32_t));
     *key = aNum[iIdx];
     pPair->key = (Key)key;
-    int32_t *value = (int32_t *)malloc(sizeof(int32_t));
+    int32_t *value = (int32_t*)malloc(sizeof(int32_t));
     *value = aNum[iIdx];
     pPair->value = (Value)value;
     CU_ASSERT(pMap->put(pMap, (Entry)pPair, sizeof(int32_t)) == SUCC);
@@ -216,8 +216,7 @@ void TestSimpleGetFail(HashMap *pMap, int32_t iIdx)
 {
     int32_t key = aNum[iIdx];
     Value valueRetv;
-    CU_ASSERT(pMap->get(pMap, (Key)&key, sizeof(int32_t), &valueRetv) 
-            == ERR_NODATA);
+    CU_ASSERT(pMap->get(pMap, (Key)&key, sizeof(int32_t), &valueRetv) == ERR_NODATA);
     CU_ASSERT_EQUAL(valueRetv, NULL);
     CU_ASSERT(pMap->get(pMap, (Key)&key, sizeof(int32_t), NULL) == ERR_GET);
 }
@@ -226,8 +225,7 @@ void TestSimpleErrorKeySize(HashMap *pMap, int32_t iIdx)
 {
     int32_t key = aNum[iIdx];
     Value valueRetv;
-    CU_ASSERT(pMap->get(pMap, (Key)&key, 0, &valueRetv) 
-            == ERR_KEYSIZE);
+    CU_ASSERT(pMap->get(pMap, (Key)&key, 0, &valueRetv)  == ERR_KEYSIZE);
     CU_ASSERT(pMap->remove(pMap, (Key)&key, 0) == ERR_KEYSIZE);
     CU_ASSERT(pMap->put(pMap, NULL, 0) == ERR_KEYSIZE);
 }
@@ -326,8 +324,7 @@ void TestAdvancedGetSucc(HashMap *pMap, int32_t iIdx)
     Employ valuePred = {aNum[iIdx]/MASK_YEAR, aNum[iIdx]/MASK_LEVEL, aNum[iIdx]};
     Value valueRetv;
 
-    CU_ASSERT(pMap->get(pMap, key, strlen(aName[iIdx]) + 1, &valueRetv) 
-            == SUCC);
+    CU_ASSERT(pMap->get(pMap, key, strlen(aName[iIdx]) + 1, &valueRetv) == SUCC);
     CU_ASSERT_EQUAL(valuePred.cYear, ((Employ*)valueRetv)->cYear);
     CU_ASSERT_EQUAL(valuePred.cLevel, ((Employ*)valueRetv)->cLevel);
     CU_ASSERT_EQUAL(valuePred.iId, ((Employ*)valueRetv)->iId);

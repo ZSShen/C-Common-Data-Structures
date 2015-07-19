@@ -7,7 +7,7 @@
 
 #include "../util.h"
 
-/** UMapData is the data type for the container private information. */
+/** HashMapData is the data type for the container private information. */
 typedef struct _HashMapData HashMapData;
 
 /** The implementation for hash map. */
@@ -31,11 +31,11 @@ typedef struct _HashMap {
         @see HashMapSize */
     int32_t (*size) (struct _HashMap*);
 
-    /** Set the user defined key value pair clean method.
+    /** Set the custom key value pair resource clean method.
         @see HashMapSetDestroy */
     int32_t (*set_destroy) (struct _HashMap*, void (*) (Entry));
 
-    /** Set the user defined hash function.
+    /** Set the custom hash function.
         @see HashMapSetHash */
     int32_t (*set_hash) (struct _HashMap*, uint32_t (*) (Key, size_t));
 } HashMap;
@@ -48,12 +48,14 @@ typedef struct _HashMap {
  * @brief The constructor for HashMap.
  *
  * @param ppObj         The double pointer to the to be constructed map
- * @param size          The size of buckets. Specify <=0 to use default size.
+ * @param uiCount       The count of buckets
  *
  * @retval SUCC
  * @retval ERR_NOMEM    Insufficient memory for map construction
+ *
+ * @note Specify uiCount to 0 for default bucket count.
  */
-extern int32_t HashMapInit(HashMap **ppObj, int32_t size);
+extern int32_t HashMapInit(HashMap **ppObj, uint32_t uiCount);
 
 /**
  * @brief The destructor for HashMap.
@@ -68,44 +70,41 @@ extern void HashMapDeinit(HashMap **ppObj);
 /**
  * @brief Insert a key value pair into the map.
  *
- * This function inserts a key value pair into the map. If the hash of the
- * designated pair is the same with a certain one stored in the map, that value
- * of pair will be replaced. Also, if the custom clean method is set, it runs
- * the resource clean method for the replaced pair.
+ * This function inserts a key value pair into the map. If the hash key of the
+ * designated pair is the same with a certain one stored in the map, that pair
+ * will be replaced. Also, if the custom clean method is set, it runs the resource
+ * clean method for the replaced pair.
  *
  * @param self          The pointer to HashMap structure
  * @param ent           The pointer to the desiganted key value pair
- * @param key_size      The size of key in bytes
+ * @param sizeKey       The key size in bytes
  *
  * @retval SUCC
- * @retval ERR_NOINIT       Uninitialized container
- * @retval ERR_NOMEM        Insufficient memory for map extension
- * @retval ERR_KEYSIZE      Invalid size of key
- * @retval ERR_IDX          Out of range indexing due to internal error
+ * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_NOMEM    Insufficient memory for map extension
+ * @retval ERR_KEYSIZE  Invalid key size
  */
-extern int32_t HashMapPut(HashMap *self, Entry ent, size_t key_size);
+extern int32_t HashMapPut(HashMap *self, Entry ent, size_t sizeKey);
 
 /**
  * @brief Retrieve the value corresponding to the designated key.
  *
  * This function retrieves the value corresponding to the designated key from
- * the map. If the key can be found, the value will be returned by the fourth 
- * parameter. Otherwise, the error code in returned and the fourth parameter is
+ * the map. If the key can be found, the value will be returned by the fourth
+ * parameter. Otherwise, the error code is returned and the fourth parameter is
  * updated with NULL.
  *
  * @param self          The pointer to Map structure
  * @param key           The designated key
- * @param key_size      The size of key in bytes
+ * @param sizeKey       The key size in bytes
  * @param pValue        The pointer to the returned value
  *
  * @retval SUCC
- * @retval ERR_NOINIT       Uninitialized container
- * @retval ERR_NODATA       No map entry can be found
- * @retval ERR_KEYSIZE      Invalid size of key
- * @retval ERR_IDX          Out of range indexing due to internal error
+ * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_NODATA   No map entry can be found
+ * @retval ERR_KEYSIZE  Invalid key size
  */
-extern int32_t HashMapGet(HashMap *self, Key key, size_t key_size, 
-        Value *pValue);
+extern int32_t HashMapGet(HashMap *self, Key key, size_t sizeKey, Value *pValue);
 
 /**
  * @brief Delete the key value pair corresponding to the designated key.
@@ -118,12 +117,11 @@ extern int32_t HashMapGet(HashMap *self, Key key, size_t key_size,
  * @param key           The designated key
  *
  * @retval SUCC
- * @retval ERR_NOINIT       Uninitialized container
- * @retval ERR_NODATA       No map entry can be found
- * @retval ERR_KEYSIZE      Invalid size of key
- * @retval ERR_IDX          Out of range indexing due to internal error
+ * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_NODATA   No map entry can be found
+ * @retval ERR_KEYSIZE  Invalid key size
  */
-extern int32_t HashMapRemove(HashMap *self, Key key, size_t key_size);
+extern int32_t HashMapRemove(HashMap *self, Key key, size_t sizeKey);
 
 /**
  * @brief Return the number of stored key value pairs.
@@ -136,7 +134,7 @@ extern int32_t HashMapRemove(HashMap *self, Key key, size_t key_size);
 extern int32_t HashMapSize(HashMap *self);
 
 /**
- * @brief Set the user defined key value pair clean method.
+ * @brief Set the custom key value pair resource clean method.
  *
  * @param self          The pointer to HashMap structure
  * @param pFunc         The function pointer to the custom method
@@ -147,7 +145,7 @@ extern int32_t HashMapSize(HashMap *self);
 extern int32_t HashMapSetDestroy(HashMap *self, void (*pFunc) (Entry));
 
 /**
- * @brief Set the user defined hash function.
+ * @brief Set the custom hash function.
  *
  * @param self          The pointer to HashMap structure
  * @param pFunc         The function pointer to the custom method
