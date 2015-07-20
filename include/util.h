@@ -29,7 +29,7 @@
 /** Invalid argument to store the returned data from getter operation. */
 #define ERR_GET         (-6)
 
-/** Invalid argument to specify the key size. */
+/** Invalid argument to specify the key size for hash data structures. */
 #define ERR_KEYSIZE     (-7)
 
 
