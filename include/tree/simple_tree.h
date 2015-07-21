@@ -206,7 +206,7 @@ int32_t SimTreeSize(SimpleTree *self);
 int32_t SimTreeSetCompare(SimpleTree *self, int32_t (*pFunc) (Item, Item));
 
 /**
- * @brief Set the custom resource item clean method.
+ * @brief Set the custom item resource clean method.
  *
  * @param self          The pointer to the SimpleTree structure
  * @param pFunc         The function pointer to the custom method

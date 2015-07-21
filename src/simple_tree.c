@@ -27,7 +27,7 @@ struct _SimTreeData {
  *                  Definition for internal functions                        *
  *===========================================================================*/
 /**
- * @brief Traverse all the nodes and clean the allocated resource.
+ * @brief Delete all the tree nodes.
  *
  * If the custom resource clean method is set, it also runs the clean method for
  * all the items.
@@ -401,6 +401,7 @@ int32_t SimTreeSetCompare(SimpleTree *self, int32_t (*pFunc) (Item, Item))
 int32_t SimTreeSetDestroy(SimpleTree *self, void (*pFunc) (Item))
 {
     CHECK_INIT(self);
+    self->pData->bUserDestroy_ = true;
     self->pData->pDestroy_ = pFunc;
     return SUCC;
 }
