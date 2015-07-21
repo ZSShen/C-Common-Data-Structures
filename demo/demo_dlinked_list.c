@@ -22,7 +22,7 @@ int main()
     /* You should initialize the DS before any operations. */
     int32_t rc = DListInit(&pList);
     if (rc != SUCC)
-        return;
+        return rc;
 
     /* If you plan to delegate the resource clean task to the DS, please set the
        custom clean method. */
