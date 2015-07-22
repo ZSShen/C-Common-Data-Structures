@@ -1,81 +1,81 @@
 /**
- * @file simple_tree.h The basic binary search tree.
+ * @file binary_tree.h The basic binary search tree.
  */
 
-#ifndef _SIMPLE_TREE_H_
-#define _SIMPLE_TREE_H_
+#ifndef _BINARY_TREE_H_
+#define _BINARY_TREE_H_
 
 #include "../util.h"
 
-/** SimTreeData is the data type for the container private information. */
-typedef struct _SimTreeData SimTreeData;
+/** BinTreeData is the data type for the container private information. */
+typedef struct _BinTreeData BinTreeData;
 
 /** The implementation for basic binary search tree. */
-typedef struct _SimpleTree {
+typedef struct _BinaryTree {
     /** The container private information. */
-    SimTreeData *pData;
+    BinTreeData *pData;
 
     /** Insert an item into the tree.
-        @see SimTreeInsert */
-    int32_t (*insert) (struct _SimpleTree*, Item);
+        @see BinTreeInsert */
+    int32_t (*insert) (struct _BinaryTree*, Item);
 
     /** Search for the item having the same order with the designated one.
-        @see SimTreeSearch */
-    int32_t (*search) (struct _SimpleTree*, Item, Item*);
+        @see BinTreeSearch */
+    int32_t (*search) (struct _BinaryTree*, Item, Item*);
 
     /** Delete the item having the same order with the designated one.
-        @see SimTreeDelete */
-    int32_t (*delete) (struct _SimpleTree*, Item);
+        @see BinTreeDelete */
+    int32_t (*delete) (struct _BinaryTree*, Item);
 
     /** Get the item having the maximum order of the tree.
-        @see SimTreeMaximum */
-    int32_t (*maximum) (struct _SimpleTree*, Item*);
+        @see BinTreeMaximum */
+    int32_t (*maximum) (struct _BinaryTree*, Item*);
 
     /** Get the item having the minimum order of the tree.
-        @see SimTreeMinimum */
-    int32_t (*minimum) (struct _SimpleTree*, Item*);
+        @see BinTreeMinimum */
+    int32_t (*minimum) (struct _BinaryTree*, Item*);
 
     /** Get the immediate successor of the designated item.
-        @see SimTreeSuccessor */
-    int32_t (*successor) (struct _SimpleTree*, Item, Item*);
+        @see BinTreeSuccessor */
+    int32_t (*successor) (struct _BinaryTree*, Item, Item*);
 
     /** Get the immediate predecessor of the designated item.
-        @see SimTreePredecessor */
-    int32_t (*predecessor) (struct _SimpleTree*, Item, Item*);
+        @see BinTreePredecessor */
+    int32_t (*predecessor) (struct _BinaryTree*, Item, Item*);
 
     /** Get the number of stored item.
-        @see SimTreeSize */
-    int32_t (*size) (struct _SimpleTree*);
+        @see BinTreeSize */
+    int32_t (*size) (struct _BinaryTree*);
 
     /** Set the user defined item comparison method.
-        @see SimTreeSetCompare */
-    int32_t (*set_compare) (struct _SimpleTree*, int32_t (*) (Item, Item));
+        @see BinTreeSetCompare */
+    int32_t (*set_compare) (struct _BinaryTree*, int32_t (*) (Item, Item));
 
     /** Set the user defined item clean method.
-        @see SimTreeSetDestroy */
-    int32_t (*set_destroy) (struct _SimpleTree*, void (*) (Item));
-} SimpleTree;
+        @see BinTreeSetDestroy */
+    int32_t (*set_destroy) (struct _BinaryTree*, void (*) (Item));
+} BinaryTree;
 
 
 /**
- * @brief The constructor for SimpleTree.
+ * @brief The constructor for BinaryTree.
  *
  * @param ppObj         The double pointer to the to be constructed tree
  *
  * @retval SUCC
  * @retval ERR_NOMEM    Insufficient memory for tree construction
  */
-int32_t SimTreeInit(SimpleTree **ppObj);
+int32_t BinTreeInit(BinaryTree **ppObj);
 
 /**
- * @brief The destructor for SimpleTree.
+ * @brief The destructor for BinaryTree.
  *
  * If the custom resource clean method is set, it also runs the clean method for
  * all the items.
  *
  * @param ppObj         The double pointer to the to be destructed tree
  */
-void SimTreeDeinit(SimpleTree **ppObj);
+void BinTreeDeinit(BinaryTree **ppObj);
 
 /**
  * @brief Insert an item into the tree.
@@ -85,14 +85,14 @@ void SimTreeDeinit(SimpleTree **ppObj);
  * replaced. Also, if the custom resource clean method is set, it also runs the
  * clean method for the replaced item.
  *
- * @param self          The pointer to the SimpleTree structure
+ * @param self          The pointer to the BinaryTree structure
  * @param item          The designated item
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NOMEM    Insufficient memory for tree extension
  */
-int32_t SimTreeInsert(SimpleTree *self, Item item);
+int32_t BinTreeInsert(BinaryTree *self, Item item);
 
 /**
  * @brief Search for the item having the same order with the designated one.
@@ -102,7 +102,7 @@ int32_t SimTreeInsert(SimpleTree *self, Item item);
  * Otherwise, the error code is returned and the third parameter is updated with
  * NULL.
  *
- * @param self          The pointer to the SimpleTree structure
+ * @param self          The pointer to the BinaryTree structure
  * @param itemIn        The designated item
  * @param pItemOut      The pointer to the returned item
  *
@@ -111,7 +111,7 @@ int32_t SimTreeInsert(SimpleTree *self, Item item);
  * @retval ERR_NODATA   Non-existent item
  * @retval ERR_GET      Invalid parameter to store returned item
  */
-int32_t SimTreeSearch(SimpleTree *self, Item itemIn, Item *pItemOut);
+int32_t BinTreeSearch(BinaryTree *self, Item itemIn, Item *pItemOut);
 
 /**
  * @brief Delete the item having the same order with the designated one.
@@ -121,19 +121,19 @@ int32_t SimTreeSearch(SimpleTree *self, Item itemIn, Item *pItemOut);
  * custom resource clean method is set, it also runs the clean method for the
  * removed item.
  *
- * @param self          The pointer to the SimpleTree structure
+ * @param self          The pointer to the BinaryTree structure
  * @param item          The designated item
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NODATA   Non-existent item
  */
-int32_t SimTreeDelete(SimpleTree *self, Item item);
+int32_t BinTreeDelete(BinaryTree *self, Item item);
 
 /**
  * @brief Return the item having the maximum order of the tree.
  *
- * @param self          The pointer to the SimpleTree structure
+ * @param self          The pointer to the BinaryTree structure
  * @param pItem         The pointer to the returned item
  *
  * @retval SUCC
@@ -141,12 +141,12 @@ int32_t SimTreeDelete(SimpleTree *self, Item item);
  * @retval ERR_IDX      Empty tree
  * @retval ERR_GET      Invalid parameter to store returned item
  */
-int32_t SimTreeMaximum(SimpleTree *self, Item *pItem);
+int32_t BinTreeMaximum(BinaryTree *self, Item *pItem);
 
 /**
  * @brief Return the item having the minimum order of the tree.
  *
- * @param self          The pointer to the SimpleTree structure
+ * @param self          The pointer to the BinaryTree structure
  * @param pItem         The pointer to the returned item
  *
  * @retval SUCC
@@ -154,12 +154,12 @@ int32_t SimTreeMaximum(SimpleTree *self, Item *pItem);
  * @retval ERR_IDX      Empty tree
  * @retval ERR_GET      Invalid parameter to store returned item
  */
-int32_t SimTreeMinimum(SimpleTree *self, Item *pItem);
+int32_t BinTreeMinimum(BinaryTree *self, Item *pItem);
 
 /**
  * @brief Return the item which is the immediate successor of the designated item.
  *
- * @param self          The pointer to the SimpleTree structure
+ * @param self          The pointer to the BinaryTree structure
  * @param itemIn        The designated item
  * @param pItemOut      The pointer to the returned item
  *
@@ -168,12 +168,12 @@ int32_t SimTreeMinimum(SimpleTree *self, Item *pItem);
  * @retval ERR_NODATA   Non-existent immediate successor
  * @retval ERR_GET      Invalid parameter to store returned item
  */
-int32_t SimTreeSuccessor(SimpleTree *self, Item itemIn, Item *pItemOut);
+int32_t BinTreeSuccessor(BinaryTree *self, Item itemIn, Item *pItemOut);
 
 /**
  * @brief Return the item which is the immediate predecessor of the designated item.
  *
- * @param self          The pointer to the SimpleTree structure
+ * @param self          The pointer to the BinaryTree structure
  * @param itemIn        The designated item
  * @param pItemOut      The pointer to the returned item
  *
@@ -182,38 +182,38 @@ int32_t SimTreeSuccessor(SimpleTree *self, Item itemIn, Item *pItemOut);
  * @retval ERR_NODATA   Non-existent immediate predecessor
  * @retval ERR_GET      Invalid parameter to store returned item
  */
-int32_t SimTreePredecessor(SimpleTree *self, Item itemIn, Item *pItemOut);
+int32_t BinTreePredecessor(BinaryTree *self, Item itemIn, Item *pItemOut);
 
 /**
  * @brief Return the number of stored items.
  *
- * @param self          The pointer to the SimpleTree structure.
+ * @param self          The pointer to the BinaryTree structure.
  *
  * @return              The number of stored items
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t SimTreeSize(SimpleTree *self);
+int32_t BinTreeSize(BinaryTree *self);
 
 /**
  * @brief Set the custom item comparison method.
  *
- * @param self          The pointer to the SimpleTree structure
+ * @param self          The pointer to the BinaryTree structure
  * @param pFunc         The function pointer to the custom method
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t SimTreeSetCompare(SimpleTree *self, int32_t (*pFunc) (Item, Item));
+int32_t BinTreeSetCompare(BinaryTree *self, int32_t (*pFunc) (Item, Item));
 
 /**
  * @brief Set the custom item resource clean method.
  *
- * @param self          The pointer to the SimpleTree structure
+ * @param self          The pointer to the BinaryTree structure
  * @param pFunc         The function pointer to the custom method
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t SimTreeSetDestroy(SimpleTree *self, void (*pFunc) (Item));
+int32_t BinTreeSetDestroy(BinaryTree *self, void (*pFunc) (Item));
 
 #endif

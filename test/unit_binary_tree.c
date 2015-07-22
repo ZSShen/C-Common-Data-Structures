@@ -1,4 +1,4 @@
-#include "tree/simple_tree.h"
+#include "tree/binary_tree.h"
 #include "CUnit/Util.h"
 #include "CUnit/Basic.h"
 
@@ -101,8 +101,8 @@ int32_t main()
 
 void TestPrimInsertAndOrder()
 {
-    SimpleTree *pTree;
-    CU_ASSERT(SimTreeInit(&pTree) == SUCC);
+    BinaryTree *pTree;
+    CU_ASSERT(BinTreeInit(&pTree) == SUCC);
 
     /**
      * The vision of the test tree.
@@ -151,13 +151,13 @@ void TestPrimInsertAndOrder()
     /* Check container size. */
     CU_ASSERT_EQUAL(pTree->size(pTree), 7);
 
-    SimTreeDeinit(&pTree);
+    BinTreeDeinit(&pTree);
 }
 
 void TestPrimDeleteAndOrder()
 {
-    SimpleTree *pTree;
-    CU_ASSERT(SimTreeInit(&pTree) == SUCC);
+    BinaryTree *pTree;
+    CU_ASSERT(BinTreeInit(&pTree) == SUCC);
 
     /**
      * The vision of the test tree.
@@ -250,13 +250,13 @@ void TestPrimDeleteAndOrder()
     /* Check the container size. */
     CU_ASSERT_EQUAL(pTree->size(pTree), 3);
 
-    SimTreeDeinit(&pTree);
+    BinTreeDeinit(&pTree);
 }
 
 void TestPrimSearch()
 {
-    SimpleTree *pTree;
-    CU_ASSERT(SimTreeInit(&pTree) == SUCC);
+    BinaryTree *pTree;
+    CU_ASSERT(BinTreeInit(&pTree) == SUCC);
 
     /* Search for the empty tree. */
     Item item;
@@ -273,7 +273,7 @@ void TestPrimSearch()
     CU_ASSERT(pTree->search(pTree, (Item)0, &item) == ERR_NODATA);
     CU_ASSERT_EQUAL(item, NULL);
 
-    SimTreeDeinit(&pTree);
+    BinTreeDeinit(&pTree);
 }
 
 
@@ -297,8 +297,8 @@ void ItemDestroy(Item item)
 
 void TestNonPrimInsertAndOrder()
 {
-    SimpleTree *pTree;
-    CU_ASSERT(SimTreeInit(&pTree) == SUCC);
+    BinaryTree *pTree;
+    CU_ASSERT(BinTreeInit(&pTree) == SUCC);
 
     CU_ASSERT(pTree->set_destroy(pTree, ItemDestroy) == SUCC);
     CU_ASSERT(pTree->set_compare(pTree, ItemCompare) == SUCC);
@@ -427,13 +427,13 @@ void TestNonPrimInsertAndOrder()
     /* Check container size. */
     CU_ASSERT_EQUAL(pTree->size(pTree), 7);
 
-    SimTreeDeinit(&pTree);
+    BinTreeDeinit(&pTree);
 }
 
 void TestNonPrimDeleteAndOrder()
 {
-    SimpleTree *pTree;
-    CU_ASSERT(SimTreeInit(&pTree) == SUCC);
+    BinaryTree *pTree;
+    CU_ASSERT(BinTreeInit(&pTree) == SUCC);
 
     CU_ASSERT(pTree->set_destroy(pTree, ItemDestroy) == SUCC);
     CU_ASSERT(pTree->set_compare(pTree, ItemCompare) == SUCC);
@@ -650,7 +650,7 @@ void TestNonPrimDeleteAndOrder()
     /* Check the container size. */
     CU_ASSERT_EQUAL(pTree->size(pTree), 3);
 
-    SimTreeDeinit(&pTree);
+    BinTreeDeinit(&pTree);
 }
 
 //void TestNonPrimSearch();

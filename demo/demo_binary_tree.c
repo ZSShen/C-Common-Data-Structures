@@ -29,10 +29,10 @@ int32_t CompareObject(Item itemSrc, Item itemTge)
 
 int main()
 {
-    SimpleTree *pTree;
+    BinaryTree *pTree;
 
     /* You should initialize the DS before any operations. */
-    int32_t rc = SimTreeInit(&pTree);
+    int32_t rc = BinTreeInit(&pTree);
     if (rc != SUCC)
         return rc;
 
@@ -105,7 +105,7 @@ int main()
     assert(pTree->size(pTree) == 2);
 
     /* You should deinitialize the DS after all the relevant tasks. */
-    SimTreeDeinit(&pTree);
+    BinTreeDeinit(&pTree);
 
     return SUCC;
 }
