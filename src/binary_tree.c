@@ -332,6 +332,8 @@ int32_t BinTreeMaximum(BinaryTree *self, Item *pItem)
         *pItem = pFind->item;
         return SUCC;
     }
+
+    *pItem = NULL;
     return ERR_IDX;
 }
 
@@ -346,6 +348,8 @@ int32_t BinTreeMinimum(BinaryTree *self, Item *pItem)
         *pItem = pFind->item;
         return SUCC;
     }
+
+    *pItem = NULL;
     return ERR_IDX;
 }
 
@@ -364,6 +368,8 @@ int32_t BinTreeSuccessor(BinaryTree *self, Item itemIn, Item *pItemOut)
         *pItemOut = pFind->item;
         return SUCC;
     }
+
+    *pItemOut = NULL;
     return ERR_NODATA;
 }
 
@@ -382,6 +388,8 @@ int32_t BinTreePredecessor(BinaryTree *self, Item itemIn, Item *pItemOut)
         *pItemOut = pFind->item;
         return SUCC;
     }
+
+    *pItemOut = NULL;
     return ERR_NODATA;
 }
 
