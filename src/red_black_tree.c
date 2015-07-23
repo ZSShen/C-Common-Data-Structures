@@ -1,23 +1,24 @@
-#include "tree/balanced_tree.h"
+#include "tree/red_black_tree.h"
 
 
 /*===========================================================================*
  *                Hide the private data of the container                     *
  *===========================================================================*/
-typedef struct _BalTreeNode {
+typedef struct _RBTreeNode {
     Item item;
     bool bColor;
-    struct _BalTreeNode *pParent;
-    struct _BalTreeNode *pLeft;
-    struct _BalTreeNode *pRight;
-} BalTreeNode;
+    struct _RBTreeNode *pParent;
+    struct _RBTreeNode *pLeft;
+    struct _RBTreeNode *pRight;
+} RBTreeNode;
 
-struct _BalTreeData {
-    int32_t _iSize;
-    BalTreeNode *_pRoot;
-    BalTreeNode *_pNull;
-    int32_t (*_pCompare) (Item, Item);
-    void (*_pDestroy) (Item);
+struct _RBTreeData {
+    bool bUserDestroy_;
+    int32_t iSize_;
+    RBTreeNode *pRoot_;
+    RBTreeNode *pNull_;
+    int32_t (*pCompare_) (Item, Item);
+    void (*pDestroy_) (Item);
 };
 
 #define DIRECT_LEFT      (0)
@@ -33,12 +34,12 @@ struct _BalTreeData {
 /**
  * @brief Traverse all the nodes and clean the allocated resource.
  *
- * If the knob is on, it also runs the resource clean method for all the items.
+ * If the custom resource clean method is set, it also runs the clean method for
+ * all the items.
  *
  * @param pData         The pointer to the tree private data
- * @param bClean        The knob to clean item resource
  */
-void _BalTreeDeinit(BalTreeData *pData, bool bClean);
+void _RBTreeDeinit(RBTreeData *pData);
 
 /**
  * @brief Return the node having the maximal order in the subtree rooted by the
@@ -48,7 +49,7 @@ void _BalTreeDeinit(BalTreeData *pData, bool bClean);
  *
  * @return              The pointer to the returned node or NULL
  */
-BalTreeNode* _BalTreeMaximal(BalTreeNode *pNull, BalTreeNode *pCurr);
+RBTreeNode* _RBTreeMaximal(RBTreeNode *pNull, RBTreeNode *pCurr);
 
 /**
  * @brief Return the node having the minimal order in the subtree rooted by the
@@ -58,7 +59,7 @@ BalTreeNode* _BalTreeMaximal(BalTreeNode *pNull, BalTreeNode *pCurr);
  *
  * @return              The pointer to the returned node or NULL
  */
-BalTreeNode* _BalTreeMinimal(BalTreeNode *pNull, BalTreeNode *pCurr);
+RBTreeNode* _RBTreeMinimal(RBTreeNode *pNull, RBTreeNode *pCurr);
 
 /**
  * @brief Return the immediate successor of the designated node.
@@ -67,7 +68,7 @@ BalTreeNode* _BalTreeMinimal(BalTreeNode *pNull, BalTreeNode *pCurr);
  *
  * @return              The pointer to the returned node or NULL
  */
-BalTreeNode* _BalTreeSuccessor(BalTreeNode *pNull, BalTreeNode *pCurr);
+RBTreeNode* _RBTreeSuccessor(RBTreeNode *pNull, RBTreeNode *pCurr);
 
 /**
  * @brief Return the immediate predecessor of the designated node.
@@ -76,7 +77,7 @@ BalTreeNode* _BalTreeSuccessor(BalTreeNode *pNull, BalTreeNode *pCurr);
  *
  * @return              The pointer to the returned node or NULL
  */
-BalTreeNode* _BalTreePredecessor(BalTreeNode *pNull, BalTreeNode *pCurr);
+RBTreeNode* _RBTreePredecessor(RBTreeNode *pNull, RBTreeNode *pCurr);
 
 /**
  * @brief Make right rotation for the subtree rooted by the designated node.
@@ -87,7 +88,7 @@ BalTreeNode* _BalTreePredecessor(BalTreeNode *pNull, BalTreeNode *pCurr);
  * @param pData         The pointer to the tree private data
  * @param pCurr         The pointer to the designated node
  */
-void _BalTreeRightRotate(BalTreeData *pData, BalTreeNode *pCurr);
+void _RBTreeRightRotate(RBTreeData *pData, RBTreeNode *pCurr);
 
 /**
  * @brief Make left rotation for the subtree rooted by the designated node.
@@ -98,7 +99,7 @@ void _BalTreeRightRotate(BalTreeData *pData, BalTreeNode *pCurr);
  * @param pData         The pointer to the tree private data
  * @param pCurr         The pointer to the designated node
  */
-void _BalTreeLeftRotate(BalTreeData *pData, BalTreeNode *pCurr);
+void _RBTreeLeftRotate(RBTreeData *pData, RBTreeNode *pCurr);
 
 /**
  * @brief Maintain the balanced tree property after node insertion.
@@ -106,7 +107,7 @@ void _BalTreeLeftRotate(BalTreeData *pData, BalTreeNode *pCurr);
  * @param pData         The pointer to the tree private data
  * @param pCurr         The pointer to the designated node
  */
-void _BalTreeInsertFixup(BalTreeData *pData, BalTreeNode *pCurr);
+void _RBTreeInsertFixup(RBTreeData *pData, RBTreeNode *pCurr);
 
 /**
  * @brief Maintain the balanced tree property after node deletion.
@@ -114,7 +115,7 @@ void _BalTreeInsertFixup(BalTreeData *pData, BalTreeNode *pCurr);
  * @param pData         The pointer to the tree private data
  * @param pCurr         The pointer to the designated node
  */
-void _BalTreeDeleteFixup(BalTreeData *pData, BalTreeNode *pCurr);
+void _RBTreeDeleteFixup(RBTreeData *pData, RBTreeNode *pCurr);
 
 /**
  * @brief Get the node which stores the item having the same order with the
@@ -125,7 +126,7 @@ void _BalTreeDeleteFixup(BalTreeData *pData, BalTreeNode *pCurr);
  *
  * @return              The pointer to the returned node or NULL
  */
-BalTreeNode* _BalTreeSearch(BalTreeData *pData, Item item);
+RBTreeNode* _RBTreeSearch(RBTreeData *pData, Item item);
 
 /**
  * @brief The default order comparison method for a pair of items.
@@ -137,14 +138,14 @@ BalTreeNode* _BalTreeSearch(BalTreeData *pData, Item item);
  * @retval 0            Both the items have the same order
  * @retval -1           The source item has the smaller order
  */
-int32_t _BalTreeItemCompare(Item itemSrc, Item itemTge);
+int32_t _RBTreeItemCompare(Item itemSrc, Item itemTge);
 
 /**
- * @brief The default item clean method.
+ * @brief The default item resource clean method.
  *
- * @param item         The designated item
+ * @param item          The designated item
  */
-void _BalTreeItemDestroy(Item item);
+void _RBTreeItemDestroy(Item item);
 
 /**
  * @brief The internal debug function to verify the structure correctness.
@@ -153,7 +154,7 @@ void _BalTreeItemDestroy(Item item);
  *
  * @return              Whether the tree has legal structure
  */
-bool _BalTreeValidate(BalTreeData *pData);
+bool _RBTreeValidate(RBTreeData *pData);
 
 
 #define CHECK_INIT(self)                                                        \
@@ -168,15 +169,15 @@ bool _BalTreeValidate(BalTreeData *pData);
 /*===========================================================================*
  *           Implementation for the exported member operations               *
  *===========================================================================*/
-int32_t BalTreeInit(BalancedTree **ppObj)
+int32_t RBTreeInit(RedBlackTree **ppObj)
 {
-    BalancedTree *pObj;
-    *ppObj = (BalancedTree*)malloc(sizeof(BalancedTree));
+    RedBlackTree *pObj;
+    *ppObj = (RedBlackTree*)malloc(sizeof(RedBlackTree));
     if (!(*ppObj))
         return ERR_NOMEM;
     pObj = *ppObj;
 
-    pObj->pData = (BalTreeData*)malloc(sizeof(BalTreeData));
+    pObj->pData = (RBTreeData*)malloc(sizeof(RBTreeData));
     if (!pObj->pData) {
         free(*ppObj);
         *ppObj = NULL;
@@ -184,48 +185,49 @@ int32_t BalTreeInit(BalancedTree **ppObj)
     }
 
     /* Create the dummy node representing as the NULL pointer of the tree. */
-    BalTreeData *pData = pObj->pData;
-    pData->_pNull = (BalTreeNode*)malloc(sizeof(BalTreeNode));
-    if (!pData->_pNull) {
+    RBTreeData *pData = pObj->pData;
+    pData->pNull_ = (RBTreeNode*)malloc(sizeof(RBTreeNode));
+    if (!pData->pNull_) {
         free(pObj->pData);
         free(*ppObj);
         *ppObj = NULL;
         return ERR_NOMEM;
     }
-    pData->_pNull->bColor = COLOR_BLACK;
-    pData->_pNull->item = NULL;
-    pData->_pNull->pParent = pData->_pNull;
-    pData->_pNull->pRight = pData->_pNull;
-    pData->_pNull->pLeft = pData->_pNull;
+    pData->pNull_->bColor = COLOR_BLACK;
+    pData->pNull_->item = NULL;
+    pData->pNull_->pParent = pData->pNull_;
+    pData->pNull_->pRight = pData->pNull_;
+    pData->pNull_->pLeft = pData->pNull_;
 
-    pObj->pData->_pRoot = pData->_pNull;
-    pObj->pData->_iSize = 0;
-    pObj->pData->_pCompare = _BalTreeItemCompare;
-    pObj->pData->_pDestroy = _BalTreeItemDestroy;
+    pObj->pData->bUserDestroy_ = false;
+    pObj->pData->iSize_ = 0;
+    pObj->pData->pRoot_ = pData->pNull_;
+    pObj->pData->pCompare_ = _RBTreeItemCompare;
+    pObj->pData->pDestroy_ = _RBTreeItemDestroy;
 
-    pObj->insert = BalTreeInsert;
-    pObj->search = BalTreeSearch;
-    pObj->delete = BalTreeDelete;
-    pObj->maximum = BalTreeMaximum;
-    pObj->minimum = BalTreeMinimum;
-    pObj->successor = BalTreeSuccessor;
-    pObj->predecessor = BalTreePredecessor;
-    pObj->size = BalTreeSize;
-    pObj->set_compare = BalTreeSetCompare;
-    pObj->set_destroy = BalTreeSetDestroy;
+    pObj->insert = RBTreeInsert;
+    pObj->search = RBTreeSearch;
+    pObj->delete = RBTreeDelete;
+    pObj->maximum = RBTreeMaximum;
+    pObj->minimum = RBTreeMinimum;
+    pObj->successor = RBTreeSuccessor;
+    pObj->predecessor = RBTreePredecessor;
+    pObj->size = RBTreeSize;
+    pObj->set_compare = RBTreeSetCompare;
+    pObj->set_destroy = RBTreeSetDestroy;
 
     return SUCC;
 }
 
-void BalTreeDeinit(BalancedTree **ppObj, bool bClean)
+void RBTreeDeinit(RedBlackTree **ppObj)
 {
-    BalancedTree *pObj;
+    RedBlackTree *pObj;
     if (*ppObj) {
         pObj = *ppObj;
         if (pObj->pData) {
-            if (pObj->pData->_pNull) {
-                _BalTreeDeinit(pObj->pData, bClean);
-                free(pObj->pData->_pNull);
+            if (pObj->pData->pNull_) {
+                _RBTreeDeinit(pObj->pData);
+                free(pObj->pData->pNull_);
                 free(pObj->pData);
             }
         }
@@ -235,28 +237,28 @@ void BalTreeDeinit(BalancedTree **ppObj, bool bClean)
     return;
 }
 
-int32_t BalTreeInsert(BalancedTree *self, Item item, bool bClean)
+int32_t RBTreeInsert(RedBlackTree *self, Item item)
 {
     CHECK_INIT(self);
 
     int32_t iOrder;
     int8_t cDirect;
-    BalTreeNode *pNew, *pCurr, *pParent;
-    pNew = (BalTreeNode*)malloc(sizeof(BalTreeNode));
+    RBTreeNode *pNew, *pCurr, *pParent;
+    pNew = (RBTreeNode*)malloc(sizeof(RBTreeNode));
     if (!pNew)
         return ERR_NOMEM;
-    BalTreeData *pData = self->pData;
+    RBTreeData *pData = self->pData;
     pNew->item = item;
     pNew->bColor = COLOR_RED;
-    pNew->pParent = pData->_pNull;
-    pNew->pLeft = pData->_pNull;
-    pNew->pRight = pData->_pNull;
+    pNew->pParent = pData->pNull_;
+    pNew->pLeft = pData->pNull_;
+    pNew->pRight = pData->pNull_;
 
-    pParent = pData->_pNull;
-    pCurr = pData->_pRoot;
-    while (pCurr != pData->_pNull) {
+    pParent = pData->pNull_;
+    pCurr = pData->pRoot_;
+    while (pCurr != pData->pNull_) {
         pParent = pCurr;
-        iOrder = pData->_pCompare(item, pCurr->item);
+        iOrder = pData->pCompare_(item, pCurr->item);
         if (iOrder > 0) {
             pCurr = pCurr->pRight;
             cDirect = DIRECT_RIGHT;
@@ -268,8 +270,8 @@ int32_t BalTreeInsert(BalancedTree *self, Item item, bool bClean)
         else {
             /* Conflict with the already stored item. */
             free(pNew);
-            if (bClean)
-                pData->_pDestroy(pCurr->item);
+            if (pData->bUserDestroy_)
+                pData->pDestroy_(pCurr->item);
             pCurr->item = item;
             return SUCC;
         }
@@ -277,30 +279,30 @@ int32_t BalTreeInsert(BalancedTree *self, Item item, bool bClean)
 
     /* Arrive at the proper position. */
     pNew->pParent = pParent;
-    if (pParent != pData->_pNull) {
+    if (pParent != pData->pNull_) {
         if (cDirect == DIRECT_LEFT)
             pParent->pLeft = pNew;
         else
             pParent->pRight = pNew;
     } else
-        self->pData->_pRoot = pNew;
+        self->pData->pRoot_ = pNew;
 
     /* Increase the size. */
-    self->pData->_iSize++;
+    self->pData->iSize_++;
 
     /* Maintain the balanced tree structure. */
-    _BalTreeInsertFixup(self->pData, pNew);
+    _RBTreeInsertFixup(self->pData, pNew);
 
     return SUCC;
 }
 
-int32_t BalTreeSearch(BalancedTree *self, Item itemIn, Item *pItemOut)
+int32_t RBTreeSearch(RedBlackTree *self, Item itemIn, Item *pItemOut)
 {
     CHECK_INIT(self);
 
-    BalTreeNode *pFind;
-    pFind = _BalTreeSearch(self->pData, itemIn);
-    if (pFind != self->pData->_pNull) {
+    RBTreeNode *pFind;
+    pFind = _RBTreeSearch(self->pData, itemIn);
+    if (pFind != self->pData->pNull_) {
         *pItemOut = pFind->item;
         return SUCC;
     }
@@ -308,14 +310,14 @@ int32_t BalTreeSearch(BalancedTree *self, Item itemIn, Item *pItemOut)
     return ERR_NODATA;
 }
 
-int32_t BalTreeDelete(BalancedTree *self, Item item, bool bClean)
+int32_t RBTreeDelete(RedBlackTree *self, Item item)
 {
     CHECK_INIT(self);
 
-    BalTreeNode *pCurr, *pChild, *pSucc;
-    BalTreeData *pData = self->pData;
-    BalTreeNode *pNull = pData->_pNull;
-    pCurr = _BalTreeSearch(pData, item);
+    RBTreeNode *pCurr, *pChild, *pSucc;
+    RBTreeData *pData = self->pData;
+    RBTreeNode *pNull = pData->pNull_;
+    pCurr = _RBTreeSearch(pData, item);
     if (pCurr == pNull)
         return ERR_NODATA;
 
@@ -328,18 +330,18 @@ int32_t BalTreeDelete(BalancedTree *self, Item item, bool bClean)
             else
                 pCurr->pParent->pRight = pNull;
         } else
-            pData->_pRoot = pNull;
+            pData->pRoot_ = pNull;
 
         bColor = pCurr->bColor;
         pChild = pNull;
         pChild->pParent = pCurr->pParent;
-        if (bClean)
-            pData->_pDestroy(pCurr->item);
+        if (pData->bUserDestroy_)
+            pData->pDestroy_(pCurr->item);
         free(pCurr);
     } else {
         /* The specified node has two children. */
         if ((pCurr->pLeft != pNull) && (pCurr->pRight != pNull)) {
-            pSucc = _BalTreeSuccessor(pNull, pCurr);
+            pSucc = _RBTreeSuccessor(pNull, pCurr);
 
             pChild = pSucc->pLeft;
             if (pChild == pNull)
@@ -353,8 +355,8 @@ int32_t BalTreeDelete(BalancedTree *self, Item item, bool bClean)
                 pSucc->pParent->pRight = pChild;
 
             bColor = pSucc->bColor;
-            if (bClean)
-                pData->_pDestroy(pCurr->item);
+            if (pData->bUserDestroy_)
+                pData->pDestroy_(pCurr->item);
             pCurr->item = pSucc->item;
             free(pSucc);
         }
@@ -372,61 +374,67 @@ int32_t BalTreeDelete(BalancedTree *self, Item item, bool bClean)
                 else
                     pCurr->pParent->pRight = pChild;
             } else
-                pData->_pRoot = pChild;
+                pData->pRoot_ = pChild;
 
             bColor = pCurr->bColor;
-            if (bClean)
-                pData->_pDestroy(pCurr->item);
+            if (pData->bUserDestroy_)
+                pData->pDestroy_(pCurr->item);
             free(pCurr);
         }
     }
 
     /* Decrease the size. */
-    pData->_iSize--;
+    pData->iSize_--;
 
     /* Maintain the balanced tree structure. */
     if (bColor == COLOR_BLACK)
-        _BalTreeDeleteFixup(pData, pChild);
+        _RBTreeDeleteFixup(pData, pChild);
 
     return SUCC;
 }
 
-int32_t BalTreeMaximum(BalancedTree *self, Item *pItem)
+int32_t RBTreeMaximum(RedBlackTree *self, Item *pItem)
 {
     CHECK_INIT(self);
+    if (!pItem)
+        return ERR_GET;
 
-    BalTreeData *pData = self->pData;
-    BalTreeNode *pFind = _BalTreeMaximal(pData->_pNull, pData->_pRoot);
-    if (pFind != pData->_pNull) {
+    RBTreeData *pData = self->pData;
+    RBTreeNode *pFind = _RBTreeMaximal(pData->pNull_, pData->pRoot_);
+    if (pFind != pData->pNull_) {
         *pItem = pFind->item;
         return SUCC;
     }
     return ERR_IDX;
 }
 
-int32_t BalTreeMinimum(BalancedTree *self, Item *pItem)
+int32_t RBTreeMinimum(RedBlackTree *self, Item *pItem)
 {
     CHECK_INIT(self);
+    if (!pItem)
+        return ERR_GET;
 
-    BalTreeData *pData = self->pData;
-    BalTreeNode *pFind = _BalTreeMinimal(pData->_pNull, pData->_pRoot);
-    if (pFind != pData->_pNull) {
+    RBTreeData *pData = self->pData;
+    RBTreeNode *pFind = _RBTreeMinimal(pData->pNull_, pData->pRoot_);
+    if (pFind != pData->pNull_) {
         *pItem = pFind->item;
         return SUCC;
     }
     return ERR_IDX;
 }
 
-int32_t BalTreeSuccessor(BalancedTree *self, Item itemIn, Item *pItemOut)
+int32_t RBTreeSuccessor(RedBlackTree *self, Item itemIn, Item *pItemOut)
 {
     CHECK_INIT(self);
+    if (!pItemOut)
+        return ERR_GET;
 
-    BalTreeNode *pNull = self->pData->_pNull;
-    BalTreeNode *pCurr = _BalTreeSearch(self->pData, itemIn);
+    RBTreeNode *pNull = self->pData->pNull_;
+    RBTreeNode *pCurr = _RBTreeSearch(self->pData, itemIn);
     if (pCurr == pNull)
         return ERR_NODATA;
 
-    BalTreeNode *pFind = _BalTreeSuccessor(pNull, pCurr);
+    RBTreeNode *pFind = _RBTreeSuccessor(pNull, pCurr);
     if (pFind != pNull) {
         *pItemOut = pFind->item;
         return SUCC;
@@ -434,16 +442,18 @@ int32_t BalTreeSuccessor(BalancedTree *self, Item itemIn, Item *pItemOut)
     return ERR_NODATA;
 }
 
-int32_t BalTreePredecessor(BalancedTree *self, Item itemIn, Item *pItemOut)
+int32_t RBTreePredecessor(RedBlackTree *self, Item itemIn, Item *pItemOut)
 {
     CHECK_INIT(self);
+    if (!pItemOut)
+        return ERR_GET;
 
-    BalTreeNode *pNull = self->pData->_pNull;
-    BalTreeNode *pCurr = _BalTreeSearch(self->pData, itemIn);
+    RBTreeNode *pNull = self->pData->pNull_;
+    RBTreeNode *pCurr = _RBTreeSearch(self->pData, itemIn);
     if (pCurr == pNull)
         return ERR_NODATA;
 
-    BalTreeNode *pFind = _BalTreePredecessor(pNull, pCurr);
+    RBTreeNode *pFind = _RBTreePredecessor(pNull, pCurr);
     if (pFind != pNull) {
         *pItemOut = pFind->item;
         return SUCC;
@@ -451,23 +461,24 @@ int32_t BalTreePredecessor(BalancedTree *self, Item itemIn, Item *pItemOut)
     return ERR_NODATA;
 }
 
-int32_t BalTreeSize(BalancedTree *self)
+int32_t RBTreeSize(RedBlackTree *self)
 {
     CHECK_INIT(self);
-    return self->pData->_iSize;
+    return self->pData->iSize_;
 }
 
-int32_t BalTreeSetCompare(BalancedTree *self, int32_t (*pFunc) (Item, Item))
+int32_t RBTreeSetCompare(RedBlackTree *self, int32_t (*pFunc) (Item, Item))
 {
     CHECK_INIT(self);
-    self->pData->_pCompare = pFunc;
+    self->pData->pCompare_ = pFunc;
     return SUCC;
 }
 
-int32_t BalTreeSetDestroy(BalancedTree *self, void (*pFunc) (Item))
+int32_t RBTreeSetDestroy(RedBlackTree *self, void (*pFunc) (Item))
 {
     CHECK_INIT(self);
-    self->pData->_pDestroy = pFunc;
+    self->pData->bUserDestroy_ = true;
+    self->pData->pDestroy_ = pFunc;
     return SUCC;
 }
 
@@ -475,29 +486,29 @@ int32_t BalTreeSetDestroy(BalancedTree *self, void (*pFunc) (Item))
 /*===========================================================================*
  *               Implementation for internal functions                       *
  *===========================================================================*/
-void _BalTreeDeinit(BalTreeData *pData, bool bClean)
+void _RBTreeDeinit(RBTreeData *pData)
 {
-    BalTreeNode *pNull = pData->_pNull;
-    if (pData->_pRoot == pNull)
+    RBTreeNode *pNull = pData->pNull_;
+    if (pData->pRoot_ == pNull)
         return;
 
     /* Simulate the stack and apply iterative post-order tree traversal. */
-    BalTreeNode ***stack = (BalTreeNode***)malloc(sizeof(BalTreeNode**) * pData->_iSize);
+    RBTreeNode ***stack = (RBTreeNode***)malloc(sizeof(RBTreeNode**) * pData->iSize_);
     assert(stack != NULL);
 
     int32_t iSize = 0;
-    stack[iSize++] = &(pData->_pRoot);
+    stack[iSize++] = &(pData->pRoot_);
     while (iSize > 0) {
-        BalTreeNode **ppCurr = stack[iSize - 1];
-        BalTreeNode *pCurr = *ppCurr;
+        RBTreeNode **ppCurr = stack[iSize - 1];
+        RBTreeNode *pCurr = *ppCurr;
         if (pCurr->pLeft != pNull)
             stack[iSize++] = &(pCurr->pLeft);
         else if (pCurr->pRight != pNull)
             stack[iSize++] = &(pCurr->pRight);
         else {
-            if (bClean)
-                pData->_pDestroy(pCurr->item);
-            BalTreeNode *pParent = pCurr->pParent;
+            if (pData->bUserDestroy_)
+                pData->pDestroy_(pCurr->item);
+            RBTreeNode *pParent = pCurr->pParent;
             if (pCurr == pParent->pLeft)
                 pParent->pLeft = pNull;
             else
@@ -511,9 +522,9 @@ void _BalTreeDeinit(BalTreeData *pData, bool bClean)
     return;
 }
 
-BalTreeNode* _BalTreeMinimal(BalTreeNode *pNull, BalTreeNode *pCurr)
+RBTreeNode* _RBTreeMinimal(RBTreeNode *pNull, RBTreeNode *pCurr)
 {
-    BalTreeNode *pParent = pNull;
+    RBTreeNode *pParent = pNull;
     while (pCurr != pNull) {
         pParent = pCurr;
         pCurr = pCurr->pLeft;
@@ -521,9 +532,9 @@ BalTreeNode* _BalTreeMinimal(BalTreeNode *pNull, BalTreeNode *pCurr)
     return pParent;
 }
 
-BalTreeNode* _BalTreeMaximal(BalTreeNode *pNull, BalTreeNode *pCurr)
+RBTreeNode* _RBTreeMaximal(RBTreeNode *pNull, RBTreeNode *pCurr)
 {
-    BalTreeNode *pParent = pNull;
+    RBTreeNode *pParent = pNull;
     while (pCurr != pNull) {
         pParent = pCurr;
         pCurr = pCurr->pRight;
@@ -531,12 +542,12 @@ BalTreeNode* _BalTreeMaximal(BalTreeNode *pNull, BalTreeNode *pCurr)
     return pParent;
 }
 
-BalTreeNode* _BalTreeSuccessor(BalTreeNode *pNull, BalTreeNode *pCurr)
+RBTreeNode* _RBTreeSuccessor(RBTreeNode *pNull, RBTreeNode *pCurr)
 {
     if (pCurr != pNull) {
         /* Case 1: The minimal node in the non-null right subtree. */
         if (pCurr->pRight != pNull)
-            pCurr = _BalTreeMinimal(pNull, pCurr->pRight);
+            pCurr = _RBTreeMinimal(pNull, pCurr->pRight);
 
         /* Case 2: The ancestor which considers the designated node as the
            maximal node of its left subtree. */
@@ -549,12 +560,12 @@ BalTreeNode* _BalTreeSuccessor(BalTreeNode *pNull, BalTreeNode *pCurr)
     return pCurr;
 }
 
-BalTreeNode* _BalTreePredecessor(BalTreeNode *pNull, BalTreeNode *pCurr)
+RBTreeNode* _RBTreePredecessor(RBTreeNode *pNull, RBTreeNode *pCurr)
 {
     if (pCurr != pNull) {
         /* Case 1: The maximal node in the non-null left subtree. */
         if (pCurr->pLeft != pNull)
-            pCurr = _BalTreeMaximal(pNull, pCurr->pLeft);
+            pCurr = _RBTreeMaximal(pNull, pCurr->pLeft);
 
         /* Case 2: The ancestor which considers the designated node as the
            minimal node of its right subtree. */
@@ -567,9 +578,9 @@ BalTreeNode* _BalTreePredecessor(BalTreeNode *pNull, BalTreeNode *pCurr)
     return pCurr;
 }
 
-void _BalTreeRightRotate(BalTreeData *pData, BalTreeNode *pCurr) {
-    BalTreeNode *pNull = pData->_pNull;
-    BalTreeNode *pChild = pCurr->pLeft;
+void _RBTreeRightRotate(RBTreeData *pData, RBTreeNode *pCurr) {
+    RBTreeNode *pNull = pData->pNull_;
+    RBTreeNode *pChild = pCurr->pLeft;
     /**
      *  Right rotation for the current node denoted as y
      *     y          x
@@ -594,7 +605,7 @@ void _BalTreeRightRotate(BalTreeData *pData, BalTreeNode *pCurr) {
         else
             pCurr->pParent->pRight = pChild;
     } else
-        pData->_pRoot = pChild;
+        pData->pRoot_ = pChild;
 
     /* Let y link x as its parent.
        And let x link y as its right child. */
@@ -604,9 +615,9 @@ void _BalTreeRightRotate(BalTreeData *pData, BalTreeNode *pCurr) {
     return;
 }
 
-void _BalTreeLeftRotate(BalTreeData *pData, BalTreeNode *pCurr) {
-    BalTreeNode *pNull = pData->_pNull;
-    BalTreeNode *pChild = pCurr->pRight;
+void _RBTreeLeftRotate(RBTreeData *pData, RBTreeNode *pCurr) {
+    RBTreeNode *pNull = pData->pNull_;
+    RBTreeNode *pChild = pCurr->pRight;
     /**
      *  Left rotation for the current node denoted as x
      *     x          y
@@ -631,7 +642,7 @@ void _BalTreeLeftRotate(BalTreeData *pData, BalTreeNode *pCurr) {
         else
             pCurr->pParent->pRight = pChild;
     } else
-        pData->_pRoot = pChild;
+        pData->pRoot_ = pChild;
 
     /* Let x link y as its parent.
        And let y link x as its left child. */
@@ -641,9 +652,9 @@ void _BalTreeLeftRotate(BalTreeData *pData, BalTreeNode *pCurr) {
     return;
 }
 
-void _BalTreeInsertFixup(BalTreeData *pData, BalTreeNode *pCurr)
+void _RBTreeInsertFixup(RBTreeData *pData, RBTreeNode *pCurr)
 {
-    BalTreeNode *pUncle;
+    RBTreeNode *pUncle;
 
     /* Denote the current node as x. */
     while (pCurr->pParent->bColor == COLOR_RED) {
@@ -688,7 +699,7 @@ void _BalTreeInsertFixup(BalTreeData *pData, BalTreeNode *pCurr)
                  */
                 if (pCurr == pCurr->pParent->pRight) {
                     pCurr = pCurr->pParent;
-                    _BalTreeLeftRotate(pData, pCurr);
+                    _RBTreeLeftRotate(pData, pCurr);
                 }
                 /**
                  * Case 3: The color of x's uncle is black, and x is its parent's
@@ -709,7 +720,7 @@ void _BalTreeInsertFixup(BalTreeData *pData, BalTreeNode *pCurr)
                  */
                 pCurr->pParent->bColor = COLOR_BLACK;
                 pCurr->pParent->pParent->bColor = COLOR_RED;
-                _BalTreeRightRotate(pData, pCurr->pParent->pParent);
+                _RBTreeRightRotate(pData, pCurr->pParent->pParent);
             }
         }
         /* x's parent is its grandparent's right child. */
@@ -727,27 +738,27 @@ void _BalTreeInsertFixup(BalTreeData *pData, BalTreeNode *pCurr)
                    left child. */
                 if (pCurr == pCurr->pParent->pLeft) {
                     pCurr = pCurr->pParent;
-                    _BalTreeRightRotate(pData, pCurr);
+                    _RBTreeRightRotate(pData, pCurr);
                 }
                 /* Case 3: The color of x's uncle is black, and x is its parent's
                    right child. */
                 pCurr->pParent->bColor = COLOR_BLACK;
                 pCurr->pParent->pParent->bColor = COLOR_RED;
-                _BalTreeLeftRotate(pData, pCurr->pParent->pParent);
+                _RBTreeLeftRotate(pData, pCurr->pParent->pParent);
             }
         }
     }
 
-    pData->_pRoot->bColor = COLOR_BLACK;
+    pData->pRoot_->bColor = COLOR_BLACK;
     return;
 }
 
-void _BalTreeDeleteFixup(BalTreeData *pData, BalTreeNode *pCurr)
+void _RBTreeDeleteFixup(RBTreeData *pData, RBTreeNode *pCurr)
 {
-    BalTreeNode *pBrother;
+    RBTreeNode *pBrother;
 
     /* Denote the current node as x. */
-    while ((pCurr != pData->_pRoot) && (pCurr->bColor == COLOR_BLACK)) {
+    while ((pCurr != pData->pRoot_) && (pCurr->bColor == COLOR_BLACK)) {
         /* x is its parent's left child. */
         if (pCurr == pCurr->pParent->pLeft) {
             pBrother = pCurr->pParent->pRight;
@@ -768,7 +779,7 @@ void _BalTreeDeleteFixup(BalTreeData *pData, BalTreeNode *pCurr)
             if (pBrother->bColor == COLOR_RED) {
                 pBrother->bColor = COLOR_BLACK;
                 pCurr->pParent->bColor = COLOR_RED;
-                _BalTreeLeftRotate(pData, pCurr->pParent);
+                _RBTreeLeftRotate(pData, pCurr->pParent);
                 pBrother = pCurr->pParent->pRight;
             }
             /**
@@ -807,7 +818,7 @@ void _BalTreeDeleteFixup(BalTreeData *pData, BalTreeNode *pCurr)
                 if (pBrother->pRight->bColor == COLOR_BLACK) {
                     pBrother->pLeft->bColor = COLOR_BLACK;
                     pBrother->bColor = COLOR_RED;
-                    _BalTreeRightRotate(pData, pBrother);
+                    _RBTreeRightRotate(pData, pBrother);
                     pBrother = pCurr->pParent->pRight;
                 }
                 /**
@@ -830,8 +841,8 @@ void _BalTreeDeleteFixup(BalTreeData *pData, BalTreeNode *pCurr)
                 pBrother->bColor = pCurr->pParent->bColor;
                 pCurr->pParent->bColor = COLOR_BLACK;
                 pBrother->pRight->bColor = COLOR_BLACK;
-                _BalTreeLeftRotate(pData, pCurr->pParent);
-                pCurr = pData->_pRoot;
+                _RBTreeLeftRotate(pData, pCurr->pParent);
+                pCurr = pData->pRoot_;
             }
         }
         /* x is its parent's right child */
@@ -841,7 +852,7 @@ void _BalTreeDeleteFixup(BalTreeData *pData, BalTreeNode *pCurr)
             if (pBrother->bColor == COLOR_RED) {
                 pBrother->bColor = COLOR_BLACK;
                 pCurr->pParent->bColor = COLOR_RED;
-                _BalTreeRightRotate(pData, pCurr->pParent);
+                _RBTreeRightRotate(pData, pCurr->pParent);
                 pBrother = pCurr->pParent->pLeft;
             }
             /* Case 2: The color of x's brother is black, and both of its
@@ -856,7 +867,7 @@ void _BalTreeDeleteFixup(BalTreeData *pData, BalTreeNode *pCurr)
                 if (pBrother->pLeft->bColor == COLOR_BLACK) {
                     pBrother->pRight->bColor = COLOR_BLACK;
                     pBrother->bColor = COLOR_RED;
-                    _BalTreeLeftRotate(pData, pBrother);
+                    _RBTreeLeftRotate(pData, pBrother);
                     pBrother = pCurr->pParent->pLeft;
                 }
                 /* Case 4: The color of x's brother is black, and its left child
@@ -864,8 +875,8 @@ void _BalTreeDeleteFixup(BalTreeData *pData, BalTreeNode *pCurr)
                 pBrother->bColor = pCurr->pParent->bColor;
                 pCurr->pParent->bColor = COLOR_BLACK;
                 pBrother->pLeft->bColor = COLOR_BLACK;
-                _BalTreeRightRotate(pData, pCurr->pParent);
-                pCurr = pData->_pRoot;
+                _RBTreeRightRotate(pData, pCurr->pParent);
+                pCurr = pData->pRoot_;
             }
         }
     }
@@ -874,12 +885,12 @@ void _BalTreeDeleteFixup(BalTreeData *pData, BalTreeNode *pCurr)
     return;
 }
 
-BalTreeNode* _BalTreeSearch(BalTreeData *pData, Item item)
+RBTreeNode* _RBTreeSearch(RBTreeData *pData, Item item)
 {
     int32_t iOrder;
-    BalTreeNode *pCurr = pData->_pRoot;
-    while(pCurr != pData->_pNull) {
-        iOrder = pData->_pCompare(item, pCurr->item);
+    RBTreeNode *pCurr = pData->pRoot_;
+    while(pCurr != pData->pNull_) {
+        iOrder = pData->pCompare_(item, pCurr->item);
         if (iOrder == 0)
             break;
         else {
@@ -892,24 +903,24 @@ BalTreeNode* _BalTreeSearch(BalTreeData *pData, Item item)
     return pCurr;
 }
 
-int32_t _BalTreeItemCompare(Item itemSrc, Item itemTge)
+int32_t _RBTreeItemCompare(Item itemSrc, Item itemTge)
 {
     if (itemSrc == itemTge)
         return 0;
     return (itemSrc > itemTge)? 1 : -1;
 }
 
-void _BalTreeItemDestroy(Item item) {}
+void _RBTreeItemDestroy(Item item) {}
 
-bool _BalTreeValidate(BalTreeData *pData)
+bool _RBTreeValidate(RBTreeData *pData)
 {
-    BalTreeNode *pNull = pData->_pNull;
+    RBTreeNode *pNull = pData->pNull_;
     bool bLegal = true;
 
     /* Simulate the stack and apply iterative in-order tree traversal. */
-    BalTreeNode **stack = (BalTreeNode**)malloc(sizeof(BalTreeNode*) * pData->_iSize);
-    BalTreeNode *pCurr = pData->_pRoot;
-    BalTreeNode *pPred = pNull;
+    RBTreeNode **stack = (RBTreeNode**)malloc(sizeof(RBTreeNode*) * pData->iSize_);
+    RBTreeNode *pCurr = pData->pRoot_;
+    RBTreeNode *pPred = pNull;
     int32_t iSize = 0;
 
     while ((pCurr != pNull) || (iSize > 0)) {
@@ -919,7 +930,7 @@ bool _BalTreeValidate(BalTreeData *pData)
         } else {
             if (pPred != pNull) {
                 pCurr = stack[iSize - 1];
-                int32_t iOrder = pData->_pCompare(pPred->item, pCurr->item);
+                int32_t iOrder = pData->pCompare_(pPred->item, pCurr->item);
                 if (iOrder >= 0)
                     bLegal = false;
             }

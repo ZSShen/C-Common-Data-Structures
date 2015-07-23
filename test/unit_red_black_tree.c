@@ -1,16 +1,14 @@
-#include "tree/balanced_tree.h"
+#include "tree/red_black_tree.h"
 #include "CUnit/Util.h"
 #include "CUnit/Basic.h"
 
 
-#define SIZE_LARGE_TEST     10000
+#define SIZE_LARGE_TEST (10000)
 int32_t aDataFst[SIZE_LARGE_TEST];
 int32_t aDataSnd[SIZE_LARGE_TEST];
 
 
-/*===========================================================================*
- *              Test suite to manipulate primitive type input                *
- *===========================================================================*/
+/* Test suite to manipulate primitive type input. */
 void TestPrimInsertBase();
 void TestPrimInsertLarge();
 void TestPrimDeleteLarge();
@@ -55,7 +53,7 @@ int32_t main()
     assert(CU_get_registry() != NULL);
     assert(!CU_is_test_running());
 
-    /* Prepare the large dataset. */
+    /* Prepare the test dataset. */
     srand(time(NULL));
     int32_t idxFst = 0, idxSnd;
     while (idxFst < SIZE_LARGE_TEST) {
@@ -92,8 +90,8 @@ int32_t main()
 
 void TestPrimInsertBase()
 {
-    BalancedTree *pTree;
-    CU_ASSERT(BalTreeInit(&pTree) == SUCC);
+    RedBlackTree *pTree;
+    CU_ASSERT(RBTreeInit(&pTree) == SUCC);
 
     /**
      * The vision of the test tree after maintaining the balanced tree property.
@@ -105,16 +103,16 @@ void TestPrimInsertBase()
      *         \      / \
      *          7   20   25
      */
-    CU_ASSERT(pTree->insert(pTree, (Item)10, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)15, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)20, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)25, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)22, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)9, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)6, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)1, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)4, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)7, true) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)10) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)15) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)20) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)25) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)22) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)9) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)6) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)1) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)4) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)7) == SUCC);
 
     /* Check structure correctness. */
     Item item;
@@ -167,22 +165,22 @@ void TestPrimInsertBase()
     /* Check the container size. */
     CU_ASSERT_EQUAL(pTree->size(pTree), 10);
 
-    BalTreeDeinit(&pTree, true);
+    RBTreeDeinit(&pTree);
 }
 
 
 void TestPrimInsertLarge()
 {
-    BalancedTree *pTree;
-    CU_ASSERT(BalTreeInit(&pTree) == SUCC);
+    RedBlackTree *pTree;
+    CU_ASSERT(RBTreeInit(&pTree) == SUCC);
 
     /* Bulk data insertion. */
     int32_t idx;
     for (idx = 0 ; idx < SIZE_LARGE_TEST ; idx++)
         #if __x86_64__
-        CU_ASSERT(pTree->insert(pTree, (Item)(int64_t)aDataFst[idx], true) == SUCC);
+        CU_ASSERT(pTree->insert(pTree, (Item)(int64_t)aDataFst[idx]) == SUCC);
         #else
-        CU_ASSERT(pTree->insert(pTree, (Item)aDataFst[idx], true) == SUCC);
+        CU_ASSERT(pTree->insert(pTree, (Item)aDataFst[idx]) == SUCC);
         #endif
 
     /* Check structure correctness. */
@@ -204,30 +202,30 @@ void TestPrimInsertLarge()
         #endif
     }
 
-    BalTreeDeinit(&pTree, true);
+    RBTreeDeinit(&pTree);
 }
 
 
 void TestPrimDeleteLarge()
 {
-    BalancedTree *pTree;
-    CU_ASSERT(BalTreeInit(&pTree) == SUCC);
+    RedBlackTree *pTree;
+    CU_ASSERT(RBTreeInit(&pTree) == SUCC);
 
     /* Bulk data insertion. */
     int32_t idx;
     for (idx = 0 ; idx < SIZE_LARGE_TEST ; idx++)
         #if __x86_64__
-        CU_ASSERT(pTree->insert(pTree, (Item)(int64_t)aDataSnd[idx], true) == SUCC);
+        CU_ASSERT(pTree->insert(pTree, (Item)(int64_t)aDataSnd[idx]) == SUCC);
         #else
-        CU_ASSERT(pTree->insert(pTree, (Item)aDataSnd[idx]), true) == SUCC);
+        CU_ASSERT(pTree->insert(pTree, (Item)aDataSnd[idx])) == SUCC);
         #endif
 
     /* Bulk data deletion. */
     for (idx = SIZE_LARGE_TEST/2 ; idx < SIZE_LARGE_TEST ; idx++)
         #if __x86_64__
-        CU_ASSERT(pTree->delete(pTree, (Item)(int64_t)aDataSnd[idx], true) == SUCC);
+        CU_ASSERT(pTree->delete(pTree, (Item)(int64_t)aDataSnd[idx]) == SUCC);
         #else
-        CU_ASSERT(pTree->delete(pTree, (Item)aDataSnd[idx]), true) == SUCC);
+        CU_ASSERT(pTree->delete(pTree, (Item)aDataSnd[idx])) == SUCC);
         #endif
 
     /* Check structure correctness. */
@@ -249,14 +247,14 @@ void TestPrimDeleteLarge()
         #endif
     }
 
-    BalTreeDeinit(&pTree, true);
+    RBTreeDeinit(&pTree);
 }
 
 
 void TestPrimSearchAndBoundary()
 {
-    BalancedTree *pTree;
-    CU_ASSERT(BalTreeInit(&pTree) == SUCC);
+    RedBlackTree *pTree;
+    CU_ASSERT(RBTreeInit(&pTree) == SUCC);
 
     /* Search for the empty tree. */
     Item item;
@@ -264,12 +262,12 @@ void TestPrimSearchAndBoundary()
     CU_ASSERT_EQUAL(item, NULL);
 
     /* Search for the real data. */
-    CU_ASSERT(pTree->insert(pTree, (Item)1, true) == SUCC);
-    CU_ASSERT(pTree->insert(pTree, (Item)0, true) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)1) == SUCC);
+    CU_ASSERT(pTree->insert(pTree, (Item)0) == SUCC);
     CU_ASSERT(pTree->search(pTree, (Item)0, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)0);
 
-    CU_ASSERT(pTree->delete(pTree, (Item)0, true) == SUCC);
+    CU_ASSERT(pTree->delete(pTree, (Item)0) == SUCC);
     CU_ASSERT(pTree->search(pTree, (Item)0, &item) == ERR_NODATA);
     CU_ASSERT_EQUAL(item, NULL);
 
@@ -279,12 +277,12 @@ void TestPrimSearchAndBoundary()
     CU_ASSERT(pTree->predecessor(pTree, (Item)1, &item) == ERR_NODATA);
     CU_ASSERT(pTree->successor(pTree, (Item)1, &item) == ERR_NODATA);
 
-    CU_ASSERT(pTree->delete(pTree, (Item)1, true) == SUCC);
+    CU_ASSERT(pTree->delete(pTree, (Item)1) == SUCC);
     CU_ASSERT(pTree->maximum(pTree, &item) == ERR_IDX);
     CU_ASSERT(pTree->minimum(pTree, &item) == ERR_IDX);
-    CU_ASSERT(pTree->delete(pTree, (Item)1, true) == ERR_NODATA);
+    CU_ASSERT(pTree->delete(pTree, (Item)1) == ERR_NODATA);
 
-    BalTreeDeinit(&pTree, true);
+    RBTreeDeinit(&pTree);
 }
 
 

@@ -1,99 +1,98 @@
 /**
- * @file balanced_tree.h The balanced binary search tree.
+ * @file red_black_tree.h The balanced binary search tree.
  */
 
-#ifndef _BALANCED_TREE_H_
-#define _BALANCED_TREE_H_
+#ifndef _REDBLACK_TREE_H_
+#define _REDBLACK_TREE_H_
 
 #include "../util.h"
 
-/** BalTreeData is the data type for the container private information. */
-typedef struct _BalTreeData BalTreeData;
+/** RBTreeData is the data type for the container private information. */
+typedef struct _RBTreeData RBTreeData;
 
-/** The implementation for basic binary search tree. */
-typedef struct _BalancedTree {
+/** The implementation for balanced binary search tree. */
+typedef struct _RedBlackTree {
     /** The container private information. */
-    BalTreeData *pData;
+    RBTreeData *pData;
 
     /** Insert an item into the tree.
-        @see BalTreeInsert */
-    int32_t (*insert) (struct _BalancedTree*, Item, bool);
+        @see RBTreeInsert */
+    int32_t (*insert) (struct _RedBlackTree*, Item);
 
     /** Search for the the item having the same order with the designated one.
-        @see BalTreeSearch */
-    int32_t (*search) (struct _BalancedTree*, Item, Item*);
+        @see RBTreeSearch */
+    int32_t (*search) (struct _RedBlackTree*, Item, Item*);
 
     /** Delete the item having the same order with the designated one.
-        @see BalTreeDelete */
-    int32_t (*delete) (struct _BalancedTree*, Item, bool);
+        @see RBTreeDelete */
+    int32_t (*delete) (struct _RedBlackTree*, Item);
 
     /** Get the item having the maximum order of the tree.
-        @see BalTreeMaximum */
-    int32_t (*maximum) (struct _BalancedTree*, Item*);
+        @see RBTreeMaximum */
+    int32_t (*maximum) (struct _RedBlackTree*, Item*);
 
     /** Get the item having the minimum order of the tree.
-        @see BalTreeMinimum */
-    int32_t (*minimum) (struct _BalancedTree*, Item*);
+        @see RBTreeMinimum */
+    int32_t (*minimum) (struct _RedBlackTree*, Item*);
 
     /** Get the immediate successor of the designated item.
-        @see BalTreeSuccessor */
-    int32_t (*successor) (struct _BalancedTree*, Item, Item*);
+        @see RBTreeSuccessor */
+    int32_t (*successor) (struct _RedBlackTree*, Item, Item*);
 
     /** Get the immediate predecessor of the designated item.
-        @see BalTreePredecessor */
-    int32_t (*predecessor) (struct _BalancedTree*, Item, Item*);
+        @see RBTreePredecessor */
+    int32_t (*predecessor) (struct _RedBlackTree*, Item, Item*);
 
     /** Get the number of stored item.
-        @see BalTreeSize */
-    int32_t (*size) (struct _BalancedTree*);
+        @see RBTreeSize */
+    int32_t (*size) (struct _RedBlackTree*);
 
-    /** Set the user defined item comparison method.
-        @see BalTreeSetCompare */
-    int32_t (*set_compare) (struct _BalancedTree*, int32_t (*) (Item, Item));
+    /** Set the custom item comparison method.
+        @see RBTreeSetCompare */
+    int32_t (*set_compare) (struct _RedBlackTree*, int32_t (*) (Item, Item));
 
-    /** Set the user defined item clean method.
-        @see BalTreeSetDestroy */
-    int32_t (*set_destroy) (struct _BalancedTree*, void (*) (Item));
-} BalancedTree;
+    /** Set the custom item resource clean method.
+        @see RBTreeSetDestroy */
+    int32_t (*set_destroy) (struct _RedBlackTree*, void (*) (Item));
+} RedBlackTree;
 
 
 /**
- * @brief The constructor for BalancedTree.
+ * @brief The constructor for RedBlackTree.
  *
  * @param ppObj         The double pointer to the to be constructed tree
  *
  * @retval SUCC
  * @retval ERR_NOMEM    Insufficient memory for tree construction
  */
-int32_t BalTreeInit(BalancedTree **ppObj);
+int32_t RBTreeInit(RedBlackTree **ppObj);
 
 /**
- * @brief The destructor for BalancedTree.
+ * @brief The destructor for RedBlackTree.
  *
- * If the knob is on, it also runs the resource clean method for all the items.
+ * If the custom resource clean method is set, it also runs the clean method for
+ * all the items.
  *
  * @param ppObj         The double pointer to the to be destructed tree
- * @param bClean        The knob to clean item resource
  */
-void BalTreeDeinit(BalancedTree **ppObj, bool bClean);
+void RBTreeDeinit(RedBlackTree **ppObj);
 
 /**
  * @brief Insert an item into the tree.
  *
  * This function inserts an item into the tree. If the order of the designated
  * item is the same with a certain one stored in the tree, that item will be
- * replaced. Also, if the knob is on, it runs the resource clean method for the
- * replaced item.
+ * replaced. Also, if the custom resource clean method is set, it runs the clean
+ * method for the replaced item.
  *
- * @param self          The pointer to the BalancedTree structure
+ * @param self          The pointer to the RedBlackTree structure
  * @param item          The designated item
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NOMEM    Insufficient memory for tree extension
  */
-int32_t BalTreeInsert(BalancedTree *self, Item item, bool bClean);
+int32_t RBTreeInsert(RedBlackTree *self, Item item);
 
 /**
  * @brief Search for the item having the same order with the designated one.
@@ -103,112 +102,118 @@ int32_t BalTreeInsert(BalancedTree *self, Item item, bool bClean);
  * Otherwise, the error code is returned and the third parameter is updated with
  * NULL.
  *
- * @param self          The pointer to the BalancedTree structure
+ * @param self          The pointer to the RedBlackTree structure
  * @param itemIn        The designated item
  * @param pItemOut      The pointer to the returned item
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NODATA   Non-existent item
+ * @retval ERR_GET      Invalid parameter to store returned item
  */
-int32_t BalTreeSearch(BalancedTree *self, Item itemIn, Item *pItemOut);
+int32_t RBTreeSearch(RedBlackTree *self, Item itemIn, Item *pItemOut);
 
 /**
 * @brief Delete the item having the same order with the designated one.
  *
  * This function first searches for the item having the same order with the
  * designated one. If such item can be found, it will be removed. Also, if the
- * knob is on, the function runs the resource clean method for the removed item.
+ * custom resource clean method is set, it runs the clean method for the removed
+ * item.
  *
- * @param self          The pointer to the BalancedTree structure
+ * @param self          The pointer to the RedBlackTree structure
  * @param item          The designated item
- * @param bClean        The knob to clean item resource
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NODATA   Non-existent item
+ * @retval ERR_GET      Invalid parameter to store returned item
  */
-int32_t BalTreeDelete(BalancedTree *self, Item item, bool bClean);
+int32_t RBTreeDelete(RedBlackTree *self, Item item);
 
 /**
  * @brief Return the item having the maximum order of the tree.
  *
- * @param self          The pointer to the BalancedTree structure
+ * @param self          The pointer to the RedBlackTree structure
  * @param pItem         The pointer to the returned item
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty tree
+ * @retval ERR_GET      Invalid parameter to store returned item
  */
-int32_t BalTreeMaximum(BalancedTree *self, Item *pItem);
+int32_t RBTreeMaximum(RedBlackTree *self, Item *pItem);
 
 /**
  * @brief Return the item having the minimum order of the tree.
  *
- * @param self          The pointer to the BalancedTree structure
+ * @param self          The pointer to the RedBlackTree structure
  * @param pItem         The pointer to the returned item
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty tree
+ * @retval ERR_GET      Invalid parameter to store returned item
  */
-int32_t BalTreeMinimum(BalancedTree *self, Item *pItem);
+int32_t RBTreeMinimum(RedBlackTree *self, Item *pItem);
 
 /**
  * @brief Return the item which is the immediate successor of the designated item.
  *
- * @param self          The pointer to the BalancedTree structure
+ * @param self          The pointer to the RedBlackTree structure
  * @param itemIn        The designated item
  * @param pItemOut      The pointer to the returned item
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NODATA   Non-existent immediate successor
+ * @retval ERR_GET      Invalid parameter to store returned item
  */
-int32_t BalTreeSuccessor(BalancedTree *self, Item itemIn, Item *pItemOut);
+int32_t RBTreeSuccessor(RedBlackTree *self, Item itemIn, Item *pItemOut);
 
 /**
  * @brief Return the item which is the immediate predecessor of the designated item.
  *
- * @param self          The pointer to the BalancedTree structure
+ * @param self          The pointer to the RedBlackTree structure
  * @param itemIn        The designated item
  * @param pItemOut      The pointer to the returned item
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NODATA   Non-existent immediate predecessor
+ * @retval ERR_GET      Invalid parameter to store returned item
  */
-int32_t BalTreePredecessor(BalancedTree *self, Item itemIn, Item *pItemOut);
+int32_t RBTreePredecessor(RedBlackTree *self, Item itemIn, Item *pItemOut);
 
 /**
  * @brief Return the number of stored items.
  *
- * @param self          The pointer to the BalancedTree structure.
+ * @param self          The pointer to the RedBlackTree structure.
  *
  * @return              The number of stored items
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t BalTreeSize(BalancedTree *self);
+int32_t RBTreeSize(RedBlackTree *self);
 
 /**
- * @brief Set the user defined item comparison method.
+ * @brief Set the custom item comparison method.
  *
- * @param self          The pointer to the BalancedTree structure
+ * @param self          The pointer to the RedBlackTree structure
  * @param pFunc         The function pointer to the custom method
  *
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t BalTreeSetCompare(BalancedTree *self, int32_t (*pFunc) (Item, Item));
+int32_t RBTreeSetCompare(RedBlackTree *self, int32_t (*pFunc) (Item, Item));
 
 /**
- * @brief Set the user defined item clean method.
+ * @brief Set the custom item resource clean method.
  *
- * @param self          The pointer to the BalancedTree structure
+ * @param self          The pointer to the RedBlackTree structure
  * @param pFunc         The function pointer to the custom method
  *
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t BalTreeSetDestroy(BalancedTree *self, void (*pFunc) (Item));
+int32_t RBTreeSetDestroy(RedBlackTree *self, void (*pFunc) (Item));
 
 
 #endif
