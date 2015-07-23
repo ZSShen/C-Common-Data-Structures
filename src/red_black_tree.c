@@ -405,6 +405,8 @@ int32_t RBTreeMaximum(RedBlackTree *self, Item *pItem)
         *pItem = pFind->item;
         return SUCC;
     }
+
+    *pItem = NULL;
     return ERR_IDX;
 }
 
@@ -420,6 +422,8 @@ int32_t RBTreeMinimum(RedBlackTree *self, Item *pItem)
         *pItem = pFind->item;
         return SUCC;
     }
+
+    *pItem = NULL;
     return ERR_IDX;
 }
 
@@ -439,6 +443,8 @@ int32_t RBTreeSuccessor(RedBlackTree *self, Item itemIn, Item *pItemOut)
         *pItemOut = pFind->item;
         return SUCC;
     }
+
+    *pItemOut = NULL;
     return ERR_NODATA;
 }
 
@@ -458,6 +464,8 @@ int32_t RBTreePredecessor(RedBlackTree *self, Item itemIn, Item *pItemOut)
         *pItemOut = pFind->item;
         return SUCC;
     }
+
+    *pItemOut = NULL;
     return ERR_NODATA;
 }
 
