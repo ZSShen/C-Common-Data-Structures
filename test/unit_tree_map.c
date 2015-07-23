@@ -1,4 +1,4 @@
-#include "map/ordered_map.h"
+#include "map/tree_map.h"
 #include "CUnit/Util.h"
 #include "CUnit/Basic.h"
 
@@ -40,10 +40,10 @@ void TestBoundaryManipulate();
 void TestAdvancedManipulate();
 
 /* The functions to assist map operatoin testing. */
-void TestSimplePut(OrderedMap*, int32_t);
-void TestSimpleGetSucc(OrderedMap*, int32_t);
-void TestSimpleGetFail(OrderedMap*, int32_t);
-void TestAdvancedPut(OrderedMap*, int32_t);
+void TestSimplePut(TreeMap*, int32_t);
+void TestSimpleGetSucc(TreeMap*, int32_t);
+void TestSimpleGetFail(TreeMap*, int32_t);
+void TestAdvancedPut(TreeMap*, int32_t);
 
 
 int32_t main()
@@ -197,7 +197,7 @@ void SimpleDestroy(Entry ent)
 }
 
 
-void TestSimplePut(OrderedMap *pMap, int32_t iIdx)
+void TestSimplePut(TreeMap *pMap, int32_t iIdx)
 {
     Pair *pPair = (Pair*)malloc(sizeof(Pair));
     if (!pPair)
@@ -210,10 +210,10 @@ void TestSimplePut(OrderedMap *pMap, int32_t iIdx)
         pPair->key = (Key)aNum[iIdx];
         pPair->value = (Value)aNum[iIdx];
     #endif
-    CU_ASSERT(pMap->put(pMap, (Entry)pPair, true) == SUCC);
+    CU_ASSERT(pMap->put(pMap, (Entry)pPair) == SUCC);
 }
 
-void TestSimpleGetSucc(OrderedMap *pMap, int32_t iIdx)
+void TestSimpleGetSucc(TreeMap *pMap, int32_t iIdx)
 {
     Key key;
     Value valuePred, valueRetv;
@@ -228,7 +228,7 @@ void TestSimpleGetSucc(OrderedMap *pMap, int32_t iIdx)
     CU_ASSERT_EQUAL(valueRetv, valuePred);
 }
 
-void TestSimpleGetFail(OrderedMap *pMap, int32_t iIdx)
+void TestSimpleGetFail(TreeMap *pMap, int32_t iIdx)
 {
     Key key;
     Value valueRetv;
@@ -244,8 +244,8 @@ void TestSimpleGetFail(OrderedMap *pMap, int32_t iIdx)
 
 void TestSimpleManipulate()
 {
-    OrderedMap *pMap;
-    CU_ASSERT(OdrMapInit(&pMap) == SUCC);
+    TreeMap *pMap;
+    CU_ASSERT(TreeMapInit(&pMap) == SUCC);
     CU_ASSERT(pMap->set_compare(pMap, SimpleCompare) == SUCC);
     CU_ASSERT(pMap->set_destroy(pMap, SimpleDestroy) == SUCC);
     CU_ASSERT_EQUAL(pMap->size(pMap), 0);
@@ -259,9 +259,9 @@ void TestSimpleManipulate()
 
     for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
         #if __x86_64__
-        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx], true) == SUCC);
+        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx]) == SUCC);
         #else
-        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx], true) == SUCC);
+        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx]) == SUCC);
         #endif
     for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
         TestSimpleGetFail(pMap, iIdx);
@@ -269,13 +269,13 @@ void TestSimpleManipulate()
         TestSimpleGetSucc(pMap, iIdx);
     CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST/2);
 
-    OdrMapDeinit(&pMap, true);
+    TreeMapDeinit(&pMap);
 }
 
 void TestBoundaryManipulate()
 {
-    OrderedMap *pMap;
-    CU_ASSERT(OdrMapInit(&pMap) == SUCC);
+    TreeMap *pMap;
+    CU_ASSERT(TreeMapInit(&pMap) == SUCC);
     CU_ASSERT(pMap->set_compare(pMap, SimpleCompare) == SUCC);
     CU_ASSERT(pMap->set_destroy(pMap, SimpleDestroy) == SUCC);
 
@@ -287,9 +287,9 @@ void TestBoundaryManipulate()
     /* Remove the unexisting key value pair. */
     for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
         #if __x86_64__
-        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx], true) == ERR_NODATA);
+        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx]) == ERR_NODATA);
         #else
-        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx], true) == ERR_NODATA);
+        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx]) == ERR_NODATA);
         #endif
 
     for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
@@ -302,12 +302,12 @@ void TestBoundaryManipulate()
     /* Remove the unexisting key value pair. */
     for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
         #if __x86_64__
-        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx], true) == ERR_NODATA);
+        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx]) == ERR_NODATA);
         #else
-        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx], true) == ERR_NODATA);
+        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx]) == ERR_NODATA);
         #endif
 
-    OdrMapDeinit(&pMap, true);
+    TreeMapDeinit(&pMap);
 }
 
 int32_t AdvancedCompare(Entry entSrc, Entry entTge)
@@ -327,7 +327,7 @@ void AdvancedDestroy(Entry ent)
     free(pPair);
 }
 
-void TestAdvancedPut(OrderedMap *pMap, int32_t iIdx)
+void TestAdvancedPut(TreeMap *pMap, int32_t iIdx)
 {
     Pair *pPair = (Pair*)malloc(sizeof(Pair));
     if (!pPair)
@@ -343,10 +343,10 @@ void TestAdvancedPut(OrderedMap *pMap, int32_t iIdx)
     pPair->key = aName[iIdx];
     pPair->value = (Value)pEmploy;
 
-    CU_ASSERT(pMap->put(pMap, (Entry)pPair, true) == SUCC);
+    CU_ASSERT(pMap->put(pMap, (Entry)pPair) == SUCC);
 }
 
-void TestAdvancedGetSucc(OrderedMap *pMap, int32_t iIdx)
+void TestAdvancedGetSucc(TreeMap *pMap, int32_t iIdx)
 {
     Key key = aName[iIdx];
     Employ valuePred = {aNum[iIdx]/MASK_YEAR, aNum[iIdx]/MASK_LEVEL, aNum[iIdx]};
@@ -358,7 +358,7 @@ void TestAdvancedGetSucc(OrderedMap *pMap, int32_t iIdx)
     CU_ASSERT_EQUAL(valuePred.iId, ((Employ*)valueRetv)->iId);
 }
 
-void TestAdvancedGetFail(OrderedMap *pMap, int32_t iIdx)
+void TestAdvancedGetFail(TreeMap *pMap, int32_t iIdx)
 {
     Key key = aName[iIdx];
     Value valueRetv;
@@ -369,8 +369,8 @@ void TestAdvancedGetFail(OrderedMap *pMap, int32_t iIdx)
 
 void TestAdvancedManipulate()
 {
-    OrderedMap *pMap;
-    CU_ASSERT(OdrMapInit(&pMap) == SUCC);
+    TreeMap *pMap;
+    CU_ASSERT(TreeMapInit(&pMap) == SUCC);
     CU_ASSERT(pMap->set_compare(pMap, AdvancedCompare) == SUCC);
     CU_ASSERT(pMap->set_destroy(pMap, AdvancedDestroy) == SUCC);
     CU_ASSERT_EQUAL(pMap->size(pMap), 0);
@@ -383,12 +383,12 @@ void TestAdvancedManipulate()
     CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST);
 
     for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
-        CU_ASSERT(pMap->remove(pMap, (Key)aName[iIdx], true) == SUCC);
+        CU_ASSERT(pMap->remove(pMap, (Key)aName[iIdx]) == SUCC);
     for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
         TestAdvancedGetFail(pMap, iIdx);
     for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
         TestAdvancedGetSucc(pMap, iIdx);
     CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST/2);
 
-    OdrMapDeinit(&pMap, true);
+    TreeMapDeinit(&pMap);
 }

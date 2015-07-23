@@ -44,9 +44,9 @@ void simple_destroy(Entry ent)
 
 void usage_simple()
 {
-    OrderedMap *pMap;
+    TreeMap *pMap;
 
-    int32_t iRtnCode = OdrMapInit(&pMap);
+    int32_t iRtnCode = TreeMapInit(&pMap);
     if (iRtnCode != SUCC)
         return;
 
@@ -68,7 +68,7 @@ void usage_simple()
         pPair->key = (Key)1;
         pPair->value = (Key)-1;
     #endif
-    pMap->put(pMap, (Entry)pPair, true);
+    pMap->put(pMap, (Entry)pPair);
 
     pPair = (Pair*)malloc(sizeof(Pair));
     #if __x86_64__
@@ -78,7 +78,7 @@ void usage_simple()
         pPair->key = (Key)3;
         pPair->value = (Key)-3;
     #endif
-    pMap->put(pMap, (Entry)pPair, true);
+    pMap->put(pMap, (Entry)pPair);
 
     pPair = (Pair*)malloc(sizeof(Pair));
     #if __x86_64__
@@ -88,7 +88,7 @@ void usage_simple()
         pPair->key = (Key)2;
         pPair->value = (Key)-2;
     #endif
-    pMap->put(pMap, (Entry)pPair, true);
+    pMap->put(pMap, (Entry)pPair);
 
     /*--------------------------------------------------*
      * Retrive the value by with the specified key.     *
@@ -106,15 +106,15 @@ void usage_simple()
      * Remove the key value pair with the specified key.*
      *--------------------------------------------------*/
     #if __x86_64__
-        pMap->remove(pMap, (Key)(int64_t)2, true);
+        pMap->remove(pMap, (Key)(int64_t)2);
     #else
-        pMap->remove(pMap, (Key)2, true);
+        pMap->remove(pMap, (Key)2);
     #endif
 
     int32_t iSize = pMap->size(pMap);
     assert(iSize == 2);
 
-    OdrMapDeinit(&pMap, true);
+    TreeMapDeinit(&pMap);
     return;
 }
 
@@ -141,9 +141,9 @@ void advanced_destroy(Entry ent)
 void usage_advanced()
 {
     char *aName[3] = {"Alice", "Bob", "Wesker"};
-    OrderedMap *pMap;
+    TreeMap *pMap;
 
-    int32_t iRtnCode = OdrMapInit(&pMap);
+    int32_t iRtnCode = TreeMapInit(&pMap);
     if (iRtnCode != SUCC)
         return;
 
@@ -163,7 +163,7 @@ void usage_advanced()
     Pair *pPair = (Pair*)malloc(sizeof(Pair));
     pPair->key = (Key)aName[0];
     pPair->value = (Value)pEmploy;
-    pMap->put(pMap, (Entry)pPair, true);
+    pMap->put(pMap, (Entry)pPair);
 
     pEmploy = (Employ*)malloc(sizeof(Employ));
     pEmploy->iId = 2;
@@ -172,7 +172,7 @@ void usage_advanced()
     pPair = (Pair*)malloc(sizeof(Pair));
     pPair->key = (Key)aName[1];
     pPair->value = (Value)pEmploy;
-    pMap->put(pMap, (Entry)pPair, true);
+    pMap->put(pMap, (Entry)pPair);
 
     pEmploy = (Employ*)malloc(sizeof(Employ));
     pEmploy->iId = 3;
@@ -181,7 +181,7 @@ void usage_advanced()
     pPair = (Pair*)malloc(sizeof(Pair));
     pPair->key = (Key)aName[2];
     pPair->value = (Value)pEmploy;
-    pMap->put(pMap, (Entry)pPair, true);
+    pMap->put(pMap, (Entry)pPair);
 
     /*--------------------------------------------------*
      * Retrive the value with the specified key.        *
@@ -195,11 +195,11 @@ void usage_advanced()
     /*--------------------------------------------------*
      * Remove the key value pair with the specified key.*
      *--------------------------------------------------*/
-    pMap->remove(pMap, (Key)aName[1], true);
+    pMap->remove(pMap, (Key)aName[1]);
 
     int32_t iSize = pMap->size(pMap);
     assert(iSize == 2);
 
-    OdrMapDeinit(&pMap, true);
+    TreeMapDeinit(&pMap);
     return;
 }

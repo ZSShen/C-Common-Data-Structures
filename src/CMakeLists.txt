@@ -15,8 +15,8 @@ function(SUB_BUILD_SPECIFIC DS)
     # If it is necessary to link the dependency, the developer should explicitly
     # specify the dependent source files here.
     set(SRC_DEP_DS "")
-    if (DS STREQUAL "ordered_map")
-        set(SRC_DEP_DS "balanced_tree.c")
+    if (DS STREQUAL "tree_map")
+        set(SRC_DEP_DS "red_black_tree.c")
     elseif (DS STREQUAL "binary_heap")
         set(SRC_DEP_DS "vector.c")
     elseif (DS STREQUAL "priority_queue")
