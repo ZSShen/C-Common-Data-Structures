@@ -1,128 +1,128 @@
 /**
- * @file dlinked_list.h The doubly linked list.
+ * @file linked_list.h The doubly linked list.
  */
 
-#ifndef _DLINKED_LIST_H_
-#define _DLINKED_LIST_H_
+#ifndef _LINKED_LIST_H_
+#define _LINKED_LIST_H_
 
 #include "../util.h"
 
-/** DListData is the data type for the container private information. */
-typedef struct _DListData DListData;
+/** ListData is the data type for the container private information. */
+typedef struct _ListData ListData;
 
 /** The implementation for doubly linked list. */
-typedef struct _DLinkedList {
+typedef struct _LinkedList {
     /** The container private information */
-    DListData *pData;
+    ListData *pData;
 
     /** Push an item to the head of the list.
-        @see DListPushFront */
-    int32_t (*push_front) (struct _DLinkedList*, Item);
+        @see ListPushFront */
+    int32_t (*push_front) (struct _LinkedList*, Item);
 
     /** Push an item to the tail of the list.
-        @see DListPushBack */
-    int32_t (*push_back) (struct _DLinkedList*, Item);
+        @see ListPushBack */
+    int32_t (*push_back) (struct _LinkedList*, Item);
 
     /** Insert an item to the designated index of the list.
-        @see DListInsert */
-    int32_t (*insert) (struct _DLinkedList*, Item, int32_t);
+        @see ListInsert */
+    int32_t (*insert) (struct _LinkedList*, Item, int32_t);
 
     /** Pop an item from the head of the list.
-        @see DListPopFront */
-    int32_t (*pop_front) (struct _DLinkedList*);
+        @see ListPopFront */
+    int32_t (*pop_front) (struct _LinkedList*);
 
     /** Pop an item from the tail of the list.
-        @see DListPopBack */
-    int32_t (*pop_back) (struct _DLinkedList*);
+        @see ListPopBack */
+    int32_t (*pop_back) (struct _LinkedList*);
 
     /** Delete an item from the designated index of the list
-        @see DListDelete */
-    int32_t (*delete) (struct _DLinkedList*, int32_t);
+        @see ListDelete */
+    int32_t (*delete) (struct _LinkedList*, int32_t);
 
     /** Set an item at the head of the list.
-        @see DListSetFront */
-    int32_t (*set_front) (struct _DLinkedList*, Item);
+        @see ListSetFront */
+    int32_t (*set_front) (struct _LinkedList*, Item);
 
     /** Set an item at the tail of the list.
-        @see DListSetBack */
-    int32_t (*set_back) (struct _DLinkedList*, Item);
+        @see ListSetBack */
+    int32_t (*set_back) (struct _LinkedList*, Item);
 
     /** Set an item at the designated index of the list.
-        @see DListSetAt */
-    int32_t (*set_at) (struct _DLinkedList*, Item, int32_t);
+        @see ListSetAt */
+    int32_t (*set_at) (struct _LinkedList*, Item, int32_t);
 
     /** Get an item from the head of the list.
-        @see DListGetFront */
-    int32_t (*get_front) (struct _DLinkedList*, Item*);
+        @see ListGetFront */
+    int32_t (*get_front) (struct _LinkedList*, Item*);
 
     /** Get an item from the tail of the list.
-        @see DListGetBack */
-    int32_t (*get_back) (struct _DLinkedList*, Item*);
+        @see ListGetBack */
+    int32_t (*get_back) (struct _LinkedList*, Item*);
 
     /** Get an item from the designated index of the list.
-        @see DListGetAt */
-    int32_t (*get_at) (struct _DLinkedList*, Item*, int32_t);
+        @see ListGetAt */
+    int32_t (*get_at) (struct _LinkedList*, Item*, int32_t);
 
     /** Return the number of stored items.
-        @see DListSize */
-    int32_t (*size) (struct _DLinkedList*);
+        @see ListSize */
+    int32_t (*size) (struct _LinkedList*);
 
     /** Reverse the list.
-        @see DListReverse */
-    int32_t (*reverse) (struct _DLinkedList*);
+        @see ListReverse */
+    int32_t (*reverse) (struct _LinkedList*);
 
     /** Set the custom item resource clean method.
-        @see DListSetDestroy */
-    int32_t (*set_destroy) (struct _DLinkedList*, void (*) (Item));
-} DLinkedList;
+        @see ListSetDestroy */
+    int32_t (*set_destroy) (struct _LinkedList*, void (*) (Item));
+} LinkedList;
 
 
 /*===========================================================================*
  *             Definition for the exported member operations                 *
  *===========================================================================*/
 /**
- * @brief The constructor for DLinkedList.
+ * @brief The constructor for LinkedList.
  *
  * @param ppObj         The double pointer to the to be constructed list
  *
  * @retval SUCC
  * @retval ERR_NOMEM    Insufficient memory for list construction
  */
-int32_t DListInit(DLinkedList **ppObj);
+int32_t ListInit(LinkedList **ppObj);
 
 /**
- * @brief The destructor for DLinkedList.
+ * @brief The destructor for LinkedList.
  *
  * If the custom resource clean method is set, it also runs the resource clean
  * method for all the items.
  *
  * @param ppObj         The double pointer to the to be destructed list
  */
-void DListDeinit(DLinkedList **ppObj);
+void ListDeinit(LinkedList **ppObj);
 
 /**
  * @brief Push an item to the head of the list.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  * @param item          The designated item
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NOMEM    Insufficient memory for list extension
  */
-int32_t DListPushFront(DLinkedList *self, Item item);
+int32_t ListPushFront(LinkedList *self, Item item);
 
 /**
  * @brief Push an item to the tail of the list.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  * @param item          The designated item
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NOMEM    Insufficient memory for list extension
  */
-int32_t DListPushBack(DLinkedList *self, Item item);
+int32_t ListPushBack(LinkedList *self, Item item);
 
 /**
  * @brief Insert an item to the designated index of the list.
@@ -140,7 +140,7 @@ int32_t DListPushBack(DLinkedList *self, Item item);
  * But no matter which indexing method is applied, the list always grows from the
  * head to the tail.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  * @param item          The designated item
  * @param iIdx          The designated index
  *
@@ -152,7 +152,7 @@ int32_t DListPushBack(DLinkedList *self, Item item);
  * @note The absolute value of the index should be smaller than or equal to the
  * list size.
  */
-int32_t DListInsert(DLinkedList *self, Item item, int32_t iIdx);
+int32_t ListInsert(LinkedList *self, Item item, int32_t iIdx);
 
 /**
  * @brief Pop an item from the head of the list.
@@ -161,13 +161,13 @@ int32_t DListInsert(DLinkedList *self, Item item, int32_t iIdx);
  * resource clean method is set, it also runs the resource clean method for the
  * removed item.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty list
  */
-int32_t DListPopFront(DLinkedList *self);
+int32_t ListPopFront(LinkedList *self);
 
 /**
  * @brief Pop an item from the tail of the list.
@@ -176,13 +176,13 @@ int32_t DListPopFront(DLinkedList *self);
  * resource clean method is set, it also runs the resource clean method for the
  * removed item.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty list
  */
-int32_t DListPopBack(DLinkedList *self);
+int32_t ListPopBack(LinkedList *self);
 
 /**
  * @brief Remove an item from the designated index of the list.
@@ -195,14 +195,14 @@ int32_t DListPopBack(DLinkedList *self);
  * For forward indexing, inequality 0 <= i < N must be fitted.
  * For backward indexing, inequality 0 < i <= -N must be fitted.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  * @param iIdx          The designated index
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Out of range indexing
  */
-int32_t DListDelete(DLinkedList *self, int32_t iIdx);
+int32_t ListDelete(LinkedList *self, int32_t iIdx);
 
 /**
  * @brief Set an item at the head of the list.
@@ -211,14 +211,14 @@ int32_t DListDelete(DLinkedList *self, int32_t iIdx);
  * resource clean method is set, it also runs the resource clean method for the
  * replaced item.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  * @param item          The designated item
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty list
  */
-int32_t DListSetFront(DLinkedList *self, Item item);
+int32_t ListSetFront(LinkedList *self, Item item);
 
 /**
  * @brief Set an item at the tail of the list.
@@ -227,14 +227,14 @@ int32_t DListSetFront(DLinkedList *self, Item item);
  * resource clean method is set, it also runs the resource clean method for the
  * replaced item.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  * @param item          The designated item
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty list
  */
-int32_t DListSetBack(DLinkedList *self, Item item);
+int32_t ListSetBack(LinkedList *self, Item item);
 
 /**
  * @brief Replace an item at the designated index of the list.
@@ -247,7 +247,7 @@ int32_t DListSetBack(DLinkedList *self, Item item);
  * For forward indexing, inequality 0 <= i < N must be fitted.
  * For backward indexing, inequality 0 < i <= -N must be fitted.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  * @param item          The designated item
  * @param iIdx          The designated index
  *
@@ -255,12 +255,12 @@ int32_t DListSetBack(DLinkedList *self, Item item);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Out of range index
  */
-int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx);
+int32_t ListSetAt(LinkedList *self, Item item, int32_t iIdx);
 
 /**
  * @brief Get an item from the head of the list.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  * @param pItem         The pointer to the returned item
  *
  * @retval SUCC
@@ -270,12 +270,12 @@ int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx);
  *
  * @note If the exception occurs, the second parameter will be updated with NULL.
  */
-int32_t DListGetFront(DLinkedList *self, Item *pItem);
+int32_t ListGetFront(LinkedList *self, Item *pItem);
 
 /**
  * @brief Get an item from the tail of the list.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  * @param pItem         The pointer to the returned item
  *
  * @retval SUCC
@@ -285,7 +285,7 @@ int32_t DListGetFront(DLinkedList *self, Item *pItem);
  *
  * @note If the exception occurs, the second parameter will be updated with NULL.
  */
-int32_t DListGetBack(DLinkedList *self, Item *pItem);
+int32_t ListGetBack(LinkedList *self, Item *pItem);
 
 /**
  * @brief Get an item from the designated index of the list.
@@ -295,7 +295,7 @@ int32_t DListGetBack(DLinkedList *self, Item *pItem);
  * For forward indexing, inequality 0 <= i < N must be fitted.
  * For backward indexing, inequality 0 < i <= -N must be fitted.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  * @param pItem         The pointer to the returned item
  * @param iIdx          The designated index
  *
@@ -306,37 +306,37 @@ int32_t DListGetBack(DLinkedList *self, Item *pItem);
  *
  * @note If the exception occurs, the second parameter will be updated with NULL.
  */
-int32_t DListGetAt(DLinkedList *self, Item *pItem, int32_t iIdx);
+int32_t ListGetAt(LinkedList *self, Item *pItem, int32_t iIdx);
 
 /**
  * @brief Return the number of stored items.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  *
  * @return              The number of stored item
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t DListSize(DLinkedList *self);
+int32_t ListSize(LinkedList *self);
 
 /**
  * @brief Reverse the list.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t DListReverse(DLinkedList *self);
+int32_t ListReverse(LinkedList *self);
 
 /**
  * @brief Set the custom item resource clean method.
  *
- * @param self          The pointer to the DLinkedList structure
+ * @param self          The pointer to the LinkedList structure
  * @param pFunc         The function pointer to the custom method
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t DListSetDestroy(DLinkedList *self, void (*pFunc) (Item));
+int32_t ListSetDestroy(LinkedList *self, void (*pFunc) (Item));
 
 #endif

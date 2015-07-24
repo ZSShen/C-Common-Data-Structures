@@ -1,19 +1,19 @@
-#include "list/dlinked_list.h"
+#include "list/linked_list.h"
 
 
 /*===========================================================================*
  *                  Hide the private data of the tree                        *
  *===========================================================================*/
-typedef struct _DListNode {
+typedef struct _ListNode {
    Item item;
-   struct _DListNode *pPrev;
-   struct _DListNode *pNext;
-} DListNode;
+   struct _ListNode *pPrev;
+   struct _ListNode *pNext;
+} ListNode;
 
-struct _DListData {
+struct _ListData {
     bool bUserDestroy_;
     int32_t iSize_;
-    DListNode *pHead_;
+    ListNode *pHead_;
     void (*pDestroy_) (Item);
 };
 
@@ -29,14 +29,14 @@ struct _DListData {
  *
  * @param pData         The pointer to the list private data
  */
- void _DListDeinit(DListData *pData);
+ void _ListDeinit(ListData *pData);
 
 /**
  * @brief The default item resource clean method.
  *
  * @param item          The designated item
  */
-void _DListItemDestroy(Item item);
+void _ListItemDestroy(Item item);
 
 
 #define CHECK_INIT(self)                                                        \
@@ -49,7 +49,7 @@ void _DListItemDestroy(Item item);
 
 #define NEW_NODE(pNew, item)                                                    \
             do {                                                                \
-                pNew = (DListNode*)malloc(sizeof(DListNode));                   \
+                pNew = (ListNode*)malloc(sizeof(ListNode));                   \
                 if (!pNew)                                                      \
                     return ERR_NOMEM;                                           \
                 pNew->item = item;                                              \
@@ -83,59 +83,59 @@ void _DListItemDestroy(Item item);
 /*===========================================================================*
  *         Implementation for the container supporting operations            *
  *===========================================================================*/
-int32_t DListInit(DLinkedList **ppObj)
+int32_t ListInit(LinkedList **ppObj)
 {
-    *ppObj = (DLinkedList*)malloc(sizeof(DLinkedList));
+    *ppObj = (LinkedList*)malloc(sizeof(LinkedList));
     if (!(*ppObj))
         return ERR_NOMEM;
-    DLinkedList *pObj = *ppObj;
+    LinkedList *pObj = *ppObj;
 
-    pObj->pData = (DListData*)malloc(sizeof(DListData));
+    pObj->pData = (ListData*)malloc(sizeof(ListData));
     if (!(pObj->pData)) {
         free(*ppObj);
         *ppObj = NULL;
         return ERR_NOMEM;
     }
-    DListData *pData = pObj->pData;
+    ListData *pData = pObj->pData;
 
     pData->bUserDestroy_ = false;
     pData->iSize_ = 0;
     pData->pHead_ = NULL;
-    pData->pDestroy_ = _DListItemDestroy;
+    pData->pDestroy_ = _ListItemDestroy;
 
-    pObj->push_front = DListPushFront;
-    pObj->push_back = DListPushBack;
-    pObj->insert = DListInsert;
+    pObj->push_front = ListPushFront;
+    pObj->push_back = ListPushBack;
+    pObj->insert = ListInsert;
 
-    pObj->pop_front = DListPopFront;
-    pObj->pop_back = DListPopBack;
-    pObj->delete = DListDelete;
+    pObj->pop_front = ListPopFront;
+    pObj->pop_back = ListPopBack;
+    pObj->delete = ListDelete;
 
-    pObj->set_front = DListSetFront;
-    pObj->set_back = DListSetBack;
-    pObj->set_at = DListSetAt;
+    pObj->set_front = ListSetFront;
+    pObj->set_back = ListSetBack;
+    pObj->set_at = ListSetAt;
 
-    pObj->get_front = DListGetFront;
-    pObj->get_back = DListGetBack;
-    pObj->get_at = DListGetAt;
+    pObj->get_front = ListGetFront;
+    pObj->get_back = ListGetBack;
+    pObj->get_at = ListGetAt;
 
-    pObj->size = DListSize;
-    pObj->reverse = DListReverse;
-    pObj->set_destroy = DListSetDestroy;
+    pObj->size = ListSize;
+    pObj->reverse = ListReverse;
+    pObj->set_destroy = ListSetDestroy;
 
     return SUCC;
 }
 
-void DListDeinit(DLinkedList **ppObj)
+void ListDeinit(LinkedList **ppObj)
 {
     if (!(*ppObj))
         goto EXIT;
 
-    DListData *pData = (*ppObj)->pData;
+    ListData *pData = (*ppObj)->pData;
     if (!pData)
         goto FREE_LIST;
 
-    _DListDeinit(pData);
+    _ListDeinit(pData);
     free(pData);
 
 FREE_LIST:
@@ -145,14 +145,14 @@ EXIT:
     return;
 }
 
-int32_t DListPushFront(DLinkedList *self, Item item)
+int32_t ListPushFront(LinkedList *self, Item item)
 {
     CHECK_INIT(self);
 
-    DListNode *pNew;
+    ListNode *pNew;
     NEW_NODE(pNew, item);
 
-    DListData *pData = self->pData;
+    ListData *pData = self->pData;
     if (!pData->pHead_)
         pNew->pPrev = pNew->pNext = pNew;
     else
@@ -164,14 +164,14 @@ int32_t DListPushFront(DLinkedList *self, Item item)
     return SUCC;
 }
 
-int32_t DListPushBack(DLinkedList *self, Item item)
+int32_t ListPushBack(LinkedList *self, Item item)
 {
     CHECK_INIT(self);
 
-    DListNode *pNew;
+    ListNode *pNew;
     NEW_NODE(pNew, item);
 
-    DListData *pData = self->pData;
+    ListData *pData = self->pData;
     if (!pData->pHead_) {
         pNew->pPrev = pNew->pNext = pNew;
         pData->pHead_ = pNew;
@@ -183,22 +183,22 @@ int32_t DListPushBack(DLinkedList *self, Item item)
     return SUCC;
 }
 
-int32_t DListInsert(DLinkedList *self, Item item, int32_t iIdx)
+int32_t ListInsert(LinkedList *self, Item item, int32_t iIdx)
 {
     CHECK_INIT(self);
 
-    DListData *pData = self->pData;
+    ListData *pData = self->pData;
     if (abs(iIdx) > pData->iSize_)
         return ERR_IDX;
 
-    DListNode *pNew;
+    ListNode *pNew;
     NEW_NODE(pNew, item);
     if (!pData->pHead_) {
         pNew->pPrev = pNew->pNext = pNew;
         pData->pHead_ = pNew;
     } else {
         int32_t i;
-        DListNode *pTrack = pData->pHead_;
+        ListNode *pTrack = pData->pHead_;
 
         /* Insert node to the proper position with forward indexing. */
         if (iIdx >= 0) {
@@ -223,15 +223,15 @@ int32_t DListInsert(DLinkedList *self, Item item, int32_t iIdx)
     return SUCC;
 }
 
-int32_t DListPopFront(DLinkedList *self)
+int32_t ListPopFront(LinkedList *self)
 {
     CHECK_INIT(self);
 
-    DListData *pData = self->pData;
+    ListData *pData = self->pData;
     if (!pData->pHead_)
         return ERR_IDX;
 
-    DListNode *pHead = pData->pHead_;
+    ListNode *pHead = pData->pHead_;
     if (pHead == pHead->pPrev) {
         if (pData->bUserDestroy_)
             pData->pDestroy_(pHead->item);
@@ -251,22 +251,22 @@ int32_t DListPopFront(DLinkedList *self)
     return SUCC;
 }
 
-int32_t DListPopBack(DLinkedList *self)
+int32_t ListPopBack(LinkedList *self)
 {
     CHECK_INIT(self);
 
-    DListData *pData = self->pData;
+    ListData *pData = self->pData;
     if (!pData->pHead_)
         return ERR_IDX;
 
-    DListNode *pHead = pData->pHead_;
+    ListNode *pHead = pData->pHead_;
     if (pHead == pHead->pNext) {
         if (pData->bUserDestroy_)
             pData->pDestroy_(pHead->item);
         free(pHead);
         pData->pHead_ = NULL;
     } else {
-        DListNode *pTail = pHead->pPrev;
+        ListNode *pTail = pHead->pPrev;
         pTail->pPrev->pNext = pHead;
         pHead->pPrev = pTail->pPrev;
         if (pData->bUserDestroy_)
@@ -279,12 +279,12 @@ int32_t DListPopBack(DLinkedList *self)
     return SUCC;
 }
 
-int32_t DListDelete(DLinkedList *self, int32_t iIdx)
+int32_t ListDelete(LinkedList *self, int32_t iIdx)
 {
     CHECK_INIT(self);
 
-    DListData *pData = self->pData;
-    DListNode *pTrack, *pPred, *pSucc;
+    ListData *pData = self->pData;
+    ListNode *pTrack, *pPred, *pSucc;
 
     /* Delete node from the designated index with forward indexing. */
     if (iIdx >= 0) {
@@ -325,11 +325,11 @@ int32_t DListDelete(DLinkedList *self, int32_t iIdx)
     return SUCC;
 }
 
-int32_t DListSetFront(DLinkedList *self, Item item)
+int32_t ListSetFront(LinkedList *self, Item item)
 {
     CHECK_INIT(self);
 
-    DListData *pData = self->pData;
+    ListData *pData = self->pData;
     if (!pData->pHead_)
         return ERR_IDX;
 
@@ -340,15 +340,15 @@ int32_t DListSetFront(DLinkedList *self, Item item)
     return SUCC;
 }
 
-int32_t DListSetBack(DLinkedList *self, Item item)
+int32_t ListSetBack(LinkedList *self, Item item)
 {
     CHECK_INIT(self);
 
-    DListData *pData = self->pData;
+    ListData *pData = self->pData;
     if (!pData->pHead_)
         return ERR_IDX;
 
-    DListNode *pTail = pData->pHead_->pPrev;
+    ListNode *pTail = pData->pHead_->pPrev;
     if (pData->bUserDestroy_)
         pData->pDestroy_(pTail->item);
     pTail->item = item;
@@ -356,17 +356,17 @@ int32_t DListSetBack(DLinkedList *self, Item item)
     return SUCC;
 }
 
-int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx)
+int32_t ListSetAt(LinkedList *self, Item item, int32_t iIdx)
 {
     CHECK_INIT(self);
 
     /* Replace item at the designated index with forward indexing. */
-    DListData *pData = self->pData;
+    ListData *pData = self->pData;
     if (iIdx >= 0) {
         if (iIdx >= pData->iSize_)
             return ERR_IDX;
 
-        DListNode *pTrack = pData->pHead_;
+        ListNode *pTrack = pData->pHead_;
         while (iIdx > 0) {
             pTrack = pTrack->pNext;
             iIdx--;
@@ -380,7 +380,7 @@ int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx)
         if (-iIdx > pData->iSize_)
             return ERR_IDX;
 
-        DListNode *pTrack = pData->pHead_;
+        ListNode *pTrack = pData->pHead_;
         while (iIdx < 0) {
             pTrack = pTrack->pPrev;
             iIdx++;
@@ -393,13 +393,13 @@ int32_t DListSetAt(DLinkedList *self, Item item, int32_t iIdx)
     return SUCC;
 }
 
-int32_t DListGetFront(DLinkedList *self, Item *pItem)
+int32_t ListGetFront(LinkedList *self, Item *pItem)
 {
     CHECK_INIT(self);
     if (!pItem)
         return ERR_GET;
 
-    DListData *pData = self->pData;
+    ListData *pData = self->pData;
     if (!pData->pHead_) {
         *pItem = NULL;
         return ERR_IDX;
@@ -409,13 +409,13 @@ int32_t DListGetFront(DLinkedList *self, Item *pItem)
     return SUCC;
 }
 
-int32_t DListGetBack(DLinkedList *self, Item *pItem)
+int32_t ListGetBack(LinkedList *self, Item *pItem)
 {
     CHECK_INIT(self);
     if (!pItem)
         return ERR_GET;
 
-    DListData *pData = self->pData;
+    ListData *pData = self->pData;
     if (!pData->pHead_) {
         *pItem = NULL;
         return ERR_IDX;
@@ -425,21 +425,21 @@ int32_t DListGetBack(DLinkedList *self, Item *pItem)
     return SUCC;
 }
 
-int32_t DListGetAt(DLinkedList *self, Item *pItem, int32_t iIdx)
+int32_t ListGetAt(LinkedList *self, Item *pItem, int32_t iIdx)
 {
     CHECK_INIT(self);
     if (!pItem)
         return ERR_GET;
 
     /* Forward indexing to the target node. */
-    DListData *pData = self->pData;
+    ListData *pData = self->pData;
     if (iIdx >= 0) {
         if (iIdx >= pData->iSize_) {
             *pItem = NULL;
             return ERR_IDX;
         }
         int i;
-        DListNode *pTrack = pData->pHead_;
+        ListNode *pTrack = pData->pHead_;
         for (i = 0 ; i < iIdx ; i++)
             pTrack = pTrack->pNext;
         *pItem = pTrack->item;
@@ -451,7 +451,7 @@ int32_t DListGetAt(DLinkedList *self, Item *pItem, int32_t iIdx)
             return ERR_IDX;
         }
         int i;
-        DListNode *pTrack = pData->pHead_;
+        ListNode *pTrack = pData->pHead_;
         for (i = 0 ; i < -iIdx ; i++)
             pTrack = pTrack->pPrev;
         *pItem = pTrack->item;
@@ -460,19 +460,19 @@ int32_t DListGetAt(DLinkedList *self, Item *pItem, int32_t iIdx)
     return SUCC;
 }
 
-int32_t DListSize(DLinkedList *self)
+int32_t ListSize(LinkedList *self)
 {
     CHECK_INIT(self);
     return self->pData->iSize_;
 }
 
-int32_t DListReverse(DLinkedList *self)
+int32_t ListReverse(LinkedList *self)
 {
     CHECK_INIT(self);
 
-    DListData *pData = self->pData;
-    DListNode *pHead = pData->pHead_;
-    DListNode *pTail = pData->pHead_->pPrev;
+    ListData *pData = self->pData;
+    ListNode *pHead = pData->pHead_;
+    ListNode *pTail = pData->pHead_->pPrev;
 
     int32_t iRge = pData->iSize_;
     while (iRge > 1) {
@@ -488,7 +488,7 @@ int32_t DListReverse(DLinkedList *self)
     return SUCC;
 }
 
-int32_t DListSetDestroy(DLinkedList *self, void (*pFunc) (Item))
+int32_t ListSetDestroy(LinkedList *self, void (*pFunc) (Item))
 {
     CHECK_INIT(self);
     self->pData->bUserDestroy_ = true;
@@ -500,12 +500,12 @@ int32_t DListSetDestroy(DLinkedList *self, void (*pFunc) (Item))
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
-void _DListDeinit(DListData *pData)
+void _ListDeinit(ListData *pData)
 {
-    DListNode *pCurr = pData->pHead_;
+    ListNode *pCurr = pData->pHead_;
     if (pCurr) {
         do {
-            DListNode *pPred = pCurr;
+            ListNode *pPred = pCurr;
             pCurr = pCurr->pNext;
             if (pData->bUserDestroy_)
                 pData->pDestroy_(pPred->item);
@@ -515,4 +515,4 @@ void _DListDeinit(DListData *pData)
     return;
 }
 
-void _DListItemDestroy(Item item) {}
+void _ListItemDestroy(Item item) {}

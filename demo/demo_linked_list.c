@@ -17,10 +17,10 @@ void DestroyObject(Item item)
 
 int main()
 {
-    DLinkedList *pList;
+    LinkedList *pList;
 
     /* You should initialize the DS before any operations. */
-    int32_t rc = DListInit(&pList);
+    int32_t rc = ListInit(&pList);
     if (rc != SUCC)
         return rc;
 
@@ -130,7 +130,7 @@ int main()
     int32_t iSize = pList->size(pList);
 
     /* You should deinitialize the DS after all the relevant tasks. */
-    DListDeinit(&pList);
+    ListDeinit(&pList);
 
     return 0;
 }
