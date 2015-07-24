@@ -1,6 +1,6 @@
 #include "map/hash_map.h"
 #include "array/vector.h"
-#include "list/dlinked_list.h"
+#include "list/linked_list.h"
 
 
 /*===========================================================================*
@@ -90,8 +90,8 @@ int32_t HashMapInit(HashMap **ppObj, uint32_t uiCount)
     int32_t iCap = vecBucket->capacity(vecBucket);
     int32_t iIdx = 0;
     while (iIdx < iCap) {
-        DLinkedList *list;
-        iRtnCode = DListInit(&list);
+        LinkedList *list;
+        iRtnCode = ListInit(&list);
         if (iRtnCode != SUCC) {
             VectorDeinit(&vecBucket);
             FREE_MAP_DATA();
@@ -157,7 +157,7 @@ int32_t HashMapPut(HashMap *self, Entry ent, size_t sizeKey)
     iIdx = (iIdx < 0)? iIdx + iSize : iIdx;
 
     /* Retrieve the slot list of the located bucket. */
-    DLinkedList *listSlot;
+    LinkedList *listSlot;
     vecBucket->get(vecBucket, (Item*)&listSlot, iIdx);
 
     /* Replace the existing duplicated entry. */
@@ -197,7 +197,7 @@ int32_t HashMapGet(HashMap *self, Key key, size_t sizeKey, Value *pValue)
     iIdx = (iIdx < 0)? iIdx + iSize : iIdx;
 
     /* Retrieve the slot list of the located bucket. */
-    DLinkedList *listSlot;
+    LinkedList *listSlot;
     vecBucket->get(vecBucket, (Item*)&listSlot, iIdx);
 
     /* Retrieve the value corresponding to the designated key. */
@@ -230,7 +230,7 @@ int32_t HashMapRemove(HashMap *self, Key key, size_t sizeKey)
     iIdx = (iIdx < 0)? iIdx + iSize : iIdx;
 
     /* Retrieve the slot list of the located bucket. */
-    DLinkedList *listSlot;
+    LinkedList *listSlot;
     vecBucket->get(vecBucket, (Item*)&listSlot, iIdx);
 
     /* Remove the key value pair having the designated key. */
@@ -261,7 +261,7 @@ int32_t HashMapSetDestroy(HashMap *self, void (*pFunc) (Entry))
     Vector *vecBucket = self->pData->vecBucket_;
     int32_t iSize = vecBucket->size(vecBucket);
 
-    DLinkedList *listSlot;
+    LinkedList *listSlot;
     int32_t iIdx = 0;
     while (iIdx < iSize) {
         vecBucket->get(vecBucket, (Item*)&listSlot, iIdx);
@@ -284,8 +284,8 @@ int32_t HashMapSetHash(HashMap *self, uint32_t (*pFunc) (Key, size_t))
  *===========================================================================*/
 static void _HashMapCleanBucket(Item item)
 {
-    DLinkedList *list = (DLinkedList*)item;
-    DListDeinit(&list);
+    LinkedList *list = (LinkedList*)item;
+    ListDeinit(&list);
 }
 
 static uint32_t _HashMapHasher(Key key, size_t sizeKey)
