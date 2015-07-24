@@ -30,6 +30,7 @@ int main()
 {
     RedBlackTree *pTree;
 
+    /* You should initialize the DS before any operations. */
     int32_t rc = RBTreeInit(&pTree);
     if (rc != SUCC)
         return rc;
