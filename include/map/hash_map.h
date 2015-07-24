@@ -1,5 +1,5 @@
 /**
- * @file unordered_map.h The unordered map.
+ * @file unordered_map.h The unordered map implemented with hash table.
  */
 
 #ifndef _HASH_MAP_H_
