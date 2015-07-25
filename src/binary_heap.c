@@ -53,12 +53,12 @@ void _BinHeapItemDestroy(Item item);
 /*===========================================================================*
  *         Implementation for the container supporting operations            *
  *===========================================================================*/
-int32_t BinHeapInit(BinHeap **ppObj)
+int32_t BinHeapInit(BinaryHeap **ppObj)
 {
-    *ppObj = (BinHeap*)malloc(sizeof(BinHeap));
+    *ppObj = (BinaryHeap*)malloc(sizeof(BinaryHeap));
     if (!(*ppObj))
         return ERR_NOMEM;
-    BinHeap *pObj = *ppObj;
+    BinaryHeap *pObj = *ppObj;
 
     pObj->pData = (BinHeapData*)malloc(sizeof(BinHeapData));
     if (!(pObj->pData)) {
@@ -91,12 +91,12 @@ int32_t BinHeapInit(BinHeap **ppObj)
     return SUCC;
 }
 
-void BinHeapDeinit(BinHeap **ppObj)
+void BinHeapDeinit(BinaryHeap **ppObj)
 {
     if (!(*ppObj))
         goto EXIT;
 
-    BinHeap *pObj = *ppObj;
+    BinaryHeap *pObj = *ppObj;
     if (!(pObj->pData))
         goto FREE_HEAP;
 
@@ -114,7 +114,7 @@ EXIT:
     return;
 }
 
-int32_t BinHeapPush(BinHeap *self, Item item)
+int32_t BinHeapPush(BinaryHeap *self, Item item)
 {
     CHECK_INIT(self);
     BinHeapData *pData = self->pData;
@@ -149,7 +149,7 @@ int32_t BinHeapPush(BinHeap *self, Item item)
     return SUCC;
 }
 
-int32_t BinHeapPop(BinHeap *self)
+int32_t BinHeapPop(BinaryHeap *self)
 {
     CHECK_INIT(self);
     BinHeapData *pData = self->pData;
@@ -211,7 +211,7 @@ int32_t BinHeapPop(BinHeap *self)
     return SUCC;
 }
 
-int32_t BinHeapTop(BinHeap *self, Item *pItem)
+int32_t BinHeapTop(BinaryHeap *self, Item *pItem)
 {
     CHECK_INIT(self);
     Vector *pVector = self->pData->pVector_;
@@ -219,7 +219,7 @@ int32_t BinHeapTop(BinHeap *self, Item *pItem)
     return iRtnCode;
 }
 
-int32_t BinHeapSize(BinHeap *self)
+int32_t BinHeapSize(BinaryHeap *self)
 {
     CHECK_INIT(self);
     Vector *pVector = self->pData->pVector_;
@@ -227,14 +227,14 @@ int32_t BinHeapSize(BinHeap *self)
     return iSize;
 }
 
-int32_t BinHeapSetCompare(BinHeap *self, int32_t (*pFunc) (Item, Item))
+int32_t BinHeapSetCompare(BinaryHeap *self, int32_t (*pFunc) (Item, Item))
 {
     CHECK_INIT(self);
     self->pData->pCompare_ = pFunc;
     return SUCC;
 }
 
-int32_t BinHeapSetDestroy(BinHeap *self, void (*pFunc) (Item))
+int32_t BinHeapSetDestroy(BinaryHeap *self, void (*pFunc) (Item))
 {
     CHECK_INIT(self);
     Vector *pVector = self->pData->pVector_;

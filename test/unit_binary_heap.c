@@ -143,7 +143,7 @@ int32_t AddAdvancedSuit()
 
 void TestSimpleManipulate()
 {
-    BinHeap *pHeap;
+    BinaryHeap *pHeap;
     CU_ASSERT(BinHeapInit(&pHeap) == SUCC);
 
     /* Build the maximum heap. */
@@ -216,7 +216,7 @@ void TestSimpleManipulate()
 
 void TestAdvancedManipulate()
 {
-    BinHeap *pHeap;
+    BinaryHeap *pHeap;
     CU_ASSERT(BinHeapInit(&pHeap) == SUCC);
 
     /* Build the minimum heap. */

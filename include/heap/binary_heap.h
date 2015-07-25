@@ -11,34 +11,34 @@
 typedef struct _BinHeapData BinHeapData;
 
 /** The implementation for binary heap. */
-typedef struct _BinHeap {
+typedef struct _BinaryHeap {
     /** The container private information */
     BinHeapData *pData;
 
     /** Push an item onto the heap.
         @see BinHeapPush */
-    int32_t (*push) (struct _BinHeap*, Item);
+    int32_t (*push) (struct _BinaryHeap*, Item);
 
     /** Retrieve item from top of the heap.
         @see BinHeapTop */
-    int32_t (*top) (struct _BinHeap*, Item*);
+    int32_t (*top) (struct _BinaryHeap*, Item*);
 
     /** Delete item from top of the heap.
         @see BinHeapPop */
-    int32_t (*pop) (struct _BinHeap*);
+    int32_t (*pop) (struct _BinaryHeap*);
 
     /** Return the number of stored items.
         @see BinHeapSize */
-    int32_t (*size) (struct _BinHeap*);
+    int32_t (*size) (struct _BinaryHeap*);
 
-    /** Set the user defined item comparison method.
+    /** Set the custom item comparison method.
         @see BinHeapSetCompare */
-    int32_t (*set_compare) (struct _BinHeap*, int32_t (*) (Item, Item));
+    int32_t (*set_compare) (struct _BinaryHeap*, int32_t (*) (Item, Item));
 
-    /** Set the custom resource clean method.
+    /** Set the custom item resource clean method.
         @see BinHeapSetDestroy */
-    int32_t (*set_destroy) (struct _BinHeap*, void (*) (Item));
-} BinHeap;
+    int32_t (*set_destroy) (struct _BinaryHeap*, void (*) (Item));
+} BinaryHeap;
 
 
 /*===========================================================================*
@@ -82,9 +82,8 @@ int32_t BinHeapPush(BinHeap *self, Item item);
 /**
  * @brief Delete item from top of the heap.
  *
- * This function deletes item from top of the heap. If the custom
- * resource clean method is set, it also runs the clean method
- * for the deleted item.
+ * This function deletes item from top of the heap. If the custom resource clean
+ * method is set, it also runs the clean method for the deleted item.
  *
  * @param self          The pointer to BinHeap structure
  *
@@ -107,6 +106,7 @@ int32_t BinHeapPop(BinHeap *self);
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty heap
+ * @retval ERR_GET      Invalid parameter to store returned item
  */
 int32_t BinHeapTop(BinHeap *self, Item *pItem);
 
@@ -121,18 +121,18 @@ int32_t BinHeapTop(BinHeap *self, Item *pItem);
 int32_t BinHeapSize(BinHeap *self);
 
 /**
- * @brief Set the user defined item comparison method.
+ * @brief Set the custom item comparison method.
  *
  * @param self          The pointer to BinHeap structure
  * @param pFunc         The function pointer to the custom method
  *
- * @retval ERR_NOINIT   Uninitialized container
  * @retval SUCC
+ * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t BinHeapSetCompare(BinHeap *self, int32_t (*pFunc) (Item, Item));
 
 /**
- * @brief Set the custom resource clean method.
+ * @brief Set the custom item resource clean method.
  *
  * @param self          The pointer to BinHeap structure
  * @param pFunc         The function pointer to the custom method
