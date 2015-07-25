@@ -7,6 +7,8 @@ var util_8h =
     [ "ERR_IDX", "util_8h.html#acac8003c163c1000c583be39800c22ba", null ],
     [ "ERR_DUPKEY", "util_8h.html#ab4fdc531e4f68894ba5caf2dfd5de639", null ],
     [ "ERR_NODATA", "util_8h.html#a1b45804a56fa8764461b11f13e5c9bf2", null ],
+    [ "ERR_GET", "util_8h.html#a9bebdd917f460e15626723b9053aa628", null ],
+    [ "ERR_KEYSIZE", "util_8h.html#a306f92ef75fa539e28087d717fcb3fc8", null ],
     [ "Item", "util_8h.html#a2583da5c1c14184068bda8cf681d5bed", null ],
     [ "Key", "util_8h.html#ab8673c57cfd615afd06cafefa9c2445e", null ],
     [ "Value", "util_8h.html#ad0d0cb99e46ebc1c0458843e19ae21bd", null ],
