@@ -8,21 +8,18 @@ Integration Test (Travis CI)
 LibCDS implements several kinds of classic containers by C. It offers uniform APIs for convenient container interaction.
 
 ##Container Category
-[API Reference Manual] (http://zsshen.github.io/C-Common-Data-Structures/html/index.html)
-+ Tree
-  + BinaryTree -- The basic binary search tree.
-  + RedBlackTree -- The balanced binary search tree.
-+ List
-  + LinkedList -- The doubly linked list.
-+ Array
-  + Vector -- The dynamically growable array.
-+ Map
-  + TreeMap -- The ordered map to store key value pairs implemented with balanced tree.
-  + HashMap -- The unordered map to store key value pairs implemented with hash table.
-+ Heap
-  + BinaryHeap -- The binary heap implemented with vector.
-+ Queue
-  + PriorityQueue -- The priority queue implemented with binary heap.
+[API Reference Manual] (http://zsshen.github.io/C-Common-Data-Structures/html/index.html)  
+
+| Category | Container | Description |  
+| ------------- | ------------- |------------- |  
+| Tree | BinaryTree | The basic binary search tree. |  
+| | RedBlackTree | The balanced binary search tree. |  
+| List | LinkedList | The doubly linked list. |  
+| Array | Vector | The dynamically growable array. |  
+| Map | TreeMap | The ordered map to store key value pairs implemented with red black tree. |  
+| | HashMap | The unordered map to store key value pairs implemented with hash table. |  
+| Heap | BinaryHeap | The binary heap implemented with vector. |  
+| Queue | PriorityQueue | The priority queue implemented with binary heap. |  
 
 ##Installation
 ####***Basic***
