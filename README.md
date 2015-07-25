@@ -10,18 +10,19 @@ LibCDS implements several kinds of classic containers by C. It offers uniform AP
 ##Container Category
 [API Reference Manual] (http://zsshen.github.io/C-Common-Data-Structures/html/index.html)
 + Tree
-  + SimpleTree -- The basic binary search tree.
-  + BalancedTree -- The balanced binary search tree implemented with red black tree.
+  + BinaryTree -- The basic binary search tree.
+  + RedBlackTree -- The balanced binary search tree.
 + List
-  + DLinkedList -- The doubly linked list.
+  + LinkedList -- The doubly linked list.
 + Array
   + Vector -- The dynamically growable array.
 + Map
-  + OrderedMap -- The ordered map to store key value pairs implemented with balanced tree.
+  + TreeMap -- The ordered map to store key value pairs implemented with balanced tree.
+  + HashMap -- The unordered map to store key value pairs implemented with hash table.
 + Heap
-  + BinHeap -- The ordered binary heap.
+  + BinaryHeap -- The binary heap implemented with vector.
 + Queue
-  + PrioQueue -- The priority queue implemented with binary heap.
+  + PriorityQueue -- The priority queue implemented with binary heap.
 
 ##Installation
 ####***Basic***
@@ -44,21 +45,21 @@ $ cmake ..
 $ make
 $ cd ..
 ```
-Then the library should be under:  
-- `./lib/release/libcds.so`  
+Then the library should be under:
+- `./lib/release/libcds.so`
 
-The demo program should be under: 
-- `./bin/demo/` 
+The demo program should be under:
+- `./bin/demo/`
 
-And the header files are grouped be under: 
-- `./include/` 
+And the header files are grouped be under:
+- `./include/`
 
-Besides, for development-relevant binaries, the unit tests should be under: 
-- `./bin/test/` 
+Besides, for development-relevant binaries, the unit tests should be under:
+- `./bin/test/`
 
 ####***Development***
-If we try to patch a certain data structure or add a new one, we can apply the following CMake options to configure the building procedures for convenient development:  
-- `BUILD_SOURCE`  
+If we try to patch a certain data structure or add a new one, we can apply the following CMake options to configure the building procedures for convenient development:
+- `BUILD_SOURCE`
   + NAME_SOURCE - Specifying a source file to build a specific data structure and the relevant demo program and unit test.
 - `CMAKE_BUILD_TYPE`
   + Release - For performance optimized binary. Library output folder is `./lib/release/`.
@@ -84,4 +85,4 @@ $ make
 
 [CMake]:http://www.cmake.org/
 [Valgrind]:http://valgrind.org/
-[CUnit]:http://cunit.sourceforge.net/ 
+[CUnit]:http://cunit.sourceforge.net/

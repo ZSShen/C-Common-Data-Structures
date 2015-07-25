@@ -74,25 +74,27 @@ $(document).ready(function(){initNavTree('README_8md.html','');});
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;##Container Category</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;+ Tree</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  + <a class="code" href="structSimpleTree.html">SimpleTree</a> -- The basic binary search tree.</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  + <a class="code" href="structBalancedTree.html">BalancedTree</a> -- The balanced binary search tree implemented with red black tree.</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  + <a class="code" href="structBinaryTree.html">BinaryTree</a> -- The basic binary search tree.</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  + <a class="code" href="structRedBlackTree.html">RedBlackTree</a> -- The balanced binary search tree.</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;+ List</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  + <a class="code" href="structDLinkedList.html">DLinkedList</a> -- The doubly linked list.</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  + <a class="code" href="structLinkedList.html">LinkedList</a> -- The doubly linked list.</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;+ Array</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  + <a class="code" href="structVector.html">Vector</a> -- The dynamically growable array.</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;+ Map</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  + <a class="code" href="structOrderedMap.html">OrderedMap</a> -- The ordered map to store key value pairs implemented with balanced tree.</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;+ Heap</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  + <a class="code" href="structBinHeap.html">BinHeap</a> -- The ordered binary heap.</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;+ Queue</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  + <a class="code" href="structPrioQueue.html">PrioQueue</a> -- The priority queue implemented with binary heap.</div>
-<div class="ttc" id="structBinHeap_html"><div class="ttname"><a href="structBinHeap.html">BinHeap</a></div><div class="ttdoc">The implementation for binary heap. </div><div class="ttdef"><b>Definition:</b> <a href="binary__heap_8h_source.html#l00014">binary_heap.h:14</a></div></div>
-<div class="ttc" id="structBalancedTree_html"><div class="ttname"><a href="structBalancedTree.html">BalancedTree</a></div><div class="ttdoc">The implementation for basic binary search tree. </div><div class="ttdef"><b>Definition:</b> <a href="balanced__tree_8h_source.html#l00014">balanced_tree.h:14</a></div></div>
-<div class="ttc" id="structVector_html"><div class="ttname"><a href="structVector.html">Vector</a></div><div class="ttdoc">The implementation for dynamic array. </div><div class="ttdef"><b>Definition:</b> <a href="vector_8h_source.html#l00014">vector.h:14</a></div></div>
-<div class="ttc" id="structPrioQueue_html"><div class="ttname"><a href="structPrioQueue.html">PrioQueue</a></div><div class="ttdoc">The implementation for priority queue. </div><div class="ttdef"><b>Definition:</b> <a href="priority__queue_8h_source.html#l00014">priority_queue.h:14</a></div></div>
-<div class="ttc" id="structOrderedMap_html"><div class="ttname"><a href="structOrderedMap.html">OrderedMap</a></div><div class="ttdoc">The implementation for ordered map. </div><div class="ttdef"><b>Definition:</b> <a href="ordered__map_8h_source.html#l00014">ordered_map.h:14</a></div></div>
-<div class="ttc" id="structDLinkedList_html"><div class="ttname"><a href="structDLinkedList.html">DLinkedList</a></div><div class="ttdoc">The implementation for doubly linked list. </div><div class="ttdef"><b>Definition:</b> <a href="dlinked__list_8h_source.html#l00014">dlinked_list.h:14</a></div></div>
-<div class="ttc" id="structSimpleTree_html"><div class="ttname"><a href="structSimpleTree.html">SimpleTree</a></div><div class="ttdoc">The implementation for basic binary search tree. </div><div class="ttdef"><b>Definition:</b> <a href="simple__tree_8h_source.html#l00014">simple_tree.h:14</a></div></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  + <a class="code" href="structTreeMap.html">TreeMap</a> -- The ordered map to store key value pairs implemented with balanced tree.</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  + <a class="code" href="structHashMap.html">HashMap</a> -- The unordered map to store key value pairs implemented with hash table.</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;+ Heap</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  + <a class="code" href="structBinaryHeap.html">BinaryHeap</a> -- The binary heap implemented with vector.</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;+ Queue</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  + <a class="code" href="structPriorityQueue.html">PriorityQueue</a> -- The priority queue implemented with binary heap.</div>
+<div class="ttc" id="structBinaryHeap_html"><div class="ttname"><a href="structBinaryHeap.html">BinaryHeap</a></div><div class="ttdoc">The implementation for binary heap. </div><div class="ttdef"><b>Definition:</b> <a href="binary__heap_8h_source.html#l00014">binary_heap.h:14</a></div></div>
+<div class="ttc" id="structTreeMap_html"><div class="ttname"><a href="structTreeMap.html">TreeMap</a></div><div class="ttdoc">The implementation for ordered map. </div><div class="ttdef"><b>Definition:</b> <a href="tree__map_8h_source.html#l00014">tree_map.h:14</a></div></div>
+<div class="ttc" id="structBinaryTree_html"><div class="ttname"><a href="structBinaryTree.html">BinaryTree</a></div><div class="ttdoc">The implementation for basic binary search tree. </div><div class="ttdef"><b>Definition:</b> <a href="binary__tree_8h_source.html#l00014">binary_tree.h:14</a></div></div>
+<div class="ttc" id="structVector_html"><div class="ttname"><a href="structVector.html">Vector</a></div><div class="ttdoc">The implementation for dynamically growable array. </div><div class="ttdef"><b>Definition:</b> <a href="vector_8h_source.html#l00014">vector.h:14</a></div></div>
+<div class="ttc" id="structLinkedList_html"><div class="ttname"><a href="structLinkedList.html">LinkedList</a></div><div class="ttdoc">The implementation for doubly linked list. </div><div class="ttdef"><b>Definition:</b> <a href="linked__list_8h_source.html#l00014">linked_list.h:14</a></div></div>
+<div class="ttc" id="structPriorityQueue_html"><div class="ttname"><a href="structPriorityQueue.html">PriorityQueue</a></div><div class="ttdoc">The implementation for priority queue. </div><div class="ttdef"><b>Definition:</b> <a href="priority__queue_8h_source.html#l00014">priority_queue.h:14</a></div></div>
+<div class="ttc" id="structRedBlackTree_html"><div class="ttname"><a href="structRedBlackTree.html">RedBlackTree</a></div><div class="ttdoc">The implementation for balanced binary search tree. </div><div class="ttdef"><b>Definition:</b> <a href="red__black__tree_8h_source.html#l00014">red_black_tree.h:14</a></div></div>
+<div class="ttc" id="structHashMap_html"><div class="ttname"><a href="structHashMap.html">HashMap</a></div><div class="ttdoc">The implementation for hash map. </div><div class="ttdef"><b>Definition:</b> <a href="hash__map_8h_source.html#l00014">hash_map.h:14</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

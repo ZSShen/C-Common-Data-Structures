@@ -6,15 +6,16 @@ LibCDS implements several kinds of classic containers by C. It offers uniform AP
 
 ##Container Category
 + Tree
-  + SimpleTree -- The basic binary search tree.
-  + BalancedTree -- The balanced binary search tree implemented with red black tree.
+  + BinaryTree -- The basic binary search tree.
+  + RedBlackTree -- The balanced binary search tree.
 + List
-  + DLinkedList -- The doubly linked list.
+  + LinkedList -- The doubly linked list.
 + Array
   + Vector -- The dynamically growable array.
 + Map
-  + OrderedMap -- The ordered map to store key value pairs implemented with balanced tree.
+  + TreeMap -- The ordered map to store key value pairs implemented with balanced tree.
+  + HashMap -- The unordered map to store key value pairs implemented with hash table.
 + Heap
-  + BinHeap -- The ordered binary heap.
+  + BinaryHeap -- The binary heap implemented with vector.
 + Queue
-  + PrioQueue -- The priority queue implemented with binary heap.
+  + PriorityQueue -- The priority queue implemented with binary heap.

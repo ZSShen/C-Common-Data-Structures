@@ -115,6 +115,7 @@ extern int32_t HashMapGet(HashMap *self, Key key, size_t sizeKey, Value *pValue)
  *
  * @param self          The pointer to UnorderedMap structure
  * @param key           The designated key
+ * @param sizeKey       The key size in bytes
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container

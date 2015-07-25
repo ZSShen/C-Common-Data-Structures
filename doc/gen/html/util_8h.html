@@ -99,6 +99,12 @@ Macros</h2></td></tr>
 <tr class="memitem:a1b45804a56fa8764461b11f13e5c9bf2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#a1b45804a56fa8764461b11f13e5c9bf2">ERR_NODATA</a>&#160;&#160;&#160;(-5)</td></tr>
 <tr class="memdesc:a1b45804a56fa8764461b11f13e5c9bf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">No entry can be found with the given key from the associative data structures.  <a href="#a1b45804a56fa8764461b11f13e5c9bf2">More...</a><br/></td></tr>
 <tr class="separator:a1b45804a56fa8764461b11f13e5c9bf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bebdd917f460e15626723b9053aa628"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#a9bebdd917f460e15626723b9053aa628">ERR_GET</a>&#160;&#160;&#160;(-6)</td></tr>
+<tr class="memdesc:a9bebdd917f460e15626723b9053aa628"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invalid argument to store the returned data from getter operation.  <a href="#a9bebdd917f460e15626723b9053aa628">More...</a><br/></td></tr>
+<tr class="separator:a9bebdd917f460e15626723b9053aa628"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a306f92ef75fa539e28087d717fcb3fc8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#a306f92ef75fa539e28087d717fcb3fc8">ERR_KEYSIZE</a>&#160;&#160;&#160;(-7)</td></tr>
+<tr class="memdesc:a306f92ef75fa539e28087d717fcb3fc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invalid argument to specify the key size for hash data structures.  <a href="#a306f92ef75fa539e28087d717fcb3fc8">More...</a><br/></td></tr>
+<tr class="separator:a306f92ef75fa539e28087d717fcb3fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -212,6 +218,38 @@ Typedefs</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a9bebdd917f460e15626723b9053aa628"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERR_GET&#160;&#160;&#160;(-6)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Invalid argument to store the returned data from getter operation. </p>
+
+<p>Definition at line <a class="el" href="util_8h_source.html#l00030">30</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a306f92ef75fa539e28087d717fcb3fc8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERR_KEYSIZE&#160;&#160;&#160;(-7)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Invalid argument to specify the key size for hash data structures. </p>
+
+<p>Definition at line <a class="el" href="util_8h_source.html#l00033">33</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a class="anchor" id="a2583da5c1c14184068bda8cf681d5bed"></a>
 <div class="memitem">
@@ -225,7 +263,7 @@ Typedefs</h2></td></tr>
 
 <p>Item is the data type for the container element. </p>
 
-<p>Definition at line <a class="el" href="util_8h_source.html#l00030">30</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+<p>Definition at line <a class="el" href="util_8h_source.html#l00037">37</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
 </div>
 </div>
@@ -241,7 +279,7 @@ Typedefs</h2></td></tr>
 
 <p>Key is the data type to index map-like containers. </p>
 
-<p>Definition at line <a class="el" href="util_8h_source.html#l00033">33</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+<p>Definition at line <a class="el" href="util_8h_source.html#l00040">40</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
 </div>
 </div>
@@ -257,7 +295,7 @@ Typedefs</h2></td></tr>
 
 <p>Value is the data type for the map-like element. </p>
 
-<p>Definition at line <a class="el" href="util_8h_source.html#l00036">36</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+<p>Definition at line <a class="el" href="util_8h_source.html#l00043">43</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
 </div>
 </div>
@@ -273,7 +311,7 @@ Typedefs</h2></td></tr>
 
 <p>Entry is the data type which wraps key value pair to manipulate map-like containers. </p>
 
-<p>Definition at line <a class="el" href="util_8h_source.html#l00040">40</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+<p>Definition at line <a class="el" href="util_8h_source.html#l00047">47</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
 </div>
 </div>
