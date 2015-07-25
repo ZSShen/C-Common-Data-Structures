@@ -6,7 +6,7 @@
  *                  Hide the private data of the tree                        *
  *===========================================================================*/
 struct _PrioQueueData {
-    BinHeap *pHeap_;
+    BinaryHeap *pHeap_;
 };
 
 
@@ -77,7 +77,7 @@ int32_t PrioQueueInit(PriorityQueue **ppObj)
     pObj->set_compare = PrioQueueSetCompare;
     pObj->set_destroy = PrioQueueSetDestroy;
 
-    BinHeap *pHeap = pData->pHeap_;
+    BinaryHeap *pHeap = pData->pHeap_;
     pHeap->set_destroy(pHeap, _PrioQueueItemDestroy);
     pHeap->set_compare(pHeap, _PrioQueueItemComp);
 
@@ -110,7 +110,7 @@ EXIT:
 int32_t PrioQueuePush(PriorityQueue *self, Item item)
 {
     CHECK_INIT(self);
-    BinHeap *pHeap = self->pData->pHeap_;
+    BinaryHeap *pHeap = self->pData->pHeap_;
     int32_t iRtnCode = pHeap->push(pHeap, item);
     return iRtnCode;
 }
@@ -118,7 +118,7 @@ int32_t PrioQueuePush(PriorityQueue *self, Item item)
 int32_t PrioQueuePop(PriorityQueue *self)
 {
     CHECK_INIT(self);
-    BinHeap *pHeap = self->pData->pHeap_;
+    BinaryHeap *pHeap = self->pData->pHeap_;
     int32_t iRtnCode = pHeap->pop(pHeap);
     return iRtnCode;
 }
@@ -126,7 +126,7 @@ int32_t PrioQueuePop(PriorityQueue *self)
 int32_t PrioQueueTop(PriorityQueue *self, Item *pItem)
 {
     CHECK_INIT(self);
-    BinHeap *pHeap = self->pData->pHeap_;
+    BinaryHeap *pHeap = self->pData->pHeap_;
     int32_t iRtnCode = pHeap->top(pHeap, pItem);
     return iRtnCode;
 }
@@ -134,7 +134,7 @@ int32_t PrioQueueTop(PriorityQueue *self, Item *pItem)
 int32_t PrioQueueSize(PriorityQueue *self)
 {
     CHECK_INIT(self);
-    BinHeap *pHeap = self->pData->pHeap_;
+    BinaryHeap *pHeap = self->pData->pHeap_;
     int32_t iSize = pHeap->size(pHeap);
     return iSize;
 }
@@ -142,7 +142,7 @@ int32_t PrioQueueSize(PriorityQueue *self)
 int32_t PrioQueueSetCompare(PriorityQueue *self, int32_t (*pFunc) (Item, Item))
 {
     CHECK_INIT(self);
-    BinHeap *pHeap = self->pData->pHeap_;
+    BinaryHeap *pHeap = self->pData->pHeap_;
     int32_t iRtnCode = pHeap->set_compare(pHeap, pFunc);
     return iRtnCode;
 }
@@ -150,7 +150,7 @@ int32_t PrioQueueSetCompare(PriorityQueue *self, int32_t (*pFunc) (Item, Item))
 int32_t PrioQueueSetDestroy(PriorityQueue *self, void (*pFunc) (Item))
 {
     CHECK_INIT(self);
-    BinHeap *pHeap = self->pData->pHeap_;
+    BinaryHeap *pHeap = self->pData->pHeap_;
     int32_t iRtnCode = pHeap->set_destroy(pHeap, pFunc);
     return iRtnCode;
 }
