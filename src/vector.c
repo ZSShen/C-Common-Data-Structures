@@ -74,7 +74,7 @@ int32_t VectorInit(Vector **ppObj, int32_t iCap)
     }
     pData = pObj->pData;
 
-    iCap = (iCap <= 0) ? DEFAULT_CAPACITY : iCap;
+    iCap = (iCap <= 0)? DEFAULT_CAPACITY : iCap;
     pData->aItem_ = (Item*)malloc(sizeof(Item) * iCap);
     if (!(pData->aItem_)) {
         free(pObj->pData);
@@ -247,6 +247,10 @@ int32_t VectorSet(Vector *self, Item item, int32_t iIdx)
 int32_t VectorGet(Vector *self, Item *pItem, int32_t iIdx)
 {
     CHECK_INIT(self);
+    if (!pItem)
+        return ERR_GET;
+    *pItem = NULL;
+
     VectorData *pData = self->pData;
 
     /* Check for illegal index. */

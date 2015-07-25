@@ -10,7 +10,7 @@
 /** VectorData is the data type for the container private information. */
 typedef struct _VectorData VectorData;
 
-/** The implementation for dynamic array. */
+/** The implementation for dynamically growable array. */
 typedef struct _Vector {
     /** The container private information */
     VectorData *pData;
@@ -51,7 +51,7 @@ typedef struct _Vector {
         @see VectorCapacity */
     int32_t (*capacity) (struct _Vector*);
 
-    /** Set the custom resource clean method.
+    /** Set the custom item resource clean method.
         @see VectorSetDestroy */
     int32_t (*set_destroy) (struct _Vector*, void (*) (Item));
 } Vector;
@@ -64,12 +64,12 @@ typedef struct _Vector {
  * @brief The constructor for Vector.
  *
  * @param ppObj         The double pointer to the to be constructed vector
- * @param iCap          The designated capacity
+ * @param iCap          The designated initial capacity
  *
  * @retval SUCC
  * @retval ERR_NOMEM    Insufficient memory for vector construction
  *
- * @note iCap <= 0 for default capacity.
+ * @note Specify iCap to 0 for default initial capacity.
  */
 int32_t VectorInit(Vector **ppObj, int32_t iCap);
 
@@ -191,6 +191,7 @@ int32_t VectorSet(Vector *self, Item item, int32_t iIdx);
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Illegal index
+ * @retval ERR_GET      Invalid parameter to store returned item
  *
  * @note The designated index should be smaller than the vector size and should
  * not be negative.
@@ -220,8 +221,8 @@ int32_t VectorResize(Vector *self, int32_t iCap);
  *
  * @param self          The pointer to the Vector structure
  *
- * @retval ERR_NOINIT   Uninitialized container
  * @return              The number of stored items
+ * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t VectorSize(Vector *self);
 
@@ -230,13 +231,13 @@ int32_t VectorSize(Vector *self);
  *
  * @param self          The pointer to the Vector structure
  *
- * @retval ERR_NOINIT   Uninitialized container
  * @return              The container capacity
+ * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t VectorCapacity(Vector *self);
 
 /**
- * @brief Set the custom resource clean method.
+ * @brief Set the custom item resource clean method.
  *
  * @param self          The pointer to the Vector structure
  * @param pFunc         The function pointer to the custom method
