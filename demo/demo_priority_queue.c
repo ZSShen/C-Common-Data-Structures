@@ -65,11 +65,12 @@ int main()
     pEmploy->cYear = 1;
     pQueue->push(pQueue, (Item)pEmploy);
 
-    /* Pop an item from the queue. */
+    /* Pop items from the queue and check the top items. */
+    Item item;
+    pHeap->top(pHeap, &item);
+    assert(((Employ*)item)->cLevel == 1);
     pQueue->pop(pQueue);
 
-    /* Check the items stored on the top of the queue. */
-    Item item;
     pQueue->top(pQueue, &item);
     assert(((Employ*)item)->cLevel == 2);
     pQueue->pop(pQueue);
