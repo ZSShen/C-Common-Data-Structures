@@ -67,7 +67,7 @@ int main()
 
     /* Pop items from the queue and check the top items. */
     Item item;
-    pHeap->top(pHeap, &item);
+    pQueue->top(pQueue, &item);
     assert(((Employ*)item)->cLevel == 1);
     pQueue->pop(pQueue);
 
