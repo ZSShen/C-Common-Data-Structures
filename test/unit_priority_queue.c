@@ -143,7 +143,7 @@ int32_t AddAdvancedSuit()
 
 void TestSimpleManipulate()
 {
-    PrioQueue *pQueue;
+    PriorityQueue *pQueue;
     CU_ASSERT(PrioQueueInit(&pQueue) == SUCC);
 
     /* Build the maximum priority queue. */
@@ -216,7 +216,7 @@ void TestSimpleManipulate()
 
 void TestAdvancedManipulate()
 {
-    PrioQueue *pQueue;
+    PriorityQueue *pQueue;
     CU_ASSERT(PrioQueueInit(&pQueue) == SUCC);
 
     /* Build the minimum priority queue. */

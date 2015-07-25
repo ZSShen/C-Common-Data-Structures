@@ -47,12 +47,12 @@ void _PrioQueueItemDestroy(Item item);
 /*===========================================================================*
  *         Implementation for the container supporting operations            *
  *===========================================================================*/
-int32_t PrioQueueInit(PrioQueue **ppObj)
+int32_t PrioQueueInit(PriorityQueue **ppObj)
 {
-    *ppObj = (PrioQueue*)malloc(sizeof(PrioQueue));
+    *ppObj = (PriorityQueue*)malloc(sizeof(PriorityQueue));
     if (!(*ppObj))
         return ERR_NOMEM;
-    PrioQueue *pObj = *ppObj;
+    PriorityQueue *pObj = *ppObj;
 
     pObj->pData = (PrioQueueData*)malloc(sizeof(PrioQueueData));
     if (!(pObj->pData)) {
@@ -84,12 +84,12 @@ int32_t PrioQueueInit(PrioQueue **ppObj)
     return SUCC;
 }
 
-void PrioQueueDeinit(PrioQueue **ppObj)
+void PrioQueueDeinit(PriorityQueue **ppObj)
 {
     if (!(*ppObj))
         goto EXIT;
 
-    PrioQueue *pObj = *ppObj;
+    PriorityQueue *pObj = *ppObj;
     if (!(pObj->pData))
         goto FREE_QUEUE;
 
@@ -107,7 +107,7 @@ EXIT:
     return;
 }
 
-int32_t PrioQueuePush(PrioQueue *self, Item item)
+int32_t PrioQueuePush(PriorityQueue *self, Item item)
 {
     CHECK_INIT(self);
     BinHeap *pHeap = self->pData->pHeap_;
@@ -115,7 +115,7 @@ int32_t PrioQueuePush(PrioQueue *self, Item item)
     return iRtnCode;
 }
 
-int32_t PrioQueuePop(PrioQueue *self)
+int32_t PrioQueuePop(PriorityQueue *self)
 {
     CHECK_INIT(self);
     BinHeap *pHeap = self->pData->pHeap_;
@@ -123,7 +123,7 @@ int32_t PrioQueuePop(PrioQueue *self)
     return iRtnCode;
 }
 
-int32_t PrioQueueTop(PrioQueue *self, Item *pItem)
+int32_t PrioQueueTop(PriorityQueue *self, Item *pItem)
 {
     CHECK_INIT(self);
     BinHeap *pHeap = self->pData->pHeap_;
@@ -131,7 +131,7 @@ int32_t PrioQueueTop(PrioQueue *self, Item *pItem)
     return iRtnCode;
 }
 
-int32_t PrioQueueSize(PrioQueue *self)
+int32_t PrioQueueSize(PriorityQueue *self)
 {
     CHECK_INIT(self);
     BinHeap *pHeap = self->pData->pHeap_;
@@ -139,7 +139,7 @@ int32_t PrioQueueSize(PrioQueue *self)
     return iSize;
 }
 
-int32_t PrioQueueSetCompare(PrioQueue *self, int32_t (*pFunc) (Item, Item))
+int32_t PrioQueueSetCompare(PriorityQueue *self, int32_t (*pFunc) (Item, Item))
 {
     CHECK_INIT(self);
     BinHeap *pHeap = self->pData->pHeap_;
@@ -147,7 +147,7 @@ int32_t PrioQueueSetCompare(PrioQueue *self, int32_t (*pFunc) (Item, Item))
     return iRtnCode;
 }
 
-int32_t PrioQueueSetDestroy(PrioQueue *self, void (*pFunc) (Item))
+int32_t PrioQueueSetDestroy(PriorityQueue *self, void (*pFunc) (Item))
 {
     CHECK_INIT(self);
     BinHeap *pHeap = self->pData->pHeap_;
