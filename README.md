@@ -1,8 +1,8 @@
 LibCDS
 =============
 
-Integration Test (Travis CI)
-+ [![Integration Test] (https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)
+Integration Test (Travis CI)  
++ [![Integration Test] (https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)  
 
 ##Objective
 LibCDS implements several kinds of classic containers by C. It offers uniform APIs for convenient container interaction.
@@ -16,13 +16,14 @@ LibCDS implements several kinds of classic containers by C. It offers uniform AP
 | | RedBlackTree | The balanced binary search tree. |  
 | List | LinkedList | The doubly linked list. |  
 | Array | Vector | The dynamically growable array. |  
-| Map | TreeMap | The ordered map to store key value pairs implemented with red black tree. |  
-| | HashMap | The unordered map to store key value pairs implemented with hash table. |  
+| Map | TreeMap | The ordered map to store key value pairs. |  
+| | HashMap | The unordered map to store key value pairs. |  
 | Heap | BinaryHeap | The binary heap implemented with vector. |  
 | Queue | PriorityQueue | The priority queue implemented with binary heap. |  
 
 ##Installation
-####***Basic***
+***This chapter illustrates how to install LibCDS to your working directory.***
+
 First of all, we need to prepare the following utilities:
 - [CMake] - A cross platform build system.
 - [Valgrind] - An instrumentation framework help for memory debug.
@@ -34,51 +35,46 @@ $ sudo apt-get install -qq cmake
 $ sudo apt-get install -qq valgrind
 $ sudo apt-get install -qq libcunit1-dev
 ```
-Now we can build the entire source tree under the project root folder:
+Now we can build the entire source tree under the package root folder:
 ``` sh
 $ ./clean.py --rebuild
 $ cd build
-$ cmake ..
+$ cmake .. -DCMAKE_INSTALL_PREFIX=/path/to/your/destination
 $ make
-$ cd ..
+$ make install
 ```
-Then the library should be under:
-- `./lib/release/libcds.so`
+Upon finishing, the public header will reside in `/path/to/your/destination/include/`.  
+And the shared library will reside in `/path/to/your/destination/lib/`.  
 
-The demo program should be under:
-- `./bin/demo/`
-
-And the header files are grouped be under:
-- `./include/`
-
-Besides, for development-relevant binaries, the unit tests should be under:
-- `./bin/test/`
-
-####***Development***
-If we try to patch a certain data structure or add a new one, we can apply the following CMake options to configure the building procedures for convenient development:
-- `BUILD_SOURCE`
-  + NAME_SOURCE - Specifying a source file to build a specific data structure and the relevant demo program and unit test.
-- `CMAKE_BUILD_TYPE`
-  + Release - For performance optimized binary. Library output folder is `./lib/release/`.
-  + Debug - For debug information added binary. Library output folder is `./lib/debug/`.
-  + Note that for demo program and unit test, the output folders are always in `./bin/demo/` and `./bin/test/`.
-
-For examples:
-- For debug version of vector
+If you plan for debug build, you can specify the cmake argument list like this:
 ``` sh
-$ cmake .. -DBUILD_SOURCE=vector  -DCMAKE_BUILD_TYPE=Debug
-$ make
+$ cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/path/to/your/destination
 ```
-- For debug version of ordered map
-``` sh
-$ cmake .. -DBUILD_SOURCE=ordered_map  -DCMAKE_BUILD_TYPE=Debug
-$ make
+
+##Usage
+***This chapter illustrates how to link and apply LibCDS in your source code.***   
+
+For header file, you just need to include the main header:  
 ```
-- For debug version of all the data structures
-``` sh
-$ cmake .. -DCMAKE_BUILD_TYPE=Debug
-$ make
+#include "cds.h"
 ```
+Assume that you apply gcc for compilation, then you need the following options:
+```
+-I/path/to/your/destination/include/
+-L/path/to/your/destination/lib/
+-lcds
+```
+Now you successfully link LibCDS with your project!  
+But wait, to run your project, you need to tell the loader where to find LibCDS:
+```
+LD_LIBRARY_PATH=/path/to/your/destination/lib/
+```
+That's all the related stuff!
+
+For detailed API usage, you can refer to the manual or check the demo programs.  
+
+##Development  
+
 
 [CMake]:http://www.cmake.org/
 [Valgrind]:http://valgrind.org/
