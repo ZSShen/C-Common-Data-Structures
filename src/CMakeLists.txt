@@ -49,6 +49,15 @@ function(SUB_BUILD_ENTIRE)
         LIBRARY_OUTPUT_DIRECTORY ${PATH_OUT}
         OUTPUT_NAME ${LIB_CDS}
     )
+
+    # Install the built library and the header file in the designated path.
+    install(DIRECTORY ${PATH_INC} DESTINATION ./)
+    install(TARGETS ${TGE_CDS}
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ
+                    WORLD_EXECUTE
+        LIBRARY DESTINATION lib
+    )
+
 endfunction()
 
 #==================================================================#
