@@ -344,5 +344,13 @@ void TestIterate()
         iIdx--;
     }
 
+    /* Reversely iterate through the vector items. */
+    iIdx = 1;
+    CU_ASSERT(pVec->reverse_iterate(pVec, true, NULL) == SUCC);
+    while (pVec->reverse_iterate(pVec, false, &item) != END) {
+        CU_ASSERT_EQUAL(iIdx, ((Tuple*)item)->iMajor);
+        iIdx++;
+    }
+
     VectorDeinit(&pVec);
 }

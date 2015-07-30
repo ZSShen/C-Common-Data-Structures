@@ -100,6 +100,7 @@ int32_t VectorInit(Vector **ppObj, int32_t iCap)
     pObj->get = VectorGet;
     pObj->sort = VectorSort;
     pObj->iterate = VectorIterate;
+    pObj->reverse_iterate = VectorReverseIterate;
     pObj->set_destroy = VectorSetDestroy;
 
     return SUCC;
@@ -291,6 +292,27 @@ int32_t VectorIterate(Vector *self, bool bReset, Item *pItem)
 
     *pItem = pData->aItem_[pData->iIter_];
     pData->iIter_++;
+    return SUCC;
+}
+
+int32_t VectorReverseIterate(Vector *self, bool bReset, Item *pItem)
+{
+    CHECK_INIT(self);
+
+    VectorData *pData = self->pData;
+    if (pData->iSize_ == 0)
+        return ERR_IDX;
+    if (bReset) {
+        pData->iIter_ = pData->iSize_ - 1;
+        return SUCC;
+    }
+    if (!pItem)
+        return ERR_GET;
+    if (pData->iIter_ == -1)
+        return END;
+
+    *pItem = pData->aItem_[pData->iIter_];
+    pData->iIter_--;
     return SUCC;
 }
 

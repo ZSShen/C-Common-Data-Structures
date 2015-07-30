@@ -75,6 +75,14 @@ int main()
         iId++;
     }
 
+    /* Reversely iterate through the vector. */
+    iId = 4;
+    pVec->reverse_iterate(pVec, true, NULL);
+    while (pVec->reverse_iterate(pVec, false, &item) != END) {
+        assert(((Employ*)item)->iId == iId);
+        iId--;
+    }
+
     /* Retrieve the items with direct indexing. */
     pVec->get(pVec, &item, 0);
     assert(((Employ*)item)->iId == 1);
