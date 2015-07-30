@@ -13,6 +13,15 @@ void DestroyObject(Item item)
     free((Employ*)item);
 }
 
+int32_t CompareObject(const void *ppSrc, const void *ppTge)
+{
+    Employ *empSrc = *((Employ**)(Item*)ppSrc);
+    Employ *empTge = *((Employ**)(Item*)ppTge);
+    if (empSrc->iId == empTge->iId)
+        return 0;
+    return (empSrc->iId > empTge->iId)? 1 : (-1);
+}
+
 
 int main()
 {
@@ -87,12 +96,19 @@ int main()
     int32_t iCap = pVec->capacity(pVec);
     assert(iCap == 4);
 
+    /* Sort the items with the custom item comparison method. */
+    pVec->sort(pVec, CompareObject);
+
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [2] | [3] | [10] | [40]             *
+     *---------------------------------------------------------------*/
+
     /* Delete the item at the designated index. */
     pVec->delete(pVec, 3);
     pVec->delete(pVec, 0);
 
     /*---------------------------------------------------------------*
-     * Now the vector should be: [2] | [3]                           *
+     * Now the vector should be: [3] | [10]                          *
      *---------------------------------------------------------------*/
 
     int32_t iNum = 0;
@@ -112,7 +128,7 @@ int main()
     iSize = pVec->size(pVec);
     assert(iSize == 0);
     iCap = pVec->capacity(pVec);
-    assert(iCap == 100);
+    assert(iCap == 260);
 
     /* You should deinitialize the DS after all the relevant tasks. */
     VectorDeinit(&pVec);

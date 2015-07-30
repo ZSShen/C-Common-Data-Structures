@@ -51,6 +51,10 @@ typedef struct _Vector {
         @see VectorCapacity */
     int32_t (*capacity) (struct _Vector*);
 
+    /** Sort the items via the designated item comparison method.
+        @see VectorSort */
+    int32_t (*sort) (struct _Vector*, int32_t (*) (const void*, const void*));
+
     /** Set the custom item resource clean method.
         @see VectorSetDestroy */
     int32_t (*set_destroy) (struct _Vector*, void (*) (Item));
@@ -237,11 +241,23 @@ int32_t VectorSize(Vector *self);
 int32_t VectorCapacity(Vector *self);
 
 /**
+ * @brief Sort the items via the designated item comparison method.
+ *
+ * @param self          The pointer to the Vector structure
+ * @param pFunc         The function pointer to the custom method
+ *
+ * @retval SUCC
+ * @retval ERR_NOINIT   Uninitialized container
+ */
+int32_t VectorSort(Vector *self, int32_t (*pFunc) (const void*, const void*));
+
+/**
  * @brief Set the custom item resource clean method.
  *
  * @param self          The pointer to the Vector structure
  * @param pFunc         The function pointer to the custom method
  *
+ * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t VectorSetDestroy(Vector *self, void (*pFunc) (Item));

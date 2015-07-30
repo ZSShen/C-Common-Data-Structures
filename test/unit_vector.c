@@ -3,15 +3,22 @@
 #include "CUnit/Basic.h"
 
 
-/*===========================================================================*
- *              Test suite to manipulate primitive type input                *
- *===========================================================================*/
+typedef struct Tuple_ {
+    int32_t iMajor;
+    int32_t iMinor;
+} Tuple;
+
+
 void TestPrimPushBack();
 void TestPrimInsert();
 void TestPrimSet();
 void TestPrimPopBack();
 void TestPrimDelete();
 void TestPrimResize();
+
+void DestroyObject(Item);
+int32_t CompareObject(const void*, const void*);
+void TestSort();
 
 
 int32_t SuitePrimitive()
@@ -42,6 +49,10 @@ int32_t SuitePrimitive()
         return ERR_NOMEM;
 
     pTest = CU_add_test(pSuite, "Storage reallocation.", TestPrimResize);
+    if (!pTest)
+        return ERR_NOMEM;
+
+    pTest = CU_add_test(pSuite, "Item sorting.", TestSort);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -246,6 +257,56 @@ void TestPrimResize()
     CU_ASSERT_EQUAL(item, (Item)0);
     CU_ASSERT_EQUAL(pVec->size(pVec), 1);
     CU_ASSERT_EQUAL(pVec->capacity(pVec), 1);
+
+    VectorDeinit(&pVec);
+}
+
+void DestroyObject(Item item)
+{
+    free((Tuple*)item);
+}
+
+int32_t CompareObject(const void *ppSrc, const void *ppTge)
+{
+    Tuple *TupleSrc = *((Tuple**)ppSrc);
+    Tuple *TupleTge = *((Tuple**)ppTge);
+    if (TupleSrc->iMajor == TupleTge->iMajor)
+        return 0;
+    return (TupleSrc->iMajor > TupleTge->iMajor)? 1 : (-1);
+}
+
+void TestSort()
+{
+    Vector *pVec;
+    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
+    CU_ASSERT(pVec->set_destroy(pVec, DestroyObject) == SUCC);
+
+    /* Push the initial items. */
+    Tuple *tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->iMajor = 3; tuple->iMinor = 3;
+    CU_ASSERT(pVec->push_back(pVec, (Item)tuple) == SUCC);
+
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->iMajor = 1; tuple->iMinor = 1;
+    CU_ASSERT(pVec->push_back(pVec, (Item)tuple) == SUCC);
+
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->iMajor = 2; tuple->iMinor = 2;
+    CU_ASSERT(pVec->push_back(pVec, (Item)tuple) == SUCC);
+
+    /* Sort the items. */
+    CU_ASSERT(pVec->sort(pVec, CompareObject) == SUCC);
+
+    /* Check the item order. */
+    Item item;
+    CU_ASSERT(pVec->get(pVec, &item, 0) == SUCC);
+    CU_ASSERT_EQUAL(1, ((Tuple*)item)->iMajor);
+
+    CU_ASSERT(pVec->get(pVec, &item, 1) == SUCC);
+    CU_ASSERT_EQUAL(2, ((Tuple*)item)->iMajor);
+
+    CU_ASSERT(pVec->get(pVec, &item, 2) == SUCC);
+    CU_ASSERT_EQUAL(3, ((Tuple*)item)->iMajor);
 
     VectorDeinit(&pVec);
 }
