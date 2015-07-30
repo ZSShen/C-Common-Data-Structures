@@ -32,6 +32,9 @@
 /** Invalid argument to specify the key size for hash data structures. */
 #define ERR_KEYSIZE     (-7)
 
+/** Iteration terminated at the end of the data structure */
+#define END 			(1)
+
 
 /** Item is the data type for the container element. */
 typedef const void* Item;

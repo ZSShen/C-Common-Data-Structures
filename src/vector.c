@@ -7,6 +7,7 @@
 struct _VectorData {
     int32_t iSize_;
     int32_t iCapacity_;
+    int32_t iIter_;
     Item *aItem_;
     void (*pDestroy_) (Item);
     bool bUserDestroy_;
@@ -84,6 +85,7 @@ int32_t VectorInit(Vector **ppObj, int32_t iCap)
     }
     pData->iSize_ = 0;
     pData->iCapacity_ = iCap;
+    pData->iIter_ = 0;
     pData->pDestroy_ = _VectorItemDestroy;
     pData->bUserDestroy_ = false;
 
@@ -96,8 +98,9 @@ int32_t VectorInit(Vector **ppObj, int32_t iCap)
     pObj->capacity = VectorCapacity;
     pObj->set = VectorSet;
     pObj->get = VectorGet;
-    pObj->set_destroy = VectorSetDestroy;
     pObj->sort = VectorSort;
+    pObj->iterate = VectorIterate;
+    pObj->set_destroy = VectorSetDestroy;
 
     return SUCC;
 }
@@ -267,6 +270,27 @@ int32_t VectorSort(Vector *self, int32_t (*pFunc) (const void*, const void*))
     CHECK_INIT(self);
     VectorData *pData = self->pData;
     qsort(pData->aItem_, pData->iSize_, sizeof(Item), pFunc);
+    return SUCC;
+}
+
+int32_t VectorIterate(Vector *self, bool bReset, Item *pItem)
+{
+    CHECK_INIT(self);
+
+    VectorData *pData = self->pData;
+    if (pData->iSize_ == 0)
+        return ERR_IDX;
+    if (bReset) {
+        pData->iIter_ = 0;
+        return SUCC;
+    }
+    if (!pItem)
+        return ERR_GET;
+    if (pData->iIter_ == pData->iSize_)
+        return END;
+
+    *pItem = pData->aItem_[pData->iIter_];
+    pData->iIter_++;
     return SUCC;
 }
 

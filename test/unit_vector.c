@@ -19,6 +19,7 @@ void TestPrimResize();
 void DestroyObject(Item);
 int32_t CompareObject(const void*, const void*);
 void TestSort();
+void TestIterate();
 
 
 int32_t SuitePrimitive()
@@ -53,6 +54,10 @@ int32_t SuitePrimitive()
         return ERR_NOMEM;
 
     pTest = CU_add_test(pSuite, "Item sorting.", TestSort);
+    if (!pTest)
+        return ERR_NOMEM;
+
+    pTest = CU_add_test(pSuite, "Vector iteration.", TestIterate);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -307,6 +312,37 @@ void TestSort()
 
     CU_ASSERT(pVec->get(pVec, &item, 2) == SUCC);
     CU_ASSERT_EQUAL(3, ((Tuple*)item)->iMajor);
+
+    VectorDeinit(&pVec);
+}
+
+void TestIterate()
+{
+    Vector *pVec;
+    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
+    CU_ASSERT(pVec->set_destroy(pVec, DestroyObject) == SUCC);
+
+    /* Push the initial items. */
+    Tuple *tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->iMajor = 3; tuple->iMinor = 3;
+    CU_ASSERT(pVec->push_back(pVec, (Item)tuple) == SUCC);
+
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->iMajor = 2; tuple->iMinor = 2;
+    CU_ASSERT(pVec->push_back(pVec, (Item)tuple) == SUCC);
+
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->iMajor = 1; tuple->iMinor = 1;
+    CU_ASSERT(pVec->push_back(pVec, (Item)tuple) == SUCC);
+
+    /* Iterate through the vector items. */
+    Item item;
+    int32_t iIdx = 3;
+    CU_ASSERT(pVec->iterate(pVec, true, NULL) == SUCC);
+    while (pVec->iterate(pVec, false, &item) != END) {
+        CU_ASSERT_EQUAL(iIdx, ((Tuple*)item)->iMajor);
+        iIdx--;
+    }
 
     VectorDeinit(&pVec);
 }

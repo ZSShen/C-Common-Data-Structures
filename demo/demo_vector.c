@@ -66,8 +66,16 @@ int main()
      * Now the vector should be: [1] | [2] | [3] | [4]               *
      *---------------------------------------------------------------*/
 
-    /* Retrieve the items with direct indexing. */
+    /* Iterate through the vector. */
     Item item;
+    int32_t iId = 1;
+    pVec->iterate(pVec, true, NULL);
+    while (pVec->iterate(pVec, false, &item) != END) {
+        assert(((Employ*)item)->iId == iId);
+        iId++;
+    }
+
+    /* Retrieve the items with direct indexing. */
     pVec->get(pVec, &item, 0);
     assert(((Employ*)item)->iId == 1);
     pVec->get(pVec, &item, 3);

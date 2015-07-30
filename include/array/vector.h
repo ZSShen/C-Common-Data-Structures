@@ -55,6 +55,10 @@ typedef struct _Vector {
         @see VectorSort */
     int32_t (*sort) (struct _Vector*, int32_t (*) (const void*, const void*));
 
+    /** Iterate through the vector till the end.
+        @see VectorIterate */
+    int32_t (*iterate) (struct _Vector*, bool, Item*);
+
     /** Set the custom item resource clean method.
         @see VectorSetDestroy */
     int32_t (*set_destroy) (struct _Vector*, void (*) (Item));
@@ -250,6 +254,26 @@ int32_t VectorCapacity(Vector *self);
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t VectorSort(Vector *self, int32_t (*pFunc) (const void*, const void*));
+
+/**
+ * @brief Iterate through the vector till the end.
+ *
+ * Before iterating through the vector, it is necessary to pass bReset := true and
+ * pItem := NULL for iterator initialization.
+ * After initialization, you can pass bReset := false and pItem := the relevant
+ * pointer to get the returned item at each iteration.
+ *
+ * @param self          The pointer to the Vector structure
+ * @param bReset        The knob to reset the iteration
+ * @param pItem         The pointer to the returned item
+ *
+ * @retval SUCC
+ * @retval END          At the end of the vector
+ * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_IDX      Empty vector
+ * @retval ERR_GET      Invalid parameter to store returned item
+ */
+int32_t VectorIterate(Vector *self, bool bReset, Item *pItem);
 
 /**
  * @brief Set the custom item resource clean method.
