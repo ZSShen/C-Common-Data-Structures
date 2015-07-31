@@ -21,6 +21,7 @@ void TestPrimPopBack();
 void TestPrimDeleteForward();
 void TestPrimDeleteBackward();
 void TestPrimSet();
+void TestIterate();
 
 /* The function to register non-primitive test suites for resource management
    verification. */
@@ -81,6 +82,10 @@ int32_t SuitePrimitive()
         return ERR_NOMEM;
 
     pTest = CU_add_test(pSuite, "List reversing", TestReverse);
+    if (!pTest)
+        return ERR_NOMEM;
+
+    pTest = CU_add_test(pSuite, "List Iteration", TestIterate);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -574,6 +579,37 @@ void TestPrimSet()
     CU_ASSERT(pList->set_at(pList, (Item)2, -2) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, -2) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
+
+    ListDeinit(&pList);
+}
+
+void TestIterate()
+{
+    LinkedList *pList;
+    CU_ASSERT(ListInit(&pList) == SUCC);
+
+    /* Push the initial items. */
+    CU_ASSERT(pList->push_back(pList, (Item)1) == SUCC);
+    CU_ASSERT(pList->push_back(pList, (Item)2) == SUCC);
+    CU_ASSERT(pList->push_back(pList, (Item)3) == SUCC);
+    CU_ASSERT(pList->push_back(pList, (Item)4) == SUCC);
+
+    /* Iterate through the list items. */
+    Item item;
+    int32_t iIdx = 1;
+    CU_ASSERT(pList->iterate(pList, true, NULL) == SUCC);
+    while (pList->iterate(pList, false, &item) != END) {
+        CU_ASSERT_EQUAL(iIdx, (int32_t)(long)item);
+        iIdx++;
+    }
+
+    /* Reversely iterate through the list items. */
+    iIdx = 4;
+    CU_ASSERT(pList->reverse_iterate(pList, true, NULL) == SUCC);
+    while (pList->reverse_iterate(pList, false, &item) != END) {
+        CU_ASSERT_EQUAL(iIdx, (int32_t)(long)item);
+        iIdx--;
+    }
 
     ListDeinit(&pList);
 }

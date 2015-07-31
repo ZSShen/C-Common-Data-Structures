@@ -71,6 +71,14 @@ typedef struct _LinkedList {
         @see ListReverse */
     int32_t (*reverse) (struct _LinkedList*);
 
+    /** Iterate through the list till the tail end.
+        @see ListIterate */
+    int32_t (*iterate) (struct _LinkedList*, bool, Item*);
+
+    /** Reversely iterate through the list till the head end.
+        @see ListReverseIterate */
+    int32_t (*reverse_iterate) (struct _LinkedList*, bool, Item*);
+
     /** Set the custom item resource clean method.
         @see ListSetDestroy */
     int32_t (*set_destroy) (struct _LinkedList*, void (*) (Item));
@@ -327,6 +335,46 @@ int32_t ListSize(LinkedList *self);
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t ListReverse(LinkedList *self);
+
+/**
+ * @brief Iterate through the list till the tail end.
+ *
+ * Before iterating through the list, it is necessary to pass bReset := true and
+ * pItem := NULL for iterator initialization.
+ * After initialization, you can pass bReset := false and pItem := the relevant
+ * pointer to get the returned item at each iteration.
+ *
+ * @param self          The pointer to the LinkedList structure
+ * @param bReset        The knob to reset the iteration
+ * @param pItem         The pointer to the returned item
+ *
+ * @retval SUCC
+ * @retval END          Beyond the tail end
+ * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_IDX      Empty list
+ * @retval ERR_GET      Invalid parameter to store returned item
+ */
+int32_t ListIterate(LinkedList *self, bool bReset, Item *pItem);
+
+/**
+ * @brief Reversely iterate through the list till the head end.
+ *
+ * Before reversely iterating through the list, it is necessary to pass
+ * bReset := true and pItem := NULL for iterator initialization.
+ * After initialization, you can pass bReset := false and pItem := the relevant
+ * pointer to get the returned item at each iteration.
+ *
+ * @param self          The pointer to the LinkedList structure
+ * @param bReset        The knob to reset the iteration
+ * @param pItem         The pointer to the returned item
+ *
+ * @retval SUCC
+ * @retval END          Beyond the head end
+ * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_IDX      Empty list
+ * @retval ERR_GET      Invalid parameter to store returned item
+ */
+int32_t ListReverseIterate(LinkedList *self, bool bReset, Item *pItem);
 
 /**
  * @brief Set the custom item resource clean method.

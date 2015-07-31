@@ -65,8 +65,24 @@ int main()
      * Now the list should be: (10)<-->(20)<-->(30)<-->(40)<-->(50)  *
      *---------------------------------------------------------------*/
 
-    /* Get the item from the list head. */
+    /* Iterate through the list. */
     Item item;
+    int32_t iId = 10;
+    pList->iterate(pList, true, NULL);
+    while (pList->iterate(pList, false, &item)) {
+        assert((int32_t)(long)item == iId);
+        iId += 10;
+    }
+
+    /* Reversely iterate through the list. */
+    iId = 50;
+    pList->reverse_iterate(pList, true, NULL);
+    while (pList->reverse_iterate(pList, false, &item)) {
+        assert((int32_t)(long)item == iId);
+        iId -= 10;
+    }
+
+    /* Get the item from the list head. */
     pList->get_front(pList, &item);
 
     /* Get the item from the list tail. */

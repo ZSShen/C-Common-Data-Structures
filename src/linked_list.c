@@ -14,6 +14,7 @@ struct _ListData {
     bool bUserDestroy_;
     int32_t iSize_;
     ListNode *pHead_;
+    ListNode *pIter_;
     void (*pDestroy_) (Item);
 };
 
@@ -49,7 +50,7 @@ void _ListItemDestroy(Item item);
 
 #define NEW_NODE(pNew, item)                                                    \
             do {                                                                \
-                pNew = (ListNode*)malloc(sizeof(ListNode));                   \
+                pNew = (ListNode*)malloc(sizeof(ListNode));                     \
                 if (!pNew)                                                      \
                     return ERR_NOMEM;                                           \
                 pNew->item = item;                                              \
@@ -101,6 +102,7 @@ int32_t ListInit(LinkedList **ppObj)
     pData->bUserDestroy_ = false;
     pData->iSize_ = 0;
     pData->pHead_ = NULL;
+    pData->pIter_ = NULL;
     pData->pDestroy_ = _ListItemDestroy;
 
     pObj->push_front = ListPushFront;
@@ -121,6 +123,10 @@ int32_t ListInit(LinkedList **ppObj)
 
     pObj->size = ListSize;
     pObj->reverse = ListReverse;
+
+    pObj->iterate = ListIterate;
+    pObj->reverse_iterate = ListReverseIterate;
+
     pObj->set_destroy = ListSetDestroy;
 
     return SUCC;
@@ -485,6 +491,54 @@ int32_t ListReverse(LinkedList *self)
         iRge -= 2;
     }
 
+    return SUCC;
+}
+
+int32_t ListIterate(LinkedList *self, bool bReset, Item *pItem)
+{
+    CHECK_INIT(self);
+
+    ListData *pData = self->pData;
+    if (pData->iSize_ == 0)
+        return ERR_IDX;
+
+    if (bReset) {
+        pData->pIter_ = pData->pHead_;
+        return SUCC;
+    }
+
+    if (!pItem)
+        return ERR_GET;
+
+    ListNode *pCurr = pData->pIter_;
+    *pItem = pCurr->item;
+    if (pCurr->pNext == pData->pHead_)
+        return END;
+    pData->pIter_ = pCurr->pNext;
+    return SUCC;
+}
+
+int32_t ListReverseIterate(LinkedList *self, bool bReset, Item *pItem)
+{
+    CHECK_INIT(self);
+
+    ListData *pData = self->pData;
+    if (pData->iSize_ == 0)
+        return ERR_IDX;
+
+    if (bReset) {
+        pData->pIter_ = pData->pHead_->pPrev;
+        return SUCC;
+    }
+
+    if (!pItem)
+        return ERR_GET;
+
+    ListNode *pCurr = pData->pIter_;
+    *pItem = pCurr->item;
+    if (pCurr == pData->pHead_)
+        return END;
+    pData->pIter_ = pCurr->pPrev;
     return SUCC;
 }
 
