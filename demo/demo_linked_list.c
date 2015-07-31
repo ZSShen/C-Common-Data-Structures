@@ -69,16 +69,16 @@ int main()
     Item item;
     int32_t iId = 10;
     pList->iterate(pList, true, NULL);
-    while (pList->iterate(pList, false, &item)) {
-        assert((int32_t)(long)item == iId);
+    while (pList->iterate(pList, false, &item) != END) {
+        assert(((Object*)item)->iId == iId);
         iId += 10;
     }
 
     /* Reversely iterate through the list. */
     iId = 50;
     pList->reverse_iterate(pList, true, NULL);
-    while (pList->reverse_iterate(pList, false, &item)) {
-        assert((int32_t)(long)item == iId);
+    while (pList->reverse_iterate(pList, false, &item) != END) {
+        assert(((Object*)item)->iId == iId);
         iId -= 10;
     }
 
