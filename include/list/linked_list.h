@@ -351,7 +351,6 @@ int32_t ListReverse(LinkedList *self);
  * @retval SUCC
  * @retval END          Beyond the tail end
  * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty list
  * @retval ERR_GET      Invalid parameter to store returned item
  */
 int32_t ListIterate(LinkedList *self, bool bReset, Item *pItem);
@@ -371,7 +370,6 @@ int32_t ListIterate(LinkedList *self, bool bReset, Item *pItem);
  * @retval SUCC
  * @retval END          Beyond the head end
  * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty list
  * @retval ERR_GET      Invalid parameter to store returned item
  */
 int32_t ListReverseIterate(LinkedList *self, bool bReset, Item *pItem);

@@ -497,10 +497,7 @@ int32_t ListReverse(LinkedList *self)
 int32_t ListIterate(LinkedList *self, bool bReset, Item *pItem)
 {
     CHECK_INIT(self);
-
     ListData *pData = self->pData;
-    if (pData->iSize_ == 0)
-        return ERR_IDX;
 
     if (bReset) {
         pData->pIter_ = pData->pHead_;
@@ -510,35 +507,44 @@ int32_t ListIterate(LinkedList *self, bool bReset, Item *pItem)
     if (!pItem)
         return ERR_GET;
 
+    if (!pData->pIter_) {
+        *pItem = NULL;
+        return END;
+    }
+
     ListNode *pCurr = pData->pIter_;
     *pItem = pCurr->item;
-    if (pCurr->pNext == pData->pHead_)
-        return END;
     pData->pIter_ = pCurr->pNext;
+    if (pData->pIter_ == pData->pHead_)
+        pData->pIter_ = NULL;
+
     return SUCC;
 }
 
 int32_t ListReverseIterate(LinkedList *self, bool bReset, Item *pItem)
 {
     CHECK_INIT(self);
-
     ListData *pData = self->pData;
-    if (pData->iSize_ == 0)
-        return ERR_IDX;
 
     if (bReset) {
-        pData->pIter_ = pData->pHead_->pPrev;
+        pData->pIter_ = (pData->pHead_)? pData->pHead_->pPrev : NULL;
         return SUCC;
     }
 
     if (!pItem)
         return ERR_GET;
 
+    if (!pData->pIter_) {
+        *pItem = NULL;
+        return END;
+    }
+
     ListNode *pCurr = pData->pIter_;
     *pItem = pCurr->item;
-    if (pCurr == pData->pHead_)
-        return END;
     pData->pIter_ = pCurr->pPrev;
+    if (pData->pIter_ == pData->pHead_->pPrev)
+        pData->pIter_ = NULL;
+
     return SUCC;
 }
 

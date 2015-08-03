@@ -588,6 +588,15 @@ void TestIterate()
     LinkedList *pList;
     CU_ASSERT(ListInit(&pList) == SUCC);
 
+    /* Iterate the empty list. */
+    Item item;
+    CU_ASSERT(pList->iterate(pList, true, NULL) == SUCC);
+    while (pList->iterate(pList, false, &item) != END);
+    CU_ASSERT_EQUAL(item, NULL);
+    CU_ASSERT(pList->reverse_iterate(pList, true, NULL) == SUCC);
+    while (pList->reverse_iterate(pList, false, &item) != END);
+    CU_ASSERT_EQUAL(item, NULL);
+
     /* Push the initial items. */
     CU_ASSERT(pList->push_back(pList, (Item)1) == SUCC);
     CU_ASSERT(pList->push_back(pList, (Item)2) == SUCC);
@@ -595,21 +604,26 @@ void TestIterate()
     CU_ASSERT(pList->push_back(pList, (Item)4) == SUCC);
 
     /* Iterate through the list items. */
-    Item item;
+    int32_t iSum = 0;
     int32_t iIdx = 1;
     CU_ASSERT(pList->iterate(pList, true, NULL) == SUCC);
     while (pList->iterate(pList, false, &item) != END) {
         CU_ASSERT_EQUAL(iIdx, (int32_t)(long)item);
+        iSum += (int32_t)(long)item;
         iIdx++;
     }
+    CU_ASSERT_EQUAL(iSum, 10);
 
     /* Reversely iterate through the list items. */
+    iSum = 0;
     iIdx = 4;
     CU_ASSERT(pList->reverse_iterate(pList, true, NULL) == SUCC);
     while (pList->reverse_iterate(pList, false, &item) != END) {
         CU_ASSERT_EQUAL(iIdx, (int32_t)(long)item);
+        iSum += (int32_t)(long)item;
         iIdx--;
     }
+    CU_ASSERT_EQUAL(iSum, 10);
 
     ListDeinit(&pList);
 }
