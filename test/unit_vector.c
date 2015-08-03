@@ -322,6 +322,13 @@ void TestIterate()
     CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
     CU_ASSERT(pVec->set_destroy(pVec, DestroyObject) == SUCC);
 
+    /* Iterate through empty vector. */
+    Item item;
+    CU_ASSERT(pVec->iterate(pVec, true, NULL) == SUCC);
+    while (pVec->iterate(pVec, false, &item) != END);
+    CU_ASSERT(pVec->reverse_iterate(pVec, true, NULL) == SUCC);
+    while (pVec->reverse_iterate(pVec, false, &item) != END);
+
     /* Push the initial items. */
     Tuple *tuple = (Tuple*)malloc(sizeof(Tuple));
     tuple->iMajor = 3; tuple->iMinor = 3;
@@ -336,7 +343,6 @@ void TestIterate()
     CU_ASSERT(pVec->push_back(pVec, (Item)tuple) == SUCC);
 
     /* Iterate through the vector items. */
-    Item item;
     int32_t iIdx = 3;
     CU_ASSERT(pVec->iterate(pVec, true, NULL) == SUCC);
     while (pVec->iterate(pVec, false, &item) != END) {

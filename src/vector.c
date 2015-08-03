@@ -279,8 +279,6 @@ int32_t VectorIterate(Vector *self, bool bReset, Item *pItem)
     CHECK_INIT(self);
 
     VectorData *pData = self->pData;
-    if (pData->iSize_ == 0)
-        return ERR_IDX;
     if (bReset) {
         pData->iIter_ = 0;
         return SUCC;
@@ -300,8 +298,6 @@ int32_t VectorReverseIterate(Vector *self, bool bReset, Item *pItem)
     CHECK_INIT(self);
 
     VectorData *pData = self->pData;
-    if (pData->iSize_ == 0)
-        return ERR_IDX;
     if (bReset) {
         pData->iIter_ = pData->iSize_ - 1;
         return SUCC;

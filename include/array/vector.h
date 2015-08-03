@@ -274,7 +274,6 @@ int32_t VectorSort(Vector *self, int32_t (*pFunc) (const void*, const void*));
  * @retval SUCC
  * @retval END          At the tail end of the vector
  * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty vector
  * @retval ERR_GET      Invalid parameter to store returned item
  */
 int32_t VectorIterate(Vector *self, bool bReset, Item *pItem);
@@ -294,7 +293,6 @@ int32_t VectorIterate(Vector *self, bool bReset, Item *pItem);
  * @retval SUCC
  * @retval END          At the tail end of the vector
  * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty vector
  * @retval ERR_GET      Invalid parameter to store returned item
  */
 int32_t VectorReverseIterate(Vector *self, bool bReset, Item *pItem);
