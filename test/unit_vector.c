@@ -326,8 +326,10 @@ void TestIterate()
     Item item;
     CU_ASSERT(pVec->iterate(pVec, true, NULL) == SUCC);
     while (pVec->iterate(pVec, false, &item) != END);
+    CU_ASSERT_EQUAL(item, NULL);
     CU_ASSERT(pVec->reverse_iterate(pVec, true, NULL) == SUCC);
     while (pVec->reverse_iterate(pVec, false, &item) != END);
+    CU_ASSERT_EQUAL(item, NULL);
 
     /* Push the initial items. */
     Tuple *tuple = (Tuple*)malloc(sizeof(Tuple));
@@ -343,20 +345,28 @@ void TestIterate()
     CU_ASSERT(pVec->push_back(pVec, (Item)tuple) == SUCC);
 
     /* Iterate through the vector items. */
+    int32_t iSum = 0;
     int32_t iIdx = 3;
     CU_ASSERT(pVec->iterate(pVec, true, NULL) == SUCC);
     while (pVec->iterate(pVec, false, &item) != END) {
-        CU_ASSERT_EQUAL(iIdx, ((Tuple*)item)->iMajor);
+        int32_t iMajor = ((Tuple*)item)->iMajor;
+        CU_ASSERT_EQUAL(iIdx, iMajor);
+        iSum += iMajor;
         iIdx--;
     }
+    CU_ASSERT_EQUAL(iSum, 6);
 
     /* Reversely iterate through the vector items. */
+    iSum = 0;
     iIdx = 1;
     CU_ASSERT(pVec->reverse_iterate(pVec, true, NULL) == SUCC);
     while (pVec->reverse_iterate(pVec, false, &item) != END) {
-        CU_ASSERT_EQUAL(iIdx, ((Tuple*)item)->iMajor);
+        int32_t iMajor = ((Tuple*)item)->iMajor;
+        CU_ASSERT_EQUAL(iIdx, iMajor);
+        iSum += iMajor;
         iIdx++;
     }
+    CU_ASSERT_EQUAL(iSum, 6);
 
     VectorDeinit(&pVec);
 }

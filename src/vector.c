@@ -285,8 +285,10 @@ int32_t VectorIterate(Vector *self, bool bReset, Item *pItem)
     }
     if (!pItem)
         return ERR_GET;
-    if (pData->iIter_ == pData->iSize_)
+    if (pData->iIter_ == pData->iSize_) {
+        *pItem = NULL;
         return END;
+    }
 
     *pItem = pData->aItem_[pData->iIter_];
     pData->iIter_++;
@@ -304,8 +306,10 @@ int32_t VectorReverseIterate(Vector *self, bool bReset, Item *pItem)
     }
     if (!pItem)
         return ERR_GET;
-    if (pData->iIter_ == -1)
+    if (pData->iIter_ == -1) {
+        *pItem = NULL;
         return END;
+    }
 
     *pItem = pData->aItem_[pData->iIter_];
     pData->iIter_--;
