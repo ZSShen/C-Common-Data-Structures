@@ -8,6 +8,8 @@ typedef struct Employ_ {
 } Employ;
 
 
+/* This comparator will cause the item with the smallest level to appear at the
+   top of the queue. And the queue can be analogy to minimum priority queue.*/
 int32_t CompareObject(Item itemSrc, Item itemTge)
 {
     Employ *empSrc = (Employ*)itemSrc;

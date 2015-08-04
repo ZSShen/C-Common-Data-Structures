@@ -8,6 +8,8 @@ typedef struct Employ_ {
 } Employ;
 
 
+/* This comparator will cause the item with the smallest level to appear at the
+   top of the heap. And the heap can be analogy to minimum heap. */
 int32_t CompareObject(Item itemSrc, Item itemTge)
 {
     Employ *empSrc = (Employ*)itemSrc;
