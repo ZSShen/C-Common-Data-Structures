@@ -82,15 +82,31 @@ int main()
         iId -= 10;
     }
 
+    /* Iterate through the list and modify the items at each iteration. */
+    iId = 100;
+    pList->iterate(pList, true, NULL);
+    while (pList->iterate(pList, false, &item) != END) {
+        pObj = (Object*)malloc(sizeof(Object));
+        pObj->iId = iId;
+        pObj->szName = (char*)malloc(sizeof(char) * 3);
+        pObj->szName[0] = 'i'; pObj->szName[1] = 't'; pObj->szName[2] = 0;
+        pList->replace(pList, (Item)pObj);
+        iId += 100;
+    }
+
     /* Get the item from the list head. */
     pList->get_front(pList, &item);
+    assert(((Object*)item)->iId == 100);
 
     /* Get the item from the list tail. */
     pList->get_back(pList, &item);
+    assert(((Object*)item)->iId == 500);
 
     /* Get the items from the designated indexes. */
     pList->get_at(pList, &item, 2);
+    assert(((Object*)item)->iId == 300);
     pList->get_at(pList, &item, -3);
+    assert(((Object*)item)->iId == 300);
 
     /* Replace the item at the list head. */
     pObj = (Object*)malloc(sizeof(Object));

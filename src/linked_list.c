@@ -14,7 +14,7 @@ struct _ListData {
     bool bUserDestroy_;
     int32_t iSize_;
     ListNode *pHead_;
-    ListNode *pIter_;
+    ListNode *pIter_, *pPred_;
     void (*pDestroy_) (Item);
 };
 
@@ -103,6 +103,7 @@ int32_t ListInit(LinkedList **ppObj)
     pData->iSize_ = 0;
     pData->pHead_ = NULL;
     pData->pIter_ = NULL;
+    pData->pPred_ = NULL;
     pData->pDestroy_ = _ListItemDestroy;
 
     pObj->push_front = ListPushFront;
@@ -126,6 +127,7 @@ int32_t ListInit(LinkedList **ppObj)
 
     pObj->iterate = ListIterate;
     pObj->reverse_iterate = ListReverseIterate;
+    pObj->replace = ListReplace;
 
     pObj->set_destroy = ListSetDestroy;
 
@@ -501,6 +503,7 @@ int32_t ListIterate(LinkedList *self, bool bReset, Item *pItem)
 
     if (bReset) {
         pData->pIter_ = pData->pHead_;
+        pData->pPred_ = NULL;
         return SUCC;
     }
 
@@ -514,6 +517,7 @@ int32_t ListIterate(LinkedList *self, bool bReset, Item *pItem)
 
     ListNode *pCurr = pData->pIter_;
     *pItem = pCurr->item;
+    pData->pPred_ = pCurr;
     pData->pIter_ = pCurr->pNext;
     if (pData->pIter_ == pData->pHead_)
         pData->pIter_ = NULL;
@@ -528,6 +532,7 @@ int32_t ListReverseIterate(LinkedList *self, bool bReset, Item *pItem)
 
     if (bReset) {
         pData->pIter_ = (pData->pHead_)? pData->pHead_->pPrev : NULL;
+        pData->pPred_ = NULL;
         return SUCC;
     }
 
@@ -541,9 +546,26 @@ int32_t ListReverseIterate(LinkedList *self, bool bReset, Item *pItem)
 
     ListNode *pCurr = pData->pIter_;
     *pItem = pCurr->item;
+    pData->pPred_ = pCurr;
     pData->pIter_ = pCurr->pPrev;
     if (pData->pIter_ == pData->pHead_->pPrev)
         pData->pIter_ = NULL;
+
+    return SUCC;
+}
+
+int32_t ListReplace(LinkedList *self, Item item)
+{
+    CHECK_INIT(self);
+    ListData *pData = self->pData;
+
+    if (!pData->pPred_)
+        return ERR_IDX;
+
+    if (pData->bUserDestroy_) {
+        pData->pDestroy_(pData->pPred_->item);
+        pData->pPred_->item = item;
+    }
 
     return SUCC;
 }

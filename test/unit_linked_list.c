@@ -33,6 +33,7 @@ void NonPrimDestroy(Item);
 /* The function to register common test suites. */
 void TestBoundary();
 void TestReverse();
+void TestReplace();
 
 
 int32_t SuitePrimitive()
@@ -114,6 +115,11 @@ int32_t SuiteNonPrimitive()
 
     szMsg = "Item replacement via sequence of set_at(), set_front(), and set_back().";
     pTest = CU_add_test(pSuite, szMsg, TestNonPrimSet);
+    if (!pTest)
+        return ERR_NOMEM;
+
+    szMsg = "Item replacement within the scope of iterate() and reverse_iterate().";
+    pTest = CU_add_test(pSuite, szMsg, TestReplace);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -980,6 +986,111 @@ void TestBoundary()
     CU_ASSERT_EQUAL(item, NULL);
     CU_ASSERT(pList->get_at(pList, &item, -1) == ERR_IDX);
     CU_ASSERT_EQUAL(item, NULL);
+
+    ListDeinit(&pList);
+}
+
+void TestReplace()
+{
+    LinkedList *pList;
+    CU_ASSERT(ListInit(&pList) == SUCC);
+    CU_ASSERT(pList->set_destroy(pList, NonPrimDestroy) == SUCC);
+
+    Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 1;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'a';
+    pEmploy->szName[1] = 'b';
+    pEmploy->szName[2] = 'c';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    Item item;
+    CU_ASSERT(pList->iterate(pList, true, NULL) == SUCC);
+    while (pList->iterate(pList, false, &item) != END) {
+        pEmploy = (Employ*)malloc(sizeof(Employ));
+        pEmploy->iId = 10;
+        pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+        pEmploy->szName[0] = 'a';
+        pEmploy->szName[1] = 'b';
+        pEmploy->szName[2] = 'c';
+        pEmploy->szName[3] = 0;
+        CU_ASSERT(pList->replace(pList, (Item)pEmploy) == SUCC);
+    }
+    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
+    CU_ASSERT_EQUAL(((Employ*)item)->iId, 10);
+
+    CU_ASSERT(pList->reverse_iterate(pList, true, NULL) == SUCC);
+    while (pList->reverse_iterate(pList, false, &item) != END) {
+        pEmploy = (Employ*)malloc(sizeof(Employ));
+        pEmploy->iId = 1;
+        pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+        pEmploy->szName[0] = 'a';
+        pEmploy->szName[1] = 'b';
+        pEmploy->szName[2] = 'c';
+        pEmploy->szName[3] = 0;
+        CU_ASSERT(pList->replace(pList, (Item)pEmploy) == SUCC);
+    }
+    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
+    CU_ASSERT_EQUAL(((Employ*)item)->iId, 1);
+
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 2;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'a';
+    pEmploy->szName[1] = 'b';
+    pEmploy->szName[2] = 'c';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->iId = 3;
+    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+    pEmploy->szName[0] = 'a';
+    pEmploy->szName[1] = 'b';
+    pEmploy->szName[2] = 'c';
+    pEmploy->szName[3] = 0;
+    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
+
+    int iId = 10;
+    CU_ASSERT(pList->iterate(pList, true, NULL) == SUCC);
+    while (pList->iterate(pList, false, &item) != END) {
+        pEmploy = (Employ*)malloc(sizeof(Employ));
+        pEmploy->iId = iId;
+        pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+        pEmploy->szName[0] = 'a';
+        pEmploy->szName[1] = 'b';
+        pEmploy->szName[2] = 'c';
+        pEmploy->szName[3] = 0;
+        CU_ASSERT(pList->replace(pList, (Item)pEmploy) == SUCC);
+        iId += 10;
+    }
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT_EQUAL(((Employ*)item)->iId, 10);
+    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
+    CU_ASSERT_EQUAL(((Employ*)item)->iId, 20);
+    CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
+    CU_ASSERT_EQUAL(((Employ*)item)->iId, 30);
+
+    iId = 3;
+    CU_ASSERT(pList->reverse_iterate(pList, true, NULL) == SUCC);
+    while (pList->reverse_iterate(pList, false, &item) != END) {
+        pEmploy = (Employ*)malloc(sizeof(Employ));
+        pEmploy->iId = iId;
+        pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
+        pEmploy->szName[0] = 'a';
+        pEmploy->szName[1] = 'b';
+        pEmploy->szName[2] = 'c';
+        pEmploy->szName[3] = 0;
+        CU_ASSERT(pList->replace(pList, (Item)pEmploy) == SUCC);
+        iId -= 1;
+    }
+    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
+    CU_ASSERT_EQUAL(((Employ*)item)->iId, 1);
+    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
+    CU_ASSERT_EQUAL(((Employ*)item)->iId, 2);
+    CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
+    CU_ASSERT_EQUAL(((Employ*)item)->iId, 3);
 
     ListDeinit(&pList);
 }

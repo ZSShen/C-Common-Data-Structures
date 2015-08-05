@@ -39,15 +39,15 @@ typedef struct _LinkedList {
         @see ListDelete */
     int32_t (*delete) (struct _LinkedList*, int32_t);
 
-    /** Set an item at the head of the list.
+    /** Replace an item at the head of the list.
         @see ListSetFront */
     int32_t (*set_front) (struct _LinkedList*, Item);
 
-    /** Set an item at the tail of the list.
+    /** Replace an item at the tail of the list.
         @see ListSetBack */
     int32_t (*set_back) (struct _LinkedList*, Item);
 
-    /** Set an item at the designated index of the list.
+    /** Replace an item at the designated index of the list.
         @see ListSetAt */
     int32_t (*set_at) (struct _LinkedList*, Item, int32_t);
 
@@ -78,6 +78,10 @@ typedef struct _LinkedList {
     /** Reversely iterate through the list till the head end.
         @see ListReverseIterate */
     int32_t (*reverse_iterate) (struct _LinkedList*, bool, Item*);
+
+    /** Immediately replace the item at a specific iteration.
+        @see ListReplace */
+    int32_t (*replace) (struct _LinkedList*, Item);
 
     /** Set the custom item resource clean method.
         @see ListSetDestroy */
@@ -213,7 +217,7 @@ int32_t ListPopBack(LinkedList *self);
 int32_t ListDelete(LinkedList *self, int32_t iIdx);
 
 /**
- * @brief Set an item at the head of the list.
+ * @brief Replace an item at the head of the list.
  *
  * This function replaces the head item with the designated one. If the custom
  * resource clean method is set, it also runs the resource clean method for the
@@ -229,7 +233,7 @@ int32_t ListDelete(LinkedList *self, int32_t iIdx);
 int32_t ListSetFront(LinkedList *self, Item item);
 
 /**
- * @brief Set an item at the tail of the list.
+ * @brief Replace an item at the tail of the list.
  *
  * This function replaces the tail item with the designated one. If the custom
  * resource clean method is set, it also runs the resource clean method for the
@@ -373,6 +377,26 @@ int32_t ListIterate(LinkedList *self, bool bReset, Item *pItem);
  * @retval ERR_GET      Invalid parameter to store returned item
  */
 int32_t ListReverseIterate(LinkedList *self, bool bReset, Item *pItem);
+
+/**
+ * @brief Immediately replace the item at a specific iteration.
+ *
+ * This operator should be applied within the scope of iterate() or
+ * reverse_iterate() iterators. If the custom resource clean method is set, it
+ * also runs the resource clean method for the replaced item
+ *
+ * @param self          The pointer to the LinkedList structure
+ * @param item          The item which intends to take position
+ *
+ * @retval SUCC
+ * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_IDX      Out of range indexing
+ *
+ * @note  If you intend to use the operator outside of the iterators, the behavior
+ * is undefined. Which is, the operator may successfully replace the item or it
+ * may return an error code.
+ */
+int32_t ListReplace(LinkedList *self, Item item);
 
 /**
  * @brief Set the custom item resource clean method.
