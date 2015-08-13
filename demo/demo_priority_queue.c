@@ -33,7 +33,7 @@ int main()
     /* You should initialize the DS before any operations. */
     int32_t iRtnCode = PrioQueueInit(&pQueue);
     if (iRtnCode != SUCC)
-        return;
+        return iRtnCode;
 
     /* You should specify how to compare your items. */
     pQueue->set_compare(pQueue, CompareObject);
