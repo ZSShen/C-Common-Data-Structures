@@ -35,6 +35,14 @@ $ sudo apt-get install -qq cmake
 $ sudo apt-get install -qq valgrind
 $ sudo apt-get install -qq libcunit1-dev
 ```
+
+For Mac OS X 10.10:
+``` sh
+$ brew install cmake
+$ brew install valgrind
+$ brew install cunit
+```
+
 Now we can build the entire source tree under the package root folder:
 ``` sh
 $ ./clean.py --rebuild
