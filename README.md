@@ -5,21 +5,23 @@ Integration Test (Travis CI)
 + [![Integration Test] (https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)  
 
 ##Objective
-LibCDS implements several kinds of classic containers by C. It offers uniform APIs for convenient container interaction.
+***LibCDS implements a set of uniform C APIs for data structure manipulation.***
+
 
 ##Container Category
 [API Reference Manual] (http://zsshen.github.io/C-Common-Data-Structures/html/index.html)  
-
-| Category | Container | Description |  
-| ------------- | ------------- |------------- |  
-| Tree | BinaryTree | The basic binary search tree. |  
-| | RedBlackTree | The balanced binary search tree. |  
-| List | LinkedList | The doubly linked list. |  
-| Array | Vector | The dynamically growable array. |  
-| Map | TreeMap | The ordered map to store key value pairs. |  
-| | HashMap | The unordered map to store key value pairs. |  
-| Heap | BinaryHeap | The binary heap implemented with vector. |  
-| Queue | PriorityQueue | The priority queue implemented with binary heap. |  
+ - Sequential Container  
+   - Vector --- The dynamically growable array
+   - LinkedList --- The doubly linked list
+ - Associative Container  
+   - TreeMap --- The ordered map to store key value pairs
+   - HashMap --- The unordered map to store key value pairs
+   - TreeSet --- The ordered set to store unique elements
+   - HashSet --- The unordered set to store unique elements
+ - Simple Collection Container
+   - Queue --- The FIFO queue
+   - Stack --- The LIFO stack
+   - PriorityQueue --- The queue to maintain priority ordering for elements
 
 ##Installation
 ***This chapter illustrates how to install LibCDS to your working directory.***
@@ -35,14 +37,6 @@ $ sudo apt-get install -qq cmake
 $ sudo apt-get install -qq valgrind
 $ sudo apt-get install -qq libcunit1-dev
 ```
-
-For Mac OS X 10.10:
-``` sh
-$ brew install cmake
-$ brew install valgrind
-$ brew install cunit
-```
-
 Now we can build the entire source tree under the package root folder:
 ``` sh
 $ ./clean.py --rebuild
@@ -81,7 +75,6 @@ That's all the related stuff!
 
 For detailed API usage, you can refer to the manual or check the demo programs.  
 
-##Development  
 
 
 [CMake]:http://www.cmake.org/
