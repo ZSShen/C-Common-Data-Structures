@@ -31,7 +31,7 @@ int main()
     PriorityQueue *pQueue;
 
     /* You should initialize the DS before any operations. */
-    int32_t iRtnCode = PrioQueueInit(&pQueue);
+    int32_t iRtnCode = PriorityQueueInit(&pQueue);
     if (iRtnCode != SUCC)
         return iRtnCode;
 
@@ -86,7 +86,7 @@ int main()
     assert(iSize == 1);
 
     /* You should deinitialize the DS after all the relevant tasks. */
-    PrioQueueDeinit(&pQueue);
+    PriorityQueueDeinit(&pQueue);
 
     return SUCC;
 }

@@ -1,13 +1,21 @@
-#include "queue/priority_queue.h"
-#include "heap/binary_heap.h"
+#include "container/priority_queue.h"
 
 
 /*===========================================================================*
  *                  Hide the private data of the tree                        *
  *===========================================================================*/
-struct _PrioQueueData {
-    BinaryHeap *pHeap_;
+struct _PriorityQueueData {
+    int32_t iSize_;
+    int32_t iCapacity_;
+    Item *aItem_;
+    int32_t (*pCompare_) (Item, Item);
+    void (*pDestroy_) (Item);
 };
+
+#define DEFAULT_CAPACITY        (32)
+#define PARENT(idx)             (idx >> 1)
+#define LEFT(idx)               (idx << 1)
+#define RIGHT(idx)              ((idx << 1) + 1)
 
 
 /*===========================================================================*
@@ -23,14 +31,7 @@ struct _PrioQueueData {
  * @retval 0            Both the items have the same order
  * @retval -1           The source item has the smaller order
  */
-int32_t _PrioQueueItemComp(Item itemSrc, Item itemTge);
-
-/**
- * @brief The default item clean method.
- *
- * @param item          The designated item
- */
-void _PrioQueueItemDestroy(Item item);
+int32_t _PriorityQueueItemComp(Item itemSrc, Item itemTge);
 
 
 #define CHECK_INIT(self)                                                        \
@@ -39,52 +40,50 @@ void _PrioQueueItemDestroy(Item item);
                     return ERR_NOINIT;                                          \
                 if (!(self->pData))                                             \
                     return ERR_NOINIT;                                          \
-                if (!(self->pData->pHeap_))                                     \
-                    return ERR_NOINIT;                                          \
             } while (0);
 
 
 /*===========================================================================*
- *         Implementation for the container supporting operations            *
+ *               Implementation for the exported operations                  *
  *===========================================================================*/
-int32_t PrioQueueInit(PriorityQueue **ppObj)
+int32_t PriorityQueueInit(PriorityQueue **ppObj)
 {
     *ppObj = (PriorityQueue*)malloc(sizeof(PriorityQueue));
     if (!(*ppObj))
         return ERR_NOMEM;
     PriorityQueue *pObj = *ppObj;
 
-    pObj->pData = (PrioQueueData*)malloc(sizeof(PrioQueueData));
+    pObj->pData = (PriorityQueueData*)malloc(sizeof(PriorityQueueData));
     if (!(pObj->pData)) {
         free(*ppObj);
         *ppObj = NULL;
         return ERR_NOMEM;
     }
-    PrioQueueData *pData = pObj->pData;
+    PriorityQueueData *pData = pObj->pData;
 
-    int32_t iRtnCode = BinHeapInit(&(pData->pHeap_));
-    if (iRtnCode != SUCC) {
+    pData->aItem_ = (Item*)malloc(sizeof(Item) * DEFAULT_CAPACITY);
+    if (!(pData->aItem_)) {
         free(pObj->pData);
         free(*ppObj);
         *ppObj = NULL;
         return ERR_NOMEM;
     }
+    pData->iSize_ = 0;
+    pData->iCapacity_ = DEFAULT_CAPACITY;
+    pData->pCompare_ = _PriorityQueueItemComp;
+    pData->pDestroy_ = NULL;
 
-    pObj->push = PrioQueuePush;
-    pObj->top = PrioQueueTop;
-    pObj->pop = PrioQueuePop;
-    pObj->size = PrioQueueSize;
-    pObj->set_compare = PrioQueueSetCompare;
-    pObj->set_destroy = PrioQueueSetDestroy;
-
-    BinaryHeap *pHeap = pData->pHeap_;
-    pHeap->set_destroy(pHeap, _PrioQueueItemDestroy);
-    pHeap->set_compare(pHeap, _PrioQueueItemComp);
+    pObj->push = PriorityQueuePush;
+    pObj->top = PriorityQueueTop;
+    pObj->pop = PriorityQueuePop;
+    pObj->size = PriorityQueueSize;
+    pObj->set_compare = PriorityQueueSetCompare;
+    pObj->set_destroy = PriorityQueueSetDestroy;
 
     return SUCC;
 }
 
-void PrioQueueDeinit(PriorityQueue **ppObj)
+void PriorityQueueDeinit(PriorityQueue **ppObj)
 {
     if (!(*ppObj))
         goto EXIT;
@@ -93,12 +92,20 @@ void PrioQueueDeinit(PriorityQueue **ppObj)
     if (!(pObj->pData))
         goto FREE_QUEUE;
 
-    PrioQueueData *pData = pObj->pData;
-    if (!(pData->pHeap_))
+    PriorityQueueData *pData = pObj->pData;
+    if (!(pData->aItem_))
         goto FREE_DATA;
 
-    BinHeapDeinit(&(pData->pHeap_));
+    if (!(pData->pDestroy_))
+        goto FREE_ARRAY;
 
+    Item *aItem = pData->aItem_;
+    int iIdx;
+    for (iIdx = 0 ; iIdx < pData->iSize_ ; iIdx++)
+        pData->pDestroy_(aItem[iIdx]);
+
+FREE_ARRAY:
+    free(pData->aItem_);
 FREE_DATA:
     free(pObj->pData);
 FREE_QUEUE:
@@ -107,63 +114,127 @@ EXIT:
     return;
 }
 
-int32_t PrioQueuePush(PriorityQueue *self, Item item)
+int32_t PriorityQueuePush(PriorityQueue *self, Item item)
 {
     CHECK_INIT(self);
-    BinaryHeap *pHeap = self->pData->pHeap_;
-    int32_t iRtnCode = pHeap->push(pHeap, item);
-    return iRtnCode;
+    PriorityQueueData *pData = self->pData;
+
+    /* If the heap is full, extend it to double capacity. */
+    Item *aItem = pData->aItem_;
+    if (pData->iSize_ == pData->iCapacity_) {
+        int32_t iCapaNew = pData->iCapacity_ << 1;
+        Item *aItemNew = (Item*)realloc(aItem, iCapaNew * sizeof(Item));
+        if (!aItemNew)
+            return ERR_NOMEM;
+        aItem = pData->aItem_ = aItemNew;
+        pData->iCapacity_ = iCapaNew;
+    }
+
+    /* Push the item to the bottom of the heap. */
+    aItem[pData->iSize_] = item;
+    pData->iSize_++;
+
+    /* Adjust the heap structure. */
+    int32_t iIdxCurr = pData->iSize_;
+    int32_t iIdxParent;
+    int32_t iOrder;
+    while (iIdxCurr > 1) {
+        iIdxParent = PARENT(iIdxCurr);
+        iOrder = pData->pCompare_(aItem[iIdxCurr - 1], aItem[iIdxParent - 1]);
+        if (iOrder <= 0)
+            break;
+        item = aItem[iIdxCurr - 1];
+        aItem[iIdxCurr - 1] = aItem[iIdxParent - 1];
+        aItem[iIdxParent - 1] = item;
+        iIdxCurr = iIdxParent;
+    }
+
+    return SUCC;
 }
 
-int32_t PrioQueuePop(PriorityQueue *self)
+int32_t PriorityQueuePop(PriorityQueue *self)
 {
     CHECK_INIT(self);
-    BinaryHeap *pHeap = self->pData->pHeap_;
-    int32_t iRtnCode = pHeap->pop(pHeap);
-    return iRtnCode;
+    PriorityQueueData *pData = self->pData;
+
+    /* Remove the heap top item. */
+    if (pData->pDestroy_)
+        pData->pDestroy_(pData->aItem_[0]);
+    pData->aItem_[0] = pData->aItem_[pData->iSize_ - 1];
+    pData->iSize_--;
+
+    /* Adjust the heap structure. */
+    Item *aItem = pData->aItem_;
+    int32_t iSize = pData->iSize_;
+    int32_t iIdxCurr = 1;
+    int32_t iIdxChildL, iIdxChildR, iIdxNext;
+    int32_t iOrder;
+    do {
+        iIdxChildL = LEFT(iIdxCurr);
+        if (iIdxChildL > iSize)
+            break;
+
+        iIdxNext = iIdxCurr;
+        iOrder = pData->pCompare_(aItem[iIdxChildL - 1], aItem[iIdxNext - 1]);
+        if (iOrder > 0)
+            iIdxNext = iIdxChildL;
+
+        iIdxChildR = RIGHT(iIdxCurr);
+        if (iIdxChildR <= iSize) {
+            iOrder = pData->pCompare_(aItem[iIdxChildR - 1], aItem[iIdxNext - 1]);
+            if (iOrder > 0)
+                iIdxNext = iIdxChildR;
+        }
+
+        if (iIdxNext == iIdxCurr)
+            break;
+        Item item = aItem[iIdxNext - 1];
+        aItem[iIdxNext - 1] = aItem[iIdxCurr - 1];
+        aItem[iIdxCurr - 1] = item;
+        iIdxCurr = iIdxNext;
+    } while (true);
+
+    return SUCC;
 }
 
-int32_t PrioQueueTop(PriorityQueue *self, Item *pItem)
+int32_t PriorityQueueTop(PriorityQueue *self, Item *pItem)
 {
     CHECK_INIT(self);
-    BinaryHeap *pHeap = self->pData->pHeap_;
-    int32_t iRtnCode = pHeap->top(pHeap, pItem);
-    return iRtnCode;
+    if (!pItem)
+        return ERR_GET;
+    if (self->pData->iSize_ == 0)
+        return ERR_IDX;
+    *pItem = self->pData->aItem_[0];
+    return SUCC;
 }
 
-int32_t PrioQueueSize(PriorityQueue *self)
+int32_t PriorityQueueSize(PriorityQueue *self)
 {
     CHECK_INIT(self);
-    BinaryHeap *pHeap = self->pData->pHeap_;
-    int32_t iSize = pHeap->size(pHeap);
-    return iSize;
+    return self->pData->iSize_;
 }
 
-int32_t PrioQueueSetCompare(PriorityQueue *self, int32_t (*pFunc) (Item, Item))
+int32_t PriorityQueueSetCompare(PriorityQueue *self, int32_t (*pFunc) (Item, Item))
 {
     CHECK_INIT(self);
-    BinaryHeap *pHeap = self->pData->pHeap_;
-    int32_t iRtnCode = pHeap->set_compare(pHeap, pFunc);
-    return iRtnCode;
+    self->pData->pCompare_ = pFunc;
+    return SUCC;
 }
 
-int32_t PrioQueueSetDestroy(PriorityQueue *self, void (*pFunc) (Item))
+int32_t PriorityQueueSetDestroy(PriorityQueue *self, void (*pFunc) (Item))
 {
     CHECK_INIT(self);
-    BinaryHeap *pHeap = self->pData->pHeap_;
-    int32_t iRtnCode = pHeap->set_destroy(pHeap, pFunc);
-    return iRtnCode;
+    self->pData->pDestroy_ = pFunc;
+    return SUCC;
 }
 
 
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
-int32_t _PrioQueueItemComp(Item itemSrc, Item itemTge)
+int32_t _PriorityQueueItemComp(Item itemSrc, Item itemTge)
 {
     if (itemSrc == itemTge)
         return 0;
     return (itemSrc > itemTge)? 1 : (-1);
 }
-
-void _PrioQueueItemDestroy(Item item) {}

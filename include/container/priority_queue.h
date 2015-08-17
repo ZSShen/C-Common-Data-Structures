@@ -7,36 +7,36 @@
 
 #include "../util.h"
 
-/** PrioQueueData is the data type for the container private information. */
-typedef struct _PrioQueueData PrioQueueData;
+/** PriorityQueueData is the data type for the container private information. */
+typedef struct _PriorityQueueData PriorityQueueData;
 
 /** The implementation for priority queue. */
 typedef struct _PriorityQueue {
     /** The container private information */
-    PrioQueueData *pData;
+    PriorityQueueData *pData;
 
     /** Push an item onto the queue.
-        @see PrioQueuePush */
+        @see PriorityQueuePush */
     int32_t (*push) (struct _PriorityQueue*, Item);
 
     /** Retrieve item from top of the queue.
-        @see PrioQueueTop */
+        @see PriorityQueueTop */
     int32_t (*top) (struct _PriorityQueue*, Item*);
 
     /** Delete item from top of the queue.
-        @see PrioQueuePop */
+        @see PriorityQueuePop */
     int32_t (*pop) (struct _PriorityQueue*);
 
     /** Return the number of stored items.
-        @see PrioQueueSize */
+        @see PriorityQueueSize */
     int32_t (*size) (struct _PriorityQueue*);
 
     /** Set the custom item comparison method.
-        @see PrioQueueSetCompare */
+        @see PriorityQueueSetCompare */
     int32_t (*set_compare) (struct _PriorityQueue*, int32_t (*) (Item, Item));
 
     /** Set the custom item resource clean method.
-        @see PrioQueueSetDestroy */
+        @see PriorityQueueSetDestroy */
     int32_t (*set_destroy) (struct _PriorityQueue*, void (*) (Item));
 } PriorityQueue;
 
@@ -52,7 +52,7 @@ typedef struct _PriorityQueue {
  * @retval SUCC
  * @retval ERR_NOMEM    Insufficient memory for queue construction
  */
-int32_t PrioQueueInit(PriorityQueue **ppObj);
+int32_t PriorityQueueInit(PriorityQueue **ppObj);
 
 /**
  * @brief The destructor for PriorityQueue.
@@ -62,7 +62,7 @@ int32_t PrioQueueInit(PriorityQueue **ppObj);
  *
  * @param ppObj         The double pointer to the to be destructed queue
  */
-void PrioQueueDeinit(PriorityQueue **ppObj);
+void PriorityQueueDeinit(PriorityQueue **ppObj);
 
 /**
  * @brief Push an item onto the queue.
@@ -77,7 +77,7 @@ void PrioQueueDeinit(PriorityQueue **ppObj);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NOMEM    Insufficient memory for queue extension
  */
-int32_t PrioQueuePush(PriorityQueue *self, Item item);
+int32_t PriorityQueuePush(PriorityQueue *self, Item item);
 
 /**
  * @brief Delete item from top of the queue.
@@ -91,7 +91,7 @@ int32_t PrioQueuePush(PriorityQueue *self, Item item);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty queue
  */
-int32_t PrioQueuePop(PriorityQueue *self);
+int32_t PriorityQueuePop(PriorityQueue *self);
 
 /**
  * @brief Retrieve item from top of the queue.
@@ -108,7 +108,7 @@ int32_t PrioQueuePop(PriorityQueue *self);
  * @retval ERR_IDX      Empty queue
  * @retval ERR_GET      Invalid parameter to store returned item
  */
-int32_t PrioQueueTop(PriorityQueue *self, Item *pItem);
+int32_t PriorityQueueTop(PriorityQueue *self, Item *pItem);
 
 /**
  * @brief Return the number of stored items.
@@ -118,7 +118,7 @@ int32_t PrioQueueTop(PriorityQueue *self, Item *pItem);
  * @return              The number of items
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t PrioQueueSize(PriorityQueue *self);
+int32_t PriorityQueueSize(PriorityQueue *self);
 
 /**
  * @brief Set the custom item comparison method.
@@ -129,7 +129,7 @@ int32_t PrioQueueSize(PriorityQueue *self);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval SUCC
  */
-int32_t PrioQueueSetCompare(PriorityQueue *self, int32_t (*pFunc) (Item, Item));
+int32_t PriorityQueueSetCompare(PriorityQueue *self, int32_t (*pFunc) (Item, Item));
 
 /**
  * @brief Set the custom item resource clean method.
@@ -140,6 +140,6 @@ int32_t PrioQueueSetCompare(PriorityQueue *self, int32_t (*pFunc) (Item, Item));
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t PrioQueueSetDestroy(PriorityQueue *self, void (*pFunc) (Item));
+int32_t PriorityQueueSetDestroy(PriorityQueue *self, void (*pFunc) (Item));
 
 #endif

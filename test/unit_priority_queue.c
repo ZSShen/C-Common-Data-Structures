@@ -1,4 +1,4 @@
-#include "queue/priority_queue.h"
+#include "container/priority_queue.h"
 #include "CUnit/Util.h"
 #include "CUnit/Basic.h"
 
@@ -144,7 +144,7 @@ int32_t AddAdvancedSuit()
 void TestSimpleManipulate()
 {
     PriorityQueue *pQueue;
-    CU_ASSERT(PrioQueueInit(&pQueue) == SUCC);
+    CU_ASSERT(PriorityQueueInit(&pQueue) == SUCC);
 
     /* Build the maximum priority queue. */
     CU_ASSERT(pQueue->set_compare(pQueue, CompPrimMax) == SUCC);
@@ -210,14 +210,14 @@ void TestSimpleManipulate()
         idx++;
     }
 
-    PrioQueueDeinit(&pQueue);
+    PriorityQueueDeinit(&pQueue);
 }
 
 
 void TestAdvancedManipulate()
 {
     PriorityQueue *pQueue;
-    CU_ASSERT(PrioQueueInit(&pQueue) == SUCC);
+    CU_ASSERT(PriorityQueueInit(&pQueue) == SUCC);
 
     /* Build the minimum priority queue. */
     CU_ASSERT(pQueue->set_compare(pQueue, CompNonPrimMin) == SUCC);
@@ -263,7 +263,7 @@ void TestAdvancedManipulate()
         idx++;
     }
 
-    PrioQueueDeinit(&pQueue);
+    PriorityQueueDeinit(&pQueue);
 }
 
 
