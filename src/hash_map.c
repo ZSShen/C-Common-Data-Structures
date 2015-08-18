@@ -1,6 +1,6 @@
 #include "map/hash_map.h"
 #include "array/vector.h"
-#include "list/linked_list.h"
+#include "container/linked_list.h"
 
 
 /*===========================================================================*
@@ -91,7 +91,7 @@ int32_t HashMapInit(HashMap **ppObj, uint32_t uiCount)
     int32_t iIdx = 0;
     while (iIdx < iCap) {
         LinkedList *list;
-        iRtnCode = ListInit(&list);
+        iRtnCode = LinkedListInit(&list);
         if (iRtnCode != SUCC) {
             VectorDeinit(&vecBucket);
             FREE_MAP_DATA();
@@ -285,7 +285,7 @@ int32_t HashMapSetHash(HashMap *self, uint32_t (*pFunc) (Key, size_t))
 static void _HashMapCleanBucket(Item item)
 {
     LinkedList *list = (LinkedList*)item;
-    ListDeinit(&list);
+    LinkedListDeinit(&list);
 }
 
 static uint32_t _HashMapHasher(Key key, size_t sizeKey)
