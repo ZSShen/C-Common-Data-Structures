@@ -33,7 +33,10 @@
 #define ERR_KEYSIZE     (-7)
 
 /** Iteration terminated at the end of the data structure */
-#define END 			(1)
+#define END             (1)
+
+/** The designated key cannot be found in the map */
+#define NOKEY           (2)
 
 
 /** Item is the data type for the container element. */
