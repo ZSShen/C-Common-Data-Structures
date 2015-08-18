@@ -20,7 +20,7 @@ int main()
     LinkedList *pList;
 
     /* You should initialize the DS before any operations. */
-    int32_t rc = ListInit(&pList);
+    int32_t rc = LinkedListInit(&pList);
     if (rc != SUCC)
         return rc;
 
@@ -162,7 +162,7 @@ int main()
     int32_t iSize = pList->size(pList);
 
     /* You should deinitialize the DS after all the relevant tasks. */
-    ListDeinit(&pList);
+    LinkedListDeinit(&pList);
 
     return 0;
 }

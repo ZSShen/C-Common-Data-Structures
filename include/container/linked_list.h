@@ -7,84 +7,84 @@
 
 #include "../util.h"
 
-/** ListData is the data type for the container private information. */
-typedef struct _ListData ListData;
+/** LinkedListData is the data type for the container private information. */
+typedef struct _LinkedListData LinkedListData;
 
 /** The implementation for doubly linked list. */
 typedef struct _LinkedList {
     /** The container private information */
-    ListData *pData;
+    LinkedListData *pData;
 
     /** Push an item to the head of the list.
-        @see ListPushFront */
+        @see LinkedListPushFront */
     int32_t (*push_front) (struct _LinkedList*, Item);
 
     /** Push an item to the tail of the list.
-        @see ListPushBack */
+        @see LinkedListPushBack */
     int32_t (*push_back) (struct _LinkedList*, Item);
 
     /** Insert an item to the designated index of the list.
-        @see ListInsert */
+        @see LinkedListInsert */
     int32_t (*insert) (struct _LinkedList*, Item, int32_t);
 
     /** Pop an item from the head of the list.
-        @see ListPopFront */
+        @see LinkedListPopFront */
     int32_t (*pop_front) (struct _LinkedList*);
 
     /** Pop an item from the tail of the list.
-        @see ListPopBack */
+        @see LinkedListPopBack */
     int32_t (*pop_back) (struct _LinkedList*);
 
     /** Delete an item from the designated index of the list
-        @see ListDelete */
+        @see LinkedListDelete */
     int32_t (*delete) (struct _LinkedList*, int32_t);
 
     /** Replace an item at the head of the list.
-        @see ListSetFront */
+        @see LinkedListSetFront */
     int32_t (*set_front) (struct _LinkedList*, Item);
 
     /** Replace an item at the tail of the list.
-        @see ListSetBack */
+        @see LinkedListSetBack */
     int32_t (*set_back) (struct _LinkedList*, Item);
 
     /** Replace an item at the designated index of the list.
-        @see ListSetAt */
+        @see LinkedListSetAt */
     int32_t (*set_at) (struct _LinkedList*, Item, int32_t);
 
     /** Get an item from the head of the list.
-        @see ListGetFront */
+        @see LinkedListGetFront */
     int32_t (*get_front) (struct _LinkedList*, Item*);
 
     /** Get an item from the tail of the list.
-        @see ListGetBack */
+        @see LinkedListGetBack */
     int32_t (*get_back) (struct _LinkedList*, Item*);
 
     /** Get an item from the designated index of the list.
-        @see ListGetAt */
+        @see LinkedListGetAt */
     int32_t (*get_at) (struct _LinkedList*, Item*, int32_t);
 
     /** Return the number of stored items.
-        @see ListSize */
+        @see LinkedListSize */
     int32_t (*size) (struct _LinkedList*);
 
     /** Reverse the list.
-        @see ListReverse */
+        @see LinkedListReverse */
     int32_t (*reverse) (struct _LinkedList*);
 
     /** Iterate through the list till the tail end.
-        @see ListIterate */
+        @see LinkedListIterate */
     int32_t (*iterate) (struct _LinkedList*, bool, Item*);
 
     /** Reversely iterate through the list till the head end.
-        @see ListReverseIterate */
+        @see LinkedListReverseIterate */
     int32_t (*reverse_iterate) (struct _LinkedList*, bool, Item*);
 
     /** Immediately replace the item at a specific iteration.
-        @see ListReplace */
+        @see LinkedListReplace */
     int32_t (*replace) (struct _LinkedList*, Item);
 
     /** Set the custom item resource clean method.
-        @see ListSetDestroy */
+        @see LinkedListSetDestroy */
     int32_t (*set_destroy) (struct _LinkedList*, void (*) (Item));
 } LinkedList;
 
@@ -100,7 +100,7 @@ typedef struct _LinkedList {
  * @retval SUCC
  * @retval ERR_NOMEM    Insufficient memory for list construction
  */
-int32_t ListInit(LinkedList **ppObj);
+int32_t LinkedListInit(LinkedList **ppObj);
 
 /**
  * @brief The destructor for LinkedList.
@@ -110,7 +110,7 @@ int32_t ListInit(LinkedList **ppObj);
  *
  * @param ppObj         The double pointer to the to be destructed list
  */
-void ListDeinit(LinkedList **ppObj);
+void LinkedListDeinit(LinkedList **ppObj);
 
 /**
  * @brief Push an item to the head of the list.
@@ -122,7 +122,7 @@ void ListDeinit(LinkedList **ppObj);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NOMEM    Insufficient memory for list extension
  */
-int32_t ListPushFront(LinkedList *self, Item item);
+int32_t LinkedListPushFront(LinkedList *self, Item item);
 
 /**
  * @brief Push an item to the tail of the list.
@@ -134,7 +134,7 @@ int32_t ListPushFront(LinkedList *self, Item item);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NOMEM    Insufficient memory for list extension
  */
-int32_t ListPushBack(LinkedList *self, Item item);
+int32_t LinkedListPushBack(LinkedList *self, Item item);
 
 /**
  * @brief Insert an item to the designated index of the list.
@@ -164,7 +164,7 @@ int32_t ListPushBack(LinkedList *self, Item item);
  * @note The absolute value of the index should be smaller than or equal to the
  * list size.
  */
-int32_t ListInsert(LinkedList *self, Item item, int32_t iIdx);
+int32_t LinkedListInsert(LinkedList *self, Item item, int32_t iIdx);
 
 /**
  * @brief Pop an item from the head of the list.
@@ -179,7 +179,7 @@ int32_t ListInsert(LinkedList *self, Item item, int32_t iIdx);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty list
  */
-int32_t ListPopFront(LinkedList *self);
+int32_t LinkedListPopFront(LinkedList *self);
 
 /**
  * @brief Pop an item from the tail of the list.
@@ -194,7 +194,7 @@ int32_t ListPopFront(LinkedList *self);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty list
  */
-int32_t ListPopBack(LinkedList *self);
+int32_t LinkedListPopBack(LinkedList *self);
 
 /**
  * @brief Remove an item from the designated index of the list.
@@ -214,7 +214,7 @@ int32_t ListPopBack(LinkedList *self);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Out of range indexing
  */
-int32_t ListDelete(LinkedList *self, int32_t iIdx);
+int32_t LinkedListDelete(LinkedList *self, int32_t iIdx);
 
 /**
  * @brief Replace an item at the head of the list.
@@ -230,7 +230,7 @@ int32_t ListDelete(LinkedList *self, int32_t iIdx);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty list
  */
-int32_t ListSetFront(LinkedList *self, Item item);
+int32_t LinkedListSetFront(LinkedList *self, Item item);
 
 /**
  * @brief Replace an item at the tail of the list.
@@ -246,7 +246,7 @@ int32_t ListSetFront(LinkedList *self, Item item);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Empty list
  */
-int32_t ListSetBack(LinkedList *self, Item item);
+int32_t LinkedListSetBack(LinkedList *self, Item item);
 
 /**
  * @brief Replace an item at the designated index of the list.
@@ -267,7 +267,7 @@ int32_t ListSetBack(LinkedList *self, Item item);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Out of range index
  */
-int32_t ListSetAt(LinkedList *self, Item item, int32_t iIdx);
+int32_t LinkedListSetAt(LinkedList *self, Item item, int32_t iIdx);
 
 /**
  * @brief Get an item from the head of the list.
@@ -282,7 +282,7 @@ int32_t ListSetAt(LinkedList *self, Item item, int32_t iIdx);
  *
  * @note If the exception occurs, the second parameter will be updated with NULL.
  */
-int32_t ListGetFront(LinkedList *self, Item *pItem);
+int32_t LinkedListGetFront(LinkedList *self, Item *pItem);
 
 /**
  * @brief Get an item from the tail of the list.
@@ -297,7 +297,7 @@ int32_t ListGetFront(LinkedList *self, Item *pItem);
  *
  * @note If the exception occurs, the second parameter will be updated with NULL.
  */
-int32_t ListGetBack(LinkedList *self, Item *pItem);
+int32_t LinkedListGetBack(LinkedList *self, Item *pItem);
 
 /**
  * @brief Get an item from the designated index of the list.
@@ -318,7 +318,7 @@ int32_t ListGetBack(LinkedList *self, Item *pItem);
  *
  * @note If the exception occurs, the second parameter will be updated with NULL.
  */
-int32_t ListGetAt(LinkedList *self, Item *pItem, int32_t iIdx);
+int32_t LinkedListGetAt(LinkedList *self, Item *pItem, int32_t iIdx);
 
 /**
  * @brief Return the number of stored items.
@@ -328,7 +328,7 @@ int32_t ListGetAt(LinkedList *self, Item *pItem, int32_t iIdx);
  * @return              The number of stored item
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t ListSize(LinkedList *self);
+int32_t LinkedListSize(LinkedList *self);
 
 /**
  * @brief Reverse the list.
@@ -338,7 +338,7 @@ int32_t ListSize(LinkedList *self);
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t ListReverse(LinkedList *self);
+int32_t LinkedListReverse(LinkedList *self);
 
 /**
  * @brief Iterate through the list till the tail end.
@@ -357,7 +357,7 @@ int32_t ListReverse(LinkedList *self);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_GET      Invalid parameter to store returned item
  */
-int32_t ListIterate(LinkedList *self, bool bReset, Item *pItem);
+int32_t LinkedListIterate(LinkedList *self, bool bReset, Item *pItem);
 
 /**
  * @brief Reversely iterate through the list till the head end.
@@ -376,7 +376,7 @@ int32_t ListIterate(LinkedList *self, bool bReset, Item *pItem);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_GET      Invalid parameter to store returned item
  */
-int32_t ListReverseIterate(LinkedList *self, bool bReset, Item *pItem);
+int32_t LinkedListReverseIterate(LinkedList *self, bool bReset, Item *pItem);
 
 /**
  * @brief Immediately replace the item at a specific iteration.
@@ -396,7 +396,7 @@ int32_t ListReverseIterate(LinkedList *self, bool bReset, Item *pItem);
  * is undefined. Which is, the operator may successfully replace the item or it
  * may return an error code.
  */
-int32_t ListReplace(LinkedList *self, Item item);
+int32_t LinkedListReplace(LinkedList *self, Item item);
 
 /**
  * @brief Set the custom item resource clean method.
@@ -407,6 +407,6 @@ int32_t ListReplace(LinkedList *self, Item item);
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t ListSetDestroy(LinkedList *self, void (*pFunc) (Item));
+int32_t LinkedListSetDestroy(LinkedList *self, void (*pFunc) (Item));
 
 #endif
