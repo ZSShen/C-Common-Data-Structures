@@ -8,22 +8,21 @@ typedef struct Employ_ {
 } Employ;
 
 
-int32_t PairCompare(Entry entSrc, Entry entTge)
+int32_t CompareKey(Key keySrc, Key keyTge)
 {
-    Pair *pPairSrc = (Pair*)entSrc;
-    Pair *pPairTge = (Pair*)entTge;
+    char *nameSrc = (char*)keySrc;
+    char *nameTge = (char*)keyTge;
 
-    int32_t iOrder = strcmp(pPairSrc->key, pPairTge->key);
+    int32_t iOrder = strcmp(nameSrc, nameTge);
     if (iOrder == 0)
         return 0;
     return (iOrder > 0)? 1 : (-1);
 }
 
-void PairDestroy(Entry ent)
+void DestroyPair(Pair *pPair)
 {
-    Pair *pPair = (Pair*)ent;
     free((Employ*)pPair->value);
-    free((Pair*)ent);
+    free(pPair);
 }
 
 
@@ -38,11 +37,11 @@ int main()
         return rc;
 
     /* You should specify how to compare your items. */
-    pMap->set_compare(pMap, PairCompare);
+    pMap->set_compare(pMap, CompareKey);
 
     /* If you plan to delegate the resource clean task to the DS, please set the
        custom clean method. */
-    pMap->set_destroy(pMap, PairDestroy);
+    pMap->set_destroy(pMap, DestroyPair);
 
     /* Insert key value pairs into the map. */
     Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
@@ -52,7 +51,7 @@ int main()
     Pair *pPair = (Pair*)malloc(sizeof(Pair));
     pPair->key = (Key)aName[0];
     pPair->value = (Value)pEmploy;
-    pMap->put(pMap, (Entry)pPair);
+    pMap->put(pMap, pPair);
 
     pEmploy = (Employ*)malloc(sizeof(Employ));
     pEmploy->iId = 2;
@@ -61,7 +60,7 @@ int main()
     pPair = (Pair*)malloc(sizeof(Pair));
     pPair->key = (Key)aName[1];
     pPair->value = (Value)pEmploy;
-    pMap->put(pMap, (Entry)pPair);
+    pMap->put(pMap, pPair);
 
     pEmploy = (Employ*)malloc(sizeof(Employ));
     pEmploy->iId = 3;
@@ -70,7 +69,7 @@ int main()
     pPair = (Pair*)malloc(sizeof(Pair));
     pPair->key = (Key)aName[2];
     pPair->value = (Value)pEmploy;
-    pMap->put(pMap, (Entry)pPair);
+    pMap->put(pMap, pPair);
 
     /* Retrieve the value with the designated key. */
     Value value;
@@ -79,8 +78,29 @@ int main()
     assert(((Employ*)value)->cYear == 25);
     assert(((Employ*)value)->cLevel == 100);
 
+    /* Retrieve the pairs with minimum and maximum key orders from the map. */
+    pMap->minimum(pMap, &pPair);
+    assert(strcmp((char*)pPair->key, aName[0]) == 0);
+    assert(((Employ*)pPair->value)->cLevel == 100);
+    pMap->maximum(pMap, &pPair);
+    assert(strcmp((char*)pPair->key, aName[2]) == 0);
+    assert(((Employ*)pPair->value)->cLevel == 80);
+
+    /* Reference the predecessor and successor pairs with the designated key. */
+    pMap->predecessor(pMap, (Key)aName[1], &pPair);
+    assert(strcmp((char*)pPair->key, aName[0]) == 0);
+    assert(((Employ*)pPair->value)->iId == 1);
+    pMap->successor(pMap, (Key)aName[1], &pPair);
+    assert(strcmp((char*)pPair->key, aName[2]) == 0);
+    assert(((Employ*)pPair->value)->iId == 3);
+
     /* Remove the key value pair with the designated key. */
     pMap->remove(pMap, (Key)aName[1]);
+
+    /* Check the key existence. */
+    assert(pMap->find(pMap, (Key)aName[0]) == SUCC);
+    assert(pMap->find(pMap, (Key)aName[1]) == NOKEY);
+    assert(pMap->find(pMap, (Key)aName[2]) == SUCC);
 
     /* Check the pair count in the map. */
     int32_t iSize = pMap->size(pMap);
