@@ -3,7 +3,21 @@
 #include "CUnit/Basic.h"
 
 
-#define SIZE_MID_TEST       (1000)
+/*------------------------------------------------------------*
+ * Test Function Declaration for basic structure verification *
+ *------------------------------------------------------------*/
+int32_t AddBasicSuite();
+void TestBasicInsert();
+void TestBoundary();
+
+void DestroyBasicPair(Pair*);
+int32_t CompareBasicKey(Key, Key);
+
+
+/*------------------------------------------------------------*
+ *    Test Function Declaration for bulk data manipulation    *
+ *------------------------------------------------------------*/
+#define SIZE_MID_TEST       (10000)
 #define SIZE_TINY_STR       (4)
 #define RANGE_CHAR          (26)
 #define BASE_CHAR           (97)
@@ -19,55 +33,37 @@ typedef struct Employ_ {
 int32_t aNum[SIZE_MID_TEST];
 char* aName[SIZE_MID_TEST];
 
+int32_t AddBulkSuite();
+void TestBulkManipulate();
 
-/* The key value pair comparison methods.*/
-int32_t SimpleCompare(Entry, Entry);
-int32_t AdvancedCompare(Entry, Entry);
-
-/* The key value pair clean methods. */
-void SimpleDestroy(Entry);
-void AdvancedDestroy(Entry);
-
-/* The functions to prepare and release test data. */
 int32_t PrepareTestData();
 void ReleaseTestData();
 
-/* The functions to register simple and advanced test suites. */
-int32_t AddSimpleSuite();
-int32_t AddAdvancedSuite();
-void TestSimpleManipulate();
-void TestBoundaryManipulate();
-void TestAdvancedManipulate();
-
-/* The functions to assist map operatoin testing. */
-void TestSimplePut(TreeMap*, int32_t);
-void TestSimpleGetSucc(TreeMap*, int32_t);
-void TestSimpleGetFail(TreeMap*, int32_t);
-void TestAdvancedPut(TreeMap*, int32_t);
+void DestroyBulkPair(Pair*);
+int32_t CompareBulkKey(Key, Key);
 
 
 int32_t main()
 {
-    int32_t iRtnCode = SUCC;
+    int32_t rc = SUCC;
 
-    iRtnCode = PrepareTestData();
-    if (iRtnCode != SUCC)
+    if (PrepareTestData() != SUCC)
         goto EXIT;
 
     if (CU_initialize_registry() != CUE_SUCCESS) {
-        iRtnCode = CU_get_error();
+        rc = CU_get_error();
         goto EXIT;
     }
 
-    /* Register the test suite for basic key value pairs. */
-    if (AddSimpleSuite() != SUCC) {
-        iRtnCode = CU_get_error();
+    /* Register the test suite for basic structure verification. */
+    if (AddBasicSuite() != SUCC) {
+        rc = CU_get_error();
         goto CLEAN;
     }
 
-    /* Register the test suite for advanced key value pairs. */
-    if (AddAdvancedSuite() != SUCC) {
-        iRtnCode = CU_get_error();
+    /* Register the test suite for bulk data manipulation. */
+    if (AddBulkSuite() != SUCC) {
+        rc = CU_get_error();
         goto CLEAN;
     }
 
@@ -77,11 +73,220 @@ int32_t main()
 
 CLEAN:
     CU_cleanup_registry();
-EXIT:
     ReleaseTestData();
-    return iRtnCode;
+EXIT:
+    return rc;
 }
 
+
+/*------------------------------------------------------------*
+ *        Test Function Implementation for Basic Suite        *
+ *------------------------------------------------------------*/
+void DestroyBasicPair(Pair *pPair) { free(pPair); }
+
+int32_t CompareBasicKey(Key keySrc, Key keyTge)
+{
+    if (keySrc == keyTge)
+        return 0;
+    return (keySrc > keyTge)? 1 : (-1);
+}
+
+int32_t AddBasicSuite()
+{
+    CU_pSuite pSuite = CU_add_suite("Basic Structure Verification", NULL, NULL);
+    if (!pSuite)
+        return ERR_REG;
+
+    CU_pTest pTest = CU_add_test(pSuite, "Pair insertion and structure verification",
+                     TestBasicInsert);
+    if (!pTest)
+        return ERR_REG;
+
+    pTest = CU_add_test(pSuite, "Key search and boundary case handling",
+            TestBoundary);
+    if (!pTest)
+        return ERR_REG;
+
+    return SUCC;
+}
+
+void TestBasicInsert()
+{
+    TreeMap *pMap;
+    CU_ASSERT(TreeMapInit(&pMap) == SUCC);
+
+    CU_ASSERT(pMap->set_compare(pMap, CompareBasicKey) == SUCC);
+    CU_ASSERT(pMap->set_destroy(pMap, DestroyBasicPair) == SUCC);
+
+    /**
+     * The vision of the test tree after maintaining the balanced tree property.
+     *          9
+     *        /   \
+     *      4      15
+     *     / \     / \
+     *    1   6   10  22
+     *         \      / \
+     *          7   20   25
+     */
+    Pair *pPair = (Pair*)malloc(sizeof(Pair));
+    pPair->key = (Key)10; pPair->value = 0;
+    CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+
+    pPair = (Pair*)malloc(sizeof(Pair));
+    pPair->key = (Key)15; pPair->value = 0;
+    CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+
+    pPair = (Pair*)malloc(sizeof(Pair));
+    pPair->key = (Key)20; pPair->value = 0;
+    CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+
+    pPair = (Pair*)malloc(sizeof(Pair));
+    pPair->key = (Key)25; pPair->value = 0;
+    CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+
+    pPair = (Pair*)malloc(sizeof(Pair));
+    pPair->key = (Key)22; pPair->value = 0;
+    CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+
+    pPair = (Pair*)malloc(sizeof(Pair));
+    pPair->key = (Key)9; pPair->value = 0;
+    CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+
+    pPair = (Pair*)malloc(sizeof(Pair));
+    pPair->key = (Key)6; pPair->value = 0;
+    CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+
+    pPair = (Pair*)malloc(sizeof(Pair));
+    pPair->key = (Key)1; pPair->value = 0;
+    CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+
+    pPair = (Pair*)malloc(sizeof(Pair));
+    pPair->key = (Key)4; pPair->value = 0;
+    CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+
+    pPair = (Pair*)malloc(sizeof(Pair));
+    pPair->key = (Key)7; pPair->value = 0;
+    CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+
+    /* Check structure correctness. */
+    CU_ASSERT(pMap->predecessor(pMap, (Key)4, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)1);
+    CU_ASSERT(pMap->successor(pMap, (Key)4, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)6);
+
+    CU_ASSERT(pMap->predecessor(pMap, (Key)6, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)4);
+    CU_ASSERT(pMap->successor(pMap, (Key)6, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)7);
+
+    CU_ASSERT(pMap->predecessor(pMap, (Key)7, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)6);
+    CU_ASSERT(pMap->successor(pMap, (Key)7, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)9);
+
+    CU_ASSERT(pMap->predecessor(pMap, (Key)9, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)7);
+    CU_ASSERT(pMap->successor(pMap, (Key)9, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)10);
+
+    CU_ASSERT(pMap->predecessor(pMap, (Key)10, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)9);
+    CU_ASSERT(pMap->successor(pMap, (Key)10, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)15);
+
+    CU_ASSERT(pMap->predecessor(pMap, (Key)15, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)10);
+    CU_ASSERT(pMap->successor(pMap, (Key)15, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)20);
+
+    CU_ASSERT(pMap->predecessor(pMap, (Key)20, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)15);
+    CU_ASSERT(pMap->successor(pMap, (Key)20, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)22);
+
+    CU_ASSERT(pMap->predecessor(pMap, (Key)22, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)20);
+    CU_ASSERT(pMap->successor(pMap, (Key)22, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)25);
+
+    /* Check the minimum and maximum item. */
+    CU_ASSERT(pMap->minimum(pMap, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)1);
+    CU_ASSERT(pMap->maximum(pMap, &pPair) == SUCC);
+    CU_ASSERT_EQUAL(pPair->key, (Key)25);
+
+    /* Check the map size. */
+    CU_ASSERT_EQUAL(pMap->size(pMap), 10);
+
+    TreeMapDeinit(&pMap);
+}
+
+void TestBoundary()
+{
+    TreeMap *pMap;
+    CU_ASSERT(TreeMapInit(&pMap) == SUCC);
+    CU_ASSERT(pMap->set_compare(pMap, CompareBasicKey) == SUCC);
+    CU_ASSERT(pMap->set_destroy(pMap, DestroyBasicPair) == SUCC);
+    CU_ASSERT_EQUAL(pMap->size(pMap), 0);
+
+    /* Search data from the empty map. */
+    Value value;
+    CU_ASSERT(pMap->get(pMap, (Key)0, &value) == ERR_NODATA);
+    CU_ASSERT_EQUAL(value, NULL);
+    CU_ASSERT(pMap->find(pMap, (Key)0) == NOKEY);
+
+    /* Search data from the non-empty map. */
+    Pair *pPair = (Pair*)malloc(sizeof(Pair));
+    pPair->key = (Key)1; pPair->value = (Value)100;
+    CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+
+    pPair = (Pair*)malloc(sizeof(Pair));
+    pPair->key = (Key)0; pPair->value = (Value)200;
+    CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+
+    CU_ASSERT(pMap->get(pMap, (Key)0, &value) == SUCC);
+    CU_ASSERT_EQUAL(value, (Value)200);
+    CU_ASSERT(pMap->find(pMap, (Key)0) == SUCC);
+
+    CU_ASSERT(pMap->remove(pMap, (Key)0) == SUCC);
+
+    CU_ASSERT(pMap->get(pMap, (Key)0, &value) == ERR_NODATA);
+    CU_ASSERT_EQUAL(value, NULL);
+    CU_ASSERT(pMap->find(pMap, (Key)0) == NOKEY);
+
+    /* Test boundary cases. */
+    CU_ASSERT(pMap->predecessor(pMap, (Key)0, &pPair) == ERR_NODATA);
+    CU_ASSERT(pMap->successor(pMap, (Key)0, &pPair) == ERR_NODATA);
+    CU_ASSERT(pMap->predecessor(pMap, (Key)1, &pPair) == ERR_NODATA);
+    CU_ASSERT(pMap->successor(pMap, (Key)1, &pPair) == ERR_NODATA);
+
+    CU_ASSERT(pMap->remove(pMap, (Key)1) == SUCC);
+    CU_ASSERT(pMap->maximum(pMap, &pPair) == ERR_IDX);
+    CU_ASSERT(pMap->minimum(pMap, &pPair) == ERR_IDX);
+    CU_ASSERT(pMap->remove(pMap, (Key)1) == ERR_NODATA);
+
+    TreeMapDeinit(&pMap);
+}
+
+/*------------------------------------------------------------*
+ *        Test Function Implementation for Bulk Suite         *
+ *------------------------------------------------------------*/
+int32_t CompareBulkKey(Key keySrc, Key keyTge)
+{
+    char *nameSrc = (char*)keySrc;
+    char *nameTge = (char*)keyTge;
+
+    int32_t iOrder = strcmp(nameSrc, nameTge);
+    if (iOrder == 0)
+        return 0;
+    return (iOrder > 0)? 1 : (-1);
+}
+
+void DestroyBulkPair(Pair *pPair)
+{
+    free((Employ*)pPair->value);
+    free(pPair);
+}
 
 int32_t PrepareTestData()
 {
@@ -148,246 +353,85 @@ void ReleaseTestData()
     }
 }
 
-
-int32_t AddSimpleSuite()
+int32_t AddBulkSuite()
 {
-    CU_pSuite pSuite = CU_add_suite("Simple key value pair", NULL, NULL);
-    if (!pSuite)
-        return ERR_NOMEM;
+    int32_t rc = SUCC;
 
-    char *szMsg = "Data manipulation with sequence of put(), get(), and remove() operations.";
-    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestSimpleManipulate);
+    CU_pSuite pSuite = CU_add_suite("Bulk date manipulation", NULL, NULL);
+    if (!pSuite) {
+        rc = ERR_REG;
+        goto EXIT;
+    }
+
+    char *szMsg = "Combination with insertion, deletion, and searching.";
+    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestBulkManipulate);
     if (!pTest)
-        return ERR_NOMEM;
+        rc = ERR_REG;
 
-    pTest = CU_add_test(pSuite, "Boundary test", TestBoundaryManipulate);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    return SUCC;
+EXIT:
+    return rc;
 }
 
-int32_t AddAdvancedSuite()
-{
-    CU_pSuite pSuite = CU_add_suite("Advanced key value pair", NULL, NULL);
-    if (!pSuite)
-        return ERR_NOMEM;
-
-    char *szMsg = "Data manipulation with sequence of put(), get(), and remove() operations.";
-    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestAdvancedManipulate);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    return SUCC;
-}
-
-
-int32_t SimpleCompare(Entry entSrc, Entry entTge)
-{
-    Pair *pPairSrc = (Pair*)entSrc;
-    Pair *pPairTge = (Pair*)entTge;
-    if (pPairSrc->key == pPairTge->key)
-        return 0;
-    return (pPairSrc->key > pPairTge->key)? 1 : (-1);
-}
-
-void SimpleDestroy(Entry ent)
-{
-    free((Pair*)ent);
-}
-
-
-void TestSimplePut(TreeMap *pMap, int32_t iIdx)
-{
-    Pair *pPair = (Pair*)malloc(sizeof(Pair));
-    if (!pPair)
-        return;
-
-    #if __x86_64__
-        pPair->key = (Key)(int64_t)aNum[iIdx];
-        pPair->value = (Value)(int64_t)aNum[iIdx];
-    #else
-        pPair->key = (Key)aNum[iIdx];
-        pPair->value = (Value)aNum[iIdx];
-    #endif
-    CU_ASSERT(pMap->put(pMap, (Entry)pPair) == SUCC);
-}
-
-void TestSimpleGetSucc(TreeMap *pMap, int32_t iIdx)
-{
-    Key key;
-    Value valuePred, valueRetv;
-    #if __x86_64__
-        key = (Key)(int64_t)aNum[iIdx];
-        valuePred = (Value)(int64_t)aNum[iIdx];
-    #else
-        key = (Key)aNum[iIdx];
-        valuePred = (Value)aNum[iIdx];
-    #endif
-    CU_ASSERT(pMap->get(pMap, key, &valueRetv) == SUCC);
-    CU_ASSERT_EQUAL(valueRetv, valuePred);
-}
-
-void TestSimpleGetFail(TreeMap *pMap, int32_t iIdx)
-{
-    Key key;
-    Value valueRetv;
-    #if __x86_64__
-        key = (Key)(int64_t)aNum[iIdx];
-    #else
-        key = (Key)aNum[iIdx];
-    #endif
-    CU_ASSERT(pMap->get(pMap, key, &valueRetv) == ERR_NODATA);
-    CU_ASSERT_EQUAL(valueRetv, NULL);
-    CU_ASSERT(pMap->get(pMap, key, NULL) == ERR_GET);
-}
-
-void TestSimpleManipulate()
+void TestBulkManipulate()
 {
     TreeMap *pMap;
     CU_ASSERT(TreeMapInit(&pMap) == SUCC);
-    CU_ASSERT(pMap->set_compare(pMap, SimpleCompare) == SUCC);
-    CU_ASSERT(pMap->set_destroy(pMap, SimpleDestroy) == SUCC);
-    CU_ASSERT_EQUAL(pMap->size(pMap), 0);
+    CU_ASSERT(pMap->set_compare(pMap, CompareBulkKey) == SUCC);
+    CU_ASSERT(pMap->set_destroy(pMap, DestroyBulkPair) == SUCC);
 
+    /* Insert the full data. */
     int32_t iIdx;
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST ; iIdx++)
-        TestSimplePut(pMap, iIdx);
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
-        TestSimpleGetSucc(pMap, iIdx);
+    for (iIdx = 0 ; iIdx < SIZE_MID_TEST ; iIdx++) {
+        Pair *pPair = (Pair*)malloc(sizeof(Pair));
+        Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
+
+        pEmploy->cYear = aNum[iIdx] / MASK_YEAR;
+        pEmploy->cLevel = aNum[iIdx] / MASK_LEVEL;
+        pEmploy->iId = aNum[iIdx];
+
+        pPair->key = aName[iIdx];
+        pPair->value = (Value)pEmploy;
+        CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+    }
+
+    /* Search and Retrieve the first half of the data. It should succeed. */
+    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++) {
+        Value valueRetv;
+        CU_ASSERT(pMap->find(pMap, aName[iIdx]) == SUCC);
+        CU_ASSERT(pMap->get(pMap, aName[iIdx], &valueRetv) == SUCC);
+        CU_ASSERT_EQUAL(aNum[iIdx]/MASK_YEAR, ((Employ*)valueRetv)->cYear);
+        CU_ASSERT_EQUAL(aNum[iIdx]/MASK_LEVEL, ((Employ*)valueRetv)->cLevel);
+        CU_ASSERT_EQUAL(aNum[iIdx], ((Employ*)valueRetv)->iId);
+    }
+
     CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST);
 
-    for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
-        #if __x86_64__
-        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx]) == SUCC);
-        #else
-        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx]) == SUCC);
-        #endif
-    for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
-        TestSimpleGetFail(pMap, iIdx);
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
-        TestSimpleGetSucc(pMap, iIdx);
-    CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST/2);
-
-    TreeMapDeinit(&pMap);
-}
-
-void TestBoundaryManipulate()
-{
-    TreeMap *pMap;
-    CU_ASSERT(TreeMapInit(&pMap) == SUCC);
-    CU_ASSERT(pMap->set_compare(pMap, SimpleCompare) == SUCC);
-    CU_ASSERT(pMap->set_destroy(pMap, SimpleDestroy) == SUCC);
-
-    /* Get the unexisting key value pair. */
-    int32_t iIdx;
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
-        TestSimpleGetFail(pMap, iIdx);
-
-    /* Remove the unexisting key value pair. */
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
-        #if __x86_64__
-        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx]) == ERR_NODATA);
-        #else
-        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx]) == ERR_NODATA);
-        #endif
-
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
-        TestSimplePut(pMap, iIdx);
-
-    /* Get the unexisting key value pair. */
-    for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
-        TestSimpleGetFail(pMap, iIdx);
-
-    /* Remove the unexisting key value pair. */
-    for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
-        #if __x86_64__
-        CU_ASSERT(pMap->remove(pMap, (Key)(int64_t)aNum[iIdx]) == ERR_NODATA);
-        #else
-        CU_ASSERT(pMap->remove(pMap, (Key)aNum[iIdx]) == ERR_NODATA);
-        #endif
-
-    TreeMapDeinit(&pMap);
-}
-
-int32_t AdvancedCompare(Entry entSrc, Entry entTge)
-{
-    Pair *pPairSrc = (Pair*)entSrc;
-    Pair *pPairTge = (Pair*)entTge;
-    int32_t iOrder = strcmp(pPairSrc->key, pPairTge->key);
-    if (iOrder == 0)
-        return 0;
-    return (iOrder > 0)? 1 : (-1);
-}
-
-void AdvancedDestroy(Entry ent)
-{
-    Pair *pPair = (Pair*)ent;
-    free((Employ*)pPair->value);
-    free(pPair);
-}
-
-void TestAdvancedPut(TreeMap *pMap, int32_t iIdx)
-{
-    Pair *pPair = (Pair*)malloc(sizeof(Pair));
-    if (!pPair)
-        return;
-
-    Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
-    if (!pEmploy)
-        return;
-    pEmploy->cYear = aNum[iIdx] / MASK_YEAR;
-    pEmploy->cLevel = aNum[iIdx] / MASK_LEVEL;
-    pEmploy->iId = aNum[iIdx];
-
-    pPair->key = aName[iIdx];
-    pPair->value = (Value)pEmploy;
-
-    CU_ASSERT(pMap->put(pMap, (Entry)pPair) == SUCC);
-}
-
-void TestAdvancedGetSucc(TreeMap *pMap, int32_t iIdx)
-{
-    Key key = aName[iIdx];
-    Employ valuePred = {aNum[iIdx]/MASK_YEAR, aNum[iIdx]/MASK_LEVEL, aNum[iIdx]};
-    Value valueRetv;
-
-    CU_ASSERT(pMap->get(pMap, key, &valueRetv) == SUCC);
-    CU_ASSERT_EQUAL(valuePred.cYear, ((Employ*)valueRetv)->cYear);
-    CU_ASSERT_EQUAL(valuePred.cLevel, ((Employ*)valueRetv)->cLevel);
-    CU_ASSERT_EQUAL(valuePred.iId, ((Employ*)valueRetv)->iId);
-}
-
-void TestAdvancedGetFail(TreeMap *pMap, int32_t iIdx)
-{
-    Key key = aName[iIdx];
-    Value valueRetv;
-
-    CU_ASSERT(pMap->get(pMap, key, &valueRetv) == ERR_NODATA);
-    CU_ASSERT_EQUAL(valueRetv, NULL);
-}
-
-void TestAdvancedManipulate()
-{
-    TreeMap *pMap;
-    CU_ASSERT(TreeMapInit(&pMap) == SUCC);
-    CU_ASSERT(pMap->set_compare(pMap, AdvancedCompare) == SUCC);
-    CU_ASSERT(pMap->set_destroy(pMap, AdvancedDestroy) == SUCC);
-    CU_ASSERT_EQUAL(pMap->size(pMap), 0);
-
-    int32_t iIdx;
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST ; iIdx++)
-        TestAdvancedPut(pMap, iIdx);
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
-        TestAdvancedGetSucc(pMap, iIdx);
-    CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST);
-
+    /* Delete the second half of the data.  */
     for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
         CU_ASSERT(pMap->remove(pMap, (Key)aName[iIdx]) == SUCC);
+
+    /* Search and Retrieve the second half of the data. It should fail. */
+    for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++) {
+        Value valueRetv;
+        CU_ASSERT(pMap->find(pMap, aName[iIdx]) == NOKEY);
+        CU_ASSERT(pMap->get(pMap, aName[iIdx], &valueRetv) == ERR_NODATA);
+        CU_ASSERT_EQUAL(valueRetv, NULL);
+    }
+
+    /* But the searching for the first half should not be affected. */
+    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++) {
+        Value valueRetv;
+        CU_ASSERT(pMap->find(pMap, aName[iIdx]) == SUCC);
+        CU_ASSERT(pMap->get(pMap, aName[iIdx], &valueRetv) == SUCC);
+        CU_ASSERT_EQUAL(aNum[iIdx]/MASK_YEAR, ((Employ*)valueRetv)->cYear);
+        CU_ASSERT_EQUAL(aNum[iIdx]/MASK_LEVEL, ((Employ*)valueRetv)->cLevel);
+        CU_ASSERT_EQUAL(aNum[iIdx], ((Employ*)valueRetv)->iId);
+    }
+
+    /* Delete the already deleted second half of the data. It should fail. */
     for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
-        TestAdvancedGetFail(pMap, iIdx);
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++)
-        TestAdvancedGetSucc(pMap, iIdx);
+        CU_ASSERT(pMap->remove(pMap, (Key)aName[iIdx]) == ERR_NODATA);
+
     CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST/2);
 
     TreeMapDeinit(&pMap);

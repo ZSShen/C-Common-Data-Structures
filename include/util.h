@@ -32,6 +32,9 @@
 /** Invalid argument to specify the key size for hash data structures. */
 #define ERR_KEYSIZE     (-7)
 
+/** Fail to register the unit test function. */
+#define ERR_REG 		(-8)
+
 /** Iteration terminated at the end of the data structure */
 #define END             (1)
 
