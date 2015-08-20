@@ -32,8 +32,11 @@
 /** Invalid argument to specify the key size for hash data structures. */
 #define ERR_KEYSIZE     (-7)
 
+/** The data structure is modified during the structure traversal. */
+#define ERR_ITER        (-8)
+
 /** Fail to register the unit test function. */
-#define ERR_REG         (-8)
+#define ERR_REG         (-9)
 
 /** Iteration terminated at the end of the data structure */
 #define END             (1)

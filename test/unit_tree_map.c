@@ -9,6 +9,7 @@
 int32_t AddBasicSuite();
 void TestBasicInsert();
 void TestBoundary();
+void TestIterator();
 
 void DestroyBasicPair(Pair*);
 int32_t CompareBasicKey(Key, Key);
@@ -17,6 +18,7 @@ int32_t CompareBasicKey(Key, Key);
 /*------------------------------------------------------------*
  *    Test Function Declaration for bulk data manipulation    *
  *------------------------------------------------------------*/
+#define COUNT_ITER          (1000)
 #define SIZE_MID_TEST       (10000)
 #define SIZE_TINY_STR       (4)
 #define RANGE_CHAR          (26)
@@ -104,6 +106,10 @@ int32_t AddBasicSuite()
 
     pTest = CU_add_test(pSuite, "Key search and boundary case handling",
             TestBoundary);
+    if (!pTest)
+        return ERR_REG;
+
+    pTest = CU_add_test(pSuite, "Map iterator", TestIterator);
     if (!pTest)
         return ERR_REG;
 
@@ -267,6 +273,68 @@ void TestBoundary()
 
     TreeMapDeinit(&pMap);
 }
+
+void TestIterator()
+{
+    TreeMap *pMap;
+    CU_ASSERT(TreeMapInit(&pMap) == SUCC);
+    CU_ASSERT(pMap->set_compare(pMap, CompareBasicKey) == SUCC);
+    CU_ASSERT(pMap->set_destroy(pMap, DestroyBasicPair) == SUCC);
+    CU_ASSERT_EQUAL(pMap->size(pMap), 0);
+
+    /* Insert the test data. */
+    Pair *pPair;
+    int32_t iIdx;
+    for (iIdx = COUNT_ITER / 2 ; iIdx > 0 ; iIdx--) {
+        pPair = (Pair*)malloc(sizeof(Pair));
+        #ifdef __x86_64__
+            pPair->key = (Key)(int64_t)iIdx;
+        #else
+            pPair->key = (Key)iIdx;
+        #endif
+        pPair->value = 0;
+        CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+    }
+    for (iIdx = COUNT_ITER / 2 + 1 ; iIdx <= COUNT_ITER ; iIdx++) {
+        pPair = (Pair*)malloc(sizeof(Pair));
+        #ifdef __x86_64__
+            pPair->key = (Key)(int64_t)iIdx;
+        #else
+            pPair->key = (Key)iIdx;
+        #endif
+        pPair->value = 0;
+        CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+    }
+
+    /* Iterate through the map. */
+    iIdx = 1;
+    CU_ASSERT(pMap->iterate(pMap, true, NULL) == SUCC);
+    while (pMap->iterate(pMap, false, &pPair) != END) {
+        #ifdef __x86_64__
+            CU_ASSERT_EQUAL(pPair->key, (Key)(int64_t)iIdx);
+        #else
+            CU_ASSERT_EQUAL(pPair->key, (Key)iIdx);
+        #endif
+        iIdx++;
+    }
+    CU_ASSERT_EQUAL(pPair, NULL);
+
+    /* Reversely iterate through the map. */
+    iIdx = COUNT_ITER;
+    CU_ASSERT(pMap->reverse_iterate(pMap, true, NULL) == SUCC);
+    while (pMap->reverse_iterate(pMap, false, &pPair) != END) {
+        #ifdef __x86_64__
+            CU_ASSERT_EQUAL(pPair->key, (Key)(int64_t)iIdx);
+        #else
+            CU_ASSERT_EQUAL(pPair->key, (Key)iIdx);
+        #endif
+        iIdx--;
+    }
+    CU_ASSERT_EQUAL(pPair, NULL);
+
+    TreeMapDeinit(&pMap);
+}
+
 
 /*------------------------------------------------------------*
  *        Test Function Implementation for Bulk Suite         *

@@ -94,6 +94,22 @@ int main()
     assert(strcmp((char*)pPair->key, aName[2]) == 0);
     assert(((Employ*)pPair->value)->iId == 3);
 
+    /* Iterate through the map. */
+    int32_t idx = 0;
+    pMap->iterate(pMap, true, NULL);
+    while (pMap->iterate(pMap, false, &pPair) != END) {
+        assert(strcmp((char*)pPair->key, aName[idx]) == 0);
+        idx++;
+    }
+
+    /* Reversely iterate through the map.*/
+    idx = 2;
+    pMap->reverse_iterate(pMap, true, NULL);
+    while (pMap->reverse_iterate(pMap, false, &pPair) != END) {
+        assert(strcmp((char*)pPair->key, aName[idx]) == 0);
+        idx--;
+    }
+
     /* Remove the key value pair with the designated key. */
     pMap->remove(pMap, (Key)aName[1]);
 

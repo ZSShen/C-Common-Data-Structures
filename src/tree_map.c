@@ -18,6 +18,12 @@ struct _TreeMapData {
     TreeNode *pNull_;
     int32_t (*pCompare_) (Key, Key);
     void (*pDestroy_) (Pair*);
+
+    /* The member variables for map iteration. */
+    bool bEnd_;
+    int32_t iTop_;
+    TreeNode *pIter_;
+    TreeNode **pStack_;
 };
 
 #define DIRECT_LEFT      (0)
@@ -194,6 +200,7 @@ int32_t TreeMapInit(TreeMap **ppObj)
     pObj->pData->pRoot_ = pData->pNull_;
     pObj->pData->pCompare_ = _TreeMapCompare;
     pObj->pData->pDestroy_ = _TreeMapDestroy;
+    pObj->pData->pStack_ = NULL;
 
     pObj->put = TreeMapPut;
     pObj->get = TreeMapGet;
@@ -227,6 +234,8 @@ void TreeMapDeinit(TreeMap **ppObj)
 
     _TreeMapDeinit(pData);
     free(pData->pNull_);
+    if (pData->pStack_)
+        free(pData->pStack_);
 
 FREE_DATA:
     free(pObj->pData);
@@ -487,13 +496,101 @@ int32_t TreeMapSuccessor(TreeMap *self, Key key, Pair **ppPair)
 int32_t TreeMapIterate(TreeMap *self, bool bReset, Pair **ppPair)
 {
     CHECK_INIT(self);
-    return SUCC;
+
+    TreeMapData *pData = self->pData;
+    if (bReset) {
+        if (pData->pStack_)
+            free(pData->pStack_);
+        pData->pStack_ = (TreeNode**)malloc(sizeof(TreeNode*) * pData->iSize_);
+        if (!(pData->pStack_)) {
+            *ppPair = NULL;
+            return ERR_NOMEM;
+        }
+        pData->pIter_ = pData->pRoot_;
+        pData->iTop_ = 0;
+        pData->bEnd_ = false;
+        return SUCC;
+    }
+
+    if (!ppPair)
+        return ERR_GET;
+
+    while (!(pData->bEnd_)) {
+        if (pData->pIter_ != pData->pNull_) {
+            if (pData->iTop_ == pData->iSize_) {
+                *ppPair = NULL;
+                return ERR_ITER;
+            }
+            pData->pStack_[pData->iTop_] = pData->pIter_;
+            pData->iTop_++;
+            pData->pIter_ = pData->pIter_->pLeft;
+        } else {
+            if (pData->iTop_ != 0) {
+                pData->iTop_--;
+                pData->pIter_ = pData->pStack_[pData->iTop_];
+                *ppPair = pData->pIter_->pPair;
+                pData->pIter_ = pData->pIter_->pRight;
+                return SUCC;
+            } else {
+                pData->bEnd_ = true;
+                free(pData->pStack_);
+                pData->pStack_ = NULL;
+            }
+        }
+    }
+
+    *ppPair = NULL;
+    return END;
 }
 
 int32_t TreeMapReverseIterate(TreeMap *self, bool bReset, Pair **ppPair)
 {
     CHECK_INIT(self);
-    return SUCC;
+
+    TreeMapData *pData = self->pData;
+    if (bReset) {
+        if (pData->pStack_)
+            free(pData->pStack_);
+        pData->pStack_ = (TreeNode**)malloc(sizeof(TreeNode*) * pData->iSize_);
+        if (!(pData->pStack_)) {
+            *ppPair = NULL;
+            return ERR_NOMEM;
+        }
+        pData->pIter_ = pData->pRoot_;
+        pData->iTop_ = 0;
+        pData->bEnd_ = false;
+        return SUCC;
+    }
+
+    if (!ppPair)
+        return ERR_GET;
+
+    while (!(pData->bEnd_)) {
+        if (pData->pIter_ != pData->pNull_) {
+            if (pData->iTop_ == pData->iSize_) {
+                *ppPair = NULL;
+                return ERR_ITER;
+            }
+            pData->pStack_[pData->iTop_] = pData->pIter_;
+            pData->iTop_++;
+            pData->pIter_ = pData->pIter_->pRight;
+        } else {
+            if (pData->iTop_ != 0) {
+                pData->iTop_--;
+                pData->pIter_ = pData->pStack_[pData->iTop_];
+                *ppPair = pData->pIter_->pPair;
+                pData->pIter_ = pData->pIter_->pLeft;
+                return SUCC;
+            } else {
+                pData->bEnd_ = true;
+                free(pData->pStack_);
+                pData->pStack_ = NULL;
+            }
+        }
+    }
+
+    *ppPair = NULL;
+    return END;
 }
 
 int32_t TreeMapSetCompare(TreeMap *self, int32_t (*pFunc) (Key, Key))
