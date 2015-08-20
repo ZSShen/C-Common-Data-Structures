@@ -33,7 +33,7 @@
 #define ERR_KEYSIZE     (-7)
 
 /** Fail to register the unit test function. */
-#define ERR_REG 		(-8)
+#define ERR_REG         (-8)
 
 /** Iteration terminated at the end of the data structure */
 #define END             (1)

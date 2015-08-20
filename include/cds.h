@@ -3,5 +3,4 @@
 #include "container/linked_list.h"
 #include "container/tree_map.h"
 #include "map/hash_map.h"
-#include "heap/binary_heap.h"
 #include "container/priority_queue.h"
