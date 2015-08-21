@@ -25,7 +25,6 @@ void DestroyPair(Pair *pPair)
     free(pPair);
 }
 
-
 int main()
 {
     char *aName[3] = {"Alice\0", "Bob\0", "Wesker\0"};

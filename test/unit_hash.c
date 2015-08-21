@@ -6,6 +6,12 @@
 /*------------------------------------------------------------*
  *       Test Function Declaration for hash calculation       *
  *------------------------------------------------------------*/
+typedef struct _Employ {
+    int8_t cYear;
+    int8_t cLevel;
+    int32_t iId;
+} Employ;
+
 int32_t AddBasicSuite();
 void TestMurMur32();
 
@@ -59,14 +65,33 @@ void TestMurMur32()
     value = HashMurMur32("NULL", 0);
     CU_ASSERT_EQUAL(value, 0);
 
-    value = HashMurMur32("1", 1);
-    printf("%u\n", value);
-    value = HashMurMur32("12", 2);
-    printf("%u\n", value);
-    value = HashMurMur32("123", 3);
-    printf("%u\n", value);
-    value = HashMurMur32("1234", 4);
-    printf("%u\n", value);
+    /* Test string key. */
+    value = HashMurMur32((Key)"1", 1);
+    value = HashMurMur32((Key)"12", 2);
+    value = HashMurMur32((Key)"123", 3);
+    value = HashMurMur32((Key)"1234", 4);
+    value = HashMurMur32((Key)"12345", 5);
+
+    /* Test integer key. */
+    int32_t iKey = 32767;
+    value = HashMurMur32((Key)&iKey, sizeof(int32_t));
+    int64_t lKey = 32767;
+    value = HashMurMur32((Key)&lKey, sizeof(int64_t));
+
+    /* Test Floating point key. */
+    float fKey = 32767.0;
+    value = HashMurMur32((Key)&fKey, sizeof(float));
+    double dKey = 32767.0;
+    value = HashMurMur32((Key)&dKey, sizeof(double));
+
+    /* Test structure key. */
+    Employ *pEmp = (Employ*)malloc(sizeof(Employ));
+    memset(pEmp, 0, sizeof(Employ));
+    pEmp->cYear = 1;
+    pEmp->cLevel = 10;
+    pEmp->iId = 25692;
+    value = HashMurMur32((Key)pEmp, sizeof(Employ));
+    free(pEmp);
 
     return;
 }
