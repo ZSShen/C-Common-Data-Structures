@@ -59,11 +59,11 @@ typedef struct _TreeMap {
         @see TreeMapReverseIterate */
     int32_t (*reverse_iterate) (struct _TreeMap*, bool, Pair**);
 
-    /** Set the user defined key comparison method.
+    /** Set the custom key comparison method.
         @see TreeMapSetCompare */
     int32_t (*set_compare) (struct _TreeMap*, int32_t (*) (Key, Key));
 
-    /** Set the user defined pair clean method.
+    /** Set the custom key value pair resource clean method.
         @see TreeMapSetDestroy */
     int32_t (*set_destroy) (struct _TreeMap*, void (*) (Pair*));
 } TreeMap;
@@ -97,8 +97,8 @@ void TreeMapDeinit(TreeMap **ppObj);
  *
  * This function inserts a key value pair into the map. If the order of the
  * designated pair is the same with a certain one stored in the map, that pair
- * will be replaced. Also, if the custom resource clean methods are set, it runs
- * the clean methods for the replaced pair.
+ * will be replaced. Also, if the custom resource clean method is set, it runs
+ * the clean method for the replaced pair.
  *
  * @param self          The pointer to TreeMap structure
  * @param pPair         The pointer to the designated pair
@@ -144,7 +144,7 @@ int32_t TreeMapFind(TreeMap *self, Key);
  * @brief Delete the key value pair corresponding to the designated key.
  *
  * This function deletes the key value pair corresponding to the designated key.
- * If the custom resource clean methods are set, it runs the clean methods for
+ * If the custom resource clean method is set, it runs the clean methods for
  * the deleted pair.
  *
  * @param self          The pointer to TreeMap structure
@@ -268,7 +268,7 @@ int32_t TreeMapIterate(TreeMap *self, bool bReset, Pair **ppPair);
 int32_t TreeMapReverseIterate(TreeMap *self, bool bReset, Pair **ppPair);
 
 /**
- * @brief Set the user defined key comparison method.
+ * @brief Set the custom key comparison method.
  *
  * @param self          The pointer to TreeMap structure
  * @param pFunc         The function pointer to the custom method
@@ -279,7 +279,7 @@ int32_t TreeMapReverseIterate(TreeMap *self, bool bReset, Pair **ppPair);
 int32_t TreeMapSetCompare(TreeMap *self, int32_t (*pFunc) (Key, Key));
 
 /**
- * @brief Set the user defined pair clean method.
+ * @brief Set the custom key value pair resource clean method.
  *
  * @param self          The pointer to TreeMap structure
  * @param pFunc         The function pointer to the custom method

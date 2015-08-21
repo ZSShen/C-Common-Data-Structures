@@ -2,9 +2,9 @@
 
 
 typedef struct Employ_ {
-    int32_t iId;
     int8_t cYear;
     int8_t cLevel;
+    int32_t iId;
 } Employ;
 
 
