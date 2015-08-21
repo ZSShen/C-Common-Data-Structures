@@ -2,15 +2,15 @@
 
 
 typedef struct _Employ {
-	int8_t cYear;
-	int8_t cLevel;
-	int32_t iId;
+    int8_t cYear;
+    int8_t cLevel;
+    int32_t iId;
 } Employ;
 
 
 int main()
 {
-	/* Use string as hash key. */
+    /* Use string as hash key. */
     char *szKey = "1234567890abcdeffedcba0987654321\0";
     uint32_t value = HashMurMur32((Key)szKey, strlen(szKey));
 
