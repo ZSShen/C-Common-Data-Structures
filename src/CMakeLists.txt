@@ -16,8 +16,7 @@ function(SUB_BUILD_SPECIFIC DS)
     # specify the dependent source files here.
     set(SRC_DEP_DS "")
     if (DS STREQUAL "hash_map")
-        set(SRC_DEP_DS "vector.c")
-        set(SRC_DEP_DS ${SRC_DEP_DS} "linked_list.c")
+        set(SRC_DEP_DS "hash.c")
     endif()
 
     add_library(${TGE_DS} ${LIB_TYPE} ${SRC_DS} ${SRC_DEP_DS})

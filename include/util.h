@@ -38,11 +38,14 @@
 /** Fail to register the unit test function. */
 #define ERR_REG         (-9)
 
+/** Iteration in progress. */
+#define CONTINUE		(1)
+
 /** Iteration terminated at the end of the data structure */
-#define END             (1)
+#define END             (2)
 
 /** The designated key cannot be found in the map */
-#define NOKEY           (2)
+#define NOKEY           (3)
 
 
 /** Item is the data type for the container element. */

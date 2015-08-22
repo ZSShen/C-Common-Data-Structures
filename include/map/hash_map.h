@@ -176,8 +176,9 @@ int32_t HashMapSize(HashMap *self);
  * @param bReset        The knob to restart the iteration
  * @param ppPair        The double pointer to the returned pair
  *
- * @retval SUCC
- * @retval END
+ * @retval SUCC         Iterator initialized successfully
+ * @retval CONTINUE     Iteration in progress
+ * @retval END          Iteration terminiated
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_GET      Invalid parameter to store returned pair
  *

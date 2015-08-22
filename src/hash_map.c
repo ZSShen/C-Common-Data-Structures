@@ -115,6 +115,18 @@ void HashMapDeinit(HashMap **ppObj)
     if (!(pData->aSlot_))
         goto FREE_DATA;
 
+    uint32_t uiIdx;
+    for (uiIdx = 0 ; uiIdx < pData->uiCountSlot_ ; uiIdx++) {
+        SlotNode *pPred;
+        SlotNode *pCurr = pData->aSlot_[uiIdx];
+        while (pCurr) {
+            pPred = pCurr;
+            pCurr = pCurr->pNext;
+            if (pData->pDestroy_)
+                pData->pDestroy_(pPred->pPair);
+            free(pPred);
+        }
+    }
     free(pData->aSlot_);
 
 FREE_DATA:
@@ -132,8 +144,11 @@ int32_t HashMapPut(HashMap *self, Pair *pPair, size_t size)
     if (size == 0)
         return ERR_KEYSIZE;
 
+    /* Check the loading factor for rehashing. */
     HashMapData *pData = self->pData;
-    SlotNode **aSlot = pData->aSlot_;
+    double dCurrLoad = (double)pData->iSize_ / pData->uiCountSlot_;
+    if (dCurrLoad >= dLoadFactor)
+        _HashMapReHash(pData, size);
 
     /* Calculate the slot index. */
     uint32_t uiValue = pData->pHash_(pPair->key, size);
@@ -141,6 +156,7 @@ int32_t HashMapPut(HashMap *self, Pair *pPair, size_t size)
 
     /* Check if the pair conflicts with a certain one stored in the map. If yes,
        replace that one. */
+    SlotNode **aSlot = pData->aSlot_;
     SlotNode *pCurr = aSlot[uiValue];
     while (pCurr) {
         int32_t iRes = memcmp(pCurr->pPair->key, pPair->key, size);
@@ -152,11 +168,6 @@ int32_t HashMapPut(HashMap *self, Pair *pPair, size_t size)
         }
         pCurr = pCurr->pNext;
     }
-
-    /* Check the loading factor for rehashing. */
-    double dCurrLoad = (double)pData->iSize_ / pData->uiCountSlot_;
-    if (dCurrLoad >= dLoadFactor)
-        _HashMapReHash(pData, size);
 
     /* Insert the new pair into the slot list. */
     SlotNode *pNew = (SlotNode*)malloc(sizeof(SlotNode));
@@ -200,7 +211,7 @@ int32_t HashMapGet(HashMap *self, Key key, size_t size, Value *pValue)
     }
 
     *pValue = NULL;
-    return NOKEY;
+    return ERR_NODATA;
 }
 
 int32_t HashMapFind(HashMap *self, Key key, size_t size)
@@ -292,17 +303,17 @@ int32_t HashMapIterate(HashMap *self, bool bReset, Pair **ppPair)
     }
 
     SlotNode **aSlot = pData->aSlot_;
-    do {
+    while (true) {
         while (pData->pIterNode_) {
             *ppPair = pData->pIterNode_->pPair;
             pData->pIterNode_ = pData->pIterNode_->pNext;
-            return SUCC;
+            return CONTINUE;
         }
         pData->uiIterIdx_++;
         if (pData->uiIterIdx_ == pData->uiCountSlot_)
             break;
         pData->pIterNode_ = aSlot[pData->uiIterIdx_];
-    } while (true);
+    }
 
     pData->bEnd_ = true;
     *ppPair = NULL;
@@ -361,8 +372,9 @@ void _HashMapReHash(HashMapData *pData, size_t size)
         SlotNode *pCurr = pData->aSlot_[uiIdx];
         while (pCurr) {
             pPred = pCurr;
+            pCurr = pCurr->pNext;
 
-            /* Migrate each pair from the old slot to the new one. */
+            /* Migrate each pair to the new slot. */
             uint32_t uiValue = pData->pHash_(pPred->pPair->key, size);
             uiValue = uiValue % uiCountNew;
             if (!aSlotNew[uiValue]) {
@@ -372,12 +384,11 @@ void _HashMapReHash(HashMapData *pData, size_t size)
                 pPred->pNext = aSlotNew[uiValue];
                 aSlotNew[uiValue] = pPred;
             }
-
-            pCurr = pCurr->pNext;
         }
     }
 
     free(pData->aSlot_);
     pData->aSlot_ = aSlotNew;
+    pData->uiCountSlot_ = uiCountNew;
     return;
 }
