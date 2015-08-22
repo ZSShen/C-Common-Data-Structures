@@ -11,6 +11,7 @@ const uint32_t aMagicPrimes[] = {
     201326611, 402653189, 805306457, 1610612741,
 };
 const int32_t iCountPrime_ = sizeof(aMagicPrimes) / sizeof(uint32_t);
+const double dLoadFactor = 0.75;
 
 
 typedef struct _SlotNode {
@@ -22,8 +23,8 @@ struct _HashMapData {
     bool bEnd_;
     int32_t iSize_;
     int32_t iIdxPrime_;
-    int32_t iCountSlot_;
-    int32_t iIterIdx_;
+    uint32_t uiIterIdx_;
+    uint32_t uiCountSlot_;
     SlotNode **aSlot_;
     SlotNode *pIterNode_;
     uint32_t (*pHash_) (Key, size_t);
@@ -43,6 +44,15 @@ struct _HashMapData {
                 if (!(self->pData->aSlot_))                                     \
                     return ERR_NOINIT;                                          \
             } while (0);
+
+
+/**
+ * @brief Extend the slot array and re-distribute the stored pairs.
+ *
+ * @param pData         The pointer to the map private data
+ * @param size          Size of the data pointed by the key in bytes
+ */
+void _HashMapReHash(HashMapData *pData, size_t size);
 
 
 /*===========================================================================*
@@ -76,7 +86,7 @@ int32_t HashMapInit(HashMap **ppObj)
 
     pData->iSize_ = 0;
     pData->iIdxPrime_ = 0;
-    pData->iCountSlot_ = aMagicPrimes[0];
+    pData->uiCountSlot_ = aMagicPrimes[0];
     pData->pHash_ = HashMurMur32;
     pData->pDestroy_ = NULL;
 
@@ -127,7 +137,7 @@ int32_t HashMapPut(HashMap *self, Pair *pPair, size_t size)
 
     /* Calculate the slot index. */
     uint32_t uiValue = pData->pHash_(pPair->key, size);
-    uiValue = uiValue % pData->iCountSlot_;
+    uiValue = uiValue % pData->uiCountSlot_;
 
     /* Check if the pair conflicts with a certain one stored in the map. If yes,
        replace that one. */
@@ -142,6 +152,11 @@ int32_t HashMapPut(HashMap *self, Pair *pPair, size_t size)
         }
         pCurr = pCurr->pNext;
     }
+
+    /* Check the loading factor for rehashing. */
+    double dCurrLoad = (double)pData->iSize_ / pData->uiCountSlot_;
+    if (dCurrLoad >= dLoadFactor)
+        _HashMapReHash(pData, size);
 
     /* Insert the new pair into the slot list. */
     SlotNode *pNew = (SlotNode*)malloc(sizeof(SlotNode));
@@ -170,7 +185,7 @@ int32_t HashMapGet(HashMap *self, Key key, size_t size, Value *pValue)
 
     /* Calculate the slot index. */
     uint32_t uiValue = pData->pHash_(key, size);
-    uiValue = uiValue % pData->iCountSlot_;
+    uiValue = uiValue % pData->uiCountSlot_;
 
     /* Search the slot list to check if there is a pair having the same key
        with the designated one. */
@@ -198,7 +213,7 @@ int32_t HashMapFind(HashMap *self, Key key, size_t size)
 
     /* Calculate the slot index. */
     uint32_t uiValue = pData->pHash_(key, size);
-    uiValue = uiValue % pData->iCountSlot_;
+    uiValue = uiValue % pData->uiCountSlot_;
 
     /* Search the slot list to check if there is a pair having the same key
        with the designated one. */
@@ -224,7 +239,7 @@ int32_t HashMapRemove(HashMap *self, Key key, size_t size)
 
     /* Calculate the slot index. */
     uint32_t uiValue = pData->pHash_(key, size);
-    uiValue = uiValue % pData->iCountSlot_;
+    uiValue = uiValue % pData->uiCountSlot_;
 
     /* Search the slot list for the deletion target. */
     SlotNode *pPred = NULL;
@@ -239,6 +254,7 @@ int32_t HashMapRemove(HashMap *self, Key key, size_t size)
             else
                 pPred->pNext = pCurr->pNext;
             free(pCurr);
+            pData->iSize_--;
             return SUCC;
         }
         pPred = pCurr;
@@ -261,7 +277,7 @@ int32_t HashMapIterate(HashMap *self, bool bReset, Pair **ppPair)
     HashMapData *pData = self->pData;
 
     if (bReset) {
-        pData->iIterIdx_ = 0;
+        pData->uiIterIdx_ = 0;
         pData->pIterNode_ = pData->aSlot_[0];
         pData->bEnd_ = false;
         return SUCC;
@@ -282,10 +298,10 @@ int32_t HashMapIterate(HashMap *self, bool bReset, Pair **ppPair)
             pData->pIterNode_ = pData->pIterNode_->pNext;
             return SUCC;
         }
-        pData->iIterIdx_++;
-        if (pData->iIterIdx_ == pData->iCountSlot_)
+        pData->uiIterIdx_++;
+        if (pData->uiIterIdx_ == pData->uiCountSlot_)
             break;
-        pData->pIterNode_ = aSlot[pData->iIterIdx_];
+        pData->pIterNode_ = aSlot[pData->uiIterIdx_];
     } while (true);
 
     pData->bEnd_ = true;
@@ -311,3 +327,57 @@ int32_t HashMapSetHash(HashMap *self, uint32_t (*pFunc) (Key, size_t))
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
+void _HashMapReHash(HashMapData *pData, size_t size)
+{
+    uint32_t uiCountNew;
+
+    /* Consume the next prime for slot array extension. */
+    if (pData->iIdxPrime_ < (iCountPrime_ - 1)) {
+        pData->iIdxPrime_++;
+        uiCountNew = aMagicPrimes[pData->iIdxPrime_];
+    }
+    /* If the prime list is completely consumed, we simply extend the slot array
+       with treble capacity.*/
+    else {
+        pData->iIdxPrime_ = iCountPrime_;
+        uiCountNew = pData->uiCountSlot_ * 3;
+    }
+
+    /* Try to allocate the new slot array. The rehashing should be canceled due
+       to insufficient memory space.  */
+    SlotNode **aSlotNew = (SlotNode**)malloc(sizeof(SlotNode*) * uiCountNew);
+    if (!aSlotNew) {
+        if (pData->iIdxPrime_ < iCountPrime_)
+            pData->iIdxPrime_--;
+        return;
+    }
+
+    uint32_t uiIdx;
+    for (uiIdx = 0  ; uiIdx < uiCountNew ; uiIdx++)
+        aSlotNew[uiIdx] = NULL;
+
+    for (uiIdx = 0 ; uiIdx < pData->uiCountSlot_ ; uiIdx++) {
+        SlotNode *pPred;
+        SlotNode *pCurr = pData->aSlot_[uiIdx];
+        while (pCurr) {
+            pPred = pCurr;
+
+            /* Migrate each pair from the old slot to the new one. */
+            uint32_t uiValue = pData->pHash_(pPred->pPair->key, size);
+            uiValue = uiValue % uiCountNew;
+            if (!aSlotNew[uiValue]) {
+                pPred->pNext = NULL;
+                aSlotNew[uiValue] = pPred;
+            } else {
+                pPred->pNext = aSlotNew[uiValue];
+                aSlotNew[uiValue] = pPred;
+            }
+
+            pCurr = pCurr->pNext;
+        }
+    }
+
+    free(pData->aSlot_);
+    pData->aSlot_ = aSlotNew;
+    return;
+}
