@@ -2,6 +2,6 @@
 #include "array/vector.h"
 #include "container/linked_list.h"
 #include "container/tree_map.h"
-#include "map/hash_map.h"
+#include "container/hash_map.h"
 #include "container/priority_queue.h"
 #include "math/hash.h"
