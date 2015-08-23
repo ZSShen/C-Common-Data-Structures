@@ -1,23 +1,21 @@
 LibCDS
 =============
 
-Integration Test (Travis CI)  
-+ [![Integration Test] (https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)  
+Integration Test (Travis CI)
++ [![Integration Test] (https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)
 
 ##Objective
 ***LibCDS implements a set of uniform C APIs for data structure manipulation.***
 
 
 ##Container Category
-[API Reference Manual] (http://zsshen.github.io/C-Common-Data-Structures/html/index.html)  
- - Sequential Container  
+[API Reference Manual] (http://zsshen.github.io/C-Common-Data-Structures/html/index.html)
+ - Sequential Container
    - Vector --- The dynamically growable array
    - LinkedList --- The doubly linked list
- - Associative Container  
+ - Associative Container
    - TreeMap --- The ordered map to store key value pairs
    - HashMap --- The unordered map to store key value pairs
-   - TreeSet --- The ordered set to store unique elements
-   - HashSet --- The unordered set to store unique elements
  - Simple Collection Container
    - Queue --- The FIFO queue
    - Stack --- The LIFO stack
@@ -45,8 +43,8 @@ $ cmake .. -DCMAKE_INSTALL_PREFIX=/path/to/your/destination
 $ make
 $ make install
 ```
-Upon finishing, the public header will reside in `/path/to/your/destination/include/`.  
-And the shared library will reside in `/path/to/your/destination/lib/`.  
+Upon finishing, the public header will reside in `/path/to/your/destination/include/`.
+And the shared library will reside in `/path/to/your/destination/lib/`.
 
 If you plan for debug build, you can specify the cmake argument list like this:
 ``` sh
@@ -54,9 +52,9 @@ $ cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/path/to/your/destina
 ```
 
 ##Usage
-***This chapter illustrates how to link and apply LibCDS in your source code.***   
+***This chapter illustrates how to link and apply LibCDS in your source code.***
 
-For header file, you just need to include the main header:  
+For header file, you just need to include the main header:
 ```
 #include "cds.h"
 ```
@@ -66,14 +64,14 @@ Assume that you apply gcc for compilation, then you need the following options:
 -L/path/to/your/destination/lib/
 -lcds
 ```
-Now you successfully link LibCDS with your project!  
+Now you successfully link LibCDS with your project!
 But wait, to run your project, you need to tell the loader where to find LibCDS:
 ```
 LD_LIBRARY_PATH=/path/to/your/destination/lib/
 ```
 That's all the related stuff!
 
-For detailed API usage, you can refer to the manual or check the demo programs.  
+For detailed API usage, you can refer to the manual or check the demo programs.
 
 
 

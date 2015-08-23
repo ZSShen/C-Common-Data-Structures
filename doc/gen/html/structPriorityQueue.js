@@ -1,6 +1,6 @@
 var structPriorityQueue =
 [
-    [ "pData", "structPriorityQueue.html#a16f39b2a521e4a12d4ddc6b6137c0588", null ],
+    [ "pData", "structPriorityQueue.html#afd272fec6386bc5f651684bf237d6da3", null ],
     [ "push", "structPriorityQueue.html#a04db2ceba01251594c35ca14b2afd405", null ],
     [ "top", "structPriorityQueue.html#aca7e696c84b86d179edaf61fd6ae83fb", null ],
     [ "pop", "structPriorityQueue.html#a88bec7993cc68b9f9b094902721560dd", null ],

@@ -126,8 +126,8 @@ int32_t PriorityQueueSize(PriorityQueue *self);
  * @param self          The pointer to PriorityQueue structure
  * @param pFunc         The function pointer to the custom method
  *
- * @retval ERR_NOINIT   Uninitialized container
  * @retval SUCC
+ * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t PriorityQueueSetCompare(PriorityQueue *self, int32_t (*pFunc) (Item, Item));
 

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>LibCDS: /home/zsshen/Desktop/git-hub-code/C-Common-Data-Structures/include/queue/priority_queue.h File Reference</title>
+<title>LibCDS: /home/zsshen/Desktop/git-hub-code/C-Common-Data-Structures/include/container/priority_queue.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -84,65 +84,65 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a78f9a5e2d9886d3a3f0a1b5ce8abfc56"><td class="memItemLeft" align="right" valign="top">typedef struct _PrioQueueData&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#a78f9a5e2d9886d3a3f0a1b5ce8abfc56">PrioQueueData</a></td></tr>
-<tr class="memdesc:a78f9a5e2d9886d3a3f0a1b5ce8abfc56"><td class="mdescLeft">&#160;</td><td class="mdescRight">PrioQueueData is the data type for the container private information.  <a href="#a78f9a5e2d9886d3a3f0a1b5ce8abfc56">More...</a><br/></td></tr>
-<tr class="separator:a78f9a5e2d9886d3a3f0a1b5ce8abfc56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53f2138b48d673da264d18fd51402c42"><td class="memItemLeft" align="right" valign="top">typedef struct _PriorityQueueData&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#a53f2138b48d673da264d18fd51402c42">PriorityQueueData</a></td></tr>
+<tr class="memdesc:a53f2138b48d673da264d18fd51402c42"><td class="mdescLeft">&#160;</td><td class="mdescRight">PriorityQueueData is the data type for the container private information.  <a href="#a53f2138b48d673da264d18fd51402c42">More...</a><br/></td></tr>
+<tr class="separator:a53f2138b48d673da264d18fd51402c42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a612a55fa8af17800f5275558bb3acf6a"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#a612a55fa8af17800f5275558bb3acf6a">PrioQueueInit</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> **ppObj)</td></tr>
-<tr class="memdesc:a612a55fa8af17800f5275558bb3acf6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor for <a class="el" href="structPriorityQueue.html" title="The implementation for priority queue. ">PriorityQueue</a>.  <a href="#a612a55fa8af17800f5275558bb3acf6a">More...</a><br/></td></tr>
-<tr class="separator:a612a55fa8af17800f5275558bb3acf6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af76c202b7599bef5f3257595c2d173ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#af76c202b7599bef5f3257595c2d173ef">PrioQueueDeinit</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> **ppObj)</td></tr>
-<tr class="memdesc:af76c202b7599bef5f3257595c2d173ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor for <a class="el" href="structPriorityQueue.html" title="The implementation for priority queue. ">PriorityQueue</a>.  <a href="#af76c202b7599bef5f3257595c2d173ef">More...</a><br/></td></tr>
-<tr class="separator:af76c202b7599bef5f3257595c2d173ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a34682584e4bc9740e0855a8fd6b48e"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#a5a34682584e4bc9740e0855a8fd6b48e">PrioQueuePush</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item)</td></tr>
-<tr class="memdesc:a5a34682584e4bc9740e0855a8fd6b48e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push an item onto the queue.  <a href="#a5a34682584e4bc9740e0855a8fd6b48e">More...</a><br/></td></tr>
-<tr class="separator:a5a34682584e4bc9740e0855a8fd6b48e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fbb1b41fc18c9cc8685e5560985f612"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#a0fbb1b41fc18c9cc8685e5560985f612">PrioQueuePop</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> *self)</td></tr>
-<tr class="memdesc:a0fbb1b41fc18c9cc8685e5560985f612"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete item from top of the queue.  <a href="#a0fbb1b41fc18c9cc8685e5560985f612">More...</a><br/></td></tr>
-<tr class="separator:a0fbb1b41fc18c9cc8685e5560985f612"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58b0e5e312c0c355ff95b84356c5181d"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#a58b0e5e312c0c355ff95b84356c5181d">PrioQueueTop</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItem)</td></tr>
-<tr class="memdesc:a58b0e5e312c0c355ff95b84356c5181d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve item from top of the queue.  <a href="#a58b0e5e312c0c355ff95b84356c5181d">More...</a><br/></td></tr>
-<tr class="separator:a58b0e5e312c0c355ff95b84356c5181d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a230503349fafc1dace7d0ade911f51fa"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#a230503349fafc1dace7d0ade911f51fa">PrioQueueSize</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> *self)</td></tr>
-<tr class="memdesc:a230503349fafc1dace7d0ade911f51fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of stored items.  <a href="#a230503349fafc1dace7d0ade911f51fa">More...</a><br/></td></tr>
-<tr class="separator:a230503349fafc1dace7d0ade911f51fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a46f3b98d90829cde62d18402e6fbc98c"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#a46f3b98d90829cde62d18402e6fbc98c">PrioQueueSetCompare</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> *self, int32_t(*pFunc)(<a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>))</td></tr>
-<tr class="memdesc:a46f3b98d90829cde62d18402e6fbc98c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the custom item comparison method.  <a href="#a46f3b98d90829cde62d18402e6fbc98c">More...</a><br/></td></tr>
-<tr class="separator:a46f3b98d90829cde62d18402e6fbc98c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aabf130fadcf8a289eaff54d82adf452e"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#aabf130fadcf8a289eaff54d82adf452e">PrioQueueSetDestroy</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> *self, void(*pFunc)(<a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>))</td></tr>
-<tr class="memdesc:aabf130fadcf8a289eaff54d82adf452e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the custom item resource clean method.  <a href="#aabf130fadcf8a289eaff54d82adf452e">More...</a><br/></td></tr>
-<tr class="separator:aabf130fadcf8a289eaff54d82adf452e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a729ca254ed0e2193b43719d62f5f2f56"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#a729ca254ed0e2193b43719d62f5f2f56">PriorityQueueInit</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> **ppObj)</td></tr>
+<tr class="memdesc:a729ca254ed0e2193b43719d62f5f2f56"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor for <a class="el" href="structPriorityQueue.html" title="The implementation for priority queue. ">PriorityQueue</a>.  <a href="#a729ca254ed0e2193b43719d62f5f2f56">More...</a><br/></td></tr>
+<tr class="separator:a729ca254ed0e2193b43719d62f5f2f56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0adc505b578c221769f018813228bd32"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#a0adc505b578c221769f018813228bd32">PriorityQueueDeinit</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> **ppObj)</td></tr>
+<tr class="memdesc:a0adc505b578c221769f018813228bd32"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor for <a class="el" href="structPriorityQueue.html" title="The implementation for priority queue. ">PriorityQueue</a>.  <a href="#a0adc505b578c221769f018813228bd32">More...</a><br/></td></tr>
+<tr class="separator:a0adc505b578c221769f018813228bd32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7aefd19c4559cdd822745d839684b494"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#a7aefd19c4559cdd822745d839684b494">PriorityQueuePush</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> *self, Item item)</td></tr>
+<tr class="memdesc:a7aefd19c4559cdd822745d839684b494"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push an item onto the queue.  <a href="#a7aefd19c4559cdd822745d839684b494">More...</a><br/></td></tr>
+<tr class="separator:a7aefd19c4559cdd822745d839684b494"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f17645f81207b3732fac992b622bcc8"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#a2f17645f81207b3732fac992b622bcc8">PriorityQueuePop</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> *self)</td></tr>
+<tr class="memdesc:a2f17645f81207b3732fac992b622bcc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete item from top of the queue.  <a href="#a2f17645f81207b3732fac992b622bcc8">More...</a><br/></td></tr>
+<tr class="separator:a2f17645f81207b3732fac992b622bcc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc37a32ca097ba94e6a185cb9c64f85a"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#afc37a32ca097ba94e6a185cb9c64f85a">PriorityQueueTop</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> *self, Item *pItem)</td></tr>
+<tr class="memdesc:afc37a32ca097ba94e6a185cb9c64f85a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve item from top of the queue.  <a href="#afc37a32ca097ba94e6a185cb9c64f85a">More...</a><br/></td></tr>
+<tr class="separator:afc37a32ca097ba94e6a185cb9c64f85a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae02471464c82b3815f957ead9456b410"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#ae02471464c82b3815f957ead9456b410">PriorityQueueSize</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> *self)</td></tr>
+<tr class="memdesc:ae02471464c82b3815f957ead9456b410"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of stored items.  <a href="#ae02471464c82b3815f957ead9456b410">More...</a><br/></td></tr>
+<tr class="separator:ae02471464c82b3815f957ead9456b410"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6661f06cfaf73e1a6249deafd4087bd6"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#a6661f06cfaf73e1a6249deafd4087bd6">PriorityQueueSetCompare</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> *self, int32_t(*pFunc)(Item, Item))</td></tr>
+<tr class="memdesc:a6661f06cfaf73e1a6249deafd4087bd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the custom item comparison method.  <a href="#a6661f06cfaf73e1a6249deafd4087bd6">More...</a><br/></td></tr>
+<tr class="separator:a6661f06cfaf73e1a6249deafd4087bd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeef557efdaca187f8ed58cbd3e01703a"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="priority__queue_8h.html#aeef557efdaca187f8ed58cbd3e01703a">PriorityQueueSetDestroy</a> (<a class="el" href="structPriorityQueue.html">PriorityQueue</a> *self, void(*pFunc)(Item))</td></tr>
+<tr class="memdesc:aeef557efdaca187f8ed58cbd3e01703a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the custom item resource clean method.  <a href="#aeef557efdaca187f8ed58cbd3e01703a">More...</a><br/></td></tr>
+<tr class="separator:aeef557efdaca187f8ed58cbd3e01703a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The priority queue implemented with binary heap. </p>
 
 <p>Definition in file <a class="el" href="priority__queue_8h_source.html">priority_queue.h</a>.</p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
-<a class="anchor" id="a78f9a5e2d9886d3a3f0a1b5ce8abfc56"></a>
+<a class="anchor" id="a53f2138b48d673da264d18fd51402c42"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef struct _PrioQueueData <a class="el" href="priority__queue_8h.html#a78f9a5e2d9886d3a3f0a1b5ce8abfc56">PrioQueueData</a></td>
+          <td class="memname">typedef struct _PriorityQueueData <a class="el" href="priority__queue_8h.html#a53f2138b48d673da264d18fd51402c42">PriorityQueueData</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>PrioQueueData is the data type for the container private information. </p>
+<p>PriorityQueueData is the data type for the container private information. </p>
 
 <p>Definition at line <a class="el" href="priority__queue_8h_source.html#l00011">11</a> of file <a class="el" href="priority__queue_8h_source.html">priority_queue.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a612a55fa8af17800f5275558bb3acf6a"></a>
+<a class="anchor" id="a729ca254ed0e2193b43719d62f5f2f56"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t PrioQueueInit </td>
+          <td class="memname">int32_t PriorityQueueInit </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structPriorityQueue.html">PriorityQueue</a> **&#160;</td>
           <td class="paramname"><em>ppObj</em></td><td>)</td>
@@ -168,12 +168,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="af76c202b7599bef5f3257595c2d173ef"></a>
+<a class="anchor" id="a0adc505b578c221769f018813228bd32"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void PrioQueueDeinit </td>
+          <td class="memname">void PriorityQueueDeinit </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structPriorityQueue.html">PriorityQueue</a> **&#160;</td>
           <td class="paramname"><em>ppObj</em></td><td>)</td>
@@ -193,12 +193,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a5a34682584e4bc9740e0855a8fd6b48e"></a>
+<a class="anchor" id="a7aefd19c4559cdd822745d839684b494"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t PrioQueuePush </td>
+          <td class="memname">int32_t PriorityQueuePush </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structPriorityQueue.html">PriorityQueue</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -206,7 +206,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
+          <td class="paramtype">Item&#160;</td>
           <td class="paramname"><em>item</em>&#160;</td>
         </tr>
         <tr>
@@ -237,12 +237,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a0fbb1b41fc18c9cc8685e5560985f612"></a>
+<a class="anchor" id="a2f17645f81207b3732fac992b622bcc8"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t PrioQueuePop </td>
+          <td class="memname">int32_t PriorityQueuePop </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structPriorityQueue.html">PriorityQueue</a> *&#160;</td>
           <td class="paramname"><em>self</em></td><td>)</td>
@@ -270,12 +270,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a58b0e5e312c0c355ff95b84356c5181d"></a>
+<a class="anchor" id="afc37a32ca097ba94e6a185cb9c64f85a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t PrioQueueTop </td>
+          <td class="memname">int32_t PriorityQueueTop </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structPriorityQueue.html">PriorityQueue</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -283,7 +283,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *&#160;</td>
+          <td class="paramtype">Item *&#160;</td>
           <td class="paramname"><em>pItem</em>&#160;</td>
         </tr>
         <tr>
@@ -315,12 +315,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a230503349fafc1dace7d0ade911f51fa"></a>
+<a class="anchor" id="ae02471464c82b3815f957ead9456b410"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t PrioQueueSize </td>
+          <td class="memname">int32_t PriorityQueueSize </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structPriorityQueue.html">PriorityQueue</a> *&#160;</td>
           <td class="paramname"><em>self</em></td><td>)</td>
@@ -346,12 +346,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a46f3b98d90829cde62d18402e6fbc98c"></a>
+<a class="anchor" id="a6661f06cfaf73e1a6249deafd4087bd6"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t PrioQueueSetCompare </td>
+          <td class="memname">int32_t PriorityQueueSetCompare </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structPriorityQueue.html">PriorityQueue</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -359,7 +359,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int32_t(*)(<a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>)&#160;</td>
+          <td class="paramtype">int32_t(*)(Item, Item)&#160;</td>
           <td class="paramname"><em>pFunc</em>&#160;</td>
         </tr>
         <tr>
@@ -380,20 +380,20 @@ Functions</h2></td></tr>
 </dl>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">ERR_NOINIT</td><td>Uninitialized container </td></tr>
     <tr><td class="paramname">SUCC</td><td></td></tr>
+    <tr><td class="paramname">ERR_NOINIT</td><td>Uninitialized container </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="aabf130fadcf8a289eaff54d82adf452e"></a>
+<a class="anchor" id="aeef557efdaca187f8ed58cbd3e01703a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t PrioQueueSetDestroy </td>
+          <td class="memname">int32_t PriorityQueueSetDestroy </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structPriorityQueue.html">PriorityQueue</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -401,7 +401,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void(*)(<a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>)&#160;</td>
+          <td class="paramtype">void(*)(Item)&#160;</td>
           <td class="paramname"><em>pFunc</em>&#160;</td>
         </tr>
         <tr>
@@ -435,7 +435,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_cac49a9e31bf4f7cd5ab50e2700548d0.html">queue</a></li><li class="navelem"><a class="el" href="priority__queue_8h.html">priority_queue.h</a></li>
+    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_e0f5f6345e438c73b9ae78ec2940718c.html">container</a></li><li class="navelem"><a class="el" href="priority__queue_8h.html">priority_queue.h</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

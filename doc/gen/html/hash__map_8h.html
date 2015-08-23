@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>LibCDS: /home/zsshen/Desktop/git-hub-code/C-Common-Data-Structures/include/map/hash_map.h File Reference</title>
+<title>LibCDS: /home/zsshen/Desktop/git-hub-code/C-Common-Data-Structures/include/container/hash_map.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,6 +71,9 @@ $(document).ready(function(){initNavTree('hash__map_8h.html','');});
 </div><!--header-->
 <div class="contents">
 
+<p>The unordered map to store key value pairs.  
+<a href="#details">More...</a></p>
+
 <p><a href="hash__map_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -87,32 +90,42 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aa0b13de1a9bb5e62d22185e7e4e5cdce"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#aa0b13de1a9bb5e62d22185e7e4e5cdce">HashMapInit</a> (<a class="el" href="structHashMap.html">HashMap</a> **ppObj, uint32_t uiCount)</td></tr>
-<tr class="memdesc:aa0b13de1a9bb5e62d22185e7e4e5cdce"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor for <a class="el" href="structHashMap.html" title="The implementation for hash map. ">HashMap</a>.  <a href="#aa0b13de1a9bb5e62d22185e7e4e5cdce">More...</a><br/></td></tr>
-<tr class="separator:aa0b13de1a9bb5e62d22185e7e4e5cdce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2af42d6e02f8df6378f225d351781e8f"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#a2af42d6e02f8df6378f225d351781e8f">HashMapInit</a> (<a class="el" href="structHashMap.html">HashMap</a> **ppObj)</td></tr>
+<tr class="memdesc:a2af42d6e02f8df6378f225d351781e8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor for <a class="el" href="structHashMap.html" title="The implementation for hash map. ">HashMap</a>.  <a href="#a2af42d6e02f8df6378f225d351781e8f">More...</a><br/></td></tr>
+<tr class="separator:a2af42d6e02f8df6378f225d351781e8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d5068c7220d92b84e4cede75ff3fb15"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#a7d5068c7220d92b84e4cede75ff3fb15">HashMapDeinit</a> (<a class="el" href="structHashMap.html">HashMap</a> **ppObj)</td></tr>
 <tr class="memdesc:a7d5068c7220d92b84e4cede75ff3fb15"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor for <a class="el" href="structHashMap.html" title="The implementation for hash map. ">HashMap</a>.  <a href="#a7d5068c7220d92b84e4cede75ff3fb15">More...</a><br/></td></tr>
 <tr class="separator:a7d5068c7220d92b84e4cede75ff3fb15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1577b4493c1dea43ec33ed025b1c5ba7"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#a1577b4493c1dea43ec33ed025b1c5ba7">HashMapPut</a> (<a class="el" href="structHashMap.html">HashMap</a> *self, <a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a> ent, size_t sizeKey)</td></tr>
-<tr class="memdesc:a1577b4493c1dea43ec33ed025b1c5ba7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a key value pair into the map.  <a href="#a1577b4493c1dea43ec33ed025b1c5ba7">More...</a><br/></td></tr>
-<tr class="separator:a1577b4493c1dea43ec33ed025b1c5ba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac28926c920b4818b7e7930f3a910f53f"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#ac28926c920b4818b7e7930f3a910f53f">HashMapGet</a> (<a class="el" href="structHashMap.html">HashMap</a> *self, <a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a> key, size_t sizeKey, <a class="el" href="util_8h.html#ad0d0cb99e46ebc1c0458843e19ae21bd">Value</a> *pValue)</td></tr>
-<tr class="memdesc:ac28926c920b4818b7e7930f3a910f53f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the value corresponding to the designated key.  <a href="#ac28926c920b4818b7e7930f3a910f53f">More...</a><br/></td></tr>
-<tr class="separator:ac28926c920b4818b7e7930f3a910f53f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5fb38f315465f9641477abe963f5624"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#ab5fb38f315465f9641477abe963f5624">HashMapRemove</a> (<a class="el" href="structHashMap.html">HashMap</a> *self, <a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a> key, size_t sizeKey)</td></tr>
-<tr class="memdesc:ab5fb38f315465f9641477abe963f5624"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the key value pair corresponding to the designated key.  <a href="#ab5fb38f315465f9641477abe963f5624">More...</a><br/></td></tr>
-<tr class="separator:ab5fb38f315465f9641477abe963f5624"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a243335e4bfd9e7efb7f5e7925c4d0d74"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#a243335e4bfd9e7efb7f5e7925c4d0d74">HashMapPut</a> (<a class="el" href="structHashMap.html">HashMap</a> *self, Pair *pPair, size_t size)</td></tr>
+<tr class="memdesc:a243335e4bfd9e7efb7f5e7925c4d0d74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a key value pair into the map.  <a href="#a243335e4bfd9e7efb7f5e7925c4d0d74">More...</a><br/></td></tr>
+<tr class="separator:a243335e4bfd9e7efb7f5e7925c4d0d74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a949863ffee4bf0b02e80953dc989a828"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#a949863ffee4bf0b02e80953dc989a828">HashMapGet</a> (<a class="el" href="structHashMap.html">HashMap</a> *self, Key key, size_t size, Value *pValue)</td></tr>
+<tr class="memdesc:a949863ffee4bf0b02e80953dc989a828"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the value corresponding to the designated key.  <a href="#a949863ffee4bf0b02e80953dc989a828">More...</a><br/></td></tr>
+<tr class="separator:a949863ffee4bf0b02e80953dc989a828"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a529685800e567cf5b960a81c17c1aa1d"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#a529685800e567cf5b960a81c17c1aa1d">HashMapFind</a> (<a class="el" href="structHashMap.html">HashMap</a> *self, Key key, size_t size)</td></tr>
+<tr class="memdesc:a529685800e567cf5b960a81c17c1aa1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the map contains the designated key.  <a href="#a529685800e567cf5b960a81c17c1aa1d">More...</a><br/></td></tr>
+<tr class="separator:a529685800e567cf5b960a81c17c1aa1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f245b96b890186f93987728f2dea402"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#a1f245b96b890186f93987728f2dea402">HashMapRemove</a> (<a class="el" href="structHashMap.html">HashMap</a> *self, Key key, size_t size)</td></tr>
+<tr class="memdesc:a1f245b96b890186f93987728f2dea402"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the key value pair corresponding to the designated key.  <a href="#a1f245b96b890186f93987728f2dea402">More...</a><br/></td></tr>
+<tr class="separator:a1f245b96b890186f93987728f2dea402"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8af14c3c4205f0a0b2a1dd75694b3bf4"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#a8af14c3c4205f0a0b2a1dd75694b3bf4">HashMapSize</a> (<a class="el" href="structHashMap.html">HashMap</a> *self)</td></tr>
 <tr class="memdesc:a8af14c3c4205f0a0b2a1dd75694b3bf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of stored key value pairs.  <a href="#a8af14c3c4205f0a0b2a1dd75694b3bf4">More...</a><br/></td></tr>
 <tr class="separator:a8af14c3c4205f0a0b2a1dd75694b3bf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6950961671bc7c857342332b456a5b1"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#aa6950961671bc7c857342332b456a5b1">HashMapSetDestroy</a> (<a class="el" href="structHashMap.html">HashMap</a> *self, void(*pFunc)(<a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>))</td></tr>
-<tr class="memdesc:aa6950961671bc7c857342332b456a5b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the custom key value pair resource clean method.  <a href="#aa6950961671bc7c857342332b456a5b1">More...</a><br/></td></tr>
-<tr class="separator:aa6950961671bc7c857342332b456a5b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbce9df57c7395e441c226919937d67f"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#abbce9df57c7395e441c226919937d67f">HashMapSetHash</a> (<a class="el" href="structHashMap.html">HashMap</a> *self, uint32_t(*pFunc)(<a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>, size_t))</td></tr>
+<tr class="memitem:aba029e83455fdbaf0d8a464dc4e3d381"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#aba029e83455fdbaf0d8a464dc4e3d381">HashMapIterate</a> (<a class="el" href="structHashMap.html">HashMap</a> *self, bool bReset, Pair **ppPair)</td></tr>
+<tr class="memdesc:aba029e83455fdbaf0d8a464dc4e3d381"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterate through the map to retrieve each key value pair.  <a href="#aba029e83455fdbaf0d8a464dc4e3d381">More...</a><br/></td></tr>
+<tr class="separator:aba029e83455fdbaf0d8a464dc4e3d381"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af937beb03d236fd4dc9a846fcb97eff4"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#af937beb03d236fd4dc9a846fcb97eff4">HashMapSetDestroy</a> (<a class="el" href="structHashMap.html">HashMap</a> *self, void(*pFunc)(Pair *))</td></tr>
+<tr class="memdesc:af937beb03d236fd4dc9a846fcb97eff4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the custom key value pair resource clean method.  <a href="#af937beb03d236fd4dc9a846fcb97eff4">More...</a><br/></td></tr>
+<tr class="separator:af937beb03d236fd4dc9a846fcb97eff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbce9df57c7395e441c226919937d67f"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash__map_8h.html#abbce9df57c7395e441c226919937d67f">HashMapSetHash</a> (<a class="el" href="structHashMap.html">HashMap</a> *self, uint32_t(*pFunc)(Key, size_t))</td></tr>
 <tr class="memdesc:abbce9df57c7395e441c226919937d67f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the custom hash function.  <a href="#abbce9df57c7395e441c226919937d67f">More...</a><br/></td></tr>
 <tr class="separator:abbce9df57c7395e441c226919937d67f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Typedef Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The unordered map to store key value pairs. </p>
+
+<p>Definition in file <a class="el" href="hash__map_8h_source.html">hash_map.h</a>.</p>
+</div><h2 class="groupheader">Typedef Documentation</h2>
 <a class="anchor" id="a9ba28ae908982272687dd668de83780a"></a>
 <div class="memitem">
 <div class="memproto">
@@ -130,7 +143,7 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="aa0b13de1a9bb5e62d22185e7e4e5cdce"></a>
+<a class="anchor" id="a2af42d6e02f8df6378f225d351781e8f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -138,18 +151,8 @@ Functions</h2></td></tr>
           <td class="memname">int32_t HashMapInit </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structHashMap.html">HashMap</a> **&#160;</td>
-          <td class="paramname"><em>ppObj</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>ppObj</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>uiCount</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -157,19 +160,17 @@ Functions</h2></td></tr>
 <p>The constructor for <a class="el" href="structHashMap.html" title="The implementation for hash map. ">HashMap</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ppObj</td><td>The double pointer to the to be constructed map </td></tr>
-    <tr><td class="paramname">uiCount</td><td>The count of buckets</td></tr>
+    <tr><td class="paramname">ppObj</td><td>The double pointer to the to be constructed map</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">SUCC</td><td></td></tr>
-    <tr><td class="paramname">ERR_NOMEM</td><td>Insufficient memory for map construction</td></tr>
+    <tr><td class="paramname">ERR_NOMEM</td><td>Insufficient memory for map construction </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>Specify uiCount to 0 for default bucket count. </dd></dl>
 
 </div>
 </div>
@@ -188,7 +189,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The destructor for <a class="el" href="structHashMap.html" title="The implementation for hash map. ">HashMap</a>. </p>
-<p>If the the custom clean method is set, it also runs the resource clean method for all the items.</p>
+<p>If the custom resource clean method is set, it also runs the clean method for each pair.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ppObj</td><td>The double pointer to the to be destructed map </td></tr>
@@ -198,7 +199,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a1577b4493c1dea43ec33ed025b1c5ba7"></a>
+<a class="anchor" id="a243335e4bfd9e7efb7f5e7925c4d0d74"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -211,14 +212,14 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>&#160;</td>
-          <td class="paramname"><em>ent</em>, </td>
+          <td class="paramtype">Pair *&#160;</td>
+          <td class="paramname"><em>pPair</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>sizeKey</em>&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -229,12 +230,12 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Insert a key value pair into the map. </p>
-<p>This function inserts a key value pair into the map. If the hash key of the designated pair is the same with a certain one stored in the map, that pair will be replaced. Also, if the custom clean method is set, it runs the resource clean method for the replaced pair.</p>
+<p>This function inserts a key value pair into the map. If the hash key of the designated pair is the same with a certain one stored in the map, that pair will be replaced. Also, if the custom resource clean method is set, it runs the resource clean method for the replaced pair.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">self</td><td>The pointer to <a class="el" href="structHashMap.html" title="The implementation for hash map. ">HashMap</a> structure </td></tr>
-    <tr><td class="paramname">ent</td><td>The pointer to the desiganted key value pair </td></tr>
-    <tr><td class="paramname">sizeKey</td><td>The key size in bytes</td></tr>
+    <tr><td class="paramname">pPair</td><td>The pointer to the designated pair </td></tr>
+    <tr><td class="paramname">size</td><td>Size of the data pointed by the key in bytes</td></tr>
   </table>
   </dd>
 </dl>
@@ -250,7 +251,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ac28926c920b4818b7e7930f3a910f53f"></a>
+<a class="anchor" id="a949863ffee4bf0b02e80953dc989a828"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -263,19 +264,19 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>&#160;</td>
+          <td class="paramtype">Key&#160;</td>
           <td class="paramname"><em>key</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>sizeKey</em>, </td>
+          <td class="paramname"><em>size</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#ad0d0cb99e46ebc1c0458843e19ae21bd">Value</a> *&#160;</td>
+          <td class="paramtype">Value *&#160;</td>
           <td class="paramname"><em>pValue</em>&#160;</td>
         </tr>
         <tr>
@@ -290,9 +291,9 @@ Functions</h2></td></tr>
 <p>This function retrieves the value corresponding to the designated key from the map. If the key can be found, the value will be returned by the fourth parameter. Otherwise, the error code is returned and the fourth parameter is updated with NULL.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">self</td><td>The pointer to Map structure </td></tr>
+    <tr><td class="paramname">self</td><td>The pointer to <a class="el" href="structHashMap.html" title="The implementation for hash map. ">HashMap</a> structure </td></tr>
     <tr><td class="paramname">key</td><td>The designated key </td></tr>
-    <tr><td class="paramname">sizeKey</td><td>The key size in bytes </td></tr>
+    <tr><td class="paramname">size</td><td>Size of the data pointed by the key in bytes </td></tr>
     <tr><td class="paramname">pValue</td><td>The pointer to the returned value</td></tr>
   </table>
   </dd>
@@ -302,14 +303,68 @@ Functions</h2></td></tr>
     <tr><td class="paramname">SUCC</td><td></td></tr>
     <tr><td class="paramname">ERR_NOINIT</td><td>Uninitialized container </td></tr>
     <tr><td class="paramname">ERR_NODATA</td><td>No map entry can be found </td></tr>
-    <tr><td class="paramname">ERR_KEYSIZE</td><td>Invalid key size </td></tr>
+    <tr><td class="paramname">ERR_GET</td><td>Invalid parameter to store returned value </td></tr>
+    <tr><td class="paramname">ERR_KEYSIZE</td><td>Invalid key size</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>The key should be the pointer to the data you plan to hash for. </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ab5fb38f315465f9641477abe963f5624"></a>
+<a class="anchor" id="a529685800e567cf5b960a81c17c1aa1d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t HashMapFind </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structHashMap.html">HashMap</a> *&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Key&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check if the map contains the designated key. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">self</td><td>The pointer to <a class="el" href="structHashMap.html" title="The implementation for hash map. ">HashMap</a> structure </td></tr>
+    <tr><td class="paramname">key</td><td>The designated key </td></tr>
+    <tr><td class="paramname">size</td><td>Size of the data pointed by the key in bytes</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">SUCC</td><td>The key can be found </td></tr>
+    <tr><td class="paramname">NOKEY</td><td>The key cannot be found </td></tr>
+    <tr><td class="paramname">ERR_NOINIT</td><td>Uninitialized container </td></tr>
+    <tr><td class="paramname">ERR_KEYSIZE</td><td>Invalid key size</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>The key should be the pointer to the data you plan to hash for. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a1f245b96b890186f93987728f2dea402"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -322,14 +377,14 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>&#160;</td>
+          <td class="paramtype">Key&#160;</td>
           <td class="paramname"><em>key</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>sizeKey</em>&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -340,12 +395,12 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Delete the key value pair corresponding to the designated key. </p>
-<p>This function deletes the key value pair corresponding to the designated key. If the custom clean method is set, it also runs the resource clean method for the deleted pair.</p>
+<p>This function deletes the key value pair corresponding to the designated key. If the custom resource clean method is set, it also runs the clean method for the deleted pair.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">self</td><td>The pointer to UnorderedMap structure </td></tr>
+    <tr><td class="paramname">self</td><td>The pointer to <a class="el" href="structHashMap.html" title="The implementation for hash map. ">HashMap</a> structure </td></tr>
     <tr><td class="paramname">key</td><td>The designated key </td></tr>
-    <tr><td class="paramname">sizeKey</td><td>The key size in bytes</td></tr>
+    <tr><td class="paramname">size</td><td>Size of the data pointed by the key in bytes</td></tr>
   </table>
   </dd>
 </dl>
@@ -354,10 +409,11 @@ Functions</h2></td></tr>
     <tr><td class="paramname">SUCC</td><td></td></tr>
     <tr><td class="paramname">ERR_NOINIT</td><td>Uninitialized container </td></tr>
     <tr><td class="paramname">ERR_NODATA</td><td>No map entry can be found </td></tr>
-    <tr><td class="paramname">ERR_KEYSIZE</td><td>Invalid key size </td></tr>
+    <tr><td class="paramname">ERR_KEYSIZE</td><td>Invalid key size</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>The key should be the pointer to the data you plan to hash for. </dd></dl>
 
 </div>
 </div>
@@ -392,7 +448,70 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aa6950961671bc7c857342332b456a5b1"></a>
+<a class="anchor" id="aba029e83455fdbaf0d8a464dc4e3d381"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t HashMapIterate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structHashMap.html">HashMap</a> *&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>bReset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Pair **&#160;</td>
+          <td class="paramname"><em>ppPair</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Iterate through the map to retrieve each key value pair. </p>
+<p>Before iterating through the map, it is necessary to pass:</p>
+<ul>
+<li>bReset = true</li>
+<li>pPair = NULL for iterator initialization.</li>
+</ul>
+<p>After initialization, you can pass:</p>
+<ul>
+<li>bReset = false</li>
+<li>pPair = the pointer to get the returned pair at each iteration.</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">self</td><td>The pointer to <a class="el" href="structHashMap.html" title="The implementation for hash map. ">HashMap</a> structure </td></tr>
+    <tr><td class="paramname">bReset</td><td>The knob to restart the iteration </td></tr>
+    <tr><td class="paramname">ppPair</td><td>The double pointer to the returned pair</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">SUCC</td><td>Iterator initialized successfully </td></tr>
+    <tr><td class="paramname">CONTINUE</td><td>Iteration in progress </td></tr>
+    <tr><td class="paramname">END</td><td>Iteration terminiated </td></tr>
+    <tr><td class="paramname">ERR_NOINIT</td><td>Uninitialized container </td></tr>
+    <tr><td class="paramname">ERR_GET</td><td>Invalid parameter to store returned pair</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Please do not insert or delete pairs during map traversal </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="af937beb03d236fd4dc9a846fcb97eff4"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -405,7 +524,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void(*)(<a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>)&#160;</td>
+          <td class="paramtype">void(*)(Pair *)&#160;</td>
           <td class="paramname"><em>pFunc</em>&#160;</td>
         </tr>
         <tr>
@@ -447,7 +566,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32_t(*)(<a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>, size_t)&#160;</td>
+          <td class="paramtype">uint32_t(*)(Key, size_t)&#160;</td>
           <td class="paramname"><em>pFunc</em>&#160;</td>
         </tr>
         <tr>
@@ -459,6 +578,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Set the custom hash function. </p>
+<p>The default hash function is HashMurMur32.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">self</td><td>The pointer to <a class="el" href="structHashMap.html" title="The implementation for hash map. ">HashMap</a> structure </td></tr>
@@ -481,7 +601,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_1e899e21dcf63412585e33a90ca7eaf3.html">map</a></li><li class="navelem"><a class="el" href="hash__map_8h.html">hash_map.h</a></li>
+    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_e0f5f6345e438c73b9ae78ec2940718c.html">container</a></li><li class="navelem"><a class="el" href="hash__map_8h.html">hash_map.h</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

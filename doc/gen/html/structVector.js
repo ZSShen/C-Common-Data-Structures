@@ -10,5 +10,8 @@ var structVector =
     [ "resize", "structVector.html#a22553ac3a370b6e8328d182f25cef754", null ],
     [ "size", "structVector.html#a3eb2a573613cac32770be7043b02f220", null ],
     [ "capacity", "structVector.html#ad21bb9cf79b2768c70ed28c7a8a7ea20", null ],
+    [ "sort", "structVector.html#af91da4c730d25e51d26cebe13593f221", null ],
+    [ "iterate", "structVector.html#a3260bc1b27debed9cfb48dba07266d42", null ],
+    [ "reverse_iterate", "structVector.html#a1ee0dafd93fec74bcf4883c1a9a95f93", null ],
     [ "set_destroy", "structVector.html#a1ca022cb083b7237760bd52269f86e88", null ]
 ];

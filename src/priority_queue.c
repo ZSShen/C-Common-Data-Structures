@@ -2,7 +2,7 @@
 
 
 /*===========================================================================*
- *                  Hide the private data of the tree                        *
+ *                        The container private data                         *
  *===========================================================================*/
 struct _PriorityQueueData {
     int32_t iSize_;

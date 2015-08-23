@@ -2,7 +2,7 @@
 
 
 /*===========================================================================*
- *                  Hide the private data of the tree                        *
+ *                        The container private data                         *
  *===========================================================================*/
 typedef struct _ListNode {
    Item item;

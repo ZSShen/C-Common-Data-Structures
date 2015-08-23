@@ -13,5 +13,8 @@ var vector_8h =
     [ "VectorResize", "vector_8h.html#a6f8dc6d9ab0a790c66acec7340dcd118", null ],
     [ "VectorSize", "vector_8h.html#a3d6adfa3c82db3a3d14d96ae5aa0f941", null ],
     [ "VectorCapacity", "vector_8h.html#aebe9767f9216efa7efcd5d006ea47009", null ],
+    [ "VectorSort", "vector_8h.html#aa3a8d94d6fffaf20d61dd713d2bf84fd", null ],
+    [ "VectorIterate", "vector_8h.html#a3f8bbcf02e7f5e6bd975aa87a0f0ea21", null ],
+    [ "VectorReverseIterate", "vector_8h.html#a010ad24d57d84416859b3f2bc928056c", null ],
     [ "VectorSetDestroy", "vector_8h.html#a6ae446f90b85e646fa3dd6e515afe0f9", null ]
 ];

@@ -2,7 +2,7 @@
 
 
 /*===========================================================================*
- *                  Hide the private data of the map                         *
+ *                        The container private data                         *
  *===========================================================================*/
 typedef struct _TreeNode {
     bool bColor;

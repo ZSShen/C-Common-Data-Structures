@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>LibCDS: /home/zsshen/Desktop/git-hub-code/C-Common-Data-Structures/include/list/linked_list.h File Reference</title>
+<title>LibCDS: /home/zsshen/Desktop/git-hub-code/C-Common-Data-Structures/include/container/linked_list.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -84,92 +84,101 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ac63d6236e7910b2b375594c73ba2e79d"><td class="memItemLeft" align="right" valign="top">typedef struct _ListData&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#ac63d6236e7910b2b375594c73ba2e79d">ListData</a></td></tr>
-<tr class="memdesc:ac63d6236e7910b2b375594c73ba2e79d"><td class="mdescLeft">&#160;</td><td class="mdescRight">ListData is the data type for the container private information.  <a href="#ac63d6236e7910b2b375594c73ba2e79d">More...</a><br/></td></tr>
-<tr class="separator:ac63d6236e7910b2b375594c73ba2e79d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8719de7cb6fd1a64fcf777df871d7813"><td class="memItemLeft" align="right" valign="top">typedef struct _LinkedListData&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a8719de7cb6fd1a64fcf777df871d7813">LinkedListData</a></td></tr>
+<tr class="memdesc:a8719de7cb6fd1a64fcf777df871d7813"><td class="mdescLeft">&#160;</td><td class="mdescRight">LinkedListData is the data type for the container private information.  <a href="#a8719de7cb6fd1a64fcf777df871d7813">More...</a><br/></td></tr>
+<tr class="separator:a8719de7cb6fd1a64fcf777df871d7813"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ad10aa1c735ce4c2156e952154fea7d2c"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#ad10aa1c735ce4c2156e952154fea7d2c">ListInit</a> (<a class="el" href="structLinkedList.html">LinkedList</a> **ppObj)</td></tr>
-<tr class="memdesc:ad10aa1c735ce4c2156e952154fea7d2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor for <a class="el" href="structLinkedList.html" title="The implementation for doubly linked list. ">LinkedList</a>.  <a href="#ad10aa1c735ce4c2156e952154fea7d2c">More...</a><br/></td></tr>
-<tr class="separator:ad10aa1c735ce4c2156e952154fea7d2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ae8c3d62068a0b3f3cce4d5f3b6f9d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a3ae8c3d62068a0b3f3cce4d5f3b6f9d0">ListDeinit</a> (<a class="el" href="structLinkedList.html">LinkedList</a> **ppObj)</td></tr>
-<tr class="memdesc:a3ae8c3d62068a0b3f3cce4d5f3b6f9d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor for <a class="el" href="structLinkedList.html" title="The implementation for doubly linked list. ">LinkedList</a>.  <a href="#a3ae8c3d62068a0b3f3cce4d5f3b6f9d0">More...</a><br/></td></tr>
-<tr class="separator:a3ae8c3d62068a0b3f3cce4d5f3b6f9d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abcb028ab69760f178ba1e2b6f8d57565"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#abcb028ab69760f178ba1e2b6f8d57565">ListPushFront</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item)</td></tr>
-<tr class="memdesc:abcb028ab69760f178ba1e2b6f8d57565"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push an item to the head of the list.  <a href="#abcb028ab69760f178ba1e2b6f8d57565">More...</a><br/></td></tr>
-<tr class="separator:abcb028ab69760f178ba1e2b6f8d57565"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe26056afa66015a6ea4c478e404f479"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#afe26056afa66015a6ea4c478e404f479">ListPushBack</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item)</td></tr>
-<tr class="memdesc:afe26056afa66015a6ea4c478e404f479"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push an item to the tail of the list.  <a href="#afe26056afa66015a6ea4c478e404f479">More...</a><br/></td></tr>
-<tr class="separator:afe26056afa66015a6ea4c478e404f479"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00b345594a572978b190d63e3de11ec0"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a00b345594a572978b190d63e3de11ec0">ListInsert</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item, int32_t iIdx)</td></tr>
-<tr class="memdesc:a00b345594a572978b190d63e3de11ec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert an item to the designated index of the list.  <a href="#a00b345594a572978b190d63e3de11ec0">More...</a><br/></td></tr>
-<tr class="separator:a00b345594a572978b190d63e3de11ec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a376b763eab64b2a1c4739dcb4a1a8e72"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a376b763eab64b2a1c4739dcb4a1a8e72">ListPopFront</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self)</td></tr>
-<tr class="memdesc:a376b763eab64b2a1c4739dcb4a1a8e72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pop an item from the head of the list.  <a href="#a376b763eab64b2a1c4739dcb4a1a8e72">More...</a><br/></td></tr>
-<tr class="separator:a376b763eab64b2a1c4739dcb4a1a8e72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e7fdcdd2c96e3b71265e7c708799e3a"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a2e7fdcdd2c96e3b71265e7c708799e3a">ListPopBack</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self)</td></tr>
-<tr class="memdesc:a2e7fdcdd2c96e3b71265e7c708799e3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pop an item from the tail of the list.  <a href="#a2e7fdcdd2c96e3b71265e7c708799e3a">More...</a><br/></td></tr>
-<tr class="separator:a2e7fdcdd2c96e3b71265e7c708799e3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a013d6d30e0e066a44d7927595f1258ba"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a013d6d30e0e066a44d7927595f1258ba">ListDelete</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, int32_t iIdx)</td></tr>
-<tr class="memdesc:a013d6d30e0e066a44d7927595f1258ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove an item from the designated index of the list.  <a href="#a013d6d30e0e066a44d7927595f1258ba">More...</a><br/></td></tr>
-<tr class="separator:a013d6d30e0e066a44d7927595f1258ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab97122bfc97f67f619cab5a42479f12f"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#ab97122bfc97f67f619cab5a42479f12f">ListSetFront</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item)</td></tr>
-<tr class="memdesc:ab97122bfc97f67f619cab5a42479f12f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set an item at the head of the list.  <a href="#ab97122bfc97f67f619cab5a42479f12f">More...</a><br/></td></tr>
-<tr class="separator:ab97122bfc97f67f619cab5a42479f12f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7946c0a07e4507b0ccb018929d03a4e9"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a7946c0a07e4507b0ccb018929d03a4e9">ListSetBack</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item)</td></tr>
-<tr class="memdesc:a7946c0a07e4507b0ccb018929d03a4e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set an item at the tail of the list.  <a href="#a7946c0a07e4507b0ccb018929d03a4e9">More...</a><br/></td></tr>
-<tr class="separator:a7946c0a07e4507b0ccb018929d03a4e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7722952701d3384a4ffcc090582ead3"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#ab7722952701d3384a4ffcc090582ead3">ListSetAt</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item, int32_t iIdx)</td></tr>
-<tr class="memdesc:ab7722952701d3384a4ffcc090582ead3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace an item at the designated index of the list.  <a href="#ab7722952701d3384a4ffcc090582ead3">More...</a><br/></td></tr>
-<tr class="separator:ab7722952701d3384a4ffcc090582ead3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a38bc5d0a540d9b717a86ae327781ef"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a4a38bc5d0a540d9b717a86ae327781ef">ListGetFront</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItem)</td></tr>
-<tr class="memdesc:a4a38bc5d0a540d9b717a86ae327781ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an item from the head of the list.  <a href="#a4a38bc5d0a540d9b717a86ae327781ef">More...</a><br/></td></tr>
-<tr class="separator:a4a38bc5d0a540d9b717a86ae327781ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81608b2714a535b32225139b5e9eda48"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a81608b2714a535b32225139b5e9eda48">ListGetBack</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItem)</td></tr>
-<tr class="memdesc:a81608b2714a535b32225139b5e9eda48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an item from the tail of the list.  <a href="#a81608b2714a535b32225139b5e9eda48">More...</a><br/></td></tr>
-<tr class="separator:a81608b2714a535b32225139b5e9eda48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9692cd98cd1a80a2624c3f4d71a8407"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#ac9692cd98cd1a80a2624c3f4d71a8407">ListGetAt</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, <a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItem, int32_t iIdx)</td></tr>
-<tr class="memdesc:ac9692cd98cd1a80a2624c3f4d71a8407"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an item from the designated index of the list.  <a href="#ac9692cd98cd1a80a2624c3f4d71a8407">More...</a><br/></td></tr>
-<tr class="separator:ac9692cd98cd1a80a2624c3f4d71a8407"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04262f42ac3762d0e15df7253566e8cf"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a04262f42ac3762d0e15df7253566e8cf">ListSize</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self)</td></tr>
-<tr class="memdesc:a04262f42ac3762d0e15df7253566e8cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of stored items.  <a href="#a04262f42ac3762d0e15df7253566e8cf">More...</a><br/></td></tr>
-<tr class="separator:a04262f42ac3762d0e15df7253566e8cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade113df0d49ffa14f409b7e738518121"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#ade113df0d49ffa14f409b7e738518121">ListReverse</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self)</td></tr>
-<tr class="memdesc:ade113df0d49ffa14f409b7e738518121"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reverse the list.  <a href="#ade113df0d49ffa14f409b7e738518121">More...</a><br/></td></tr>
-<tr class="separator:ade113df0d49ffa14f409b7e738518121"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8bf278781f5cb90a1fd524e9996a6e0e"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a8bf278781f5cb90a1fd524e9996a6e0e">ListSetDestroy</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, void(*pFunc)(<a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>))</td></tr>
-<tr class="memdesc:a8bf278781f5cb90a1fd524e9996a6e0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the custom item resource clean method.  <a href="#a8bf278781f5cb90a1fd524e9996a6e0e">More...</a><br/></td></tr>
-<tr class="separator:a8bf278781f5cb90a1fd524e9996a6e0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a127f510506f08af50204dc4303999fbb"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a127f510506f08af50204dc4303999fbb">LinkedListInit</a> (<a class="el" href="structLinkedList.html">LinkedList</a> **ppObj)</td></tr>
+<tr class="memdesc:a127f510506f08af50204dc4303999fbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor for <a class="el" href="structLinkedList.html" title="The implementation for doubly linked list. ">LinkedList</a>.  <a href="#a127f510506f08af50204dc4303999fbb">More...</a><br/></td></tr>
+<tr class="separator:a127f510506f08af50204dc4303999fbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f5499dc2ef8b3474e1ca4e3f415757e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a8f5499dc2ef8b3474e1ca4e3f415757e">LinkedListDeinit</a> (<a class="el" href="structLinkedList.html">LinkedList</a> **ppObj)</td></tr>
+<tr class="memdesc:a8f5499dc2ef8b3474e1ca4e3f415757e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor for <a class="el" href="structLinkedList.html" title="The implementation for doubly linked list. ">LinkedList</a>.  <a href="#a8f5499dc2ef8b3474e1ca4e3f415757e">More...</a><br/></td></tr>
+<tr class="separator:a8f5499dc2ef8b3474e1ca4e3f415757e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5b531ccb05248d3badb364a829cd34f"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#ab5b531ccb05248d3badb364a829cd34f">LinkedListPushFront</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, Item item)</td></tr>
+<tr class="memdesc:ab5b531ccb05248d3badb364a829cd34f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push an item to the head of the list.  <a href="#ab5b531ccb05248d3badb364a829cd34f">More...</a><br/></td></tr>
+<tr class="separator:ab5b531ccb05248d3badb364a829cd34f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47fc1ea5b88257be51e7314ee0806f6d"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a47fc1ea5b88257be51e7314ee0806f6d">LinkedListPushBack</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, Item item)</td></tr>
+<tr class="memdesc:a47fc1ea5b88257be51e7314ee0806f6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push an item to the tail of the list.  <a href="#a47fc1ea5b88257be51e7314ee0806f6d">More...</a><br/></td></tr>
+<tr class="separator:a47fc1ea5b88257be51e7314ee0806f6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa3c2edaa7d589284f3541f805c3ab5e"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#aaa3c2edaa7d589284f3541f805c3ab5e">LinkedListInsert</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, Item item, int32_t iIdx)</td></tr>
+<tr class="memdesc:aaa3c2edaa7d589284f3541f805c3ab5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert an item to the designated index of the list.  <a href="#aaa3c2edaa7d589284f3541f805c3ab5e">More...</a><br/></td></tr>
+<tr class="separator:aaa3c2edaa7d589284f3541f805c3ab5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a9524b9b34be78e35b9d8de3a85d65a"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a4a9524b9b34be78e35b9d8de3a85d65a">LinkedListPopFront</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self)</td></tr>
+<tr class="memdesc:a4a9524b9b34be78e35b9d8de3a85d65a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pop an item from the head of the list.  <a href="#a4a9524b9b34be78e35b9d8de3a85d65a">More...</a><br/></td></tr>
+<tr class="separator:a4a9524b9b34be78e35b9d8de3a85d65a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95e53af11960f9fd6f70cf769620a64f"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a95e53af11960f9fd6f70cf769620a64f">LinkedListPopBack</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self)</td></tr>
+<tr class="memdesc:a95e53af11960f9fd6f70cf769620a64f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pop an item from the tail of the list.  <a href="#a95e53af11960f9fd6f70cf769620a64f">More...</a><br/></td></tr>
+<tr class="separator:a95e53af11960f9fd6f70cf769620a64f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a384f7bfd2b5fb39c2f5329e91e2a7376"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a384f7bfd2b5fb39c2f5329e91e2a7376">LinkedListDelete</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, int32_t iIdx)</td></tr>
+<tr class="memdesc:a384f7bfd2b5fb39c2f5329e91e2a7376"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove an item from the designated index of the list.  <a href="#a384f7bfd2b5fb39c2f5329e91e2a7376">More...</a><br/></td></tr>
+<tr class="separator:a384f7bfd2b5fb39c2f5329e91e2a7376"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a376dd24b0783a07fb468f3d5538edc7c"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a376dd24b0783a07fb468f3d5538edc7c">LinkedListSetFront</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, Item item)</td></tr>
+<tr class="memdesc:a376dd24b0783a07fb468f3d5538edc7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace an item at the head of the list.  <a href="#a376dd24b0783a07fb468f3d5538edc7c">More...</a><br/></td></tr>
+<tr class="separator:a376dd24b0783a07fb468f3d5538edc7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c972c5c89ad9f38fa65e0793317c903"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a8c972c5c89ad9f38fa65e0793317c903">LinkedListSetBack</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, Item item)</td></tr>
+<tr class="memdesc:a8c972c5c89ad9f38fa65e0793317c903"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace an item at the tail of the list.  <a href="#a8c972c5c89ad9f38fa65e0793317c903">More...</a><br/></td></tr>
+<tr class="separator:a8c972c5c89ad9f38fa65e0793317c903"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6e18d3450b370c7e7e05969634995b2"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#ad6e18d3450b370c7e7e05969634995b2">LinkedListSetAt</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, Item item, int32_t iIdx)</td></tr>
+<tr class="memdesc:ad6e18d3450b370c7e7e05969634995b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace an item at the designated index of the list.  <a href="#ad6e18d3450b370c7e7e05969634995b2">More...</a><br/></td></tr>
+<tr class="separator:ad6e18d3450b370c7e7e05969634995b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cfa21bd5b14fbe0725b2bbe30765943"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a7cfa21bd5b14fbe0725b2bbe30765943">LinkedListGetFront</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, Item *pItem)</td></tr>
+<tr class="memdesc:a7cfa21bd5b14fbe0725b2bbe30765943"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an item from the head of the list.  <a href="#a7cfa21bd5b14fbe0725b2bbe30765943">More...</a><br/></td></tr>
+<tr class="separator:a7cfa21bd5b14fbe0725b2bbe30765943"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afaae460221606412734f4ed18866d2e9"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#afaae460221606412734f4ed18866d2e9">LinkedListGetBack</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, Item *pItem)</td></tr>
+<tr class="memdesc:afaae460221606412734f4ed18866d2e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an item from the tail of the list.  <a href="#afaae460221606412734f4ed18866d2e9">More...</a><br/></td></tr>
+<tr class="separator:afaae460221606412734f4ed18866d2e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a241bbf1a187568d66fb0d9cdc3d7b2a3"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a241bbf1a187568d66fb0d9cdc3d7b2a3">LinkedListGetAt</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, Item *pItem, int32_t iIdx)</td></tr>
+<tr class="memdesc:a241bbf1a187568d66fb0d9cdc3d7b2a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an item from the designated index of the list.  <a href="#a241bbf1a187568d66fb0d9cdc3d7b2a3">More...</a><br/></td></tr>
+<tr class="separator:a241bbf1a187568d66fb0d9cdc3d7b2a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21c0825453470b43383b9c29f7faaeaa"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a21c0825453470b43383b9c29f7faaeaa">LinkedListSize</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self)</td></tr>
+<tr class="memdesc:a21c0825453470b43383b9c29f7faaeaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of stored items.  <a href="#a21c0825453470b43383b9c29f7faaeaa">More...</a><br/></td></tr>
+<tr class="separator:a21c0825453470b43383b9c29f7faaeaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac73df44c8ffd827de1239f27998b5515"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#ac73df44c8ffd827de1239f27998b5515">LinkedListReverse</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self)</td></tr>
+<tr class="memdesc:ac73df44c8ffd827de1239f27998b5515"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reverse the list.  <a href="#ac73df44c8ffd827de1239f27998b5515">More...</a><br/></td></tr>
+<tr class="separator:ac73df44c8ffd827de1239f27998b5515"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31e963d96b59aceffe7de151e38b7671"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a31e963d96b59aceffe7de151e38b7671">LinkedListIterate</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, bool bReset, Item *pItem)</td></tr>
+<tr class="memdesc:a31e963d96b59aceffe7de151e38b7671"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterate through the list till the tail end.  <a href="#a31e963d96b59aceffe7de151e38b7671">More...</a><br/></td></tr>
+<tr class="separator:a31e963d96b59aceffe7de151e38b7671"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12330d90fc1d10c01fa69dfdf2fc7546"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a12330d90fc1d10c01fa69dfdf2fc7546">LinkedListReverseIterate</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, bool bReset, Item *pItem)</td></tr>
+<tr class="memdesc:a12330d90fc1d10c01fa69dfdf2fc7546"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reversely iterate through the list till the head end.  <a href="#a12330d90fc1d10c01fa69dfdf2fc7546">More...</a><br/></td></tr>
+<tr class="separator:a12330d90fc1d10c01fa69dfdf2fc7546"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad88e7dae7a30ea875c883a750371f951"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#ad88e7dae7a30ea875c883a750371f951">LinkedListReplace</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, Item item)</td></tr>
+<tr class="memdesc:ad88e7dae7a30ea875c883a750371f951"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immediately replace the item at a specific iteration.  <a href="#ad88e7dae7a30ea875c883a750371f951">More...</a><br/></td></tr>
+<tr class="separator:ad88e7dae7a30ea875c883a750371f951"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a248804060a13cf954492129d002f4ce2"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linked__list_8h.html#a248804060a13cf954492129d002f4ce2">LinkedListSetDestroy</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *self, void(*pFunc)(Item))</td></tr>
+<tr class="memdesc:a248804060a13cf954492129d002f4ce2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the custom item resource clean method.  <a href="#a248804060a13cf954492129d002f4ce2">More...</a><br/></td></tr>
+<tr class="separator:a248804060a13cf954492129d002f4ce2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The doubly linked list. </p>
 
 <p>Definition in file <a class="el" href="linked__list_8h_source.html">linked_list.h</a>.</p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
-<a class="anchor" id="ac63d6236e7910b2b375594c73ba2e79d"></a>
+<a class="anchor" id="a8719de7cb6fd1a64fcf777df871d7813"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef struct _ListData <a class="el" href="linked__list_8h.html#ac63d6236e7910b2b375594c73ba2e79d">ListData</a></td>
+          <td class="memname">typedef struct _LinkedListData <a class="el" href="linked__list_8h.html#a8719de7cb6fd1a64fcf777df871d7813">LinkedListData</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>ListData is the data type for the container private information. </p>
+<p>LinkedListData is the data type for the container private information. </p>
 
 <p>Definition at line <a class="el" href="linked__list_8h_source.html#l00011">11</a> of file <a class="el" href="linked__list_8h_source.html">linked_list.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ad10aa1c735ce4c2156e952154fea7d2c"></a>
+<a class="anchor" id="a127f510506f08af50204dc4303999fbb"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListInit </td>
+          <td class="memname">int32_t LinkedListInit </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> **&#160;</td>
           <td class="paramname"><em>ppObj</em></td><td>)</td>
@@ -195,12 +204,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a3ae8c3d62068a0b3f3cce4d5f3b6f9d0"></a>
+<a class="anchor" id="a8f5499dc2ef8b3474e1ca4e3f415757e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void ListDeinit </td>
+          <td class="memname">void LinkedListDeinit </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> **&#160;</td>
           <td class="paramname"><em>ppObj</em></td><td>)</td>
@@ -220,12 +229,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="abcb028ab69760f178ba1e2b6f8d57565"></a>
+<a class="anchor" id="ab5b531ccb05248d3badb364a829cd34f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListPushFront </td>
+          <td class="memname">int32_t LinkedListPushFront </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -233,7 +242,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
+          <td class="paramtype">Item&#160;</td>
           <td class="paramname"><em>item</em>&#160;</td>
         </tr>
         <tr>
@@ -263,12 +272,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="afe26056afa66015a6ea4c478e404f479"></a>
+<a class="anchor" id="a47fc1ea5b88257be51e7314ee0806f6d"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListPushBack </td>
+          <td class="memname">int32_t LinkedListPushBack </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -276,7 +285,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
+          <td class="paramtype">Item&#160;</td>
           <td class="paramname"><em>item</em>&#160;</td>
         </tr>
         <tr>
@@ -306,12 +315,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a00b345594a572978b190d63e3de11ec0"></a>
+<a class="anchor" id="aaa3c2edaa7d589284f3541f805c3ab5e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListInsert </td>
+          <td class="memname">int32_t LinkedListInsert </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -319,7 +328,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
+          <td class="paramtype">Item&#160;</td>
           <td class="paramname"><em>item</em>, </td>
         </tr>
         <tr>
@@ -359,12 +368,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a376b763eab64b2a1c4739dcb4a1a8e72"></a>
+<a class="anchor" id="a4a9524b9b34be78e35b9d8de3a85d65a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListPopFront </td>
+          <td class="memname">int32_t LinkedListPopFront </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em></td><td>)</td>
@@ -392,12 +401,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a2e7fdcdd2c96e3b71265e7c708799e3a"></a>
+<a class="anchor" id="a95e53af11960f9fd6f70cf769620a64f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListPopBack </td>
+          <td class="memname">int32_t LinkedListPopBack </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em></td><td>)</td>
@@ -425,12 +434,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a013d6d30e0e066a44d7927595f1258ba"></a>
+<a class="anchor" id="a384f7bfd2b5fb39c2f5329e91e2a7376"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListDelete </td>
+          <td class="memname">int32_t LinkedListDelete </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -469,12 +478,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ab97122bfc97f67f619cab5a42479f12f"></a>
+<a class="anchor" id="a376dd24b0783a07fb468f3d5538edc7c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListSetFront </td>
+          <td class="memname">int32_t LinkedListSetFront </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -482,7 +491,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
+          <td class="paramtype">Item&#160;</td>
           <td class="paramname"><em>item</em>&#160;</td>
         </tr>
         <tr>
@@ -493,7 +502,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Set an item at the head of the list. </p>
+<p>Replace an item at the head of the list. </p>
 <p>This function replaces the head item with the designated one. If the custom resource clean method is set, it also runs the resource clean method for the replaced item.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -513,12 +522,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a7946c0a07e4507b0ccb018929d03a4e9"></a>
+<a class="anchor" id="a8c972c5c89ad9f38fa65e0793317c903"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListSetBack </td>
+          <td class="memname">int32_t LinkedListSetBack </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -526,7 +535,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
+          <td class="paramtype">Item&#160;</td>
           <td class="paramname"><em>item</em>&#160;</td>
         </tr>
         <tr>
@@ -537,7 +546,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Set an item at the tail of the list. </p>
+<p>Replace an item at the tail of the list. </p>
 <p>This function replaces the tail item with the designated one. If the custom resource clean method is set, it also runs the resource clean method for the replaced item.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -557,12 +566,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ab7722952701d3384a4ffcc090582ead3"></a>
+<a class="anchor" id="ad6e18d3450b370c7e7e05969634995b2"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListSetAt </td>
+          <td class="memname">int32_t LinkedListSetAt </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -570,7 +579,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>&#160;</td>
+          <td class="paramtype">Item&#160;</td>
           <td class="paramname"><em>item</em>, </td>
         </tr>
         <tr>
@@ -608,12 +617,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a4a38bc5d0a540d9b717a86ae327781ef"></a>
+<a class="anchor" id="a7cfa21bd5b14fbe0725b2bbe30765943"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListGetFront </td>
+          <td class="memname">int32_t LinkedListGetFront </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -621,7 +630,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *&#160;</td>
+          <td class="paramtype">Item *&#160;</td>
           <td class="paramname"><em>pItem</em>&#160;</td>
         </tr>
         <tr>
@@ -653,12 +662,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a81608b2714a535b32225139b5e9eda48"></a>
+<a class="anchor" id="afaae460221606412734f4ed18866d2e9"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListGetBack </td>
+          <td class="memname">int32_t LinkedListGetBack </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -666,7 +675,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *&#160;</td>
+          <td class="paramtype">Item *&#160;</td>
           <td class="paramname"><em>pItem</em>&#160;</td>
         </tr>
         <tr>
@@ -698,12 +707,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ac9692cd98cd1a80a2624c3f4d71a8407"></a>
+<a class="anchor" id="a241bbf1a187568d66fb0d9cdc3d7b2a3"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListGetAt </td>
+          <td class="memname">int32_t LinkedListGetAt </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -711,7 +720,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *&#160;</td>
+          <td class="paramtype">Item *&#160;</td>
           <td class="paramname"><em>pItem</em>, </td>
         </tr>
         <tr>
@@ -751,12 +760,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a04262f42ac3762d0e15df7253566e8cf"></a>
+<a class="anchor" id="a21c0825453470b43383b9c29f7faaeaa"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListSize </td>
+          <td class="memname">int32_t LinkedListSize </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em></td><td>)</td>
@@ -782,12 +791,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ade113df0d49ffa14f409b7e738518121"></a>
+<a class="anchor" id="ac73df44c8ffd827de1239f27998b5515"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListReverse </td>
+          <td class="memname">int32_t LinkedListReverse </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em></td><td>)</td>
@@ -813,12 +822,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a8bf278781f5cb90a1fd524e9996a6e0e"></a>
+<a class="anchor" id="a31e963d96b59aceffe7de151e38b7671"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t ListSetDestroy </td>
+          <td class="memname">int32_t LinkedListIterate </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -826,7 +835,156 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void(*)(<a class="el" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>)&#160;</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>bReset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Item *&#160;</td>
+          <td class="paramname"><em>pItem</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Iterate through the list till the tail end. </p>
+<p>Before iterating through the list, it is necessary to pass bReset := true and pItem := NULL for iterator initialization. After initialization, you can pass bReset := false and pItem := the relevant pointer to get the returned item at each iteration.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structLinkedList.html" title="The implementation for doubly linked list. ">LinkedList</a> structure </td></tr>
+    <tr><td class="paramname">bReset</td><td>The knob to reset the iteration </td></tr>
+    <tr><td class="paramname">pItem</td><td>The pointer to the returned item</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">SUCC</td><td></td></tr>
+    <tr><td class="paramname">END</td><td>Beyond the tail end </td></tr>
+    <tr><td class="paramname">ERR_NOINIT</td><td>Uninitialized container </td></tr>
+    <tr><td class="paramname">ERR_GET</td><td>Invalid parameter to store returned item </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a12330d90fc1d10c01fa69dfdf2fc7546"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t LinkedListReverseIterate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>bReset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Item *&#160;</td>
+          <td class="paramname"><em>pItem</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reversely iterate through the list till the head end. </p>
+<p>Before reversely iterating through the list, it is necessary to pass bReset := true and pItem := NULL for iterator initialization. After initialization, you can pass bReset := false and pItem := the relevant pointer to get the returned item at each iteration.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structLinkedList.html" title="The implementation for doubly linked list. ">LinkedList</a> structure </td></tr>
+    <tr><td class="paramname">bReset</td><td>The knob to reset the iteration </td></tr>
+    <tr><td class="paramname">pItem</td><td>The pointer to the returned item</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">SUCC</td><td></td></tr>
+    <tr><td class="paramname">END</td><td>Beyond the head end </td></tr>
+    <tr><td class="paramname">ERR_NOINIT</td><td>Uninitialized container </td></tr>
+    <tr><td class="paramname">ERR_GET</td><td>Invalid parameter to store returned item </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ad88e7dae7a30ea875c883a750371f951"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t LinkedListReplace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Item&#160;</td>
+          <td class="paramname"><em>item</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Immediately replace the item at a specific iteration. </p>
+<p>This operator should be applied within the scope of iterate() or reverse_iterate() iterators. If the custom resource clean method is set, it also runs the resource clean method for the replaced item</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">self</td><td>The pointer to the <a class="el" href="structLinkedList.html" title="The implementation for doubly linked list. ">LinkedList</a> structure </td></tr>
+    <tr><td class="paramname">item</td><td>The item which intends to take position</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">SUCC</td><td></td></tr>
+    <tr><td class="paramname">ERR_NOINIT</td><td>Uninitialized container </td></tr>
+    <tr><td class="paramname">ERR_IDX</td><td>Out of range indexing</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>If you intend to use the operator outside of the iterators, the behavior is undefined. Which is, the operator may successfully replace the item or it may return an error code. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a248804060a13cf954492129d002f4ce2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t LinkedListSetDestroy </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void(*)(Item)&#160;</td>
           <td class="paramname"><em>pFunc</em>&#160;</td>
         </tr>
         <tr>
@@ -860,7 +1018,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_0aa88ba44bbec23a6de57be31686ecf8.html">list</a></li><li class="navelem"><a class="el" href="linked__list_8h.html">linked_list.h</a></li>
+    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_e0f5f6345e438c73b9ae78ec2940718c.html">container</a></li><li class="navelem"><a class="el" href="linked__list_8h.html">linked_list.h</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

@@ -138,7 +138,7 @@ int32_t TreeMapGet(TreeMap *self, Key key, Value *pValue);
  * @retval NOKEY        The key cannot be found
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t TreeMapFind(TreeMap *self, Key);
+int32_t TreeMapFind(TreeMap *self, Key key);
 
 /**
  * @brief Delete the key value pair corresponding to the designated key.
