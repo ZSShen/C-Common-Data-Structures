@@ -1,15 +1,13 @@
-LibCDS
+LibCDS 
 =============
 
 Integration Test (Travis CI)
 + [![Integration Test] (https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)
 
-##Objective
-***LibCDS implements a set of uniform C APIs for data structure manipulation.***
-
+##API Document
+[Link of the API Manual] (http://zsshen.github.io/C-Common-Data-Structures/html/index.html)  
 
 ##Container Category
-[API Reference Manual] (http://zsshen.github.io/C-Common-Data-Structures/html/index.html)
  - Sequential Container
    - Vector --- The dynamically growable array
    - LinkedList --- The doubly linked list
@@ -71,8 +69,7 @@ LD_LIBRARY_PATH=/path/to/your/destination/lib/
 ```
 That's all the related stuff!
 
-For detailed API usage, you can refer to the manual or check the demo programs.
-
+For detailed API usage, you can refer to the manual or check the `demo programs`.  
 
 
 [CMake]:http://www.cmake.org/
