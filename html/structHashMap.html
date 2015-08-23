@@ -77,22 +77,28 @@ Data Fields</h2></td></tr>
 <tr class="memitem:aef83bfc8e8bc94e4ee0aee547baa7a27"><td class="memItemLeft" align="right" valign="top"><a class="el" href="hash__map_8h.html#a9ba28ae908982272687dd668de83780a">HashMapData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashMap.html#aef83bfc8e8bc94e4ee0aee547baa7a27">pData</a></td></tr>
 <tr class="memdesc:aef83bfc8e8bc94e4ee0aee547baa7a27"><td class="mdescLeft">&#160;</td><td class="mdescRight">The container private information.  <a href="#aef83bfc8e8bc94e4ee0aee547baa7a27">More...</a><br/></td></tr>
 <tr class="separator:aef83bfc8e8bc94e4ee0aee547baa7a27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a107a2dcdf472d9915617578f2fd4d4cc"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashMap.html#a107a2dcdf472d9915617578f2fd4d4cc">put</a> )(struct _HashMap *, <a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>, size_t)</td></tr>
-<tr class="memdesc:a107a2dcdf472d9915617578f2fd4d4cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a key value pair into the map.  <a href="#a107a2dcdf472d9915617578f2fd4d4cc">More...</a><br/></td></tr>
-<tr class="separator:a107a2dcdf472d9915617578f2fd4d4cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59de022d954bb25adc5898a2c5c84f93"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashMap.html#a59de022d954bb25adc5898a2c5c84f93">get</a> )(struct _HashMap *, <a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>, size_t, <a class="el" href="util_8h.html#ad0d0cb99e46ebc1c0458843e19ae21bd">Value</a> *)</td></tr>
+<tr class="memitem:a7e5c1a720833b69cbd83ccf2d2664b62"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashMap.html#a7e5c1a720833b69cbd83ccf2d2664b62">put</a> )(struct _HashMap *, Pair *, size_t)</td></tr>
+<tr class="memdesc:a7e5c1a720833b69cbd83ccf2d2664b62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a key value pair into the map.  <a href="#a7e5c1a720833b69cbd83ccf2d2664b62">More...</a><br/></td></tr>
+<tr class="separator:a7e5c1a720833b69cbd83ccf2d2664b62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59de022d954bb25adc5898a2c5c84f93"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashMap.html#a59de022d954bb25adc5898a2c5c84f93">get</a> )(struct _HashMap *, Key, size_t, Value *)</td></tr>
 <tr class="memdesc:a59de022d954bb25adc5898a2c5c84f93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the value corresponding to the designated key.  <a href="#a59de022d954bb25adc5898a2c5c84f93">More...</a><br/></td></tr>
 <tr class="separator:a59de022d954bb25adc5898a2c5c84f93"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc566a2cf7a0a421ae6522bb73e69860"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashMap.html#adc566a2cf7a0a421ae6522bb73e69860">remove</a> )(struct _HashMap *, <a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>, size_t)</td></tr>
+<tr class="memitem:a56c9e15c9a2f15e319acc0cd983279fb"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashMap.html#a56c9e15c9a2f15e319acc0cd983279fb">find</a> )(struct _HashMap *, Key, size_t)</td></tr>
+<tr class="memdesc:a56c9e15c9a2f15e319acc0cd983279fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the map contains the designated key.  <a href="#a56c9e15c9a2f15e319acc0cd983279fb">More...</a><br/></td></tr>
+<tr class="separator:a56c9e15c9a2f15e319acc0cd983279fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc566a2cf7a0a421ae6522bb73e69860"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashMap.html#adc566a2cf7a0a421ae6522bb73e69860">remove</a> )(struct _HashMap *, Key, size_t)</td></tr>
 <tr class="memdesc:adc566a2cf7a0a421ae6522bb73e69860"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the key value pair corresponding to the designated key.  <a href="#adc566a2cf7a0a421ae6522bb73e69860">More...</a><br/></td></tr>
 <tr class="separator:adc566a2cf7a0a421ae6522bb73e69860"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f99aaee737bfb5ab7804db8559b4853"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashMap.html#a6f99aaee737bfb5ab7804db8559b4853">size</a> )(struct _HashMap *)</td></tr>
 <tr class="memdesc:a6f99aaee737bfb5ab7804db8559b4853"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of stored key value pairs.  <a href="#a6f99aaee737bfb5ab7804db8559b4853">More...</a><br/></td></tr>
 <tr class="separator:a6f99aaee737bfb5ab7804db8559b4853"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38841771e89f788cd5eecb2abd170687"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashMap.html#a38841771e89f788cd5eecb2abd170687">set_destroy</a> )(struct _HashMap *, void(*)(<a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>))</td></tr>
-<tr class="memdesc:a38841771e89f788cd5eecb2abd170687"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the custom key value pair resource clean method.  <a href="#a38841771e89f788cd5eecb2abd170687">More...</a><br/></td></tr>
-<tr class="separator:a38841771e89f788cd5eecb2abd170687"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d773cae38845791bb20462fd9f6c099"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashMap.html#a2d773cae38845791bb20462fd9f6c099">set_hash</a> )(struct _HashMap *, uint32_t(*)(<a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>, size_t))</td></tr>
+<tr class="memitem:a54623cbc411f079c0653ebf0b20b0452"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashMap.html#a54623cbc411f079c0653ebf0b20b0452">iterate</a> )(struct _HashMap *, bool, Pair **)</td></tr>
+<tr class="memdesc:a54623cbc411f079c0653ebf0b20b0452"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterate through the map to retrieve each key value pair.  <a href="#a54623cbc411f079c0653ebf0b20b0452">More...</a><br/></td></tr>
+<tr class="separator:a54623cbc411f079c0653ebf0b20b0452"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae65414b0bd1586f4482640e790fdd445"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashMap.html#ae65414b0bd1586f4482640e790fdd445">set_destroy</a> )(struct _HashMap *, void(*)(Pair *))</td></tr>
+<tr class="memdesc:ae65414b0bd1586f4482640e790fdd445"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the custom key value pair resource clean method.  <a href="#ae65414b0bd1586f4482640e790fdd445">More...</a><br/></td></tr>
+<tr class="separator:ae65414b0bd1586f4482640e790fdd445"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d773cae38845791bb20462fd9f6c099"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashMap.html#a2d773cae38845791bb20462fd9f6c099">set_hash</a> )(struct _HashMap *, uint32_t(*)(Key, size_t))</td></tr>
 <tr class="memdesc:a2d773cae38845791bb20462fd9f6c099"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the custom hash function.  <a href="#a2d773cae38845791bb20462fd9f6c099">More...</a><br/></td></tr>
 <tr class="separator:a2d773cae38845791bb20462fd9f6c099"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -117,18 +123,18 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a107a2dcdf472d9915617578f2fd4d4cc"></a>
+<a class="anchor" id="a7e5c1a720833b69cbd83ccf2d2664b62"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t(* HashMap::put)(struct _HashMap *, <a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>, size_t)</td>
+          <td class="memname">int32_t(* HashMap::put)(struct _HashMap *, Pair *, size_t)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Insert a key value pair into the map. </p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="hash__map_8h.html#a1577b4493c1dea43ec33ed025b1c5ba7" title="Insert a key value pair into the map. ">HashMapPut</a> </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="hash__map_8h.html#a243335e4bfd9e7efb7f5e7925c4d0d74" title="Insert a key value pair into the map. ">HashMapPut</a> </dd></dl>
 
 <p>Definition at line <a class="el" href="hash__map_8h_source.html#l00020">20</a> of file <a class="el" href="hash__map_8h_source.html">hash_map.h</a>.</p>
 
@@ -139,15 +145,32 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t(* HashMap::get)(struct _HashMap *, <a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>, size_t, <a class="el" href="util_8h.html#ad0d0cb99e46ebc1c0458843e19ae21bd">Value</a> *)</td>
+          <td class="memname">int32_t(* HashMap::get)(struct _HashMap *, Key, size_t, Value *)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Retrieve the value corresponding to the designated key. </p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="hash__map_8h.html#ac28926c920b4818b7e7930f3a910f53f" title="Retrieve the value corresponding to the designated key. ">HashMapGet</a> </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="hash__map_8h.html#a949863ffee4bf0b02e80953dc989a828" title="Retrieve the value corresponding to the designated key. ">HashMapGet</a> </dd></dl>
 
 <p>Definition at line <a class="el" href="hash__map_8h_source.html#l00024">24</a> of file <a class="el" href="hash__map_8h_source.html">hash_map.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a56c9e15c9a2f15e319acc0cd983279fb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t(* HashMap::find)(struct _HashMap *, Key, size_t)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check if the map contains the designated key. </p>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#ac0625e6795079093de1d082d86398413" title="Check if the map contains the designated key. ">TreeMapFind</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="hash__map_8h_source.html#l00028">28</a> of file <a class="el" href="hash__map_8h_source.html">hash_map.h</a>.</p>
 
 </div>
 </div>
@@ -156,15 +179,15 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t(* HashMap::remove)(struct _HashMap *, <a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>, size_t)</td>
+          <td class="memname">int32_t(* HashMap::remove)(struct _HashMap *, Key, size_t)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Delete the key value pair corresponding to the designated key. </p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="hash__map_8h.html#ab5fb38f315465f9641477abe963f5624" title="Delete the key value pair corresponding to the designated key. ">HashMapRemove</a> </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="hash__map_8h.html#a1f245b96b890186f93987728f2dea402" title="Delete the key value pair corresponding to the designated key. ">HashMapRemove</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="hash__map_8h_source.html#l00028">28</a> of file <a class="el" href="hash__map_8h_source.html">hash_map.h</a>.</p>
+<p>Definition at line <a class="el" href="hash__map_8h_source.html#l00032">32</a> of file <a class="el" href="hash__map_8h_source.html">hash_map.h</a>.</p>
 
 </div>
 </div>
@@ -181,24 +204,41 @@ Data Fields</h2></td></tr>
 <p>Return the number of stored key value pairs. </p>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="hash__map_8h.html#a8af14c3c4205f0a0b2a1dd75694b3bf4" title="Return the number of stored key value pairs. ">HashMapSize</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="hash__map_8h_source.html#l00032">32</a> of file <a class="el" href="hash__map_8h_source.html">hash_map.h</a>.</p>
+<p>Definition at line <a class="el" href="hash__map_8h_source.html#l00036">36</a> of file <a class="el" href="hash__map_8h_source.html">hash_map.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a38841771e89f788cd5eecb2abd170687"></a>
+<a class="anchor" id="a54623cbc411f079c0653ebf0b20b0452"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t(* HashMap::set_destroy)(struct _HashMap *, void(*)(<a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>))</td>
+          <td class="memname">int32_t(* HashMap::iterate)(struct _HashMap *, bool, Pair **)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Iterate through the map to retrieve each key value pair. </p>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="hash__map_8h.html#aba029e83455fdbaf0d8a464dc4e3d381" title="Iterate through the map to retrieve each key value pair. ">HashMapIterate</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="hash__map_8h_source.html#l00040">40</a> of file <a class="el" href="hash__map_8h_source.html">hash_map.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae65414b0bd1586f4482640e790fdd445"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t(* HashMap::set_destroy)(struct _HashMap *, void(*)(Pair *))</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Set the custom key value pair resource clean method. </p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="hash__map_8h.html#aa6950961671bc7c857342332b456a5b1" title="Set the custom key value pair resource clean method. ">HashMapSetDestroy</a> </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="hash__map_8h.html#af937beb03d236fd4dc9a846fcb97eff4" title="Set the custom key value pair resource clean method. ">HashMapSetDestroy</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="hash__map_8h_source.html#l00036">36</a> of file <a class="el" href="hash__map_8h_source.html">hash_map.h</a>.</p>
+<p>Definition at line <a class="el" href="hash__map_8h_source.html#l00044">44</a> of file <a class="el" href="hash__map_8h_source.html">hash_map.h</a>.</p>
 
 </div>
 </div>
@@ -207,7 +247,7 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t(* HashMap::set_hash)(struct _HashMap *, uint32_t(*)(<a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>, size_t))</td>
+          <td class="memname">int32_t(* HashMap::set_hash)(struct _HashMap *, uint32_t(*)(Key, size_t))</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -215,7 +255,7 @@ Data Fields</h2></td></tr>
 <p>Set the custom hash function. </p>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="hash__map_8h.html#abbce9df57c7395e441c226919937d67f" title="Set the custom hash function. ">HashMapSetHash</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="hash__map_8h_source.html#l00040">40</a> of file <a class="el" href="hash__map_8h_source.html">hash_map.h</a>.</p>
+<p>Definition at line <a class="el" href="hash__map_8h_source.html#l00048">48</a> of file <a class="el" href="hash__map_8h_source.html">hash_map.h</a>.</p>
 
 </div>
 </div>

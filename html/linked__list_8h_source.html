@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>LibCDS: /home/zsshen/Desktop/git-hub-code/C-Common-Data-Structures/include/list/linked_list.h Source File</title>
+<title>LibCDS: /home/zsshen/Desktop/git-hub-code/C-Common-Data-Structures/include/container/linked_list.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -75,113 +75,113 @@ $(document).ready(function(){initNavTree('linked__list_8h_source.html','');});
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;../util.h&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">/** ListData is the data type for the container private information. */</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="linked__list_8h.html#ac63d6236e7910b2b375594c73ba2e79d">   11</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>_ListData <a class="code" href="linked__list_8h.html#ac63d6236e7910b2b375594c73ba2e79d">ListData</a>;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">/** LinkedListData is the data type for the container private information. */</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="linked__list_8h.html#a8719de7cb6fd1a64fcf777df871d7813">   11</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>_LinkedListData <a class="code" href="linked__list_8h.html#a8719de7cb6fd1a64fcf777df871d7813">LinkedListData</a>;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">/** The implementation for doubly linked list. */</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="structLinkedList.html">   14</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>_LinkedList {<span class="comment"></span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">    /** The container private information */</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="structLinkedList.html#ada9dba2f02c558b34599f9f83f7eebcc">   16</a></span>&#160;    <a class="code" href="linked__list_8h.html#ac63d6236e7910b2b375594c73ba2e79d">ListData</a> *<a class="code" href="structLinkedList.html#ada9dba2f02c558b34599f9f83f7eebcc">pData</a>;</div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="structLinkedList.html#a33116a1ae335db6a26130f1981b9bbef">   16</a></span>&#160;    <a class="code" href="linked__list_8h.html#a8719de7cb6fd1a64fcf777df871d7813">LinkedListData</a> *<a class="code" href="structLinkedList.html#a33116a1ae335db6a26130f1981b9bbef">pData</a>;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">    /** Push an item to the head of the list.</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">        @see ListPushFront */</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="structLinkedList.html#abb4adf5b2182038bd099de0503f907ba">   20</a></span>&#160;    int32_t (*push_front) (<span class="keyword">struct </span>_LinkedList*, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">        @see LinkedListPushFront */</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="structLinkedList.html#abb4adf5b2182038bd099de0503f907ba">   20</a></span>&#160;    int32_t (*push_front) (<span class="keyword">struct </span>_LinkedList*, Item);</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">    /** Push an item to the tail of the list.</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">        @see ListPushBack */</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="structLinkedList.html#a0440bcb49429632f7a179b9639d8191b">   24</a></span>&#160;    int32_t (*push_back) (<span class="keyword">struct </span>_LinkedList*, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">        @see LinkedListPushBack */</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="structLinkedList.html#a0440bcb49429632f7a179b9639d8191b">   24</a></span>&#160;    int32_t (*push_back) (<span class="keyword">struct </span>_LinkedList*, Item);</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">    /** Insert an item to the designated index of the list.</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">        @see ListInsert */</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="structLinkedList.html#a16a1e9a428ec75746030367469c469c8">   28</a></span>&#160;    int32_t (*insert) (<span class="keyword">struct </span>_LinkedList*, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>, int32_t);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">        @see LinkedListInsert */</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="structLinkedList.html#a16a1e9a428ec75746030367469c469c8">   28</a></span>&#160;    int32_t (*insert) (<span class="keyword">struct </span>_LinkedList*, Item, int32_t);</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">    /** Pop an item from the head of the list.</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">        @see ListPopFront */</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">        @see LinkedListPopFront */</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="structLinkedList.html#ab6410dfe96bb5b043f7f9f815bdeae00">   32</a></span>&#160;    int32_t (*pop_front) (<span class="keyword">struct </span>_LinkedList*);</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">    /** Pop an item from the tail of the list.</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">        @see ListPopBack */</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">        @see LinkedListPopBack */</span></div>
 <div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="structLinkedList.html#a84c8c0477d69dbf5c5ab19f66a0d3d6f">   36</a></span>&#160;    int32_t (*pop_back) (<span class="keyword">struct </span>_LinkedList*);</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">    /** Delete an item from the designated index of the list</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">        @see ListDelete */</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">        @see LinkedListDelete */</span></div>
 <div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="structLinkedList.html#ae986659b372ce476e4003c4eaf23b3ee">   40</a></span>&#160;    int32_t (*<span class="keyword">delete</span>) (<span class="keyword">struct </span>_LinkedList*, int32_t);</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">    /** Set an item at the head of the list.</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">        @see ListSetFront */</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="structLinkedList.html#a4a0a476dd970e5cbc1141c4080ff7347">   44</a></span>&#160;    int32_t (*set_front) (<span class="keyword">struct </span>_LinkedList*, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">    /** Replace an item at the head of the list.</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">        @see LinkedListSetFront */</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="structLinkedList.html#a4a0a476dd970e5cbc1141c4080ff7347">   44</a></span>&#160;    int32_t (*set_front) (<span class="keyword">struct </span>_LinkedList*, Item);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">    /** Set an item at the tail of the list.</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">        @see ListSetBack */</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="structLinkedList.html#aae38fd5efc42c3bfed9c83496b5148b8">   48</a></span>&#160;    int32_t (*set_back) (<span class="keyword">struct </span>_LinkedList*, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">    /** Replace an item at the tail of the list.</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">        @see LinkedListSetBack */</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="structLinkedList.html#aae38fd5efc42c3bfed9c83496b5148b8">   48</a></span>&#160;    int32_t (*set_back) (<span class="keyword">struct </span>_LinkedList*, Item);</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">    /** Set an item at the designated index of the list.</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">        @see ListSetAt */</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="structLinkedList.html#a5fb16e9dc5596281ac1448c3345dfdf5">   52</a></span>&#160;    int32_t (*set_at) (<span class="keyword">struct </span>_LinkedList*, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>, int32_t);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">    /** Replace an item at the designated index of the list.</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">        @see LinkedListSetAt */</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="structLinkedList.html#a5fb16e9dc5596281ac1448c3345dfdf5">   52</a></span>&#160;    int32_t (*set_at) (<span class="keyword">struct </span>_LinkedList*, Item, int32_t);</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">    /** Get an item from the head of the list.</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">        @see ListGetFront */</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="structLinkedList.html#ad2b2d3c92a72c160a05b382206359e67">   56</a></span>&#160;    int32_t (*get_front) (<span class="keyword">struct </span>_LinkedList*, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>*);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">        @see LinkedListGetFront */</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="structLinkedList.html#ad2b2d3c92a72c160a05b382206359e67">   56</a></span>&#160;    int32_t (*get_front) (<span class="keyword">struct </span>_LinkedList*, Item*);</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">    /** Get an item from the tail of the list.</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">        @see ListGetBack */</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="structLinkedList.html#aa97e3b1b1618b4c3161fd1015e7bcd52">   60</a></span>&#160;    int32_t (*get_back) (<span class="keyword">struct </span>_LinkedList*, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>*);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">        @see LinkedListGetBack */</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="structLinkedList.html#aa97e3b1b1618b4c3161fd1015e7bcd52">   60</a></span>&#160;    int32_t (*get_back) (<span class="keyword">struct </span>_LinkedList*, Item*);</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment">    /** Get an item from the designated index of the list.</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">        @see ListGetAt */</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="structLinkedList.html#a928f99a1c02c9351528712b73c435c0e">   64</a></span>&#160;    int32_t (*get_at) (<span class="keyword">struct </span>_LinkedList*, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>*, int32_t);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">        @see LinkedListGetAt */</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="structLinkedList.html#a928f99a1c02c9351528712b73c435c0e">   64</a></span>&#160;    int32_t (*get_at) (<span class="keyword">struct </span>_LinkedList*, Item*, int32_t);</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment">    /** Return the number of stored items.</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">        @see ListSize */</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">        @see LinkedListSize */</span></div>
 <div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="structLinkedList.html#a78e87772e9e7c42b869879a36a7df7ec">   68</a></span>&#160;    int32_t (*size) (<span class="keyword">struct </span>_LinkedList*);</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">    /** Reverse the list.</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment">        @see ListReverse */</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment">        @see LinkedListReverse */</span></div>
 <div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="structLinkedList.html#a9d7995cff003ad651fbd2c6dad4edece">   72</a></span>&#160;    int32_t (*reverse) (<span class="keyword">struct </span>_LinkedList*);</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment">    /** Set the custom item resource clean method.</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment">        @see ListSetDestroy */</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="structLinkedList.html#a5e7889c281dc1a3fa66441d2298386f3">   76</a></span>&#160;    int32_t (*set_destroy) (<span class="keyword">struct </span>_LinkedList*, void (*) (<a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>));</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;} <a class="code" href="structLinkedList.html">LinkedList</a>;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">/*===========================================================================*</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment"> *             Definition for the exported member operations                 *</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment"> *===========================================================================*/</span><span class="comment"></span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment"> * @brief The constructor for LinkedList.</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment"> * @param ppObj         The double pointer to the to be constructed list</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment"> * @retval ERR_NOMEM    Insufficient memory for list construction</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;int32_t <a class="code" href="linked__list_8h.html#ad10aa1c735ce4c2156e952154fea7d2c">ListInit</a>(<a class="code" href="structLinkedList.html">LinkedList</a> **ppObj);</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment"> * @brief The destructor for LinkedList.</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment"> * If the custom resource clean method is set, it also runs the resource clean</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment"> * method for all the items.</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment"> * @param ppObj         The double pointer to the to be destructed list</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="keywordtype">void</span> <a class="code" href="linked__list_8h.html#a3ae8c3d62068a0b3f3cce4d5f3b6f9d0">ListDeinit</a>(<a class="code" href="structLinkedList.html">LinkedList</a> **ppObj);</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="comment"> * @brief Push an item to the head of the list.</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="comment"> * @param item          The designated item</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="comment"> * @retval ERR_NOMEM    Insufficient memory for list extension</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment">    /** Iterate through the list till the tail end.</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment">        @see LinkedListIterate */</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="structLinkedList.html#a6c0f89a365ea9c9692bdeb38bf54f589">   76</a></span>&#160;    int32_t (*iterate) (<span class="keyword">struct </span>_LinkedList*, bool, Item*);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">    /** Reversely iterate through the list till the head end.</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment">        @see LinkedListReverseIterate */</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="structLinkedList.html#a2a9e5084402bc627db022c1d33d6092a">   80</a></span>&#160;    int32_t (*reverse_iterate) (<span class="keyword">struct </span>_LinkedList*, bool, Item*);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">    /** Immediately replace the item at a specific iteration.</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment">        @see LinkedListReplace */</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="structLinkedList.html#a9bf51d7b8154b36ae60449b18af502df">   84</a></span>&#160;    int32_t (*replace) (<span class="keyword">struct </span>_LinkedList*, Item);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment">    /** Set the custom item resource clean method.</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment">        @see LinkedListSetDestroy */</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="structLinkedList.html#a5e7889c281dc1a3fa66441d2298386f3">   88</a></span>&#160;    int32_t (*set_destroy) (<span class="keyword">struct </span>_LinkedList*, void (*) (Item));</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;} <a class="code" href="structLinkedList.html">LinkedList</a>;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment">/*===========================================================================*</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="comment"> *             Definition for the exported member operations                 *</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment"> *===========================================================================*/</span><span class="comment"></span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment"> * @brief The constructor for LinkedList.</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment"> * @param ppObj         The double pointer to the to be constructed list</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="comment"> * @retval ERR_NOMEM    Insufficient memory for list construction</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a127f510506f08af50204dc4303999fbb">LinkedListInit</a>(<a class="code" href="structLinkedList.html">LinkedList</a> **ppObj);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="comment"> * @brief The destructor for LinkedList.</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="comment"> * If the custom resource clean method is set, it also runs the resource clean</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="comment"> * method for all the items.</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="comment"> * @param ppObj         The double pointer to the to be destructed list</span></div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;int32_t <a class="code" href="linked__list_8h.html#abcb028ab69760f178ba1e2b6f8d57565">ListPushFront</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item);</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="keywordtype">void</span> <a class="code" href="linked__list_8h.html#a8f5499dc2ef8b3474e1ca4e3f415757e">LinkedListDeinit</a>(<a class="code" href="structLinkedList.html">LinkedList</a> **ppObj);</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="comment"> * @brief Push an item to the tail of the list.</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="comment"> * @brief Push an item to the head of the list.</span></div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="comment"> * @param item          The designated item</span></div>
@@ -190,251 +190,323 @@ $(document).ready(function(){initNavTree('linked__list_8h_source.html','');});
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="comment"> * @retval ERR_NOMEM    Insufficient memory for list extension</span></div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;int32_t <a class="code" href="linked__list_8h.html#afe26056afa66015a6ea4c478e404f479">ListPushBack</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item);</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;int32_t <a class="code" href="linked__list_8h.html#ab5b531ccb05248d3badb364a829cd34f">LinkedListPushFront</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, Item item);</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="comment"> * @brief Insert an item to the designated index of the list.</span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="comment"> * @brief Push an item to the tail of the list.</span></div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="comment"> * This function inserts an item to the designated index of the list and shifts</span></div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="comment"> * the trailing items one position to the tail. The index can be positive or</span></div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="comment"> * negative, but its absolute value should be smaller than or equal to the list</span></div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="comment"> * size.</span></div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="comment"> * The operation supports both forward and backward indexing. For the former one,</span></div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="comment"> * the list is traversed from the head to the tail. And for the later one, the</span></div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="comment"> * direction is reversed.</span></div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;<span class="comment"> * To illustrate the behavior, let N denote the list size. Thus for forward indexing</span></div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="comment"> * , index (0) and index (N-1) point to the head and tail. And for backward indexing,</span></div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="comment"> * index (-1) and index (-N) point to the list tail and head.</span></div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="comment"> * But no matter which indexing method is applied, the list always grows from the</span></div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;<span class="comment"> * head to the tail.</span></div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="comment"> * @param item          The designated item</span></div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="comment"> * @param iIdx          The designated index</span></div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="comment"> * @retval ERR_NOMEM    Insufficient memory for list extension</span></div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="comment"> * @retval ERR_IDX      Out of range indexing</span></div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="comment"> * @note The absolute value of the index should be smaller than or equal to the</span></div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="comment"> * list size.</span></div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a00b345594a572978b190d63e3de11ec0">ListInsert</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item, int32_t iIdx);</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="comment"> * @brief Pop an item from the head of the list.</span></div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;<span class="comment"> * This function removes an item from the head of the list. If the custom</span></div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;<span class="comment"> * resource clean method is set, it also runs the resource clean method for the</span></div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="comment"> * removed item.</span></div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="comment"> * @param item          The designated item</span></div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="comment"> * @retval ERR_NOMEM    Insufficient memory for list extension</span></div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a47fc1ea5b88257be51e7314ee0806f6d">LinkedListPushBack</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, Item item);</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="comment"> * @brief Insert an item to the designated index of the list.</span></div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="comment"> * This function inserts an item to the designated index of the list and shifts</span></div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;<span class="comment"> * the trailing items one position to the tail. The index can be positive or</span></div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="comment"> * negative, but its absolute value should be smaller than or equal to the list</span></div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="comment"> * size.</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="comment"> * The operation supports both forward and backward indexing. For the former one,</span></div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="comment"> * the list is traversed from the head to the tail. And for the later one, the</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="comment"> * direction is reversed.</span></div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="comment"> * To illustrate the behavior, let N denote the list size. Thus for forward indexing</span></div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="comment"> * , index (0) and index (N-1) point to the head and tail. And for backward indexing,</span></div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="comment"> * index (-1) and index (-N) point to the list tail and head.</span></div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="comment"> * But no matter which indexing method is applied, the list always grows from the</span></div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="comment"> * head to the tail.</span></div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;<span class="comment"> * @param item          The designated item</span></div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="comment"> * @param iIdx          The designated index</span></div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;<span class="comment"> * @retval ERR_NOMEM    Insufficient memory for list extension</span></div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="comment"> * @retval ERR_IDX      Out of range indexing</span></div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="comment"> * @retval ERR_IDX      Empty list</span></div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a376b763eab64b2a1c4739dcb4a1a8e72">ListPopFront</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>);</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="comment"> * @brief Pop an item from the tail of the list.</span></div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;<span class="comment"> * This function removes an item from the tail of the list. If the custom</span></div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<span class="comment"> * resource clean method is set, it also runs the resource clean method for the</span></div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="comment"> * removed item.</span></div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="comment"> * @retval ERR_IDX      Empty list</span></div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a2e7fdcdd2c96e3b71265e7c708799e3a">ListPopBack</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>);</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="comment"> * @brief Remove an item from the designated index of the list.</span></div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="comment"> * This function removes an item from the designated index of the list and shifts</span></div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="comment"> * the trailing items one position to the head. If the custom resource clean</span></div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="comment"> * method is set, it also runs the resource clean method for the removed item.</span></div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="comment"> * The operation supports both forward and backward indexing. Let N denote the</span></div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="comment"> * list size and i denote the index.</span></div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="comment"> * For forward indexing, inequality 0 &lt;= i &lt; N must be fitted.</span></div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;<span class="comment"> * For backward indexing, inequality 0 &lt; i &lt;= -N must be fitted.</span></div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;<span class="comment"> * @param iIdx          The designated index</span></div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;<span class="comment"> * @retval ERR_IDX      Out of range indexing</span></div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a013d6d30e0e066a44d7927595f1258ba">ListDelete</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, int32_t iIdx);</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;<span class="comment"> * @brief Set an item at the head of the list.</span></div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="comment"> * @note The absolute value of the index should be smaller than or equal to the</span></div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<span class="comment"> * list size.</span></div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;int32_t <a class="code" href="linked__list_8h.html#aaa3c2edaa7d589284f3541f805c3ab5e">LinkedListInsert</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, Item item, int32_t iIdx);</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="comment"> * @brief Pop an item from the head of the list.</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="comment"> * This function removes an item from the head of the list. If the custom</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="comment"> * resource clean method is set, it also runs the resource clean method for the</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;<span class="comment"> * removed item.</span></div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="comment"> * @retval ERR_IDX      Empty list</span></div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a4a9524b9b34be78e35b9d8de3a85d65a">LinkedListPopFront</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>);</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="comment"> * @brief Pop an item from the tail of the list.</span></div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="comment"> * This function removes an item from the tail of the list. If the custom</span></div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="comment"> * resource clean method is set, it also runs the resource clean method for the</span></div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="comment"> * removed item.</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="comment"> * @retval ERR_IDX      Empty list</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a95e53af11960f9fd6f70cf769620a64f">LinkedListPopBack</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>);</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<span class="comment"> * @brief Remove an item from the designated index of the list.</span></div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<span class="comment"> * This function removes an item from the designated index of the list and shifts</span></div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;<span class="comment"> * the trailing items one position to the head. If the custom resource clean</span></div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="comment"> * method is set, it also runs the resource clean method for the removed item.</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;<span class="comment"> * The operation supports both forward and backward indexing. Let N denote the</span></div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;<span class="comment"> * list size and i denote the index.</span></div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;<span class="comment"> * For forward indexing, inequality 0 &lt;= i &lt; N must be fitted.</span></div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;<span class="comment"> * For backward indexing, inequality 0 &lt; i &lt;= -N must be fitted.</span></div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;<span class="comment"> * This function replaces the head item with the designated one. If the custom</span></div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;<span class="comment"> * resource clean method is set, it also runs the resource clean method for the</span></div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="comment"> * replaced item.</span></div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;<span class="comment"> * @param item          The designated item</span></div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="comment"> * @retval ERR_IDX      Empty list</span></div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;int32_t <a class="code" href="linked__list_8h.html#ab97122bfc97f67f619cab5a42479f12f">ListSetFront</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item);</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;<span class="comment"> * @brief Set an item at the tail of the list.</span></div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;<span class="comment"> * @param iIdx          The designated index</span></div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;<span class="comment"> * @retval ERR_IDX      Out of range indexing</span></div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a384f7bfd2b5fb39c2f5329e91e2a7376">LinkedListDelete</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, int32_t iIdx);</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;<span class="comment"> * @brief Replace an item at the head of the list.</span></div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;<span class="comment"> * This function replaces the head item with the designated one. If the custom</span></div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;<span class="comment"> * resource clean method is set, it also runs the resource clean method for the</span></div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;<span class="comment"> * replaced item.</span></div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<span class="comment"> * This function replaces the tail item with the designated one. If the custom</span></div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="comment"> * resource clean method is set, it also runs the resource clean method for the</span></div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="comment"> * replaced item.</span></div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;<span class="comment"> * @param item          The designated item</span></div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="comment"> * @retval ERR_IDX      Empty list</span></div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a7946c0a07e4507b0ccb018929d03a4e9">ListSetBack</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item);</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="comment"> * @brief Replace an item at the designated index of the list.</span></div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="comment"> * @param item          The designated item</span></div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;<span class="comment"> * @retval ERR_IDX      Empty list</span></div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a376dd24b0783a07fb468f3d5538edc7c">LinkedListSetFront</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, Item item);</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="comment"> * @brief Replace an item at the tail of the list.</span></div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="comment"> * This function replaces the tail item with the designated one. If the custom</span></div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="comment"> * resource clean method is set, it also runs the resource clean method for the</span></div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="comment"> * replaced item.</span></div>
 <div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;<span class="comment"> * This function replaces the item at the designated index with the designated</span></div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="comment"> * one. If the custom resource clean method is set, it also runs the resource</span></div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="comment"> * clean method for the replaced item.</span></div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;<span class="comment"> * The operation supports both forward and backward indexing. Let N denote the</span></div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;<span class="comment"> * list size and i denote the index.</span></div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="comment"> * For forward indexing, inequality 0 &lt;= i &lt; N must be fitted.</span></div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;<span class="comment"> * For backward indexing, inequality 0 &lt; i &lt;= -N must be fitted.</span></div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;<span class="comment"> * @param item          The designated item</span></div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="comment"> * @param iIdx          The designated index</span></div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="comment"> * @param item          The designated item</span></div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="comment"> * @retval ERR_IDX      Empty list</span></div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a8c972c5c89ad9f38fa65e0793317c903">LinkedListSetBack</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, Item item);</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="comment"> * @brief Replace an item at the designated index of the list.</span></div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;<span class="comment"> * @retval ERR_IDX      Out of range index</span></div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;int32_t <a class="code" href="linked__list_8h.html#ab7722952701d3384a4ffcc090582ead3">ListSetAt</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> item, int32_t iIdx);</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="comment"> * @brief Get an item from the head of the list.</span></div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="comment"> * @param pItem         The pointer to the returned item</span></div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="comment"> * This function replaces the item at the designated index with the designated</span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="comment"> * one. If the custom resource clean method is set, it also runs the resource</span></div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;<span class="comment"> * clean method for the replaced item.</span></div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="comment"> * The operation supports both forward and backward indexing. Let N denote the</span></div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;<span class="comment"> * list size and i denote the index.</span></div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;<span class="comment"> * For forward indexing, inequality 0 &lt;= i &lt; N must be fitted.</span></div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="comment"> * For backward indexing, inequality 0 &lt; i &lt;= -N must be fitted.</span></div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="comment"> * @param item          The designated item</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="comment"> * @param iIdx          The designated index</span></div>
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;<span class="comment"> * @retval SUCC</span></div>
 <div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;<span class="comment"> * @retval ERR_IDX      Empty list</span></div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="comment"> * @retval ERR_GET      Invalid parameter to store returned item</span></div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;<span class="comment"> * @note If the exception occurs, the second parameter will be updated with NULL.</span></div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a4a38bc5d0a540d9b717a86ae327781ef">ListGetFront</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItem);</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;<span class="comment"> * @brief Get an item from the tail of the list.</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;<span class="comment"> * @retval ERR_IDX      Out of range index</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;int32_t <a class="code" href="linked__list_8h.html#ad6e18d3450b370c7e7e05969634995b2">LinkedListSetAt</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, Item item, int32_t iIdx);</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;<span class="comment"> * @brief Get an item from the head of the list.</span></div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;<span class="comment"> * @param pItem         The pointer to the returned item</span></div>
 <div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;<span class="comment"> * @param pItem         The pointer to the returned item</span></div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="comment"> * @retval ERR_IDX      Empty list</span></div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;<span class="comment"> * @retval ERR_GET      Invalid parameter to store returned item</span></div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;<span class="comment"> * @note If the exception occurs, the second parameter will be updated with NULL.</span></div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a81608b2714a535b32225139b5e9eda48">ListGetBack</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItem);</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="comment"> * @brief Get an item from the designated index of the list.</span></div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;<span class="comment"> * @retval ERR_IDX      Empty list</span></div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<span class="comment"> * @retval ERR_GET      Invalid parameter to store returned item</span></div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="comment"> * @note If the exception occurs, the second parameter will be updated with NULL.</span></div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a7cfa21bd5b14fbe0725b2bbe30765943">LinkedListGetFront</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, Item *pItem);</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;<span class="comment"> * @brief Get an item from the tail of the list.</span></div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="comment"> * @param pItem         The pointer to the returned item</span></div>
 <div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;<span class="comment"> * The operation supports both forward and backward indexing. Let N denote the</span></div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;<span class="comment"> * list size and i denote the index.</span></div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;<span class="comment"> * For forward indexing, inequality 0 &lt;= i &lt; N must be fitted.</span></div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;<span class="comment"> * For backward indexing, inequality 0 &lt; i &lt;= -N must be fitted.</span></div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;<span class="comment"> * @retval ERR_IDX      Empty list</span></div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;<span class="comment"> * @retval ERR_GET      Invalid parameter to store returned item</span></div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;<span class="comment"> * @param pItem         The pointer to the returned item</span></div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;<span class="comment"> * @param iIdx          The designated index</span></div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;<span class="comment"> * @retval ERR_IDX      Out of range index</span></div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="comment"> * @retval ERR_GET      Invalid parameter to store returned item</span></div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="comment"> * @note If the exception occurs, the second parameter will be updated with NULL.</span></div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;int32_t <a class="code" href="linked__list_8h.html#ac9692cd98cd1a80a2624c3f4d71a8407">ListGetAt</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, <a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a> *pItem, int32_t iIdx);</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;<span class="comment"> * @brief Return the number of stored items.</span></div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="comment"> * @note If the exception occurs, the second parameter will be updated with NULL.</span></div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;int32_t <a class="code" href="linked__list_8h.html#afaae460221606412734f4ed18866d2e9">LinkedListGetBack</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, Item *pItem);</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;<span class="comment"> * @brief Get an item from the designated index of the list.</span></div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="comment"> * The operation supports both forward and backward indexing. Let N denote the</span></div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;<span class="comment"> * list size and i denote the index.</span></div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="comment"> * For forward indexing, inequality 0 &lt;= i &lt; N must be fitted.</span></div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;<span class="comment"> * For backward indexing, inequality 0 &lt; i &lt;= -N must be fitted.</span></div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;<span class="comment"> * @param pItem         The pointer to the returned item</span></div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;<span class="comment"> * @param iIdx          The designated index</span></div>
 <div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;<span class="comment"> * @return              The number of stored item</span></div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a04262f42ac3762d0e15df7253566e8cf">ListSize</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>);</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;<span class="comment"> * @brief Reverse the list.</span></div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;<span class="comment"> * @retval ERR_IDX      Out of range index</span></div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;<span class="comment"> * @retval ERR_GET      Invalid parameter to store returned item</span></div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;<span class="comment"> * @note If the exception occurs, the second parameter will be updated with NULL.</span></div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a241bbf1a187568d66fb0d9cdc3d7b2a3">LinkedListGetAt</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, Item *pItem, int32_t iIdx);</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;<span class="comment"> * @brief Return the number of stored items.</span></div>
 <div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;int32_t <a class="code" href="linked__list_8h.html#ade113df0d49ffa14f409b7e738518121">ListReverse</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>);</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;<span class="comment"> * @brief Set the custom item resource clean method.</span></div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;<span class="comment"> * @param pFunc         The function pointer to the custom method</span></div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a8bf278781f5cb90a1fd524e9996a6e0e">ListSetDestroy</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, <span class="keywordtype">void</span> (*pFunc) (<a class="code" href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a>));</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="linked__list_8h_html_a2e7fdcdd2c96e3b71265e7c708799e3a"><div class="ttname"><a href="linked__list_8h.html#a2e7fdcdd2c96e3b71265e7c708799e3a">ListPopBack</a></div><div class="ttdeci">int32_t ListPopBack(LinkedList *self)</div><div class="ttdoc">Pop an item from the tail of the list. </div></div>
-<div class="ttc" id="linked__list_8h_html_abcb028ab69760f178ba1e2b6f8d57565"><div class="ttname"><a href="linked__list_8h.html#abcb028ab69760f178ba1e2b6f8d57565">ListPushFront</a></div><div class="ttdeci">int32_t ListPushFront(LinkedList *self, Item item)</div><div class="ttdoc">Push an item to the head of the list. </div></div>
-<div class="ttc" id="linked__list_8h_html_ab97122bfc97f67f619cab5a42479f12f"><div class="ttname"><a href="linked__list_8h.html#ab97122bfc97f67f619cab5a42479f12f">ListSetFront</a></div><div class="ttdeci">int32_t ListSetFront(LinkedList *self, Item item)</div><div class="ttdoc">Set an item at the head of the list. </div></div>
-<div class="ttc" id="linked__list_8h_html_a4a38bc5d0a540d9b717a86ae327781ef"><div class="ttname"><a href="linked__list_8h.html#a4a38bc5d0a540d9b717a86ae327781ef">ListGetFront</a></div><div class="ttdeci">int32_t ListGetFront(LinkedList *self, Item *pItem)</div><div class="ttdoc">Get an item from the head of the list. </div></div>
-<div class="ttc" id="structLinkedList_html_ada9dba2f02c558b34599f9f83f7eebcc"><div class="ttname"><a href="structLinkedList.html#ada9dba2f02c558b34599f9f83f7eebcc">LinkedList::pData</a></div><div class="ttdeci">ListData * pData</div><div class="ttdoc">The container private information. </div><div class="ttdef"><b>Definition:</b> <a href="linked__list_8h_source.html#l00016">linked_list.h:16</a></div></div>
-<div class="ttc" id="linked__list_8h_html_a3ae8c3d62068a0b3f3cce4d5f3b6f9d0"><div class="ttname"><a href="linked__list_8h.html#a3ae8c3d62068a0b3f3cce4d5f3b6f9d0">ListDeinit</a></div><div class="ttdeci">void ListDeinit(LinkedList **ppObj)</div><div class="ttdoc">The destructor for LinkedList. </div></div>
-<div class="ttc" id="linked__list_8h_html_a00b345594a572978b190d63e3de11ec0"><div class="ttname"><a href="linked__list_8h.html#a00b345594a572978b190d63e3de11ec0">ListInsert</a></div><div class="ttdeci">int32_t ListInsert(LinkedList *self, Item item, int32_t iIdx)</div><div class="ttdoc">Insert an item to the designated index of the list. </div></div>
-<div class="ttc" id="linked__list_8h_html_ac63d6236e7910b2b375594c73ba2e79d"><div class="ttname"><a href="linked__list_8h.html#ac63d6236e7910b2b375594c73ba2e79d">ListData</a></div><div class="ttdeci">struct _ListData ListData</div><div class="ttdoc">ListData is the data type for the container private information. </div><div class="ttdef"><b>Definition:</b> <a href="linked__list_8h_source.html#l00011">linked_list.h:11</a></div></div>
-<div class="ttc" id="linked__list_8h_html_a376b763eab64b2a1c4739dcb4a1a8e72"><div class="ttname"><a href="linked__list_8h.html#a376b763eab64b2a1c4739dcb4a1a8e72">ListPopFront</a></div><div class="ttdeci">int32_t ListPopFront(LinkedList *self)</div><div class="ttdoc">Pop an item from the head of the list. </div></div>
-<div class="ttc" id="linked__list_8h_html_a81608b2714a535b32225139b5e9eda48"><div class="ttname"><a href="linked__list_8h.html#a81608b2714a535b32225139b5e9eda48">ListGetBack</a></div><div class="ttdeci">int32_t ListGetBack(LinkedList *self, Item *pItem)</div><div class="ttdoc">Get an item from the tail of the list. </div></div>
-<div class="ttc" id="util_8h_html_a2583da5c1c14184068bda8cf681d5bed"><div class="ttname"><a href="util_8h.html#a2583da5c1c14184068bda8cf681d5bed">Item</a></div><div class="ttdeci">const void * Item</div><div class="ttdoc">Item is the data type for the container element. </div><div class="ttdef"><b>Definition:</b> <a href="util_8h_source.html#l00037">util.h:37</a></div></div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;<span class="comment"> * @return              The number of stored item</span></div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a21c0825453470b43383b9c29f7faaeaa">LinkedListSize</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>);</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;<span class="comment"> * @brief Reverse the list.</span></div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;int32_t <a class="code" href="linked__list_8h.html#ac73df44c8ffd827de1239f27998b5515">LinkedListReverse</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>);</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;<span class="comment"> * @brief Iterate through the list till the tail end.</span></div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;<span class="comment"> * Before iterating through the list, it is necessary to pass bReset := true and</span></div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;<span class="comment"> * pItem := NULL for iterator initialization.</span></div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;<span class="comment"> * After initialization, you can pass bReset := false and pItem := the relevant</span></div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;<span class="comment"> * pointer to get the returned item at each iteration.</span></div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;<span class="comment"> * @param bReset        The knob to reset the iteration</span></div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;<span class="comment"> * @param pItem         The pointer to the returned item</span></div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;<span class="comment"> * @retval END          Beyond the tail end</span></div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;<span class="comment"> * @retval ERR_GET      Invalid parameter to store returned item</span></div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a31e963d96b59aceffe7de151e38b7671">LinkedListIterate</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, <span class="keywordtype">bool</span> bReset, Item *pItem);</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;<span class="comment"> * @brief Reversely iterate through the list till the head end.</span></div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;<span class="comment"> * Before reversely iterating through the list, it is necessary to pass</span></div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;<span class="comment"> * bReset := true and pItem := NULL for iterator initialization.</span></div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;<span class="comment"> * After initialization, you can pass bReset := false and pItem := the relevant</span></div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;<span class="comment"> * pointer to get the returned item at each iteration.</span></div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;<span class="comment"> * @param bReset        The knob to reset the iteration</span></div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;<span class="comment"> * @param pItem         The pointer to the returned item</span></div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;<span class="comment"> * @retval END          Beyond the head end</span></div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;<span class="comment"> * @retval ERR_GET      Invalid parameter to store returned item</span></div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a12330d90fc1d10c01fa69dfdf2fc7546">LinkedListReverseIterate</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, <span class="keywordtype">bool</span> bReset, Item *pItem);</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;<span class="comment"> * @brief Immediately replace the item at a specific iteration.</span></div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;<span class="comment"> * This operator should be applied within the scope of iterate() or</span></div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;<span class="comment"> * reverse_iterate() iterators. If the custom resource clean method is set, it</span></div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;<span class="comment"> * also runs the resource clean method for the replaced item</span></div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;<span class="comment"> * @param item          The item which intends to take position</span></div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;<span class="comment"> * @retval ERR_IDX      Out of range indexing</span></div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;<span class="comment"> * @note  If you intend to use the operator outside of the iterators, the behavior</span></div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;<span class="comment"> * is undefined. Which is, the operator may successfully replace the item or it</span></div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;<span class="comment"> * may return an error code.</span></div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;int32_t <a class="code" href="linked__list_8h.html#ad88e7dae7a30ea875c883a750371f951">LinkedListReplace</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, Item item);</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;<span class="comment"> * @brief Set the custom item resource clean method.</span></div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;<span class="comment"> * @param self          The pointer to the LinkedList structure</span></div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;<span class="comment"> * @param pFunc         The function pointer to the custom method</span></div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;int32_t <a class="code" href="linked__list_8h.html#a248804060a13cf954492129d002f4ce2">LinkedListSetDestroy</a>(<a class="code" href="structLinkedList.html">LinkedList</a> *<span class="keyword">self</span>, <span class="keywordtype">void</span> (*pFunc) (Item));</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="linked__list_8h_html_a4a9524b9b34be78e35b9d8de3a85d65a"><div class="ttname"><a href="linked__list_8h.html#a4a9524b9b34be78e35b9d8de3a85d65a">LinkedListPopFront</a></div><div class="ttdeci">int32_t LinkedListPopFront(LinkedList *self)</div><div class="ttdoc">Pop an item from the head of the list. </div></div>
+<div class="ttc" id="linked__list_8h_html_ab5b531ccb05248d3badb364a829cd34f"><div class="ttname"><a href="linked__list_8h.html#ab5b531ccb05248d3badb364a829cd34f">LinkedListPushFront</a></div><div class="ttdeci">int32_t LinkedListPushFront(LinkedList *self, Item item)</div><div class="ttdoc">Push an item to the head of the list. </div></div>
+<div class="ttc" id="linked__list_8h_html_a127f510506f08af50204dc4303999fbb"><div class="ttname"><a href="linked__list_8h.html#a127f510506f08af50204dc4303999fbb">LinkedListInit</a></div><div class="ttdeci">int32_t LinkedListInit(LinkedList **ppObj)</div><div class="ttdoc">The constructor for LinkedList. </div></div>
+<div class="ttc" id="linked__list_8h_html_aaa3c2edaa7d589284f3541f805c3ab5e"><div class="ttname"><a href="linked__list_8h.html#aaa3c2edaa7d589284f3541f805c3ab5e">LinkedListInsert</a></div><div class="ttdeci">int32_t LinkedListInsert(LinkedList *self, Item item, int32_t iIdx)</div><div class="ttdoc">Insert an item to the designated index of the list. </div></div>
+<div class="ttc" id="structLinkedList_html_a33116a1ae335db6a26130f1981b9bbef"><div class="ttname"><a href="structLinkedList.html#a33116a1ae335db6a26130f1981b9bbef">LinkedList::pData</a></div><div class="ttdeci">LinkedListData * pData</div><div class="ttdoc">The container private information. </div><div class="ttdef"><b>Definition:</b> <a href="linked__list_8h_source.html#l00016">linked_list.h:16</a></div></div>
+<div class="ttc" id="linked__list_8h_html_a95e53af11960f9fd6f70cf769620a64f"><div class="ttname"><a href="linked__list_8h.html#a95e53af11960f9fd6f70cf769620a64f">LinkedListPopBack</a></div><div class="ttdeci">int32_t LinkedListPopBack(LinkedList *self)</div><div class="ttdoc">Pop an item from the tail of the list. </div></div>
+<div class="ttc" id="linked__list_8h_html_a8c972c5c89ad9f38fa65e0793317c903"><div class="ttname"><a href="linked__list_8h.html#a8c972c5c89ad9f38fa65e0793317c903">LinkedListSetBack</a></div><div class="ttdeci">int32_t LinkedListSetBack(LinkedList *self, Item item)</div><div class="ttdoc">Replace an item at the tail of the list. </div></div>
+<div class="ttc" id="linked__list_8h_html_a47fc1ea5b88257be51e7314ee0806f6d"><div class="ttname"><a href="linked__list_8h.html#a47fc1ea5b88257be51e7314ee0806f6d">LinkedListPushBack</a></div><div class="ttdeci">int32_t LinkedListPushBack(LinkedList *self, Item item)</div><div class="ttdoc">Push an item to the tail of the list. </div></div>
+<div class="ttc" id="linked__list_8h_html_a8719de7cb6fd1a64fcf777df871d7813"><div class="ttname"><a href="linked__list_8h.html#a8719de7cb6fd1a64fcf777df871d7813">LinkedListData</a></div><div class="ttdeci">struct _LinkedListData LinkedListData</div><div class="ttdoc">LinkedListData is the data type for the container private information. </div><div class="ttdef"><b>Definition:</b> <a href="linked__list_8h_source.html#l00011">linked_list.h:11</a></div></div>
+<div class="ttc" id="linked__list_8h_html_a376dd24b0783a07fb468f3d5538edc7c"><div class="ttname"><a href="linked__list_8h.html#a376dd24b0783a07fb468f3d5538edc7c">LinkedListSetFront</a></div><div class="ttdeci">int32_t LinkedListSetFront(LinkedList *self, Item item)</div><div class="ttdoc">Replace an item at the head of the list. </div></div>
+<div class="ttc" id="linked__list_8h_html_a241bbf1a187568d66fb0d9cdc3d7b2a3"><div class="ttname"><a href="linked__list_8h.html#a241bbf1a187568d66fb0d9cdc3d7b2a3">LinkedListGetAt</a></div><div class="ttdeci">int32_t LinkedListGetAt(LinkedList *self, Item *pItem, int32_t iIdx)</div><div class="ttdoc">Get an item from the designated index of the list. </div></div>
+<div class="ttc" id="linked__list_8h_html_a21c0825453470b43383b9c29f7faaeaa"><div class="ttname"><a href="linked__list_8h.html#a21c0825453470b43383b9c29f7faaeaa">LinkedListSize</a></div><div class="ttdeci">int32_t LinkedListSize(LinkedList *self)</div><div class="ttdoc">Return the number of stored items. </div></div>
+<div class="ttc" id="linked__list_8h_html_ad88e7dae7a30ea875c883a750371f951"><div class="ttname"><a href="linked__list_8h.html#ad88e7dae7a30ea875c883a750371f951">LinkedListReplace</a></div><div class="ttdeci">int32_t LinkedListReplace(LinkedList *self, Item item)</div><div class="ttdoc">Immediately replace the item at a specific iteration. </div></div>
 <div class="ttc" id="structLinkedList_html"><div class="ttname"><a href="structLinkedList.html">LinkedList</a></div><div class="ttdoc">The implementation for doubly linked list. </div><div class="ttdef"><b>Definition:</b> <a href="linked__list_8h_source.html#l00014">linked_list.h:14</a></div></div>
-<div class="ttc" id="linked__list_8h_html_a8bf278781f5cb90a1fd524e9996a6e0e"><div class="ttname"><a href="linked__list_8h.html#a8bf278781f5cb90a1fd524e9996a6e0e">ListSetDestroy</a></div><div class="ttdeci">int32_t ListSetDestroy(LinkedList *self, void(*pFunc)(Item))</div><div class="ttdoc">Set the custom item resource clean method. </div></div>
-<div class="ttc" id="linked__list_8h_html_ac9692cd98cd1a80a2624c3f4d71a8407"><div class="ttname"><a href="linked__list_8h.html#ac9692cd98cd1a80a2624c3f4d71a8407">ListGetAt</a></div><div class="ttdeci">int32_t ListGetAt(LinkedList *self, Item *pItem, int32_t iIdx)</div><div class="ttdoc">Get an item from the designated index of the list. </div></div>
-<div class="ttc" id="linked__list_8h_html_a013d6d30e0e066a44d7927595f1258ba"><div class="ttname"><a href="linked__list_8h.html#a013d6d30e0e066a44d7927595f1258ba">ListDelete</a></div><div class="ttdeci">int32_t ListDelete(LinkedList *self, int32_t iIdx)</div><div class="ttdoc">Remove an item from the designated index of the list. </div></div>
-<div class="ttc" id="linked__list_8h_html_afe26056afa66015a6ea4c478e404f479"><div class="ttname"><a href="linked__list_8h.html#afe26056afa66015a6ea4c478e404f479">ListPushBack</a></div><div class="ttdeci">int32_t ListPushBack(LinkedList *self, Item item)</div><div class="ttdoc">Push an item to the tail of the list. </div></div>
-<div class="ttc" id="linked__list_8h_html_a04262f42ac3762d0e15df7253566e8cf"><div class="ttname"><a href="linked__list_8h.html#a04262f42ac3762d0e15df7253566e8cf">ListSize</a></div><div class="ttdeci">int32_t ListSize(LinkedList *self)</div><div class="ttdoc">Return the number of stored items. </div></div>
-<div class="ttc" id="linked__list_8h_html_a7946c0a07e4507b0ccb018929d03a4e9"><div class="ttname"><a href="linked__list_8h.html#a7946c0a07e4507b0ccb018929d03a4e9">ListSetBack</a></div><div class="ttdeci">int32_t ListSetBack(LinkedList *self, Item item)</div><div class="ttdoc">Set an item at the tail of the list. </div></div>
-<div class="ttc" id="linked__list_8h_html_ad10aa1c735ce4c2156e952154fea7d2c"><div class="ttname"><a href="linked__list_8h.html#ad10aa1c735ce4c2156e952154fea7d2c">ListInit</a></div><div class="ttdeci">int32_t ListInit(LinkedList **ppObj)</div><div class="ttdoc">The constructor for LinkedList. </div></div>
-<div class="ttc" id="linked__list_8h_html_ade113df0d49ffa14f409b7e738518121"><div class="ttname"><a href="linked__list_8h.html#ade113df0d49ffa14f409b7e738518121">ListReverse</a></div><div class="ttdeci">int32_t ListReverse(LinkedList *self)</div><div class="ttdoc">Reverse the list. </div></div>
-<div class="ttc" id="linked__list_8h_html_ab7722952701d3384a4ffcc090582ead3"><div class="ttname"><a href="linked__list_8h.html#ab7722952701d3384a4ffcc090582ead3">ListSetAt</a></div><div class="ttdeci">int32_t ListSetAt(LinkedList *self, Item item, int32_t iIdx)</div><div class="ttdoc">Replace an item at the designated index of the list. </div></div>
+<div class="ttc" id="linked__list_8h_html_ad6e18d3450b370c7e7e05969634995b2"><div class="ttname"><a href="linked__list_8h.html#ad6e18d3450b370c7e7e05969634995b2">LinkedListSetAt</a></div><div class="ttdeci">int32_t LinkedListSetAt(LinkedList *self, Item item, int32_t iIdx)</div><div class="ttdoc">Replace an item at the designated index of the list. </div></div>
+<div class="ttc" id="linked__list_8h_html_a384f7bfd2b5fb39c2f5329e91e2a7376"><div class="ttname"><a href="linked__list_8h.html#a384f7bfd2b5fb39c2f5329e91e2a7376">LinkedListDelete</a></div><div class="ttdeci">int32_t LinkedListDelete(LinkedList *self, int32_t iIdx)</div><div class="ttdoc">Remove an item from the designated index of the list. </div></div>
+<div class="ttc" id="linked__list_8h_html_a7cfa21bd5b14fbe0725b2bbe30765943"><div class="ttname"><a href="linked__list_8h.html#a7cfa21bd5b14fbe0725b2bbe30765943">LinkedListGetFront</a></div><div class="ttdeci">int32_t LinkedListGetFront(LinkedList *self, Item *pItem)</div><div class="ttdoc">Get an item from the head of the list. </div></div>
+<div class="ttc" id="linked__list_8h_html_a12330d90fc1d10c01fa69dfdf2fc7546"><div class="ttname"><a href="linked__list_8h.html#a12330d90fc1d10c01fa69dfdf2fc7546">LinkedListReverseIterate</a></div><div class="ttdeci">int32_t LinkedListReverseIterate(LinkedList *self, bool bReset, Item *pItem)</div><div class="ttdoc">Reversely iterate through the list till the head end. </div></div>
+<div class="ttc" id="linked__list_8h_html_ac73df44c8ffd827de1239f27998b5515"><div class="ttname"><a href="linked__list_8h.html#ac73df44c8ffd827de1239f27998b5515">LinkedListReverse</a></div><div class="ttdeci">int32_t LinkedListReverse(LinkedList *self)</div><div class="ttdoc">Reverse the list. </div></div>
+<div class="ttc" id="linked__list_8h_html_a8f5499dc2ef8b3474e1ca4e3f415757e"><div class="ttname"><a href="linked__list_8h.html#a8f5499dc2ef8b3474e1ca4e3f415757e">LinkedListDeinit</a></div><div class="ttdeci">void LinkedListDeinit(LinkedList **ppObj)</div><div class="ttdoc">The destructor for LinkedList. </div></div>
+<div class="ttc" id="linked__list_8h_html_afaae460221606412734f4ed18866d2e9"><div class="ttname"><a href="linked__list_8h.html#afaae460221606412734f4ed18866d2e9">LinkedListGetBack</a></div><div class="ttdeci">int32_t LinkedListGetBack(LinkedList *self, Item *pItem)</div><div class="ttdoc">Get an item from the tail of the list. </div></div>
+<div class="ttc" id="linked__list_8h_html_a248804060a13cf954492129d002f4ce2"><div class="ttname"><a href="linked__list_8h.html#a248804060a13cf954492129d002f4ce2">LinkedListSetDestroy</a></div><div class="ttdeci">int32_t LinkedListSetDestroy(LinkedList *self, void(*pFunc)(Item))</div><div class="ttdoc">Set the custom item resource clean method. </div></div>
+<div class="ttc" id="linked__list_8h_html_a31e963d96b59aceffe7de151e38b7671"><div class="ttname"><a href="linked__list_8h.html#a31e963d96b59aceffe7de151e38b7671">LinkedListIterate</a></div><div class="ttdeci">int32_t LinkedListIterate(LinkedList *self, bool bReset, Item *pItem)</div><div class="ttdoc">Iterate through the list till the tail end. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_0aa88ba44bbec23a6de57be31686ecf8.html">list</a></li><li class="navelem"><a class="el" href="linked__list_8h.html">linked_list.h</a></li>
+    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_e0f5f6345e438c73b9ae78ec2940718c.html">container</a></li><li class="navelem"><a class="el" href="linked__list_8h.html">linked_list.h</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

@@ -77,24 +77,45 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a0b3580fc846909d246fb8a38eed04b8c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="tree__map_8h.html#a6f6e4f4df6632fdbf3d1075f51af07af">TreeMapData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#a0b3580fc846909d246fb8a38eed04b8c">pData</a></td></tr>
 <tr class="memdesc:a0b3580fc846909d246fb8a38eed04b8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The container private information.  <a href="#a0b3580fc846909d246fb8a38eed04b8c">More...</a><br/></td></tr>
 <tr class="separator:a0b3580fc846909d246fb8a38eed04b8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74a266ed9974a71e54dddbd5c70c9322"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#a74a266ed9974a71e54dddbd5c70c9322">put</a> )(struct _TreeMap *, <a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>)</td></tr>
-<tr class="memdesc:a74a266ed9974a71e54dddbd5c70c9322"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a key value pair into the map.  <a href="#a74a266ed9974a71e54dddbd5c70c9322">More...</a><br/></td></tr>
-<tr class="separator:a74a266ed9974a71e54dddbd5c70c9322"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3ac1a25d27e3f58eee42f2458d46577"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#ae3ac1a25d27e3f58eee42f2458d46577">get</a> )(struct _TreeMap *, <a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>, <a class="el" href="util_8h.html#ad0d0cb99e46ebc1c0458843e19ae21bd">Value</a> *)</td></tr>
+<tr class="memitem:a23619fecb4cc03b9dea9e321d533ac74"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#a23619fecb4cc03b9dea9e321d533ac74">put</a> )(struct _TreeMap *, Pair *)</td></tr>
+<tr class="memdesc:a23619fecb4cc03b9dea9e321d533ac74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a key value pair into the map.  <a href="#a23619fecb4cc03b9dea9e321d533ac74">More...</a><br/></td></tr>
+<tr class="separator:a23619fecb4cc03b9dea9e321d533ac74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3ac1a25d27e3f58eee42f2458d46577"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#ae3ac1a25d27e3f58eee42f2458d46577">get</a> )(struct _TreeMap *, Key, Value *)</td></tr>
 <tr class="memdesc:ae3ac1a25d27e3f58eee42f2458d46577"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the value corresponding to the designated key.  <a href="#ae3ac1a25d27e3f58eee42f2458d46577">More...</a><br/></td></tr>
 <tr class="separator:ae3ac1a25d27e3f58eee42f2458d46577"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55665d1f01d91d8e4280053428cf9c8a"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#a55665d1f01d91d8e4280053428cf9c8a">remove</a> )(struct _TreeMap *, <a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>)</td></tr>
+<tr class="memitem:aea96058dce2498c396b09f561435f58a"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#aea96058dce2498c396b09f561435f58a">find</a> )(struct _TreeMap *, Key)</td></tr>
+<tr class="memdesc:aea96058dce2498c396b09f561435f58a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the map contains the designated key.  <a href="#aea96058dce2498c396b09f561435f58a">More...</a><br/></td></tr>
+<tr class="separator:aea96058dce2498c396b09f561435f58a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55665d1f01d91d8e4280053428cf9c8a"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#a55665d1f01d91d8e4280053428cf9c8a">remove</a> )(struct _TreeMap *, Key)</td></tr>
 <tr class="memdesc:a55665d1f01d91d8e4280053428cf9c8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the key value pair corresponding to the designated key.  <a href="#a55665d1f01d91d8e4280053428cf9c8a">More...</a><br/></td></tr>
 <tr class="separator:a55665d1f01d91d8e4280053428cf9c8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad670d2ebfeedc3cdaa18cb1ed1b2ae10"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#ad670d2ebfeedc3cdaa18cb1ed1b2ae10">size</a> )(struct _TreeMap *)</td></tr>
 <tr class="memdesc:ad670d2ebfeedc3cdaa18cb1ed1b2ae10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of stored key value pairs.  <a href="#ad670d2ebfeedc3cdaa18cb1ed1b2ae10">More...</a><br/></td></tr>
 <tr class="separator:ad670d2ebfeedc3cdaa18cb1ed1b2ae10"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4eb8ff22f0b422ab54484640534d926b"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#a4eb8ff22f0b422ab54484640534d926b">set_compare</a> )(struct _TreeMap *, int32_t(*)(<a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>, <a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>))</td></tr>
-<tr class="memdesc:a4eb8ff22f0b422ab54484640534d926b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the user defined key value pair comparison method.  <a href="#a4eb8ff22f0b422ab54484640534d926b">More...</a><br/></td></tr>
-<tr class="separator:a4eb8ff22f0b422ab54484640534d926b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a771c139c5d94f0adf27c53669430380a"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#a771c139c5d94f0adf27c53669430380a">set_destroy</a> )(struct _TreeMap *, void(*)(<a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>))</td></tr>
-<tr class="memdesc:a771c139c5d94f0adf27c53669430380a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the user defined key value pair clean method.  <a href="#a771c139c5d94f0adf27c53669430380a">More...</a><br/></td></tr>
-<tr class="separator:a771c139c5d94f0adf27c53669430380a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a172cd26b06106288bdfbfa3766825f9c"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#a172cd26b06106288bdfbfa3766825f9c">minimum</a> )(struct _TreeMap *, Pair **)</td></tr>
+<tr class="memdesc:a172cd26b06106288bdfbfa3766825f9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the key value pair with the minimum order from the map.  <a href="#a172cd26b06106288bdfbfa3766825f9c">More...</a><br/></td></tr>
+<tr class="separator:a172cd26b06106288bdfbfa3766825f9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd0ec534c018a6275db0e9dc57c505f4"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#afd0ec534c018a6275db0e9dc57c505f4">maximum</a> )(struct _TreeMap *, Pair **)</td></tr>
+<tr class="memdesc:afd0ec534c018a6275db0e9dc57c505f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the key value pair with the maximum order from the map.  <a href="#afd0ec534c018a6275db0e9dc57c505f4">More...</a><br/></td></tr>
+<tr class="separator:afd0ec534c018a6275db0e9dc57c505f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91386e61367d2368eebd000353d912e9"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#a91386e61367d2368eebd000353d912e9">predecessor</a> )(struct _TreeMap *, Key, Pair **)</td></tr>
+<tr class="memdesc:a91386e61367d2368eebd000353d912e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the key value pair which is the predecessor of the given key.  <a href="#a91386e61367d2368eebd000353d912e9">More...</a><br/></td></tr>
+<tr class="separator:a91386e61367d2368eebd000353d912e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ee5078a4aa7b4f4efa14526bf341a41"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#a6ee5078a4aa7b4f4efa14526bf341a41">successor</a> )(struct _TreeMap *, Key, Pair **)</td></tr>
+<tr class="memdesc:a6ee5078a4aa7b4f4efa14526bf341a41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the key value pair which is the successor of the given key.  <a href="#a6ee5078a4aa7b4f4efa14526bf341a41">More...</a><br/></td></tr>
+<tr class="separator:a6ee5078a4aa7b4f4efa14526bf341a41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62a2264b3fd6c89068cdc79242aff4cb"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#a62a2264b3fd6c89068cdc79242aff4cb">iterate</a> )(struct _TreeMap *, bool, Pair **)</td></tr>
+<tr class="memdesc:a62a2264b3fd6c89068cdc79242aff4cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterate through the map from the minimum order to the maximum order.  <a href="#a62a2264b3fd6c89068cdc79242aff4cb">More...</a><br/></td></tr>
+<tr class="separator:a62a2264b3fd6c89068cdc79242aff4cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2f535fa40c63a1acfd393c7e9561e29"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#ad2f535fa40c63a1acfd393c7e9561e29">reverse_iterate</a> )(struct _TreeMap *, bool, Pair **)</td></tr>
+<tr class="memdesc:ad2f535fa40c63a1acfd393c7e9561e29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterate through the map from the maximum order to the minimum order.  <a href="#ad2f535fa40c63a1acfd393c7e9561e29">More...</a><br/></td></tr>
+<tr class="separator:ad2f535fa40c63a1acfd393c7e9561e29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a418ed8c2ae20266a7ae38dd3129fe50d"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#a418ed8c2ae20266a7ae38dd3129fe50d">set_compare</a> )(struct _TreeMap *, int32_t(*)(Key, Key))</td></tr>
+<tr class="memdesc:a418ed8c2ae20266a7ae38dd3129fe50d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the custom key comparison method.  <a href="#a418ed8c2ae20266a7ae38dd3129fe50d">More...</a><br/></td></tr>
+<tr class="separator:a418ed8c2ae20266a7ae38dd3129fe50d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8027e812c60f174417f5823b5e0bb505"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeMap.html#a8027e812c60f174417f5823b5e0bb505">set_destroy</a> )(struct _TreeMap *, void(*)(Pair *))</td></tr>
+<tr class="memdesc:a8027e812c60f174417f5823b5e0bb505"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the custom key value pair resource clean method.  <a href="#a8027e812c60f174417f5823b5e0bb505">More...</a><br/></td></tr>
+<tr class="separator:a8027e812c60f174417f5823b5e0bb505"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The implementation for ordered map. </p>
@@ -117,18 +138,18 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a74a266ed9974a71e54dddbd5c70c9322"></a>
+<a class="anchor" id="a23619fecb4cc03b9dea9e321d533ac74"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t(* TreeMap::put)(struct _TreeMap *, <a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>)</td>
+          <td class="memname">int32_t(* TreeMap::put)(struct _TreeMap *, Pair *)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Insert a key value pair into the map. </p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#ad7cff1380215106ce3b9e1a39c83833d" title="Insert a key value pair into the map. ">TreeMapPut</a> </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#a2cb91b8efa436584df1dcd9418113e5c" title="Insert a key value pair into the map. ">TreeMapPut</a> </dd></dl>
 
 <p>Definition at line <a class="el" href="tree__map_8h_source.html#l00020">20</a> of file <a class="el" href="tree__map_8h_source.html">tree_map.h</a>.</p>
 
@@ -139,7 +160,7 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t(* TreeMap::get)(struct _TreeMap *, <a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>, <a class="el" href="util_8h.html#ad0d0cb99e46ebc1c0458843e19ae21bd">Value</a> *)</td>
+          <td class="memname">int32_t(* TreeMap::get)(struct _TreeMap *, Key, Value *)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -151,12 +172,29 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="aea96058dce2498c396b09f561435f58a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t(* TreeMap::find)(struct _TreeMap *, Key)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check if the map contains the designated key. </p>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#ac0625e6795079093de1d082d86398413" title="Check if the map contains the designated key. ">TreeMapFind</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="tree__map_8h_source.html#l00028">28</a> of file <a class="el" href="tree__map_8h_source.html">tree_map.h</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a55665d1f01d91d8e4280053428cf9c8a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t(* TreeMap::remove)(struct _TreeMap *, <a class="el" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>)</td>
+          <td class="memname">int32_t(* TreeMap::remove)(struct _TreeMap *, Key)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -164,7 +202,7 @@ Data Fields</h2></td></tr>
 <p>Delete the key value pair corresponding to the designated key. </p>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#a1b0e88042bb8fba059416422ebf0d6ab" title="Delete the key value pair corresponding to the designated key. ">TreeMapRemove</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="tree__map_8h_source.html#l00028">28</a> of file <a class="el" href="tree__map_8h_source.html">tree_map.h</a>.</p>
+<p>Definition at line <a class="el" href="tree__map_8h_source.html#l00032">32</a> of file <a class="el" href="tree__map_8h_source.html">tree_map.h</a>.</p>
 
 </div>
 </div>
@@ -181,41 +219,143 @@ Data Fields</h2></td></tr>
 <p>Return the number of stored key value pairs. </p>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#a72b723785ef79b537b3305a9c9244099" title="Return the number of stored key value pairs. ">TreeMapSize</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="tree__map_8h_source.html#l00032">32</a> of file <a class="el" href="tree__map_8h_source.html">tree_map.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a4eb8ff22f0b422ab54484640534d926b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int32_t(* TreeMap::set_compare)(struct _TreeMap *, int32_t(*)(<a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>, <a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>))</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Set the user defined key value pair comparison method. </p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#a5f963a5fc8e810f0d57d83a2065b99a4" title="Set the user defined key value pair comparison method. ">TreeMapSetCompare</a> </dd></dl>
-
 <p>Definition at line <a class="el" href="tree__map_8h_source.html#l00036">36</a> of file <a class="el" href="tree__map_8h_source.html">tree_map.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a771c139c5d94f0adf27c53669430380a"></a>
+<a class="anchor" id="a172cd26b06106288bdfbfa3766825f9c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t(* TreeMap::set_destroy)(struct _TreeMap *, void(*)(<a class="el" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>))</td>
+          <td class="memname">int32_t(* TreeMap::minimum)(struct _TreeMap *, Pair **)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Set the user defined key value pair clean method. </p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#a38c4ff5432a23686e4ffe1bbc6165149" title="Set the user defined key value pair clean method. ">TreeMapSetDestroy</a> </dd></dl>
+<p>Retrieve the key value pair with the minimum order from the map. </p>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#a27eff230144c1b126c4851b12b195331" title="Retrieve the key value pair with the minimum order from the map. ">TreeMapMinimum</a> </dd></dl>
 
 <p>Definition at line <a class="el" href="tree__map_8h_source.html#l00040">40</a> of file <a class="el" href="tree__map_8h_source.html">tree_map.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afd0ec534c018a6275db0e9dc57c505f4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t(* TreeMap::maximum)(struct _TreeMap *, Pair **)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve the key value pair with the maximum order from the map. </p>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#a534d5b9030b8f20f365fa911843f56a0" title="Retrieve the key value pair with the maximum order from the map. ">TreeMapMaximum</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="tree__map_8h_source.html#l00044">44</a> of file <a class="el" href="tree__map_8h_source.html">tree_map.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a91386e61367d2368eebd000353d912e9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t(* TreeMap::predecessor)(struct _TreeMap *, Key, Pair **)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve the key value pair which is the predecessor of the given key. </p>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#a400b43cf750c51cb02fd284bf5f45698" title="Retrieve the key value pair which is the predecessor of the given key. ">TreeMapPredecessor</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="tree__map_8h_source.html#l00048">48</a> of file <a class="el" href="tree__map_8h_source.html">tree_map.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6ee5078a4aa7b4f4efa14526bf341a41"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t(* TreeMap::successor)(struct _TreeMap *, Key, Pair **)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve the key value pair which is the successor of the given key. </p>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#a54d38e9eae8308b8fb0d4c0469520b91" title="Retrieve the key value pair which is the successor of the given key. ">TreeMapSuccessor</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="tree__map_8h_source.html#l00052">52</a> of file <a class="el" href="tree__map_8h_source.html">tree_map.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a62a2264b3fd6c89068cdc79242aff4cb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t(* TreeMap::iterate)(struct _TreeMap *, bool, Pair **)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Iterate through the map from the minimum order to the maximum order. </p>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#a2982b98fafa5703c7220478bd0d29bcf" title="Iterate through the map from the minimum order to the maximum order. ">TreeMapIterate</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="tree__map_8h_source.html#l00056">56</a> of file <a class="el" href="tree__map_8h_source.html">tree_map.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad2f535fa40c63a1acfd393c7e9561e29"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t(* TreeMap::reverse_iterate)(struct _TreeMap *, bool, Pair **)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Iterate through the map from the maximum order to the minimum order. </p>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#a91cb4be6a5e7e775d66b9a536463db87" title="Reversely iterate through the map from the minimum order to the maximum order. ">TreeMapReverseIterate</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="tree__map_8h_source.html#l00060">60</a> of file <a class="el" href="tree__map_8h_source.html">tree_map.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a418ed8c2ae20266a7ae38dd3129fe50d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t(* TreeMap::set_compare)(struct _TreeMap *, int32_t(*)(Key, Key))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the custom key comparison method. </p>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#ab744090c91ce404e0f4853599ecf3649" title="Set the custom key comparison method. ">TreeMapSetCompare</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="tree__map_8h_source.html#l00064">64</a> of file <a class="el" href="tree__map_8h_source.html">tree_map.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8027e812c60f174417f5823b5e0bb505"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t(* TreeMap::set_destroy)(struct _TreeMap *, void(*)(Pair *))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the custom key value pair resource clean method. </p>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="tree__map_8h.html#ab3385c339bc1eb4047d0d7af472febec" title="Set the custom key value pair resource clean method. ">TreeMapSetDestroy</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="tree__map_8h_source.html#l00068">68</a> of file <a class="el" href="tree__map_8h_source.html">tree_map.h</a>.</p>
 
 </div>
 </div>

@@ -61,33 +61,23 @@ $(document).ready(function(){initNavTree('index.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h2>Objective</h2>
-<p>LibCDS implements several kinds of classic containers by C. It offers uniform APIs for convenient container interaction.</p>
+<p>LibCDS implements a set of uniform C APIs for data structure manipulation.</p>
 <h2>Container Category</h2>
 <ul>
-<li>Tree<ul>
-<li><a class="el" href="structBinaryTree.html" title="The implementation for basic binary search tree. ">BinaryTree</a> &ndash; The basic binary search tree.</li>
-<li><a class="el" href="structRedBlackTree.html" title="The implementation for balanced binary search tree. ">RedBlackTree</a> &ndash; The balanced binary search tree.</li>
+<li>Sequential Container<ul>
+<li><a class="el" href="structVector.html" title="The implementation for dynamically growable array. ">Vector</a> &mdash; The dynamically growable array</li>
+<li><a class="el" href="structLinkedList.html" title="The implementation for doubly linked list. ">LinkedList</a> &mdash; The doubly linked list</li>
 </ul>
 </li>
-<li>List<ul>
-<li><a class="el" href="structLinkedList.html" title="The implementation for doubly linked list. ">LinkedList</a> &ndash; The doubly linked list.</li>
+<li>Associative Container<ul>
+<li><a class="el" href="structTreeMap.html" title="The implementation for ordered map. ">TreeMap</a> &mdash; The ordered map to store key value pairs</li>
+<li><a class="el" href="structHashMap.html" title="The implementation for hash map. ">HashMap</a> &mdash; The unordered map to store key value pairs</li>
 </ul>
 </li>
-<li>Array<ul>
-<li><a class="el" href="structVector.html" title="The implementation for dynamically growable array. ">Vector</a> &ndash; The dynamically growable array.</li>
-</ul>
-</li>
-<li>Map<ul>
-<li><a class="el" href="structTreeMap.html" title="The implementation for ordered map. ">TreeMap</a> &ndash; The ordered map to store key value pairs implemented with balanced tree.</li>
-<li><a class="el" href="structHashMap.html" title="The implementation for hash map. ">HashMap</a> &ndash; The unordered map to store key value pairs implemented with hash table.</li>
-</ul>
-</li>
-<li>Heap<ul>
-<li><a class="el" href="structBinaryHeap.html" title="The implementation for binary heap. ">BinaryHeap</a> &ndash; The binary heap implemented with vector.</li>
-</ul>
-</li>
-<li>Queue<ul>
-<li><a class="el" href="structPriorityQueue.html" title="The implementation for priority queue. ">PriorityQueue</a> &ndash; The priority queue implemented with binary heap. </li>
+<li>Simple Collection Container<ul>
+<li><a class="el" href="structQueue.html" title="The implementation for queue. ">Queue</a> &mdash; The FIFO queue</li>
+<li><a class="el" href="structStack.html" title="The implementation for stack. ">Stack</a> &mdash; The LIFO stack</li>
+<li><a class="el" href="structPriorityQueue.html" title="The implementation for priority queue. ">PriorityQueue</a> &mdash; The queue to maintain priority ordering for elements </li>
 </ul>
 </li>
 </ul>

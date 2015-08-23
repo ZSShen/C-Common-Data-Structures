@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>LibCDS: /home/zsshen/Desktop/git-hub-code/C-Common-Data-Structures/include/map/hash_map.h Source File</title>
+<title>LibCDS: /home/zsshen/Desktop/git-hub-code/C-Common-Data-Structures/include/container/hash_map.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -67,7 +67,7 @@ $(document).ready(function(){initNavTree('hash__map_8h_source.html','');});
 </div><!--header-->
 <div class="contents">
 <a href="hash__map_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * @file unordered_map.h The unordered map implemented with hash table.</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * @file hash_map.h The unordered map to store key value pairs.</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#ifndef _HASH_MAP_H_</span></div>
@@ -85,166 +85,219 @@ $(document).ready(function(){initNavTree('hash__map_8h_source.html','');});
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">    /** Insert a key value pair into the map.</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">        @see HashMapPut */</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="structHashMap.html#a107a2dcdf472d9915617578f2fd4d4cc">   20</a></span>&#160;    int32_t (*put) (<span class="keyword">struct </span>_HashMap*, <a class="code" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>, size_t);</div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="structHashMap.html#a7e5c1a720833b69cbd83ccf2d2664b62">   20</a></span>&#160;    int32_t (*put) (<span class="keyword">struct </span>_HashMap*, Pair*, size_t);</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">    /** Retrieve the value corresponding to the designated key.</span></div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">        @see HashMapGet */</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="structHashMap.html#a59de022d954bb25adc5898a2c5c84f93">   24</a></span>&#160;    int32_t (*<span class="keyword">get</span>) (<span class="keyword">struct </span>_HashMap*, <a class="code" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>, size_t, <a class="code" href="util_8h.html#ad0d0cb99e46ebc1c0458843e19ae21bd">Value</a>*);</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="structHashMap.html#a59de022d954bb25adc5898a2c5c84f93">   24</a></span>&#160;    int32_t (*<span class="keyword">get</span>) (<span class="keyword">struct </span>_HashMap*, Key, size_t, Value*);</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">    /** Delete the key value pair corresponding to the designated key.</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">        @see HashMapRemove */</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="structHashMap.html#adc566a2cf7a0a421ae6522bb73e69860">   28</a></span>&#160;    int32_t (*<span class="keyword">remove</span>) (<span class="keyword">struct </span>_HashMap*, <a class="code" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>, size_t);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">    /** Check if the map contains the designated key.</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">        @see TreeMapFind */</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="structHashMap.html#a56c9e15c9a2f15e319acc0cd983279fb">   28</a></span>&#160;    int32_t (*find) (<span class="keyword">struct </span>_HashMap*, Key, size_t);</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">    /** Return the number of stored key value pairs.</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">        @see HashMapSize */</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="structHashMap.html#a6f99aaee737bfb5ab7804db8559b4853">   32</a></span>&#160;    int32_t (*size) (<span class="keyword">struct </span>_HashMap*);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">    /** Delete the key value pair corresponding to the designated key.</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">        @see HashMapRemove */</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="structHashMap.html#adc566a2cf7a0a421ae6522bb73e69860">   32</a></span>&#160;    int32_t (*<span class="keyword">remove</span>) (<span class="keyword">struct </span>_HashMap*, Key, size_t);</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">    /** Set the custom key value pair resource clean method.</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">        @see HashMapSetDestroy */</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="structHashMap.html#a38841771e89f788cd5eecb2abd170687">   36</a></span>&#160;    int32_t (*set_destroy) (<span class="keyword">struct </span>_HashMap*, void (*) (<a class="code" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>));</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">    /** Return the number of stored key value pairs.</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">        @see HashMapSize */</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="structHashMap.html#a6f99aaee737bfb5ab7804db8559b4853">   36</a></span>&#160;    int32_t (*size) (<span class="keyword">struct </span>_HashMap*);</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">    /** Set the custom hash function.</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">        @see HashMapSetHash */</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="structHashMap.html#a2d773cae38845791bb20462fd9f6c099">   40</a></span>&#160;    int32_t (*set_hash) (<span class="keyword">struct </span>_HashMap*, uint32_t (*) (<a class="code" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>, size_t));</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;} <a class="code" href="structHashMap.html">HashMap</a>;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">/*===========================================================================*</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment"> *             Definition for the exported member operations                 *</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment"> *===========================================================================*/</span><span class="comment"></span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment"> * @brief The constructor for HashMap.</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment"> * @param ppObj         The double pointer to the to be constructed map</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment"> * @param uiCount       The count of buckets</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment"> * @retval ERR_NOMEM    Insufficient memory for map construction</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment"> * @note Specify uiCount to 0 for default bucket count.</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">extern</span> int32_t <a class="code" href="hash__map_8h.html#aa0b13de1a9bb5e62d22185e7e4e5cdce">HashMapInit</a>(<a class="code" href="structHashMap.html">HashMap</a> **ppObj, uint32_t uiCount);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment"> * @brief The destructor for HashMap.</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment"> * If the the custom clean method is set, it also runs the resource clean method</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment"> * for all the items.</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment"> * @param ppObj         The double pointer to the to be destructed map</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">extern</span> <span class="keywordtype">void</span> <a class="code" href="hash__map_8h.html#a7d5068c7220d92b84e4cede75ff3fb15">HashMapDeinit</a>(<a class="code" href="structHashMap.html">HashMap</a> **ppObj);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment"> * @brief Insert a key value pair into the map.</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment"> * This function inserts a key value pair into the map. If the hash key of the</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment"> * designated pair is the same with a certain one stored in the map, that pair</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment"> * will be replaced. Also, if the custom clean method is set, it runs the resource</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment"> * clean method for the replaced pair.</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">    /** Iterate through the map to retrieve each key value pair.</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">        @see HashMapIterate */</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="structHashMap.html#a54623cbc411f079c0653ebf0b20b0452">   40</a></span>&#160;    int32_t (*iterate) (<span class="keyword">struct </span>_HashMap*, bool, Pair**);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">    /** Set the custom key value pair resource clean method.</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">        @see HashMapSetDestroy */</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="structHashMap.html#ae65414b0bd1586f4482640e790fdd445">   44</a></span>&#160;    int32_t (*set_destroy) (<span class="keyword">struct </span>_HashMap*, void (*) (Pair*));</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">    /** Set the custom hash function.</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">        @see HashMapSetHash */</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="structHashMap.html#a2d773cae38845791bb20462fd9f6c099">   48</a></span>&#160;    int32_t (*set_hash) (<span class="keyword">struct </span>_HashMap*, uint32_t (*) (Key, size_t));</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;} <a class="code" href="structHashMap.html">HashMap</a>;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">/*===========================================================================*</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment"> *             Definition for the exported member operations                 *</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment"> *===========================================================================*/</span><span class="comment"></span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment"> * @brief The constructor for HashMap.</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment"> * @param ppObj         The double pointer to the to be constructed map</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment"> * @retval ERR_NOMEM    Insufficient memory for map construction</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;int32_t <a class="code" href="hash__map_8h.html#a2af42d6e02f8df6378f225d351781e8f">HashMapInit</a>(<a class="code" href="structHashMap.html">HashMap</a> **ppObj);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment"> * @brief The destructor for HashMap.</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment"> * If the custom resource clean method is set, it also runs the clean method</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment"> * for each pair.</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment"> * @param ppObj         The double pointer to the to be destructed map</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hash__map_8h.html#a7d5068c7220d92b84e4cede75ff3fb15">HashMapDeinit</a>(<a class="code" href="structHashMap.html">HashMap</a> **ppObj);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment"> * @brief Insert a key value pair into the map.</span></div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment"> * @param self          The pointer to HashMap structure</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment"> * @param ent           The pointer to the desiganted key value pair</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment"> * @param sizeKey       The key size in bytes</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment"> * @retval ERR_NOMEM    Insufficient memory for map extension</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment"> * @retval ERR_KEYSIZE  Invalid key size</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keyword">extern</span> int32_t <a class="code" href="hash__map_8h.html#a1577b4493c1dea43ec33ed025b1c5ba7">HashMapPut</a>(<a class="code" href="structHashMap.html">HashMap</a> *<span class="keyword">self</span>, <a class="code" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a> ent, <span class="keywordtype">size_t</span> sizeKey);</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment"> * @brief Retrieve the value corresponding to the designated key.</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment"> * This function retrieves the value corresponding to the designated key from</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="comment"> * the map. If the key can be found, the value will be returned by the fourth</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment"> * parameter. Otherwise, the error code is returned and the fourth parameter is</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment"> * updated with NULL.</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment"> * This function inserts a key value pair into the map. If the hash key of the</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment"> * designated pair is the same with a certain one stored in the map, that pair</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment"> * will be replaced. Also, if the custom resource clean method is set, it runs</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment"> * the resource clean method for the replaced pair.</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment"> * @param self          The pointer to HashMap structure</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment"> * @param pPair         The pointer to the designated pair</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment"> * @param size          Size of the data pointed by the key in bytes</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment"> * @retval ERR_NOMEM    Insufficient memory for map extension</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment"> * @retval ERR_KEYSIZE  Invalid key size</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;int32_t <a class="code" href="hash__map_8h.html#a243335e4bfd9e7efb7f5e7925c4d0d74">HashMapPut</a>(<a class="code" href="structHashMap.html">HashMap</a> *<span class="keyword">self</span>, Pair *pPair, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment"> * @brief Retrieve the value corresponding to the designated key.</span></div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment"> * @param self          The pointer to Map structure</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment"> * @param key           The designated key</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment"> * @param sizeKey       The key size in bytes</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment"> * @param pValue        The pointer to the returned value</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment"> * This function retrieves the value corresponding to the designated key from</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment"> * the map. If the key can be found, the value will be returned by the fourth</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment"> * parameter. Otherwise, the error code is returned and the fourth parameter is</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment"> * updated with NULL.</span></div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="comment"> * @retval ERR_NODATA   No map entry can be found</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="comment"> * @retval ERR_KEYSIZE  Invalid key size</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="keyword">extern</span> int32_t <a class="code" href="hash__map_8h.html#ac28926c920b4818b7e7930f3a910f53f">HashMapGet</a>(<a class="code" href="structHashMap.html">HashMap</a> *<span class="keyword">self</span>, <a class="code" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a> key, <span class="keywordtype">size_t</span> sizeKey, <a class="code" href="util_8h.html#ad0d0cb99e46ebc1c0458843e19ae21bd">Value</a> *pValue);</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="comment"> * @brief Delete the key value pair corresponding to the designated key.</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="comment"> * This function deletes the key value pair corresponding to the designated key.</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="comment"> * If the custom clean method is set, it also runs the resource clean method for</span></div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="comment"> * the deleted pair.</span></div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="comment"> * @param self          The pointer to UnorderedMap structure</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="comment"> * @param key           The designated key</span></div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="comment"> * @param sizeKey       The key size in bytes</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="comment"> * @param self          The pointer to HashMap structure</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment"> * @param key           The designated key</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="comment"> * @param size          Size of the data pointed by the key in bytes</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="comment"> * @param pValue        The pointer to the returned value</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="comment"> * @retval ERR_NODATA   No map entry can be found</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="comment"> * @retval ERR_GET      Invalid parameter to store returned value</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="comment"> * @retval ERR_KEYSIZE  Invalid key size</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="comment"> * @note The key should be the pointer to the data you plan to hash for.</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;int32_t <a class="code" href="hash__map_8h.html#a949863ffee4bf0b02e80953dc989a828">HashMapGet</a>(<a class="code" href="structHashMap.html">HashMap</a> *<span class="keyword">self</span>, Key key, <span class="keywordtype">size_t</span> size, Value *pValue);</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="comment"> * @brief Check if the map contains the designated key.</span></div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="comment"> * @retval ERR_NODATA   No map entry can be found</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="comment"> * @retval ERR_KEYSIZE  Invalid key size</span></div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="keyword">extern</span> int32_t <a class="code" href="hash__map_8h.html#ab5fb38f315465f9641477abe963f5624">HashMapRemove</a>(<a class="code" href="structHashMap.html">HashMap</a> *<span class="keyword">self</span>, <a class="code" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a> key, <span class="keywordtype">size_t</span> sizeKey);</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="comment"> * @brief Return the number of stored key value pairs.</span></div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="comment"> * @param self          The pointer to HashMap structure</span></div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="comment"> * @return              The number of stored pairs</span></div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="keyword">extern</span> int32_t <a class="code" href="hash__map_8h.html#a8af14c3c4205f0a0b2a1dd75694b3bf4">HashMapSize</a>(<a class="code" href="structHashMap.html">HashMap</a> *<span class="keyword">self</span>);</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="comment"> * @brief Set the custom key value pair resource clean method.</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="comment"> * @param self          The pointer to HashMap structure</span></div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="comment"> * @param key           The designated key</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="comment"> * @param size          Size of the data pointed by the key in bytes</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="comment"> * @retval SUCC         The key can be found</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="comment"> * @retval NOKEY        The key cannot be found</span></div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="comment"> * @retval ERR_KEYSIZE  Invalid key size</span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="comment"> * @note The key should be the pointer to the data you plan to hash for.</span></div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;int32_t <a class="code" href="hash__map_8h.html#a529685800e567cf5b960a81c17c1aa1d">HashMapFind</a>(<a class="code" href="structHashMap.html">HashMap</a> *<span class="keyword">self</span>, Key key, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="comment"> * @brief Delete the key value pair corresponding to the designated key.</span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="comment"> * This function deletes the key value pair corresponding to the designated key.</span></div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;<span class="comment"> * If the custom resource clean method is set, it also runs the clean method for</span></div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="comment"> * the deleted pair.</span></div>
 <div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="comment"> * @param self          The pointer to HashMap structure</span></div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;<span class="comment"> * @param pFunc         The function pointer to the custom method</span></div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="keyword">extern</span> int32_t <a class="code" href="hash__map_8h.html#aa6950961671bc7c857342332b456a5b1">HashMapSetDestroy</a>(<a class="code" href="structHashMap.html">HashMap</a> *<span class="keyword">self</span>, <span class="keywordtype">void</span> (*pFunc) (<a class="code" href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a>));</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="comment"> * @brief Set the custom hash function.</span></div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="comment"> * @param self          The pointer to HashMap structure</span></div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="comment"> * @param pFunc         The function pointer to the custom method</span></div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="comment"> * @retval SUCC</span></div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="keyword">extern</span> int32_t <a class="code" href="hash__map_8h.html#abbce9df57c7395e441c226919937d67f">HashMapSetHash</a>(<a class="code" href="structHashMap.html">HashMap</a> *<span class="keyword">self</span>, uint32_t (*pFunc) (<a class="code" href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a>, <span class="keywordtype">size_t</span>));</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="hash__map_8h_html_aa0b13de1a9bb5e62d22185e7e4e5cdce"><div class="ttname"><a href="hash__map_8h.html#aa0b13de1a9bb5e62d22185e7e4e5cdce">HashMapInit</a></div><div class="ttdeci">int32_t HashMapInit(HashMap **ppObj, uint32_t uiCount)</div><div class="ttdoc">The constructor for HashMap. </div></div>
-<div class="ttc" id="util_8h_html_ad0d0cb99e46ebc1c0458843e19ae21bd"><div class="ttname"><a href="util_8h.html#ad0d0cb99e46ebc1c0458843e19ae21bd">Value</a></div><div class="ttdeci">const void * Value</div><div class="ttdoc">Value is the data type for the map-like element. </div><div class="ttdef"><b>Definition:</b> <a href="util_8h_source.html#l00043">util.h:43</a></div></div>
-<div class="ttc" id="hash__map_8h_html_ac28926c920b4818b7e7930f3a910f53f"><div class="ttname"><a href="hash__map_8h.html#ac28926c920b4818b7e7930f3a910f53f">HashMapGet</a></div><div class="ttdeci">int32_t HashMapGet(HashMap *self, Key key, size_t sizeKey, Value *pValue)</div><div class="ttdoc">Retrieve the value corresponding to the designated key. </div></div>
-<div class="ttc" id="hash__map_8h_html_ab5fb38f315465f9641477abe963f5624"><div class="ttname"><a href="hash__map_8h.html#ab5fb38f315465f9641477abe963f5624">HashMapRemove</a></div><div class="ttdeci">int32_t HashMapRemove(HashMap *self, Key key, size_t sizeKey)</div><div class="ttdoc">Delete the key value pair corresponding to the designated key. </div></div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;<span class="comment"> * @param key           The designated key</span></div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="comment"> * @param size          Size of the data pointed by the key in bytes</span></div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="comment"> * @retval ERR_NODATA   No map entry can be found</span></div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="comment"> * @retval ERR_KEYSIZE  Invalid key size</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="comment"> * @note The key should be the pointer to the data you plan to hash for.</span></div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;int32_t <a class="code" href="hash__map_8h.html#a1f245b96b890186f93987728f2dea402">HashMapRemove</a>(<a class="code" href="structHashMap.html">HashMap</a> *<span class="keyword">self</span>, Key key, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="comment"> * @brief Return the number of stored key value pairs.</span></div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;<span class="comment"> * @param self          The pointer to HashMap structure</span></div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="comment"> * @return              The number of stored pairs</span></div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;int32_t <a class="code" href="hash__map_8h.html#a8af14c3c4205f0a0b2a1dd75694b3bf4">HashMapSize</a>(<a class="code" href="structHashMap.html">HashMap</a> *<span class="keyword">self</span>);</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="comment"> * @brief Iterate through the map to retrieve each key value pair.</span></div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="comment"> * Before iterating through the map, it is necessary to pass:</span></div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<span class="comment"> *  - bReset = true</span></div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="comment"> *  - pPair = NULL</span></div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="comment"> * for iterator initialization.</span></div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="comment"> * After initialization, you can pass:</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="comment"> *  - bReset = false</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="comment"> *  - pPair = the pointer to get the returned pair at each iteration.</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;<span class="comment"> * @param self          The pointer to HashMap structure</span></div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<span class="comment"> * @param bReset        The knob to restart the iteration</span></div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="comment"> * @param ppPair        The double pointer to the returned pair</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="comment"> * @retval SUCC         Iterator initialized successfully</span></div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="comment"> * @retval CONTINUE     Iteration in progress</span></div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="comment"> * @retval END          Iteration terminiated</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="comment"> * @retval ERR_GET      Invalid parameter to store returned pair</span></div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="comment"> * @note Please do not insert or delete pairs during map traversal</span></div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;int32_t <a class="code" href="hash__map_8h.html#aba029e83455fdbaf0d8a464dc4e3d381">HashMapIterate</a>(<a class="code" href="structHashMap.html">HashMap</a> *<span class="keyword">self</span>, <span class="keywordtype">bool</span> bReset, Pair **ppPair);</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="comment"> * @brief Set the custom key value pair resource clean method.</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="comment"> * @param self          The pointer to HashMap structure</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="comment"> * @param pFunc         The function pointer to the custom method</span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;int32_t <a class="code" href="hash__map_8h.html#af937beb03d236fd4dc9a846fcb97eff4">HashMapSetDestroy</a>(<a class="code" href="structHashMap.html">HashMap</a> *<span class="keyword">self</span>, <span class="keywordtype">void</span> (*pFunc) (Pair*));</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<span class="comment"> * @brief Set the custom hash function.</span></div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;<span class="comment"> * The default hash function is HashMurMur32.</span></div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;<span class="comment"> * @param self          The pointer to HashMap structure</span></div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;<span class="comment"> * @param pFunc         The function pointer to the custom method</span></div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;<span class="comment"> * @retval SUCC</span></div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;<span class="comment"> * @retval ERR_NOINIT   Uninitialized container</span></div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;int32_t <a class="code" href="hash__map_8h.html#abbce9df57c7395e441c226919937d67f">HashMapSetHash</a>(<a class="code" href="structHashMap.html">HashMap</a> *<span class="keyword">self</span>, uint32_t (*pFunc) (Key, <span class="keywordtype">size_t</span>));</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="hash__map_8h_html_a1f245b96b890186f93987728f2dea402"><div class="ttname"><a href="hash__map_8h.html#a1f245b96b890186f93987728f2dea402">HashMapRemove</a></div><div class="ttdeci">int32_t HashMapRemove(HashMap *self, Key key, size_t size)</div><div class="ttdoc">Delete the key value pair corresponding to the designated key. </div></div>
+<div class="ttc" id="hash__map_8h_html_a243335e4bfd9e7efb7f5e7925c4d0d74"><div class="ttname"><a href="hash__map_8h.html#a243335e4bfd9e7efb7f5e7925c4d0d74">HashMapPut</a></div><div class="ttdeci">int32_t HashMapPut(HashMap *self, Pair *pPair, size_t size)</div><div class="ttdoc">Insert a key value pair into the map. </div></div>
 <div class="ttc" id="hash__map_8h_html_a7d5068c7220d92b84e4cede75ff3fb15"><div class="ttname"><a href="hash__map_8h.html#a7d5068c7220d92b84e4cede75ff3fb15">HashMapDeinit</a></div><div class="ttdeci">void HashMapDeinit(HashMap **ppObj)</div><div class="ttdoc">The destructor for HashMap. </div></div>
-<div class="ttc" id="hash__map_8h_html_a1577b4493c1dea43ec33ed025b1c5ba7"><div class="ttname"><a href="hash__map_8h.html#a1577b4493c1dea43ec33ed025b1c5ba7">HashMapPut</a></div><div class="ttdeci">int32_t HashMapPut(HashMap *self, Entry ent, size_t sizeKey)</div><div class="ttdoc">Insert a key value pair into the map. </div></div>
+<div class="ttc" id="hash__map_8h_html_a949863ffee4bf0b02e80953dc989a828"><div class="ttname"><a href="hash__map_8h.html#a949863ffee4bf0b02e80953dc989a828">HashMapGet</a></div><div class="ttdeci">int32_t HashMapGet(HashMap *self, Key key, size_t size, Value *pValue)</div><div class="ttdoc">Retrieve the value corresponding to the designated key. </div></div>
 <div class="ttc" id="hash__map_8h_html_a8af14c3c4205f0a0b2a1dd75694b3bf4"><div class="ttname"><a href="hash__map_8h.html#a8af14c3c4205f0a0b2a1dd75694b3bf4">HashMapSize</a></div><div class="ttdeci">int32_t HashMapSize(HashMap *self)</div><div class="ttdoc">Return the number of stored key value pairs. </div></div>
-<div class="ttc" id="util_8h_html_a0f62df023942df493672150257c26348"><div class="ttname"><a href="util_8h.html#a0f62df023942df493672150257c26348">Entry</a></div><div class="ttdeci">const void * Entry</div><div class="ttdoc">Entry is the data type which wraps key value pair to manipulate map-like containers. </div><div class="ttdef"><b>Definition:</b> <a href="util_8h_source.html#l00047">util.h:47</a></div></div>
+<div class="ttc" id="hash__map_8h_html_af937beb03d236fd4dc9a846fcb97eff4"><div class="ttname"><a href="hash__map_8h.html#af937beb03d236fd4dc9a846fcb97eff4">HashMapSetDestroy</a></div><div class="ttdeci">int32_t HashMapSetDestroy(HashMap *self, void(*pFunc)(Pair *))</div><div class="ttdoc">Set the custom key value pair resource clean method. </div></div>
 <div class="ttc" id="hash__map_8h_html_a9ba28ae908982272687dd668de83780a"><div class="ttname"><a href="hash__map_8h.html#a9ba28ae908982272687dd668de83780a">HashMapData</a></div><div class="ttdeci">struct _HashMapData HashMapData</div><div class="ttdoc">HashMapData is the data type for the container private information. </div><div class="ttdef"><b>Definition:</b> <a href="hash__map_8h_source.html#l00011">hash_map.h:11</a></div></div>
-<div class="ttc" id="hash__map_8h_html_aa6950961671bc7c857342332b456a5b1"><div class="ttname"><a href="hash__map_8h.html#aa6950961671bc7c857342332b456a5b1">HashMapSetDestroy</a></div><div class="ttdeci">int32_t HashMapSetDestroy(HashMap *self, void(*pFunc)(Entry))</div><div class="ttdoc">Set the custom key value pair resource clean method. </div></div>
+<div class="ttc" id="hash__map_8h_html_aba029e83455fdbaf0d8a464dc4e3d381"><div class="ttname"><a href="hash__map_8h.html#aba029e83455fdbaf0d8a464dc4e3d381">HashMapIterate</a></div><div class="ttdeci">int32_t HashMapIterate(HashMap *self, bool bReset, Pair **ppPair)</div><div class="ttdoc">Iterate through the map to retrieve each key value pair. </div></div>
 <div class="ttc" id="hash__map_8h_html_abbce9df57c7395e441c226919937d67f"><div class="ttname"><a href="hash__map_8h.html#abbce9df57c7395e441c226919937d67f">HashMapSetHash</a></div><div class="ttdeci">int32_t HashMapSetHash(HashMap *self, uint32_t(*pFunc)(Key, size_t))</div><div class="ttdoc">Set the custom hash function. </div></div>
-<div class="ttc" id="util_8h_html_ab8673c57cfd615afd06cafefa9c2445e"><div class="ttname"><a href="util_8h.html#ab8673c57cfd615afd06cafefa9c2445e">Key</a></div><div class="ttdeci">const void * Key</div><div class="ttdoc">Key is the data type to index map-like containers. </div><div class="ttdef"><b>Definition:</b> <a href="util_8h_source.html#l00040">util.h:40</a></div></div>
+<div class="ttc" id="hash__map_8h_html_a529685800e567cf5b960a81c17c1aa1d"><div class="ttname"><a href="hash__map_8h.html#a529685800e567cf5b960a81c17c1aa1d">HashMapFind</a></div><div class="ttdeci">int32_t HashMapFind(HashMap *self, Key key, size_t size)</div><div class="ttdoc">Check if the map contains the designated key. </div></div>
 <div class="ttc" id="structHashMap_html"><div class="ttname"><a href="structHashMap.html">HashMap</a></div><div class="ttdoc">The implementation for hash map. </div><div class="ttdef"><b>Definition:</b> <a href="hash__map_8h_source.html#l00014">hash_map.h:14</a></div></div>
 <div class="ttc" id="structHashMap_html_aef83bfc8e8bc94e4ee0aee547baa7a27"><div class="ttname"><a href="structHashMap.html#aef83bfc8e8bc94e4ee0aee547baa7a27">HashMap::pData</a></div><div class="ttdeci">HashMapData * pData</div><div class="ttdoc">The container private information. </div><div class="ttdef"><b>Definition:</b> <a href="hash__map_8h_source.html#l00016">hash_map.h:16</a></div></div>
+<div class="ttc" id="hash__map_8h_html_a2af42d6e02f8df6378f225d351781e8f"><div class="ttname"><a href="hash__map_8h.html#a2af42d6e02f8df6378f225d351781e8f">HashMapInit</a></div><div class="ttdeci">int32_t HashMapInit(HashMap **ppObj)</div><div class="ttdoc">The constructor for HashMap. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_1e899e21dcf63412585e33a90ca7eaf3.html">map</a></li><li class="navelem"><a class="el" href="hash__map_8h.html">hash_map.h</a></li>
+    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_e0f5f6345e438c73b9ae78ec2940718c.html">container</a></li><li class="navelem"><a class="el" href="hash__map_8h.html">hash_map.h</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
