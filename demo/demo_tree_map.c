@@ -96,7 +96,7 @@ int main()
     /* Iterate through the map. */
     int32_t idx = 0;
     pMap->iterate(pMap, true, NULL);
-    while (pMap->iterate(pMap, false, &pPair) != END) {
+    while (pMap->iterate(pMap, false, &pPair) == CONTINUE) {
         assert(strcmp((char*)pPair->key, aName[idx]) == 0);
         idx++;
     }
@@ -104,7 +104,7 @@ int main()
     /* Reversely iterate through the map.*/
     idx = 2;
     pMap->reverse_iterate(pMap, true, NULL);
-    while (pMap->reverse_iterate(pMap, false, &pPair) != END) {
+    while (pMap->reverse_iterate(pMap, false, &pPair) == CONTINUE) {
         assert(strcmp((char*)pPair->key, aName[idx]) == 0);
         idx--;
     }

@@ -5,25 +5,23 @@
  *                  Hide the private data of the map                         *
  *===========================================================================*/
 typedef struct _TreeNode {
-    Pair *pPair;
     bool bColor;
+    Pair *pPair;
     struct _TreeNode *pParent;
     struct _TreeNode *pLeft;
     struct _TreeNode *pRight;
 } TreeNode;
 
 struct _TreeMapData {
+    bool bEnd_;
     int32_t iSize_;
+    int32_t iTop_;
     TreeNode *pRoot_;
     TreeNode *pNull_;
-    int32_t (*pCompare_) (Key, Key);
-    void (*pDestroy_) (Pair*);
-
-    /* The member variables for map iteration. */
-    bool bEnd_;
-    int32_t iTop_;
     TreeNode *pIter_;
     TreeNode **pStack_;
+    int32_t (*pCompare_) (Key, Key);
+    void (*pDestroy_) (Pair*);
 };
 
 #define DIRECT_LEFT      (0)

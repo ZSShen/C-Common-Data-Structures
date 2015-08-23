@@ -236,8 +236,9 @@ int32_t TreeMapSuccessor(TreeMap *self, Key key, Pair **ppPair);
  * @param bReset        The knob to restart the iteration
  * @param ppPair        The double pointer to the returned pair
  *
- * @retval SUCC
- * @retval END
+ * @retval SUCC         Iterator initialized successfully
+ * @retval CONTINUE     Iteration in progress
+ * @retval END          Iteration terminiated
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_GET      Invalid parameter to store returned pair
  */
@@ -260,8 +261,9 @@ int32_t TreeMapIterate(TreeMap *self, bool bReset, Pair **ppPair);
  * @param bReset        The knob to restart the iteration
  * @param ppPair        The double pointer to the returned pair
  *
- * @retval SUCC
- * @retval END
+ * @retval SUCC         Iterator initialized successfully
+ * @retval CONTINUE     Iteration in progress
+ * @retval END          Iteration terminiated
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_GET      Invalid parameter to store returned pair
  */
