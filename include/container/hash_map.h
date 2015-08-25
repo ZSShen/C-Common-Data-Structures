@@ -82,7 +82,7 @@ void HashMapDeinit(HashMap **ppObj);
  *
  * @param self          The pointer to HashMap structure
  * @param pPair         The pointer to the designated pair
- * @param size          Size of the data pointed by the key in bytes
+ * @param size          Key size in bytes
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
@@ -101,7 +101,7 @@ int32_t HashMapPut(HashMap *self, Pair *pPair, size_t size);
  *
  * @param self          The pointer to HashMap structure
  * @param key           The designated key
- * @param size          Size of the data pointed by the key in bytes
+ * @param size          Key size in bytes
  * @param pValue        The pointer to the returned value
  *
  * @retval SUCC
@@ -119,7 +119,7 @@ int32_t HashMapGet(HashMap *self, Key key, size_t size, Value *pValue);
  *
  * @param self          The pointer to HashMap structure
  * @param key           The designated key
- * @param size          Size of the data pointed by the key in bytes
+ * @param size          Key size in bytes
  *
  * @retval SUCC         The key can be found
  * @retval NOKEY        The key cannot be found
@@ -139,7 +139,7 @@ int32_t HashMapFind(HashMap *self, Key key, size_t size);
  *
  * @param self          The pointer to HashMap structure
  * @param key           The designated key
- * @param size          Size of the data pointed by the key in bytes
+ * @param size          Key size in bytes
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container

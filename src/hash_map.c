@@ -5,16 +5,17 @@
 /*===========================================================================*
  *                        The container private data                         *
  *===========================================================================*/
-const uint32_t aMagicPrimes[] = {
+static const uint32_t aMagicPrimes[] = {
     769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433,
     1572869, 3145739, 6291469, 12582917, 25165843, 50331653, 100663319,
     201326611, 402653189, 805306457, 1610612741,
 };
-const int32_t iCountPrime_ = sizeof(aMagicPrimes) / sizeof(uint32_t);
-const double dLoadFactor = 0.75;
+static const int32_t iCountPrime_ = sizeof(aMagicPrimes) / sizeof(uint32_t);
+static const double dLoadFactor = 0.75;
 
 
 typedef struct _SlotNode {
+    size_t sizeKey;
     Pair *pPair;
     struct _SlotNode *pNext;
 } SlotNode;
@@ -159,8 +160,8 @@ int32_t HashMapPut(HashMap *self, Pair *pPair, size_t size)
     SlotNode **aSlot = pData->aSlot_;
     SlotNode *pCurr = aSlot[uiValue];
     while (pCurr) {
-        int32_t iRes = memcmp(pCurr->pPair->key, pPair->key, size);
-        if (iRes == 0) {
+        if ((pCurr->sizeKey == size) &&
+            (memcmp(pCurr->pPair->key, pPair->key, size) == 0)) {
             if (pData->pDestroy_)
                 pData->pDestroy_(pCurr->pPair);
             pCurr->pPair = pPair;
@@ -171,6 +172,7 @@ int32_t HashMapPut(HashMap *self, Pair *pPair, size_t size)
 
     /* Insert the new pair into the slot list. */
     SlotNode *pNew = (SlotNode*)malloc(sizeof(SlotNode));
+    pNew->sizeKey = size;
     pNew->pPair = pPair;
     if (!(aSlot[uiValue])) {
         pNew->pNext = NULL;
@@ -202,8 +204,8 @@ int32_t HashMapGet(HashMap *self, Key key, size_t size, Value *pValue)
        with the designated one. */
     SlotNode *pCurr = pData->aSlot_[uiValue];
     while (pCurr) {
-        int32_t iRes = memcmp(pCurr->pPair->key, key, size);
-        if (iRes == 0) {
+        if ((pCurr->sizeKey == size) &&
+            (memcmp(pCurr->pPair->key, key, size) == 0)) {
             *pValue = pCurr->pPair->value;
             return SUCC;
         }
@@ -230,8 +232,8 @@ int32_t HashMapFind(HashMap *self, Key key, size_t size)
        with the designated one. */
     SlotNode *pCurr = pData->aSlot_[uiValue];
     while (pCurr) {
-        int32_t iRes = memcmp(pCurr->pPair->key, key, size);
-        if (iRes == 0)
+        if ((pCurr->sizeKey == size) &&
+            (memcmp(pCurr->pPair->key, key, size) == 0))
             return SUCC;
         pCurr = pCurr->pNext;
     }
@@ -256,8 +258,8 @@ int32_t HashMapRemove(HashMap *self, Key key, size_t size)
     SlotNode *pPred = NULL;
     SlotNode *pCurr = aSlot[uiValue];
     while (pCurr) {
-        int32_t iRes = memcmp(pCurr->pPair->key, key, size);
-        if (iRes == 0) {
+        if ((pCurr->sizeKey == size) &&
+            (memcmp(pCurr->pPair->key, key, size) == 0)) {
             if (pData->pDestroy_)
                 pData->pDestroy_(pCurr->pPair);
             if (!pPred)
