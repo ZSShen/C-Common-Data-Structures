@@ -5,13 +5,13 @@
 /*===========================================================================*
  *                        The container private data                         *
  *===========================================================================*/
-const uint32_t aMagicPrimes[] = {
+static const uint32_t aMagicPrimes[] = {
     769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433,
     1572869, 3145739, 6291469, 12582917, 25165843, 50331653, 100663319,
     201326611, 402653189, 805306457, 1610612741,
 };
-const int32_t iCountPrime_ = sizeof(aMagicPrimes) / sizeof(uint32_t);
-const double dLoadFactor_ = 0.75;
+static const int32_t iCountPrime_ = sizeof(aMagicPrimes) / sizeof(uint32_t);
+static const double dLoadFactor_ = 0.75;
 
 
 typedef struct _SlotNode {
