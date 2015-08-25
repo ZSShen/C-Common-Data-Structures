@@ -15,15 +15,15 @@ typedef struct _Stack {
     /** The container private information */
     StackData *pData;
 
-    /** Push an item onto the stack.
+    /** Insert an item to the top of the stack.
         @see StackPush */
     int32_t (*push) (struct _Stack*, Item);
 
-    /** Retrieve item from top of the stack.
+    /** Retrieve item from the top of the stack.
         @see StackTop */
     int32_t (*top) (struct _Stack*, Item*);
 
-    /** Delete item from top of the stack.
+    /** Delete item from the top of the stack.
         @see StackPop */
     int32_t (*pop) (struct _Stack*);
 
@@ -61,10 +61,10 @@ int32_t StackInit(Stack **ppObj);
 void StackDeinit(Stack **ppObj);
 
 /**
- * @brief Push an item onto the stack.
+ * @brief Insert an item to the top of the stack.
  *
- * This function pushes an item onto the stack with the corresponding stack size
- * extension.
+ * This function inserts an item to the top of the stack with the corresponding
+ * stack size extension.
  *
  * @param self          The pointer to Stack structure
  * @param item          The designated item
@@ -78,8 +78,8 @@ int32_t StackPush(Stack *self, Item item);
 /**
  * @brief Delete item from top of the stack.
  *
- * This function deletes item from top of the stack. If the custom resource clean
- * method is set, it also runs the clean method for the deleted item.
+ * This function deletes item from the top of the stack. If the custom resource
+ * clean method is set, it also runs the clean method for the deleted item.
  *
  * @param self          The pointer to Stack structure
  *
@@ -92,9 +92,9 @@ int32_t StackPop(Stack *self);
 /**
  * @brief Retrieve item from top of the stack.
  *
- * This function retrieves item from top of the stack. If the stack is not empty,
- * the item is returned by the second parameter. Otherwise, the error code is
- * returned and the second parameter is updated with NULL.
+ * This function retrieves item from the top of the stack. If the stack is not
+ * empty, the item is returned by the second parameter. Otherwise, the error
+ * code is returned and the second parameter is updated with NULL.
  *
  * @param self          The pointer to Stack structure
  * @param pItem         The pointer to the returned item

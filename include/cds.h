@@ -4,6 +4,7 @@
 #include "container/tree_map.h"
 #include "container/hash_map.h"
 #include "container/hash_set.h"
+#include "container/stack.h"
 #include "container/queue.h"
 #include "container/priority_queue.h"
 #include "math/hash.h"
