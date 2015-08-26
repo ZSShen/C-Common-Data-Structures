@@ -21,6 +21,6 @@ script:
     - make run
 
 after_success:
-    #- coveralls
+    - coveralls
 
 

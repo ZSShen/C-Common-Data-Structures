@@ -85,6 +85,7 @@ endforeach()
 # Determine the build type and prepare the C macro if necessary.
 if (CMAKE_BUILD_TYPE STREQUAL OPT_BUILD_DEBUG)
     set(PATH_OUT "${PATH_LIB}/debug")
+    set(CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage ")
     add_definitions(-DDEBUG)
 elseif (CMAKE_BUILD_TYPE STREQUAL OPT_BUILD_RELEASE)
     set(PATH_OUT "${PATH_LIB}/release")
