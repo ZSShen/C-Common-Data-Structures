@@ -22,6 +22,14 @@ function(SUB_BUILD_SPECIFIC DS)
     endif()
 
     add_library(${TGE_DS} ${LIB_TYPE} ${SRC_DS} ${SRC_DEP_DS})
+
+    if (CMAKE_BUILD_TYPE STREQUAL OPT_BUILD_DEBUG)
+        set(CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG} -O0 --coverage")
+        target_link_libraries(${TGE_DS} "-lgcov")
+    endif()
+
+    message(${CMAKE_C_FLAGS_DEBUG})
+
     set_target_properties(${TGE_DS} PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${PATH_SUB}
         OUTPUT_NAME ${DS}
@@ -85,7 +93,6 @@ endforeach()
 # Determine the build type and prepare the C macro if necessary.
 if (CMAKE_BUILD_TYPE STREQUAL OPT_BUILD_DEBUG)
     set(PATH_OUT "${PATH_LIB}/debug")
-    set(CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage ")
     add_definitions(-DDEBUG)
 elseif (CMAKE_BUILD_TYPE STREQUAL OPT_BUILD_RELEASE)
     set(PATH_OUT "${PATH_LIB}/release")
