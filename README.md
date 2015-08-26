@@ -1,11 +1,11 @@
-LibCDS 
+LibCDS
 =============
 
 Integration Test (Travis CI)
 + [![Integration Test] (https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)
 
 ##API Document
-[Link of the API Manual] (http://zsshen.github.io/C-Common-Data-Structures/html/index.html)  
+[Link of the API Manual] (http://zsshen.github.io/C-Common-Data-Structures/html/index.html)
 
 ##Container Category
  - Sequential Container
@@ -14,6 +14,7 @@ Integration Test (Travis CI)
  - Associative Container
    - TreeMap --- The ordered map to store key value pairs
    - HashMap --- The unordered map to store key value pairs
+   - HashSet --- The unordered set to store unique elements
  - Simple Collection Container
    - Queue --- The FIFO queue
    - Stack --- The LIFO stack
@@ -69,7 +70,7 @@ LD_LIBRARY_PATH=/path/to/your/destination/lib/
 ```
 That's all the related stuff!
 
-For detailed API usage, you can refer to the manual or check the `demo programs`.  
+For detailed API usage, you can refer to the manual or check the `demo programs`.
 
 
 [CMake]:http://www.cmake.org/

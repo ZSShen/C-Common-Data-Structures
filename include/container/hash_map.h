@@ -24,7 +24,7 @@ typedef struct _HashMap {
     int32_t (*get) (struct _HashMap*, Key, size_t, Value*);
 
     /** Check if the map contains the designated key.
-        @see TreeMapFind */
+        @see HashMapFind */
     int32_t (*find) (struct _HashMap*, Key, size_t);
 
     /** Delete the key value pair corresponding to the designated key.

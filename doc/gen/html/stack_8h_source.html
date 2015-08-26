@@ -83,15 +83,15 @@ $(document).ready(function(){initNavTree('stack_8h_source.html','');});
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">    /** The container private information */</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="structStack.html#a69e3e18aef64433ee8ac234952d2093a">   16</a></span>&#160;    <a class="code" href="stack_8h.html#af968af8c43a6dda234dde1f746408d3a">StackData</a> *<a class="code" href="structStack.html#a69e3e18aef64433ee8ac234952d2093a">pData</a>;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">    /** Push an item onto the stack.</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">    /** Insert an item to the top of the stack.</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">        @see StackPush */</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="structStack.html#a591908b7610a6275335c033b66bded9f">   20</a></span>&#160;    int32_t (*push) (<span class="keyword">struct </span>_Stack*, Item);</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">    /** Retrieve item from top of the stack.</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">    /** Retrieve item from the top of the stack.</span></div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">        @see StackTop */</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="structStack.html#adc26bf8a52ad6f99669b1aa6ecafe9a7">   24</a></span>&#160;    int32_t (*top) (<span class="keyword">struct </span>_Stack*, Item*);</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">    /** Delete item from top of the stack.</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">    /** Delete item from the top of the stack.</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">        @see StackPop */</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="structStack.html#a954ecc5777b207c7741623a0b147b02d">   28</a></span>&#160;    int32_t (*pop) (<span class="keyword">struct </span>_Stack*);</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment"></span></div>
@@ -129,10 +129,10 @@ $(document).ready(function(){initNavTree('stack_8h_source.html','');});
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keywordtype">void</span> <a class="code" href="stack_8h.html#aa3773552daf4b7a1d916f66ed689ee8f">StackDeinit</a>(<a class="code" href="structStack.html">Stack</a> **ppObj);</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment"> * @brief Push an item onto the stack.</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment"> * @brief Insert an item to the top of the stack.</span></div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment"> * This function pushes an item onto the stack with the corresponding stack size</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment"> * extension.</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment"> * This function inserts an item to the top of the stack with the corresponding</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment"> * stack size extension.</span></div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment"> * @param self          The pointer to Stack structure</span></div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment"> * @param item          The designated item</span></div>
@@ -146,8 +146,8 @@ $(document).ready(function(){initNavTree('stack_8h_source.html','');});
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">/**</span></div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment"> * @brief Delete item from top of the stack.</span></div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment"> * This function deletes item from top of the stack. If the custom resource clean</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment"> * method is set, it also runs the clean method for the deleted item.</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment"> * This function deletes item from the top of the stack. If the custom resource</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment"> * clean method is set, it also runs the clean method for the deleted item.</span></div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment"> * @param self          The pointer to Stack structure</span></div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment"> *</span></div>
@@ -160,9 +160,9 @@ $(document).ready(function(){initNavTree('stack_8h_source.html','');});
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment">/**</span></div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="comment"> * @brief Retrieve item from top of the stack.</span></div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment"> * This function retrieves item from top of the stack. If the stack is not empty,</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment"> * the item is returned by the second parameter. Otherwise, the error code is</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment"> * returned and the second parameter is updated with NULL.</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment"> * This function retrieves item from the top of the stack. If the stack is not</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment"> * empty, the item is returned by the second parameter. Otherwise, the error</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment"> * code is returned and the second parameter is updated with NULL.</span></div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment"> * @param self          The pointer to Stack structure</span></div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment"> * @param pItem         The pointer to the returned item</span></div>
@@ -200,7 +200,7 @@ $(document).ready(function(){initNavTree('stack_8h_source.html','');});
 <div class="ttc" id="stack_8h_html_af968af8c43a6dda234dde1f746408d3a"><div class="ttname"><a href="stack_8h.html#af968af8c43a6dda234dde1f746408d3a">StackData</a></div><div class="ttdeci">struct _StackData StackData</div><div class="ttdoc">StackData is the data type for the container private information. </div><div class="ttdef"><b>Definition:</b> <a href="stack_8h_source.html#l00011">stack.h:11</a></div></div>
 <div class="ttc" id="stack_8h_html_a3049959ea474e0622db16c479c3eb217"><div class="ttname"><a href="stack_8h.html#a3049959ea474e0622db16c479c3eb217">StackInit</a></div><div class="ttdeci">int32_t StackInit(Stack **ppObj)</div><div class="ttdoc">The constructor for Stack. </div></div>
 <div class="ttc" id="stack_8h_html_a612f324df336d05db3266421ee35ea39"><div class="ttname"><a href="stack_8h.html#a612f324df336d05db3266421ee35ea39">StackPop</a></div><div class="ttdeci">int32_t StackPop(Stack *self)</div><div class="ttdoc">Delete item from top of the stack. </div></div>
-<div class="ttc" id="stack_8h_html_a1245bd0f5a05613512420b3255bcfa74"><div class="ttname"><a href="stack_8h.html#a1245bd0f5a05613512420b3255bcfa74">StackPush</a></div><div class="ttdeci">int32_t StackPush(Stack *self, Item item)</div><div class="ttdoc">Push an item onto the stack. </div></div>
+<div class="ttc" id="stack_8h_html_a1245bd0f5a05613512420b3255bcfa74"><div class="ttname"><a href="stack_8h.html#a1245bd0f5a05613512420b3255bcfa74">StackPush</a></div><div class="ttdeci">int32_t StackPush(Stack *self, Item item)</div><div class="ttdoc">Insert an item to the top of the stack. </div></div>
 <div class="ttc" id="structStack_html_a69e3e18aef64433ee8ac234952d2093a"><div class="ttname"><a href="structStack.html#a69e3e18aef64433ee8ac234952d2093a">Stack::pData</a></div><div class="ttdeci">StackData * pData</div><div class="ttdoc">The container private information. </div><div class="ttdef"><b>Definition:</b> <a href="stack_8h_source.html#l00016">stack.h:16</a></div></div>
 <div class="ttc" id="stack_8h_html_a45e7a4767c677ff44f39b5a6ed862076"><div class="ttname"><a href="stack_8h.html#a45e7a4767c677ff44f39b5a6ed862076">StackSetDestroy</a></div><div class="ttdeci">int32_t StackSetDestroy(Stack *self, void(*pFunc)(Item))</div><div class="ttdoc">Set the custom item resource clean method. </div></div>
 <div class="ttc" id="stack_8h_html_a4ac15dedfababd313e61132761b5ce3a"><div class="ttname"><a href="stack_8h.html#a4ac15dedfababd313e61132761b5ce3a">StackTop</a></div><div class="ttdeci">int32_t StackTop(Stack *self, Item *pItem)</div><div class="ttdoc">Retrieve item from top of the stack. </div></div>

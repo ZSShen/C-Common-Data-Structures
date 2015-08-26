@@ -11,6 +11,7 @@ LibCDS implements a set of uniform C APIs for data structure manipulation.
  - Associative Container
    - TreeMap --- The ordered map to store key value pairs
    - HashMap --- The unordered map to store key value pairs
+   - HashSet --- The unordered set to store unique elements
  - Simple Collection Container
    - Queue --- The FIFO queue
    - Stack --- The LIFO stack

@@ -78,13 +78,13 @@ Data Fields</h2></td></tr>
 <tr class="memdesc:a69e3e18aef64433ee8ac234952d2093a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The container private information.  <a href="#a69e3e18aef64433ee8ac234952d2093a">More...</a><br/></td></tr>
 <tr class="separator:a69e3e18aef64433ee8ac234952d2093a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a591908b7610a6275335c033b66bded9f"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStack.html#a591908b7610a6275335c033b66bded9f">push</a> )(struct _Stack *, Item)</td></tr>
-<tr class="memdesc:a591908b7610a6275335c033b66bded9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push an item onto the stack.  <a href="#a591908b7610a6275335c033b66bded9f">More...</a><br/></td></tr>
+<tr class="memdesc:a591908b7610a6275335c033b66bded9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert an item to the top of the stack.  <a href="#a591908b7610a6275335c033b66bded9f">More...</a><br/></td></tr>
 <tr class="separator:a591908b7610a6275335c033b66bded9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc26bf8a52ad6f99669b1aa6ecafe9a7"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStack.html#adc26bf8a52ad6f99669b1aa6ecafe9a7">top</a> )(struct _Stack *, Item *)</td></tr>
-<tr class="memdesc:adc26bf8a52ad6f99669b1aa6ecafe9a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve item from top of the stack.  <a href="#adc26bf8a52ad6f99669b1aa6ecafe9a7">More...</a><br/></td></tr>
+<tr class="memdesc:adc26bf8a52ad6f99669b1aa6ecafe9a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve item from the top of the stack.  <a href="#adc26bf8a52ad6f99669b1aa6ecafe9a7">More...</a><br/></td></tr>
 <tr class="separator:adc26bf8a52ad6f99669b1aa6ecafe9a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a954ecc5777b207c7741623a0b147b02d"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStack.html#a954ecc5777b207c7741623a0b147b02d">pop</a> )(struct _Stack *)</td></tr>
-<tr class="memdesc:a954ecc5777b207c7741623a0b147b02d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete item from top of the stack.  <a href="#a954ecc5777b207c7741623a0b147b02d">More...</a><br/></td></tr>
+<tr class="memdesc:a954ecc5777b207c7741623a0b147b02d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete item from the top of the stack.  <a href="#a954ecc5777b207c7741623a0b147b02d">More...</a><br/></td></tr>
 <tr class="separator:a954ecc5777b207c7741623a0b147b02d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af94d4377f882ffad54596c782a13f3eb"><td class="memItemLeft" align="right" valign="top">int32_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStack.html#af94d4377f882ffad54596c782a13f3eb">size</a> )(struct _Stack *)</td></tr>
 <tr class="memdesc:af94d4377f882ffad54596c782a13f3eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of stored items.  <a href="#af94d4377f882ffad54596c782a13f3eb">More...</a><br/></td></tr>
@@ -124,8 +124,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Push an item onto the stack. </p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="stack_8h.html#a1245bd0f5a05613512420b3255bcfa74" title="Push an item onto the stack. ">StackPush</a> </dd></dl>
+<p>Insert an item to the top of the stack. </p>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="stack_8h.html#a1245bd0f5a05613512420b3255bcfa74" title="Insert an item to the top of the stack. ">StackPush</a> </dd></dl>
 
 <p>Definition at line <a class="el" href="stack_8h_source.html#l00020">20</a> of file <a class="el" href="stack_8h_source.html">stack.h</a>.</p>
 
@@ -141,7 +141,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Retrieve item from top of the stack. </p>
+<p>Retrieve item from the top of the stack. </p>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="stack_8h.html#a4ac15dedfababd313e61132761b5ce3a" title="Retrieve item from top of the stack. ">StackTop</a> </dd></dl>
 
 <p>Definition at line <a class="el" href="stack_8h_source.html#l00024">24</a> of file <a class="el" href="stack_8h_source.html">stack.h</a>.</p>
@@ -158,7 +158,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Delete item from top of the stack. </p>
+<p>Delete item from the top of the stack. </p>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="stack_8h.html#a612f324df336d05db3266421ee35ea39" title="Delete item from top of the stack. ">StackPop</a> </dd></dl>
 
 <p>Definition at line <a class="el" href="stack_8h_source.html#l00028">28</a> of file <a class="el" href="stack_8h_source.html">stack.h</a>.</p>

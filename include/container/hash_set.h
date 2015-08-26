@@ -20,7 +20,7 @@ typedef struct _HashSet {
     int32_t (*add) (struct _HashSet*, Key, size_t);
 
     /** Check if the set contains the designated key.
-        @see TreeMapFind */
+        @see HashSetFind */
     int32_t (*find) (struct _HashSet*, Key, size_t);
 
     /** Delete the designated key from the set.
