@@ -122,7 +122,8 @@ int32_t QueuePush(Queue *self, Item item)
         /* If back index is smaller than front index, we should migrate the
            circularly pushed items to the newly allocated space. */
         if (pData->iBack_ <= pData->iFront_) {
-            memmove(aItem + pData->iSize_, aItem, sizeof(Item) * pData->iBack_);
+            memmove(pData->aItem_ + pData->iSize_, pData->aItem_,
+                    sizeof(Item) * pData->iBack_);
             pData->iBack_ += pData->iSize_;
         }
     }
