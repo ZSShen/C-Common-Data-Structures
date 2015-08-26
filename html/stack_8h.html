@@ -97,7 +97,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:aa3773552daf4b7a1d916f66ed689ee8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor for <a class="el" href="structStack.html" title="The implementation for stack. ">Stack</a>.  <a href="#aa3773552daf4b7a1d916f66ed689ee8f">More...</a><br/></td></tr>
 <tr class="separator:aa3773552daf4b7a1d916f66ed689ee8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1245bd0f5a05613512420b3255bcfa74"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stack_8h.html#a1245bd0f5a05613512420b3255bcfa74">StackPush</a> (<a class="el" href="structStack.html">Stack</a> *self, Item item)</td></tr>
-<tr class="memdesc:a1245bd0f5a05613512420b3255bcfa74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push an item onto the stack.  <a href="#a1245bd0f5a05613512420b3255bcfa74">More...</a><br/></td></tr>
+<tr class="memdesc:a1245bd0f5a05613512420b3255bcfa74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert an item to the top of the stack.  <a href="#a1245bd0f5a05613512420b3255bcfa74">More...</a><br/></td></tr>
 <tr class="separator:a1245bd0f5a05613512420b3255bcfa74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a612f324df336d05db3266421ee35ea39"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stack_8h.html#a612f324df336d05db3266421ee35ea39">StackPop</a> (<a class="el" href="structStack.html">Stack</a> *self)</td></tr>
 <tr class="memdesc:a612f324df336d05db3266421ee35ea39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete item from top of the stack.  <a href="#a612f324df336d05db3266421ee35ea39">More...</a><br/></td></tr>
@@ -214,8 +214,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Push an item onto the stack. </p>
-<p>This function pushes an item onto the stack with the corresponding stack size extension.</p>
+<p>Insert an item to the top of the stack. </p>
+<p>This function inserts an item to the top of the stack with the corresponding stack size extension.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">self</td><td>The pointer to <a class="el" href="structStack.html" title="The implementation for stack. ">Stack</a> structure </td></tr>
@@ -249,7 +249,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Delete item from top of the stack. </p>
-<p>This function deletes item from top of the stack. If the custom resource clean method is set, it also runs the clean method for the deleted item.</p>
+<p>This function deletes item from the top of the stack. If the custom resource clean method is set, it also runs the clean method for the deleted item.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">self</td><td>The pointer to <a class="el" href="structStack.html" title="The implementation for stack. ">Stack</a> structure</td></tr>
@@ -292,7 +292,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Retrieve item from top of the stack. </p>
-<p>This function retrieves item from top of the stack. If the stack is not empty, the item is returned by the second parameter. Otherwise, the error code is returned and the second parameter is updated with NULL.</p>
+<p>This function retrieves item from the top of the stack. If the stack is not empty, the item is returned by the second parameter. Otherwise, the error code is returned and the second parameter is updated with NULL.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">self</td><td>The pointer to <a class="el" href="structStack.html" title="The implementation for stack. ">Stack</a> structure </td></tr>
