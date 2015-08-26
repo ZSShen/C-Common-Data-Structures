@@ -84,9 +84,9 @@ void QueueDeinit(Queue **ppObj)
         goto FREE_ARRAY;
 
     Item *aItem = pData->aItem_;
-    int iSize = pData->iSize_;
-    int iCapacity = pData->iCapacity_;
-    int iFront = pData->iFront_;
+    int32_t iSize = pData->iSize_;
+    int32_t iCapacity = pData->iCapacity_;
+    int32_t iFront = pData->iFront_;
     while (iSize > 0) {
         if (iFront == iCapacity)
             iFront = 0;
@@ -111,13 +111,12 @@ int32_t QueuePush(Queue *self, Item item)
     QueueData *pData = self->pData;
 
     /* If the array is full, extend it to double capacity. */
-    Item *aItem = pData->aItem_;
     if (pData->iSize_ == pData->iCapacity_) {
         int32_t iCapaNew = pData->iCapacity_ << 1;
-        Item *aItemNew = (Item*)realloc(aItem, iCapaNew * sizeof(Item));
+        Item *aItemNew = (Item*)realloc(pData->aItem_, iCapaNew * sizeof(Item));
         if (!aItemNew)
             return ERR_NOMEM;
-        aItem = pData->aItem_ = aItemNew;
+        pData->aItem_ = aItemNew;
         pData->iCapacity_ = iCapaNew;
 
         /* If back index is smaller than front index, we should migrate the
@@ -129,7 +128,7 @@ int32_t QueuePush(Queue *self, Item item)
     }
 
     /* Insert the item to the tail of the array. */
-    aItem[pData->iBack_] = item;
+    pData->aItem_[pData->iBack_] = item;
     pData->iBack_++;
     if (pData->iBack_ == pData->iCapacity_)
         pData->iBack_ = 0;
