@@ -21,6 +21,6 @@ script:
     - make run
 
 after_success:
-    - coveralls --include ${TRAVIS_BUILD_DIR}/src/
+    - coveralls --include ./src/ ./build/src/CMakeFiles/
 
 

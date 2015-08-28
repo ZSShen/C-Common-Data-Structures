@@ -22,14 +22,6 @@ function(SUB_BUILD_SPECIFIC DS)
     endif()
 
     add_library(${TGE_DS} ${LIB_TYPE} ${SRC_DS} ${SRC_DEP_DS})
-
-    if (CMAKE_BUILD_TYPE STREQUAL OPT_BUILD_DEBUG)
-        set(CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG} -O0 --coverage")
-        target_link_libraries(${TGE_DS} "-lgcov")
-    endif()
-
-    message(${CMAKE_C_FLAGS_DEBUG})
-
     set_target_properties(${TGE_DS} PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${PATH_SUB}
         OUTPUT_NAME ${DS}
@@ -94,6 +86,7 @@ endforeach()
 if (CMAKE_BUILD_TYPE STREQUAL OPT_BUILD_DEBUG)
     set(PATH_OUT "${PATH_LIB}/debug")
     add_definitions(-DDEBUG)
+    set(CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG} -O0 --coverage")
 elseif (CMAKE_BUILD_TYPE STREQUAL OPT_BUILD_RELEASE)
     set(PATH_OUT "${PATH_LIB}/release")
 else()
