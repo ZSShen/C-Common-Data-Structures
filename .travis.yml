@@ -22,5 +22,5 @@ script:
     - make run
 
 after_success:
-    - coveralls --include ./build
+    - coveralls --exclude ./build/src/CMakeFiles/CDS.dir/
 
