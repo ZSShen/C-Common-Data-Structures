@@ -4,6 +4,10 @@ LibCDS
 Integration Test (Travis CI)
 + [![Integration Test] (https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)
 
+Unit Test Coverage Status (Coveralls.io)
++ [![Coverage Status] (https://coveralls.io/repos/ZSShen/C-Common-Data-Structures/badge.svg?branch=master&service=github)](https://coveralls.io/github/ZSShen/C-Common-Data-Structures?branch=master)
+
+
 ##API Document
 [Link of the API Manual] (http://zsshen.github.io/C-Common-Data-Structures/html/index.html)
 
