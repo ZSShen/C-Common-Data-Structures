@@ -7,8 +7,9 @@ git:
   depth: 1
 
 install:
-    - sudo pip install cpp-coveralls
     - sudo apt-get update -qq
+    - sudo pip install cpp-coveralls
+    - sudo pip install requests==2.5.3
     - sudo apt-get install -qq cmake python3-minimal
     - sudo apt-get install -qq valgrind
     - sudo apt-get install -qq libcunit1-dev
