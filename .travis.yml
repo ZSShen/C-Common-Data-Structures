@@ -8,8 +8,7 @@ git:
 
 install:
     - sudo apt-get update -qq
-    - sudo apt-get install -y lcov
-    - gem install coveralls-lcov
+    - sudo pip install cpp-coveralls
     - sudo apt-get install -qq cmake python3-minimal
     - sudo apt-get install -qq valgrind
     - sudo apt-get install -qq libcunit1-dev
@@ -22,6 +21,4 @@ script:
     - make run
 
 after_success:
-    - lcov --compat-libtool --directory . --capture --output-file coverage.info
-    - coveralls-lcov coverage.info
-
+    - coveralls --exclude "include" --exclude "test" --exclude "demo" --exclude-pattern ".*CMakeFiles.*" --verbose
