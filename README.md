@@ -5,7 +5,7 @@ Integration Test (Travis CI)
 + [![Integration Test] (https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)  
 
 Unit Test Coverage Status (Coveralls.io)
-+ [![Coverage Status](https://coveralls.io/repos/ZSShen/C-Common-Data-Structures/badge.png?branch=master)](https://coveralls.io/r/ZSShen/C-Common-Data-Structures?branch=master)
++ [![Coverage Status](https://coveralls.io/repos/ZSShen/C-Common-Data-Structures/badge.svg?branch=master)](https://coveralls.io/github/ZSShen/C-Common-Data-Structures?branch=master)
 
 
 ##API Document
