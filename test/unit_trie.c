@@ -1,0 +1,179 @@
+#include "container/trie.h"
+#include "CUnit/Util.h"
+#include "CUnit/Basic.h"
+
+
+int32_t AddSuite();
+void TestInsertDummy();
+void TestInsertOnePrefix();
+void TestInsertOneSuffix();
+void TestBulkInsert();
+
+
+int32_t main()
+{
+    int32_t rc = SUCC;
+
+    if (CU_initialize_registry() != CUE_SUCCESS) {
+        rc = CU_get_error();
+        goto EXIT;
+    }
+
+    /* Register the test suite for stack structure verification. */
+    if (AddSuite() != SUCC) {
+        rc = CU_get_error();
+        goto CLEAN;
+    }
+
+    /* Launch all the tests. */
+    CU_basic_set_mode(CU_BRM_VERBOSE);
+    CU_basic_run_tests();
+
+CLEAN:
+    CU_cleanup_registry();
+EXIT:
+    return rc;
+}
+
+int32_t AddSuite()
+{
+    int32_t rc = SUCC;
+
+    CU_pSuite pSuite = CU_add_suite("Structure Verification", NULL, NULL);
+    if (!pSuite) {
+        rc = ERR_REG;
+        goto EXIT;
+    }
+
+    char *szMsg = "Insert the dummy data and verify the boundary case handling.";
+    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestInsertDummy);
+    if (!pTest)
+        rc = ERR_REG;
+
+    szMsg = "Insert and search the strings sharing the only one common prefix.";
+    pTest = CU_add_test(pSuite, szMsg, TestInsertOnePrefix);
+    if (!pTest)
+        rc = ERR_REG;
+
+    szMsg = "Insert and search the strings sharing the only one common suffix.";
+    pTest = CU_add_test(pSuite, szMsg, TestInsertOneSuffix);
+    if (!pTest)
+        rc = ERR_REG;
+
+    szMsg = "Insert bulk data.";
+    pTest = CU_add_test(pSuite, szMsg, TestBulkInsert);
+    if (!pTest)
+        rc = ERR_REG;
+
+EXIT:
+    return rc;
+}
+
+void TestInsertDummy()
+{
+    Trie *pTrie;
+    CU_ASSERT(TrieInit(&pTrie) == SUCC);
+
+    CU_ASSERT(pTrie->insert(pTrie, "ab\0") == SUCC);
+    CU_ASSERT(pTrie->insert(pTrie, "aa\0") == SUCC);
+
+    /* Insert NULL into the trie. */
+    CU_ASSERT(pTrie->insert(pTrie, NULL) == SUCC);
+
+    /* Insert dummy string into the trie. */
+    CU_ASSERT(pTrie->insert(pTrie, "\0") == SUCC);
+    CU_ASSERT(pTrie->insert(pTrie, "\0\0") == SUCC);
+
+    CU_ASSERT_EQUAL(pTrie->size(pTrie), 2);
+
+    TrieDeinit(&pTrie);
+}
+
+void TestInsertOnePrefix()
+{
+    Trie *pTrie;
+    CU_ASSERT(TrieInit(&pTrie) == SUCC);
+
+    char *szPrefix = "abcdefghijklmnopqrstuvwxyz\0";
+    int32_t iLen = strlen(szPrefix);
+    char szBuf[iLen + 1];
+
+    /* Insert the prefixes and verify the number of stored strings. */
+    int32_t iIdx;
+    for (iIdx = 0 ; iIdx < iLen ; ++iIdx) {
+        int32_t iOfst = iIdx;
+        while (iOfst < iLen) {
+            int32_t iCap = iOfst - iIdx + 2;
+            memset(szBuf, 0, sizeof(char) * iCap);
+            strncpy(szBuf, szPrefix + iIdx, iCap - 1);
+            CU_ASSERT(pTrie->insert(pTrie, szBuf) == SUCC);
+            ++iOfst;
+        }
+    }
+    CU_ASSERT_EQUAL(pTrie->size(pTrie), ((iLen * (iLen + 1)) >> 1));
+
+    TrieDeinit(&pTrie);
+}
+
+void TestInsertOneSuffix()
+{
+    Trie *pTrie;
+    CU_ASSERT(TrieInit(&pTrie) == SUCC);
+
+    char *szSuffix = "abcdefghijklmnopqrstuvwxyz\0";
+    int32_t iLen = strlen(szSuffix);
+    char szBuf[iLen + 1];
+
+    /* Insert the suffixes and verify the number of stored strings. */
+    int32_t iIdx;
+    for (iIdx = iLen - 1 ; iIdx >= 0 ; --iIdx) {
+        int32_t iOfst = iIdx;
+        while (iOfst >= 0) {
+            int32_t iCap = iIdx - iOfst + 2;
+            memset(szBuf, 0, sizeof(char) * iCap);
+            strncpy(szBuf, szSuffix + iOfst, iCap - 1);
+            CU_ASSERT(pTrie->insert(pTrie, szBuf) == SUCC);
+            --iOfst;
+        }
+    }
+    CU_ASSERT_EQUAL(pTrie->size(pTrie), ((iLen * (iLen + 1)) >> 1));
+
+    TrieDeinit(&pTrie);
+}
+
+void TestBulkInsert()
+{
+    Trie *pTrie;
+    CU_ASSERT(TrieInit(&pTrie) == SUCC);
+
+    char *szPalin = "abcdefghijklmnopqrstuvwxyzzyxwvutsrqponmlkjihgfedcba\0";
+    int32_t iLen = strlen(szPalin);
+
+    /* Apply bulk_insert() to put the first half of the data. */
+    char **aStr = (char**)malloc(sizeof(char*) * ((iLen * (iLen + 1)) >> 1));
+    int32_t iPivot = 0, iIdx;
+    for (iIdx = 0 ; iIdx < iLen ; ++iIdx) {
+        int32_t iOfst = iIdx;
+        while (iOfst < iLen) {
+            int32_t iCap = iOfst - iIdx + 2;
+            char *str = (char*)malloc(sizeof(char) * iCap);
+            memset(str, 0, sizeof(char) * iCap);
+            strncpy(str, szPalin + iIdx, iCap - 1);
+            aStr[iPivot++] = str;
+            ++iOfst;
+        }
+    }
+    CU_ASSERT(pTrie->bulk_insert(pTrie, aStr, iPivot >> 1) == SUCC);
+    CU_ASSERT_EQUAL(pTrie->size(pTrie), (iLen * (iLen + 1)) >> 2);
+
+    /* Iteratively apply insert() to put the second half of the data. */
+    for (iIdx = iPivot >> 1 ; iIdx < iPivot ; ++iIdx)
+        CU_ASSERT(pTrie->insert(pTrie, aStr[iIdx]) == SUCC);
+    CU_ASSERT_EQUAL(pTrie->size(pTrie), ((iLen * (iLen + 1)) >> 1) - (iLen >> 1));
+
+    while (iPivot > 0)
+        free(aStr[--iPivot]);
+    free(aStr);
+
+    TrieDeinit(&pTrie);
+}

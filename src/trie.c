@@ -15,8 +15,13 @@ typedef struct _TrieNode {
 
 struct _TrieData {
     int32_t iSize_;
+    int32_t iCountNode_;
     TrieNode *pRoot_;
 };
+
+#define DIRECT_LEFT             (0)
+#define DIRECT_MIDDLE           (1)
+#define DIRECT_RIGHT            (2)
 
 
 /*===========================================================================*
@@ -59,7 +64,7 @@ int32_t TrieInit(Trie **ppObj)
     }
 
     TrieData *pData = pObj->pData;
-    pData->iSize_ = 0;
+    pData->iSize_ = pData->iCountNode_ = 0;
     pData->pRoot_ = NULL;
 
     pObj->insert = TrieInsert;
@@ -99,12 +104,140 @@ EXIT:
 int32_t TrieInsert(Trie *self, char *str)
 {
     CHECK_INIT(self);
+    if (!str)
+        return SUCC;
+    if (*str == 0)
+        return SUCC;
+
+    TrieData *pData = self->pData;
+    TrieNode *pCurr = pData->pRoot_;
+    TrieNode *pPred = NULL;
+
+    char ch, cDirect;
+    while (pCurr && ((ch = *str) != 0)) {
+        pPred = pCurr;
+        if (ch == pCurr->cToken_) {
+            pCurr = pCurr->pMiddle_;
+            cDirect = DIRECT_MIDDLE;
+            ++str;
+        } else {
+            if (ch < pCurr->cToken_) {
+                pCurr = pCurr->pLeft_;
+                cDirect = DIRECT_LEFT;
+            } else {
+                pCurr = pCurr->pRight_;
+                cDirect = DIRECT_RIGHT;
+            }
+        }
+    }
+
+    while (*str) {
+        TrieNode *pNew = (TrieNode*)malloc(sizeof(TrieNode));
+        if (!pNew)
+            return ERR_NOMEM;
+        pNew->pMiddle_ = pNew->pLeft_ = pNew->pRight_ = NULL;
+        pNew->pParent_ = pPred;
+        pNew->cToken_ = *str;
+        pNew->bEndStr_ = false;
+
+        if (!pPred)
+            pData->pRoot_ = pNew;
+        else {
+            switch (cDirect) {
+                case DIRECT_LEFT:
+                    pPred->pLeft_ = pNew;
+                    break;
+                case DIRECT_MIDDLE:
+                    pPred->pMiddle_ = pNew;
+                    break;
+                case DIRECT_RIGHT:
+                    pPred->pRight_ = pNew;
+            }
+        }
+        pPred = pNew;
+        cDirect = DIRECT_MIDDLE;
+        pData->iCountNode_++;
+        ++str;
+    }
+
+    if (!(pPred->bEndStr_)) {
+        pPred->bEndStr_ = true;
+        pData->iSize_++;
+    }
+
     return SUCC;
 }
 
 int32_t TrieBulkInsert(Trie *self, char **aStr, int iNum)
 {
     CHECK_INIT(self);
+    TrieData *pData = self->pData;
+
+    int iIdx;
+    for (iIdx = 0 ; iIdx < iNum ; ++iIdx) {
+        char *str = aStr[iIdx];
+        if (!str)
+            continue;
+        if (*str == 0)
+            continue;
+
+        TrieNode *pCurr = pData->pRoot_;
+        TrieNode *pPred = NULL;
+
+        char ch, cDirect;
+        while (pCurr && ((ch = *str) != 0)) {
+            pPred = pCurr;
+            if (ch == pCurr->cToken_) {
+                pCurr = pCurr->pMiddle_;
+                cDirect = DIRECT_MIDDLE;
+                ++str;
+            } else {
+                if (ch < pCurr->cToken_) {
+                    pCurr = pCurr->pLeft_;
+                    cDirect = DIRECT_LEFT;
+                }
+                else {
+                    pCurr = pCurr->pRight_;
+                    cDirect = DIRECT_RIGHT;
+                }
+            }
+        }
+
+        while (*str) {
+            TrieNode *pNew = (TrieNode*)malloc(sizeof(TrieNode));
+            if (!pNew)
+                return ERR_NOMEM;
+            pNew->pMiddle_ = pNew->pLeft_ = pNew->pRight_ = NULL;
+            pNew->pParent_ = pPred;
+            pNew->cToken_ = *str;
+            pNew->bEndStr_ = false;
+
+            if (!pPred)
+                pData->pRoot_ = pNew;
+            else {
+                switch (cDirect) {
+                    case DIRECT_LEFT:
+                        pPred->pLeft_ = pNew;
+                        break;
+                    case DIRECT_MIDDLE:
+                        pPred->pMiddle_ = pNew;
+                        break;
+                    case DIRECT_RIGHT:
+                        pPred->pRight_ = pNew;
+                }
+            }
+            pPred = pNew;
+            cDirect = DIRECT_MIDDLE;
+            pData->iCountNode_++;
+            ++str;
+        }
+
+        if (!(pPred->bEndStr_)) {
+            pPred->bEndStr_ = true;
+            pData->iSize_++;
+        }
+    }
+
     return SUCC;
 }
 
@@ -148,7 +281,7 @@ void _TrieDeinit(TrieData *pData)
         return;
 
     /* Simulate the stack and apply iterative post-order trie traversal. */
-    TrieNode ***stack = (TrieNode***)malloc(sizeof(TrieNode**) * pData->iSize_);
+    TrieNode ***stack = (TrieNode***)malloc(sizeof(TrieNode**) * pData->iCountNode_);
     assert(stack != NULL);
 
     int32_t iSize = 0;
@@ -156,20 +289,22 @@ void _TrieDeinit(TrieData *pData)
     while (iSize > 0) {
         TrieNode **ppCurr = stack[iSize - 1];
         TrieNode *pCurr = *ppCurr;
-        if (pCurr->pLeft_ != NULL)
+        if (pCurr->pLeft_)
             stack[iSize++] = &(pCurr->pLeft_);
-        else if (pCurr->pMiddle_ != NULL)
+        else if (pCurr->pMiddle_)
             stack[iSize++] = &(pCurr->pMiddle_);
-        else if (pCurr->pRight_ != NULL)
+        else if (pCurr->pRight_)
             stack[iSize++] = &(pCurr->pRight_);
         else {
             TrieNode *pParent = pCurr->pParent_;
-            if (pCurr == pParent->pLeft_)
-                pParent->pLeft_ = NULL;
-            else if (pCurr == pParent->pMiddle_)
-                pParent->pMiddle_ = NULL;
-            else
-                pParent->pRight_ = NULL;
+            if (pParent) {
+                if (pCurr == pParent->pLeft_)
+                    pParent->pLeft_ = NULL;
+                else if (pCurr == pParent->pMiddle_)
+                    pParent->pMiddle_ = NULL;
+                else
+                    pParent->pRight_ = NULL;
+            }
             free(pCurr);
             iSize--;
         }
