@@ -110,6 +110,7 @@ int32_t TrieHasExact(Trie *self, char *str);
  * @retval SUCC
  * @retval NOKEY
  * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_NOMEM    Insufficient memory to prepare trie traversal
  */
 int32_t TrieHasPrefixAs(Trie *self, char *str);
 

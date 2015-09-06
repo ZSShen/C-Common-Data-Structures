@@ -22,6 +22,7 @@ struct _TrieData {
 #define DIRECT_LEFT             (0)
 #define DIRECT_MIDDLE           (1)
 #define DIRECT_RIGHT            (2)
+#define INIT_STACK_SIZE(size)   (size >> 2)
 
 
 /*===========================================================================*
@@ -41,6 +42,44 @@ void _TrieDeinit(TrieData *pData);
                     return ERR_NOINIT;                                          \
                 if (!(self->pData))                                             \
                     return ERR_NOINIT;                                          \
+            } while (0);
+
+#define LONGEST_PREFIX_MATCH()                                                  \
+            do {                                                                \
+                char ch;                                                        \
+                while (pCurr && ((ch = *str) != 0)) {                           \
+                    pPred = pCurr;                                              \
+                    if (ch == pCurr->cToken_) {                                 \
+                        pCurr = pCurr->pMiddle_;                                \
+                        ++str;                                                  \
+                    } else {                                                    \
+                        if (ch < pCurr->cToken_)                                \
+                            pCurr = pCurr->pLeft_;                              \
+                        else                                                    \
+                            pCurr = pCurr->pRight_;                             \
+                    }                                                           \
+                }                                                               \
+            } while (0);
+
+#define LONGEST_PREFIX_MATCH_TRACK_DIRECTION()                                  \
+            do {                                                                \
+                char ch;                                                        \
+                while (pCurr && ((ch = *str) != 0)) {                           \
+                    pPred = pCurr;                                              \
+                    if (ch == pCurr->cToken_) {                                 \
+                        pCurr = pCurr->pMiddle_;                                \
+                        cDirect = DIRECT_MIDDLE;                                \
+                        ++str;                                                  \
+                    } else {                                                    \
+                        if (ch < pCurr->cToken_) {                              \
+                            pCurr = pCurr->pLeft_;                              \
+                            cDirect = DIRECT_LEFT;                              \
+                        } else {                                                \
+                            pCurr = pCurr->pRight_;                             \
+                            cDirect = DIRECT_RIGHT;                             \
+                        }                                                       \
+                    }                                                           \
+                }                                                               \
             } while (0);
 
 
@@ -112,24 +151,8 @@ int32_t TrieInsert(Trie *self, char *str)
     TrieData *pData = self->pData;
     TrieNode *pCurr = pData->pRoot_;
     TrieNode *pPred = NULL;
-
-    char ch, cDirect;
-    while (pCurr && ((ch = *str) != 0)) {
-        pPred = pCurr;
-        if (ch == pCurr->cToken_) {
-            pCurr = pCurr->pMiddle_;
-            cDirect = DIRECT_MIDDLE;
-            ++str;
-        } else {
-            if (ch < pCurr->cToken_) {
-                pCurr = pCurr->pLeft_;
-                cDirect = DIRECT_LEFT;
-            } else {
-                pCurr = pCurr->pRight_;
-                cDirect = DIRECT_RIGHT;
-            }
-        }
-    }
+    char cDirect;
+    LONGEST_PREFIX_MATCH_TRACK_DIRECTION();
 
     while (*str) {
         TrieNode *pNew = (TrieNode*)malloc(sizeof(TrieNode));
@@ -183,25 +206,8 @@ int32_t TrieBulkInsert(Trie *self, char **aStr, int iNum)
 
         TrieNode *pCurr = pData->pRoot_;
         TrieNode *pPred = NULL;
-
-        char ch, cDirect;
-        while (pCurr && ((ch = *str) != 0)) {
-            pPred = pCurr;
-            if (ch == pCurr->cToken_) {
-                pCurr = pCurr->pMiddle_;
-                cDirect = DIRECT_MIDDLE;
-                ++str;
-            } else {
-                if (ch < pCurr->cToken_) {
-                    pCurr = pCurr->pLeft_;
-                    cDirect = DIRECT_LEFT;
-                }
-                else {
-                    pCurr = pCurr->pRight_;
-                    cDirect = DIRECT_RIGHT;
-                }
-            }
-        }
+        char cDirect;
+        LONGEST_PREFIX_MATCH_TRACK_DIRECTION();
 
         while (*str) {
             TrieNode *pNew = (TrieNode*)malloc(sizeof(TrieNode));
@@ -244,13 +250,81 @@ int32_t TrieBulkInsert(Trie *self, char **aStr, int iNum)
 int32_t TrieHasExact(Trie *self, char *str)
 {
     CHECK_INIT(self);
-    return SUCC;
+    if (!str)
+        return NOKEY;
+    if (*str == 0)
+        return NOKEY;
+
+    TrieData *pData = self->pData;
+    TrieNode *pCurr = pData->pRoot_;
+    TrieNode *pPred = NULL;
+    LONGEST_PREFIX_MATCH();
+
+    /* Locate at the exact tail of a certain string. */
+    return (pPred && pPred->bEndStr_ && *str == 0)? SUCC : NOKEY;
 }
 
 int32_t TrieHasPrefixAs(Trie *self, char *str)
 {
     CHECK_INIT(self);
-    return SUCC;
+    if (!str)
+        return NOKEY;
+    if (*str == 0)
+        return NOKEY;
+
+    TrieData *pData = self->pData;
+    TrieNode *pCurr = pData->pRoot_;
+    TrieNode *pPred = NULL;
+    LONGEST_PREFIX_MATCH();
+
+    if (*str == 0) { /* Legal prefix */
+        if (!pCurr)
+            return (pPred && pPred->bEndStr_)? SUCC : NOKEY;
+        if (pCurr && pPred && pPred->bEndStr_)
+            /* Shortcut if the prefix is just a string. */
+            return SUCC;
+    } else
+        return NOKEY;
+
+    /* Otherwise, the slow iterative preorder traversal is necessary to find any
+       node marked as string tail. */
+    int32_t iCap = ((pData->iSize_ << 2) >= pData->iCountNode_)? \
+                   INIT_STACK_SIZE(pData->iSize_) : \
+                   INIT_STACK_SIZE(pData->iCountNode_ >> 1);
+    TrieNode **stack = (TrieNode**)malloc(sizeof(TrieNode*) * iCap);
+    if (!stack)
+        return ERR_NOMEM;
+
+    int32_t iRtn = NOKEY;
+    int32_t iTop = 0;
+    stack[iTop++] = pCurr;
+    while (iTop > 0) {
+        pCurr = stack[--iTop];
+        if (pCurr->bEndStr_) {
+            iRtn = SUCC;
+            break;
+        }
+
+        if (iTop == iCap) {
+            iCap <<= 1;
+            TrieNode **extend = (TrieNode**)realloc(stack, iCap);
+            if (!extend) {
+                iRtn = ERR_NOMEM;
+                break;
+            }
+            stack = extend;
+        }
+
+        if (pCurr->pRight_)
+            stack[iTop++] = pCurr->pRight_;
+        if (pCurr->pMiddle_)
+            stack[iTop++] = pCurr->pMiddle_;
+        if (pCurr->pLeft_)
+            stack[iTop++] = pCurr->pLeft_;
+    }
+    free(stack);
+
+    return iRtn;
 }
 
 int32_t TrieGetPrefixAs(Trie *self, char* str, char ***paStr, int *piNum)
@@ -262,7 +336,23 @@ int32_t TrieGetPrefixAs(Trie *self, char* str, char ***paStr, int *piNum)
 int32_t TrieDelete(Trie *self, char *str)
 {
     CHECK_INIT(self);
-    return SUCC;
+    if (!str)
+        return NOKEY;
+    if (*str == 0)
+        return NOKEY;
+
+    TrieData *pData = self->pData;
+    TrieNode *pCurr = pData->pRoot_;
+    TrieNode *pPred = NULL;
+    LONGEST_PREFIX_MATCH();
+
+    /* Locate at the exact tail of a certain string. */
+    if (pPred && pPred->bEndStr_ && *str == 0) {
+        pPred->bEndStr_ = false;
+        pData->iSize_--;
+        return SUCC;
+    }
+    return NOKEY;
 }
 
 int32_t TrieSize(Trie *self)
