@@ -14,6 +14,7 @@ void TestBulkInsert();
 void TestSearchExact();
 void TestSearchPrefix();
 void TestDeleteThenVerify();
+void TestGetPrefix();
 
 
 int32_t main()
@@ -83,6 +84,11 @@ int32_t AddSuite()
 
     szMsg = "Delete strings and then verify the searching operators.";
     pTest = CU_add_test(pSuite, szMsg, TestDeleteThenVerify);
+    if (!pTest)
+        rc = ERR_REG;
+
+    szMsg = "Get the strings matching the designated prefix.";
+    pTest = CU_add_test(pSuite, szMsg, TestGetPrefix);
     if (!pTest)
         rc = ERR_REG;
 
@@ -359,6 +365,25 @@ void TestDeleteThenVerify()
         szBuf[0] = szSeq[iIdx]; szBuf[1] = 0;
         CU_ASSERT(pTrie->has_prefix_as(pTrie, szBuf) == NOKEY);
     }
+
+    TrieDeinit(&pTrie);
+}
+
+void TestGetPrefix()
+{
+    Trie *pTrie;
+    CU_ASSERT(TrieInit(&pTrie) == SUCC);
+
+    /* Pass invalid parameters for the returned data. */
+    char **aStr;
+    int32_t iSizeArr;
+    CU_ASSERT(pTrie->get_prefix_as(pTrie, NULL, NULL, &iSizeArr) == ERR_GET);
+    CU_ASSERT(pTrie->get_prefix_as(pTrie, NULL, &aStr, NULL) == ERR_GET);
+
+    /* Pass dummy prefix. */
+    CU_ASSERT(pTrie->get_prefix_as(pTrie, NULL, &aStr, &iSizeArr) == NOKEY);
+    CU_ASSERT(pTrie->get_prefix_as(pTrie, "\0", &aStr, &iSizeArr) == NOKEY);
+
 
     TrieDeinit(&pTrie);
 }

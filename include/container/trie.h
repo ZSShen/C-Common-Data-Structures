@@ -7,7 +7,7 @@
 #include "../util.h"
 
 /** TrieData is the data type for the container private information. */
-typedef struct _TrieData TrieData;
+typedef struct TrieData_ TrieData;
 
 /** The implementation for trie. */
 typedef struct _Trie {
@@ -132,6 +132,7 @@ int32_t TrieHasPrefixAs(Trie *self, char *str);
  * @retval SUCC
  * @retval NOKEY
  * @retval ERR_NOINIT   Uninitialized container
+ * @retval ERR_GET      Invalid parameter to store returned data
  * @retval ERR_NOMEM    Insufficient memory to store the resolved strings
  */
 int32_t TrieGetPrefixAs(Trie *self, char* str, char ***paStr, int *piNum);
