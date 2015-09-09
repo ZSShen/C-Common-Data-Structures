@@ -7,5 +7,6 @@ var annotated =
     [ "Queue", "structQueue.html", "structQueue" ],
     [ "Stack", "structStack.html", "structStack" ],
     [ "TreeMap", "structTreeMap.html", "structTreeMap" ],
+    [ "Trie", "structTrie.html", "structTrie" ],
     [ "Vector", "structVector.html", "structVector" ]
 ];
