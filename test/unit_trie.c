@@ -382,7 +382,16 @@ void TestGetPrefix()
 
     /* Pass dummy prefix. */
     CU_ASSERT(pTrie->get_prefix_as(pTrie, NULL, &aStr, &iSizeArr) == NOKEY);
+    CU_ASSERT_EQUAL(aStr, NULL);
+    CU_ASSERT_EQUAL(iSizeArr, 0);
     CU_ASSERT(pTrie->get_prefix_as(pTrie, "\0", &aStr, &iSizeArr) == NOKEY);
+    CU_ASSERT_EQUAL(aStr, NULL);
+    CU_ASSERT_EQUAL(iSizeArr, 0);
+
+    /* Pass non-existing prefix. */
+    CU_ASSERT(pTrie->get_prefix_as(pTrie, "012\0", &aStr, &iSizeArr) == NOKEY);
+    CU_ASSERT_EQUAL(aStr, NULL);
+    CU_ASSERT_EQUAL(iSizeArr, 0);
 
     char *szSeq = "nopqrstuvwxyzyxwvutsrqponmlkjihgfedcbabcdefghijklmno\0";
     int32_t iLen = strlen(szSeq);
@@ -501,6 +510,36 @@ void TestGetPrefix()
 
         free(aStr[0]);
         free(aStr);
+    }
+
+    /* Delete the strings with 3 bytes. */
+    for (iIdx = 0 ; iIdx < iLen - 2 ; ++iIdx) {
+        memset(szBuf, 0, sizeof(char) * 4);
+        strncpy(szBuf, szSeq + iIdx, 3);
+        CU_ASSERT(pTrie->delete(pTrie, szBuf) == SUCC);
+    }
+
+    /* Then, all the get_prefix_as() should return NOKEY. */
+    for (iIdx = 0 ; iIdx < iLen ; ++iIdx) {
+        szBuf[0] = szSeq[iIdx];
+        szBuf[1];
+        CU_ASSERT(pTrie->get_prefix_as(pTrie, szBuf, &aStr, &iSizeArr) == NOKEY);
+        CU_ASSERT_EQUAL(aStr, NULL);
+        CU_ASSERT_EQUAL(iSizeArr, 0);
+    }
+    for (iIdx = 0 ; iIdx < iLen - 1 ; ++iIdx) {
+        memset(szBuf, 0, sizeof(char) * 3);
+        strncpy(szBuf, szSeq + iIdx, 2);
+        CU_ASSERT(pTrie->get_prefix_as(pTrie, szBuf, &aStr, &iSizeArr) == NOKEY);
+        CU_ASSERT_EQUAL(aStr, NULL);
+        CU_ASSERT_EQUAL(iSizeArr, 0);
+    }
+    for (iIdx = 0 ; iIdx < iLen - 2 ; ++iIdx) {
+        memset(szBuf, 0, sizeof(char) * 4);
+        strncpy(szBuf, szSeq + iIdx, 3);
+        CU_ASSERT(pTrie->get_prefix_as(pTrie, szBuf, &aStr, &iSizeArr) == NOKEY);
+        CU_ASSERT_EQUAL(aStr, NULL);
+        CU_ASSERT_EQUAL(iSizeArr, 0);
     }
 
     TrieDeinit(&pTrie);

@@ -448,7 +448,7 @@ int32_t TrieGetPrefixAs(Trie *self, char* str, char ***paStr, int *piNum)
     ESTIMATE_STORAGE_SIZE(iCapStack, pData->iSize_, pData->iCountNode_);
     StackFrame *stack;
     MALLOC_BLOCK(stack, iCapStack, StackFrame, iRtn, FREE_PREFIX, \
-                 FREE_BLOCK(paStr, iSizeArr));
+                 FREE_BLOCK(*paStr, iSizeArr));
 
     if (pCurr) {
         stack[iTop].bVisit_ = false;
@@ -468,7 +468,7 @@ int32_t TrieGetPrefixAs(Trie *self, char* str, char ***paStr, int *piNum)
             if (iDepth == iCapPrefix) {
                 int32_t iCapPrefixNew = iCapPrefix << 1;
                 REALLOC_BLOCK(szPrefix, iCapPrefixNew, char, iRtn, FREE_STACK, \
-                              FREE_BLOCK(paStr, iSizeArr));
+                              FREE_BLOCK(*paStr, iSizeArr));
                 iCapPrefix = iCapPrefixNew;
             }
             szPrefix[iDepth] = pCurr->cToken_;
@@ -481,7 +481,7 @@ int32_t TrieGetPrefixAs(Trie *self, char* str, char ***paStr, int *piNum)
         if (iTop == iCapStack) {
             int32_t iCapStackNew = iCapStack << 1;
             REALLOC_BLOCK(stack, iCapStackNew, StackFrame, iRtn, FREE_STACK, \
-                          FREE_BLOCK(paStr, iSizeArr));
+                          FREE_BLOCK(*paStr, iSizeArr));
             iCapStack = iCapStackNew;
         }
 
@@ -523,10 +523,16 @@ int32_t TrieGetPrefixAs(Trie *self, char* str, char ***paStr, int *piNum)
     }
 
     /* Arrange the returned data. */
-    REALLOC_BLOCK(*paStr, iSizeArr, char*, iRtn, FREE_STACK, \
-                  FREE_BLOCK(paStr, iSizeArr));
+    if (iSizeArr > 0) {
+        REALLOC_BLOCK(*paStr, iSizeArr, char*, iRtn, FREE_STACK, \
+                      FREE_BLOCK(*paStr, iSizeArr));
+        iRtn = SUCC;
+    } else {
+        free(*paStr);
+        *paStr = NULL;
+        iRtn = NOKEY;
+    }
     *piNum = iSizeArr;
-    iRtn = SUCC;
 
 FREE_STACK:
     free(stack);
