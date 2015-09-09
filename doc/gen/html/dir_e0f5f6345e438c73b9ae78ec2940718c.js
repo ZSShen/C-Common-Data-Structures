@@ -7,5 +7,6 @@ var dir_e0f5f6345e438c73b9ae78ec2940718c =
     [ "queue.h", "queue_8h.html", "queue_8h" ],
     [ "stack.h", "stack_8h.html", "stack_8h" ],
     [ "tree_map.h", "tree__map_8h.html", "tree__map_8h" ],
+    [ "trie.h", "trie_8h.html", "trie_8h" ],
     [ "vector.h", "vector_8h.html", "vector_8h" ]
 ];

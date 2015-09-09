@@ -26,11 +26,11 @@ typedef struct _Trie {
         @see TrieHasExact */
     int32_t (*has_exact) (struct _Trie*, char*);
 
-    /** Check if the trie contains the strings having the designated prefix.
+    /** Check if the trie contains the strings matching the designated prefix.
         @see TrieHasPrefixAs */
     int32_t (*has_prefix_as) (struct _Trie*, char*);
 
-    /** Retrieve the strings from the trie having the designated prefix.
+    /** Retrieve the strings from the trie matching the designated prefix.
         @see TrieGetPrefixAs */
     int32_t (*get_prefix_as) (struct _Trie*, char*, char***, int*);
 
@@ -102,7 +102,7 @@ int32_t TrieBulkInsert(Trie *self, char **aStr, int iNum);
 int32_t TrieHasExact(Trie *self, char *str);
 
 /**
- * @brief Check if the trie contains the strings having the designated prefix.
+ * @brief Check if the trie contains the strings matching the designated prefix.
  *
  * @param self          The pointer to Trie structure
  * @param str           The designated prefix
@@ -115,11 +115,12 @@ int32_t TrieHasExact(Trie *self, char *str);
 int32_t TrieHasPrefixAs(Trie *self, char *str);
 
 /**
- * @brief Retrieve the strings from the trie having the designated prefix.
+ * @brief Retrieve the strings from the trie matching the designated prefix.
  *
  * To retrieve the strings, you need to pass:
  *   - The pointer to the string array to store the returned strings.
  *   - The pointer to the integer for the returned array size.
+ *
  * And this function will allocate the memory to store the returned strings.
  * But if no string can be resolved, the string array will be returned as NULL
  * and the array size will be returned as 0.

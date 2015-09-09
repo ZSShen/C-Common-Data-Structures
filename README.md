@@ -19,7 +19,8 @@ Unit Test Coverage Status (Coveralls.io)
    - TreeMap --- The ordered map to store key value pairs
    - HashMap --- The unordered map to store key value pairs
    - HashSet --- The unordered set to store unique elements
- - Simple Collection Container
+   - Trie --- The string dictionary
+- Simple Collection Container
    - Queue --- The FIFO queue
    - Stack --- The LIFO stack
    - PriorityQueue --- The queue to maintain priority ordering for elements
