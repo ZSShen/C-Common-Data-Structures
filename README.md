@@ -5,8 +5,7 @@ Integration Test (Travis CI)
 + [![Integration Test] (https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)  
 
 Unit Test Coverage Status (Coveralls.io)
-+ [![Coverage Status](https://coveralls.io/repos/ZSShen/C-Common-Data-Structures/badge.svg?branch=master)](https://coveralls.io/github/ZSShen/C-Common-Data-Structures?branch=master)
-
++ [![Coverage Status](https://coveralls.io/repos/ZSShen/C-Common-Data-Structures/badge.svg?branch=master&service=github)](https://coveralls.io/github/ZSShen/C-Common-Data-Structures?branch=master)  
 
 ##API Document
 [Link of the API Manual] (http://zsshen.github.io/C-Common-Data-Structures/html/index.html)
@@ -20,7 +19,7 @@ Unit Test Coverage Status (Coveralls.io)
    - HashMap --- The unordered map to store key value pairs
    - HashSet --- The unordered set to store unique elements
    - Trie --- The string dictionary
-- Simple Collection Container
+ - Simple Collection Container
    - Queue --- The FIFO queue
    - Stack --- The LIFO stack
    - PriorityQueue --- The queue to maintain priority ordering for elements
