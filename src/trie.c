@@ -13,16 +13,17 @@ typedef struct TrieNode_ {
     struct TrieNode_ *pParent_;
 } TrieNode;
 
-typedef struct StackFrame_ {
-    TrieNode *pTrieNode_;
-    int32_t iDepth_;
-} StackFrame;
-
 struct TrieData_ {
     int32_t iSize_;
     int32_t iCountNode_;
     TrieNode *pRoot_;
 };
+
+typedef struct StackFrame_ {
+    bool bVisit_;
+    int32_t iDepth_;
+    TrieNode *pTrieNode_;
+} StackFrame;
 
 
 /*===========================================================================*
@@ -48,98 +49,109 @@ void _TrieDeinit(TrieData *pData);
                     return ERR_NOINIT;                                          \
             } while (0);
 
-#define ESTIMATE_STORAGE_SIZE(__sz_store, __sz_trie, __cap_trie)                \
+#define ESTIMATE_STORAGE_SIZE(_size_blk, _size_trie, _cap_trie)                 \
             do {                                                                \
-                __sz_store = ((__sz_trie << 2) >= __cap_trie)?                  \
-                             __sz_trie >> 2:                                    \
-                             __cap_trie >> 3;                                   \
+                _size_blk = ((_size_trie << 2) >= _cap_trie)?                   \
+                             (_size_trie >> 2) : (_cap_trie >> 3);              \
             } while (0);
 
-#define LONGEST_PREFIX_MATCH(__str, __nd_pred, __nd_curr)                       \
+#define LONGEST_PREFIX_MATCH(_str, _node_pred, _node_curr)                      \
             do {                                                                \
-                char __ch;                                                      \
-                while (__nd_curr && ((__ch = *__str) != 0)) {                   \
-                    __nd_pred = __nd_curr;                                      \
-                    if (__ch == __nd_curr->cToken_) {                           \
-                        __nd_curr = __nd_curr->pMiddle_;                        \
-                        ++__str;                                                \
+                char _ch;                                                       \
+                while (_node_curr && ((_ch = *_str) != 0)) {                    \
+                    _node_pred = _node_curr;                                    \
+                    if (_ch == _node_curr->cToken_) {                           \
+                        _node_curr = _node_curr->pMiddle_;                      \
+                        ++_str;                                                 \
                     } else {                                                    \
-                        if (__ch < __nd_curr->cToken_)                          \
-                            __nd_curr = __nd_curr->pLeft_;                      \
+                        if (_ch < _node_curr->cToken_)                          \
+                            _node_curr = _node_curr->pLeft_;                    \
                         else                                                    \
-                            __nd_curr = __nd_curr->pRight_;                     \
+                            _node_curr = _node_curr->pRight_;                   \
                     }                                                           \
                 }                                                               \
             } while (0);
 
-#define LONGEST_PREFIX_MATCH_TRACK_DIRECTION(__str, __nd_pred, __nd_curr,       \
-                                             __direct)                          \
+#define LONGEST_PREFIX_MATCH_TRACK_FLOW(_str, _node_pred, _node_curr, _direct)  \
             do {                                                                \
-                char __ch;                                                      \
-                while (__nd_curr && ((__ch = *__str) != 0)) {                   \
-                    __nd_pred = __nd_curr;                                      \
-                    if (__ch == __nd_curr->cToken_) {                           \
-                        __nd_curr = __nd_curr->pMiddle_;                        \
-                        __direct = DIRECT_MIDDLE;                               \
-                        ++__str;                                                \
+                char _ch;                                                       \
+                while (_node_curr && ((_ch = *_str) != 0)) {                    \
+                    _node_pred = _node_curr;                                    \
+                    if (_ch == _node_curr->cToken_) {                           \
+                        _node_curr = _node_curr->pMiddle_;                      \
+                        _direct = DIRECT_MIDDLE;                                \
+                        ++_str;                                                 \
                     } else {                                                    \
-                        if (__ch < __nd_curr->cToken_) {                        \
-                            __nd_curr = __nd_curr->pLeft_;                      \
-                            __direct = DIRECT_LEFT;                             \
+                        if (_ch < _node_curr->cToken_) {                        \
+                            _node_curr = _node_curr->pLeft_;                    \
+                            _direct = DIRECT_LEFT;                              \
                         } else {                                                \
-                            __nd_curr = __nd_curr->pRight_;                     \
-                            __direct = DIRECT_RIGHT;                            \
+                            _node_curr = _node_curr->pRight_;                   \
+                            _direct = DIRECT_RIGHT;                             \
                         }                                                       \
                     }                                                           \
                 }                                                               \
             } while (0);
 
-#define MALLOC_DATA_ARRAY(__ptr_arr, __cap_arr, __rtn, __label_exit)            \
+#define MALLOC_DATA_ARRAY(_ptr_arr, _cap_arr, _rtn, _label_exit)                \
             do {                                                                \
-                *__ptr_arr = (char**)malloc(sizeof(char*) * __cap_arr);         \
-                if (!(*__ptr_arr)) {                                            \
-                    __rtn = ERR_NOMEM;                                          \
-                    goto __label_exit;                                          \
+                *_ptr_arr = (char**)malloc(sizeof(char*) * _cap_arr);           \
+                if (!(*_ptr_arr)) {                                             \
+                    _rtn = ERR_NOMEM;                                           \
+                    goto _label_exit;                                           \
                 }                                                               \
             } while (0);
 
-#define FREE_DATA_ARRAY(__ptr_arr, __sz_arr)                                    \
+#define MALLOC_BLOCK(_ptr_blk, _cap_blk, TYPE, _rtn, _label_exit, ...)          \
             do {                                                                \
-                char **__arr = *__ptr_arr;                                      \
-                int32_t __idx;                                                  \
-                for (__idx = 0 ; __idx < __sz_arr ; ++__idx)                    \
-                    free(__arr[__idx]);                                         \
-                free(*__ptr_arr);                                               \
-                *__ptr_arr = NULL;                                              \
+                _ptr_blk = (TYPE*)malloc(sizeof(TYPE) * _cap_blk);              \
+                if (!(_ptr_blk)) {                                              \
+                    _rtn = ERR_NOMEM;                                           \
+                    __VA_ARGS__;                                                \
+                    goto _label_exit;                                           \
+                }                                                               \
             } while (0);
 
-#define COLLECT_PREFIX(__prefix, __len, __ptr_arr, __sz_arr, __cap_arr,         \
-                       __rtn, __label_exit)                                     \
+#define REALLOC_BLOCK(_ptr_blk, _cap_blk, TYPE, _rtn, _label_exit, ...)         \
             do {                                                                \
-                char *__cand = (char*)malloc(sizeof(char) * (__len + 1));       \
-                if (!__cand) {                                                  \
-                    FREE_DATA_ARRAY(__ptr_arr, __sz_arr);                       \
-                    __rtn = ERR_NOMEM;                                          \
-                    goto __label_exit;                                          \
+                TYPE *_ptr_blk_new = (TYPE*)realloc(_ptr_blk,                   \
+                                     sizeof(TYPE) *_cap_blk);                   \
+                if (!_ptr_blk_new) {                                            \
+                    _rtn = ERR_NOMEM;                                           \
+                    __VA_ARGS__;                                                \
+                    goto _label_exit;                                           \
                 }                                                               \
-                strncpy(__cand, __prefix, __len);                               \
-                __cand[__len] = 0;                                              \
+                _ptr_blk = _ptr_blk_new;                                        \
+            } while (0);
+
+#define FREE_BLOCK(_ptr_blk, _size_blk)                                         \
+            do {                                                                \
+                int32_t _idx;                                                   \
+                for (_idx = 0 ; _idx < _size_blk ; ++_idx)                      \
+                    free((_ptr_blk)[_idx]);                                     \
+                free(_ptr_blk);                                                 \
+                _ptr_blk = NULL;                                                \
+            } while (0);
+
+#define COLLECT_PREFIX(_prefix, _len, _ptr_arr, _size_arr, _cap_arr, _rtn,      \
+                       _label_exit)                                             \
+            do {                                                                \
+                char *_cand;                                                    \
+                MALLOC_BLOCK(_cand, (_len + 1), char, _rtn, _label_exit,        \
+                            FREE_BLOCK(*_ptr_arr, _size_arr));                  \
+                strncpy(_cand, _prefix, _len);                                  \
+                _cand[_len] = 0;                                                \
                                                                                 \
-                if (__sz_arr < __cap_arr) {                                     \
-                    (*__ptr_arr)[__sz_arr++] = __cand;                          \
+                if (_size_arr < _cap_arr) {                                     \
+                    (*_ptr_arr)[_size_arr++] = _cand;                           \
                     break;                                                      \
                 }                                                               \
                                                                                 \
-                int32_t __cap_arr_new = __cap_arr << 1;                         \
-                char **__arr_new = (char**)realloc(*__ptr_arr, __cap_arr_new);  \
-                if (!__arr_new) {                                               \
-                    FREE_DATA_ARRAY(__ptr_arr, __sz_arr);                       \
-                    __rtn = ERR_NOMEM;                                          \
-                    goto __label_exit;                                          \
-                }                                                               \
-                *__ptr_arr = __arr_new;                                         \
-                __cap_arr = __cap_arr_new;                                      \
-                (*__ptr_arr)[__sz_arr++] = __cand;                              \
+                int32_t _cap_arr_new = _cap_arr << 1;                           \
+                REALLOC_BLOCK(*_ptr_arr, _cap_arr_new, char*, _rtn,             \
+                             _label_exit, FREE_BLOCK(*_ptr_arr, _size_arr));    \
+                _cap_arr = _cap_arr_new;                                        \
+                (*_ptr_arr)[_size_arr++] = _cand;                               \
             } while (0);
 
 
@@ -208,16 +220,16 @@ int32_t TrieInsert(Trie *self, char *str)
     if (*str == 0)
         return SUCC;
 
+    int32_t iRtn = SUCC;
     TrieData *pData = self->pData;
     TrieNode *pCurr = pData->pRoot_;
     TrieNode *pPred = NULL;
     char cDirect;
-    LONGEST_PREFIX_MATCH_TRACK_DIRECTION(str, pPred, pCurr, cDirect);
+    LONGEST_PREFIX_MATCH_TRACK_FLOW(str, pPred, pCurr, cDirect);
 
     while (*str) {
-        TrieNode *pNew = (TrieNode*)malloc(sizeof(TrieNode));
-        if (!pNew)
-            return ERR_NOMEM;
+        TrieNode *pNew;
+        MALLOC_BLOCK(pNew, 1, TrieNode, iRtn, EXIT);
         pNew->pMiddle_ = pNew->pLeft_ = pNew->pRight_ = NULL;
         pNew->pParent_ = pPred;
         pNew->cToken_ = *str;
@@ -248,7 +260,8 @@ int32_t TrieInsert(Trie *self, char *str)
         pData->iSize_++;
     }
 
-    return SUCC;
+EXIT:
+    return iRtn;
 }
 
 int32_t TrieBulkInsert(Trie *self, char **aStr, int iNum)
@@ -256,7 +269,7 @@ int32_t TrieBulkInsert(Trie *self, char **aStr, int iNum)
     CHECK_INIT(self);
     TrieData *pData = self->pData;
 
-    int iIdx;
+    int iRtn = SUCC, iIdx;
     for (iIdx = 0 ; iIdx < iNum ; ++iIdx) {
         char *str = aStr[iIdx];
         if (!str)
@@ -267,12 +280,11 @@ int32_t TrieBulkInsert(Trie *self, char **aStr, int iNum)
         TrieNode *pCurr = pData->pRoot_;
         TrieNode *pPred = NULL;
         char cDirect;
-        LONGEST_PREFIX_MATCH_TRACK_DIRECTION(str, pPred, pCurr, cDirect);
+        LONGEST_PREFIX_MATCH_TRACK_FLOW(str, pPred, pCurr, cDirect);
 
         while (*str) {
-            TrieNode *pNew = (TrieNode*)malloc(sizeof(TrieNode));
-            if (!pNew)
-                return ERR_NOMEM;
+            TrieNode *pNew;
+            MALLOC_BLOCK(pNew, 1, TrieNode, iRtn, EXIT);
             pNew->pMiddle_ = pNew->pLeft_ = pNew->pRight_ = NULL;
             pNew->pParent_ = pPred;
             pNew->cToken_ = *str;
@@ -304,7 +316,8 @@ int32_t TrieBulkInsert(Trie *self, char **aStr, int iNum)
         }
     }
 
-    return SUCC;
+EXIT:
+    return iRtn;
 }
 
 int32_t TrieHasExact(Trie *self, char *str)
@@ -320,7 +333,7 @@ int32_t TrieHasExact(Trie *self, char *str)
     TrieNode *pPred = NULL;
     LONGEST_PREFIX_MATCH(str, pPred, pCurr);
 
-    /* Locate at the exact tail of a certain string. */
+    /* At the tail of a certain string. */
     return (pPred && pPred->bEndStr_ && *str == 0)? SUCC : NOKEY;
 }
 
@@ -337,24 +350,23 @@ int32_t TrieHasPrefixAs(Trie *self, char *str)
     TrieNode *pPred = NULL;
     LONGEST_PREFIX_MATCH(str, pPred, pCurr);
 
-    if (*str == 0) { /* Legal prefix */
+    /* The designated prefix is legal. */
+    if (*str == 0) {
         if (!pCurr)
             return (pPred && pPred->bEndStr_)? SUCC : NOKEY;
+        /* Short cut if this prefix is a certain string stored in the trie. */
         if (pCurr && pPred && pPred->bEndStr_)
-            /* Shortcut if the prefix is just a string. */
             return SUCC;
     } else
         return NOKEY;
 
-    /* Otherwise, the slow iterative preorder traversal is necessary to find any
-       node marked as string tail. */
-    int32_t iCap;
+    /* The slow trie traversal to find any node marked as string tail. */
+    int32_t iRtn, iCap;
     ESTIMATE_STORAGE_SIZE(iCap, pData->iSize_, pData->iCountNode_);
-    TrieNode **stack = (TrieNode**)malloc(sizeof(TrieNode*) * iCap);
-    if (!stack)
-        return ERR_NOMEM;
+    TrieNode **stack;
+    MALLOC_BLOCK(stack, iCap, TrieNode*, iRtn, EXIT);
 
-    int32_t iRtn = NOKEY;
+    iRtn = NOKEY;
     int32_t iTop = 0;
     stack[iTop++] = pCurr;
     while (iTop > 0) {
@@ -366,12 +378,7 @@ int32_t TrieHasPrefixAs(Trie *self, char *str)
 
         if (iTop == iCap) {
             iCap <<= 1;
-            TrieNode **extend = (TrieNode**)realloc(stack, iCap);
-            if (!extend) {
-                iRtn = ERR_NOMEM;
-                break;
-            }
-            stack = extend;
+            REALLOC_BLOCK(stack, iCap, TrieNode*, iRtn, FREE_STACK);
         }
 
         if (pCurr->pRight_)
@@ -381,8 +388,10 @@ int32_t TrieHasPrefixAs(Trie *self, char *str)
         if (pCurr->pLeft_)
             stack[iTop++] = pCurr->pLeft_;
     }
-    free(stack);
 
+FREE_STACK:
+    free(stack);
+EXIT:
     return iRtn;
 }
 
@@ -399,15 +408,13 @@ int32_t TrieGetPrefixAs(Trie *self, char* str, char ***paStr, int *piNum)
     if (*str == 0)
         return NOKEY;
 
-    /* Prepare the prefix string for trie traversal. */
+    /* Prepare the prefix path record which is extended or shrunk during trie
+       traversal to represent a certain string stored in the trie. */
     int32_t iRtn;
     int32_t iLenPrefix = strlen(str);
     int32_t iCapPrefix = iLenPrefix << 1;
-    char *szPrefix = (char*)malloc(sizeof(char) * iCapPrefix);
-    if (!szPrefix) {
-        iRtn = ERR_NOMEM;
-        goto EXIT;
-    }
+    char *szPrefix;
+    MALLOC_BLOCK(szPrefix, iCapPrefix, char, iRtn, EXIT);
     memset(szPrefix, 0, sizeof(char) * iCapPrefix);
     strcpy(szPrefix, str);
 
@@ -417,97 +424,109 @@ int32_t TrieGetPrefixAs(Trie *self, char* str, char ***paStr, int *piNum)
     LONGEST_PREFIX_MATCH(str, pPred, pCurr);
 
     int32_t iSizeArr = 0, iCapArr;
-
     if (*str == 0) {
-        if (!pCurr) {
-            if (!(pPred->bEndStr_)) {
-                iRtn = NOKEY;
-                goto FREE_PREFIX;
-            }
-            MALLOC_DATA_ARRAY(paStr, 1, iRtn, FREE_PREFIX);
-            COLLECT_PREFIX(szPrefix, iLenPrefix, paStr, iSizeArr, iCapArr, \
-                           iRtn, FREE_PREFIX);
-            *piNum = 1;
-            iRtn = SUCC;
+        /* The designated prefix is legal, and we try to search for the strings
+           matching it. */
+        if (!pCurr && !(pPred->bEndStr_)) {
+            iRtn = NOKEY;
             goto FREE_PREFIX;
         }
-        if (pPred->bEndStr_) {
-            ESTIMATE_STORAGE_SIZE(iCapArr, pData->iSize_, pData->iCountNode_);
-            MALLOC_DATA_ARRAY(paStr, iCapArr, iRtn, FREE_PREFIX);
+
+        ESTIMATE_STORAGE_SIZE(iCapArr, pData->iSize_, pData->iCountNode_);
+        MALLOC_BLOCK(*paStr, iCapArr, char*, iRtn, FREE_PREFIX);
+
+        if (pPred->bEndStr_)
             COLLECT_PREFIX(szPrefix, iLenPrefix, paStr, iSizeArr, iCapArr, \
                            iRtn, FREE_PREFIX);
-        }
     } else {
         iRtn = NOKEY;
         goto FREE_PREFIX;
     }
 
-    /* Prepare the stack for iterative preorder traversal which finds all the
-       strings matching the designated prefix. */
+    /* Prepare the stack for DFS-like traversal. */
     int32_t iTop = 0, iCapStack;
     ESTIMATE_STORAGE_SIZE(iCapStack, pData->iSize_, pData->iCountNode_);
-    StackFrame *stack = (StackFrame*)malloc(sizeof(StackFrame) * iCapStack);
-    if (!stack) {
-        FREE_DATA_ARRAY(paStr, iSizeArr);
-        goto FREE_PREFIX;
-    }
-    if (pCurr->pRight_) {
-        stack[iTop].pTrieNode_ = pCurr->pRight_;
-        stack[iTop++].iDepth_ = iLenPrefix;
-    }
-    stack[iTop].pTrieNode_ = pCurr;
-    stack[iTop++].iDepth_ = iLenPrefix;
-    if (pCurr->pLeft_) {
-        stack[iTop].pTrieNode_ = pCurr->pLeft_;
-        stack[iTop++].iDepth_ = iLenPrefix;
+    StackFrame *stack;
+    MALLOC_BLOCK(stack, iCapStack, StackFrame, iRtn, FREE_PREFIX, \
+                 FREE_BLOCK(paStr, iSizeArr));
+
+    if (pCurr) {
+        stack[iTop].bVisit_ = false;
+        stack[iTop].iDepth_ = iLenPrefix;
+        stack[iTop++].pTrieNode_ = pCurr;
     }
 
     while (iTop > 0) {
         StackFrame frame = stack[--iTop];
-        TrieNode *pCurr = frame.pTrieNode_;
         int32_t iDepth = frame.iDepth_;
+        TrieNode *pCurr = frame.pTrieNode_;
 
-        if ((iDepth + 1) == iCapPrefix) {
-            int32_t iCapPrefixNew = iCapPrefix << 1;
-            char *szPrefixNew = (char*)malloc(sizeof(char) * iCapPrefixNew);
-            if (!szPrefixNew) {
-                FREE_DATA_ARRAY(paStr, iSizeArr);
-                goto FREE_STACK;
+        /* Update the prefix path record only when a certain node is visited in
+           the second time. And also collect the record if it represents a certain
+           string stored in the trie. */
+        if (frame.bVisit_) {
+            if (iDepth == iCapPrefix) {
+                int32_t iCapPrefixNew = iCapPrefix << 1;
+                REALLOC_BLOCK(szPrefix, iCapPrefixNew, char, iRtn, FREE_STACK, \
+                              FREE_BLOCK(paStr, iSizeArr));
+                iCapPrefix = iCapPrefixNew;
             }
-            szPrefix = szPrefixNew;
-            iCapPrefix = iCapPrefixNew;
+            szPrefix[iDepth] = pCurr->cToken_;
+            if (pCurr->bEndStr_)
+                COLLECT_PREFIX(szPrefix, iDepth + 1, paStr, iSizeArr, iCapArr, \
+                               iRtn, FREE_STACK);
+            continue;
         }
-        szPrefix[iDepth] = pCurr->cToken_;
-        if (pCurr->bEndStr_)
-            COLLECT_PREFIX(szPrefix, iDepth, paStr, iSizeArr, iCapArr, \
-                           iRtn, FREE_STACK);
 
         if (iTop == iCapStack) {
             int32_t iCapStackNew = iCapStack << 1;
-            StackFrame *stackNew = (StackFrame*)realloc(stack, iCapStackNew);
-            if (!stackNew) {
-                FREE_DATA_ARRAY(paStr, iSizeArr);
-                goto FREE_STACK;
-            }
-            stack = stackNew;
+            REALLOC_BLOCK(stack, iCapStackNew, StackFrame, iRtn, FREE_STACK, \
+                          FREE_BLOCK(paStr, iSizeArr));
             iCapStack = iCapStackNew;
         }
 
+        /*--------------------------------------------------------------------*
+         * Given the prefix "01":                                             *
+         *                    The traversal order should be:                  *
+         *          0         (a) The sub-trie rooted by the node containing  *
+         *          |             character #1.                               *
+         *          1         (b) The node containing character #5.           *
+         *          |         (c) The sub-trie rooted by the node containing  *
+         *          5             character #2.                               *
+         *      __/ | \__     (d) The sub-trie rooted by the node containing  *
+         *     /    2    \        character #9.                               *
+         *    1    / \    9                                                   *
+         *   / \  /___\  / \  Thus the stack pushing order should be:         *
+         *  /___\       /___\     (d) -> (c) -> (b) -> (a)                    *
+         *--------------------------------------------------------------------*/
         if (pCurr->pRight_) {
-            stack[iTop].pTrieNode_ = pCurr->pRight_;
-            stack[iTop++].iDepth_ = iDepth + 1;
+            stack[iTop].bVisit_ = false;
+            stack[iTop].iDepth_ = iDepth;
+            stack[iTop++].pTrieNode_ = pCurr->pRight_;
         }
+
         if (pCurr->pMiddle_) {
-            stack[iTop].pTrieNode_ = pCurr->pMiddle_;
-            stack[iTop++].iDepth_ = iDepth + 1;
+            stack[iTop].bVisit_ = false;
+            stack[iTop].iDepth_ = iDepth + 1;
+            stack[iTop++].pTrieNode_ = pCurr->pMiddle_;
         }
+
+        stack[iTop].bVisit_ = true;
+        stack[iTop].iDepth_ = iDepth;
+        stack[iTop++].pTrieNode_ = pCurr;
+
         if (pCurr->pLeft_) {
-            stack[iTop].pTrieNode_ = pCurr->pLeft_;
-            stack[iTop++].iDepth_ = iDepth + 1;
+            stack[iTop].bVisit_ = false;
+            stack[iTop].iDepth_ = iDepth;
+            stack[iTop++].pTrieNode_ = pCurr->pLeft_;
         }
     }
-    iRtn = SUCC;
+
+    /* Arrange the returned data. */
+    REALLOC_BLOCK(*paStr, iSizeArr, char*, iRtn, FREE_STACK, \
+                  FREE_BLOCK(paStr, iSizeArr));
     *piNum = iSizeArr;
+    iRtn = SUCC;
 
 FREE_STACK:
     free(stack);
@@ -530,7 +549,7 @@ int32_t TrieDelete(Trie *self, char *str)
     TrieNode *pPred = NULL;
     LONGEST_PREFIX_MATCH(str, pPred, pCurr);
 
-    /* Locate at the exact tail of a certain string. */
+    /* At the tail of a certain string. */
     if (pPred && pPred->bEndStr_ && *str == 0) {
         pPred->bEndStr_ = false;
         pData->iSize_--;
