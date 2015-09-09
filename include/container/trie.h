@@ -134,6 +134,10 @@ int32_t TrieHasPrefixAs(Trie *self, char *str);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_GET      Invalid parameter to store returned data
  * @retval ERR_NOMEM    Insufficient memory to store the resolved strings
+ *
+ * @note Please remember to free the following resource:
+ *       - Each returned string
+ *       - The array to store returned strings
  */
 int32_t TrieGetPrefixAs(Trie *self, char* str, char ***paStr, int *piNum);
 

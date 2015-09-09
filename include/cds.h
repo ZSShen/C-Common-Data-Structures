@@ -7,4 +7,5 @@
 #include "container/stack.h"
 #include "container/queue.h"
 #include "container/priority_queue.h"
+#include "container/trie.h"
 #include "math/hash.h"
