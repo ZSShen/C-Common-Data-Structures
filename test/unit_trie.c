@@ -384,6 +384,124 @@ void TestGetPrefix()
     CU_ASSERT(pTrie->get_prefix_as(pTrie, NULL, &aStr, &iSizeArr) == NOKEY);
     CU_ASSERT(pTrie->get_prefix_as(pTrie, "\0", &aStr, &iSizeArr) == NOKEY);
 
+    char *szSeq = "nopqrstuvwxyzyxwvutsrqponmlkjihgfedcbabcdefghijklmno\0";
+    int32_t iLen = strlen(szSeq);
+    char szBuf[iLen + 1];
+
+    int32_t iIdx;
+    for (iIdx = 0 ; iIdx < iLen - 2 ; ++iIdx) {
+        memset(szBuf, 0, sizeof(char) * 4);
+        strncpy(szBuf, szSeq + iIdx, 3);
+        CU_ASSERT(pTrie->insert(pTrie, szBuf) == SUCC);
+    }
+    for (iIdx = 0 ; iIdx < iLen - 1 ; ++iIdx) {
+        memset(szBuf, 0, sizeof(char) * 3);
+        strncpy(szBuf, szSeq + iIdx, 2);
+        CU_ASSERT(pTrie->insert(pTrie, szBuf) == SUCC);
+    }
+
+    /* Get the strings matching the designated prefixes. */
+    for (iIdx = 0 ; iIdx < iLen - 2 ; ++iIdx) {
+        memset(szBuf, 0, sizeof(char) * 4);
+        strncpy(szBuf, szSeq + iIdx, 3);
+        CU_ASSERT(pTrie->get_prefix_as(pTrie, szBuf, &aStr, &iSizeArr) == SUCC);
+
+        CU_ASSERT_EQUAL(iSizeArr, 1);
+        CU_ASSERT(strcmp(aStr[0], szBuf) == 0);
+
+        free(aStr[0]);
+        free(aStr);
+    }
+    for (iIdx = 0 ; iIdx < iLen - 2 ; ++iIdx) {
+        memset(szBuf, 0, sizeof(char) * 3);
+        strncpy(szBuf, szSeq + iIdx, 2);
+        CU_ASSERT(pTrie->get_prefix_as(pTrie, szBuf, &aStr, &iSizeArr) == SUCC);
+
+        CU_ASSERT_EQUAL(iSizeArr, 2);
+        CU_ASSERT(strcmp(aStr[0], szBuf) == 0);
+
+        szBuf[2] = szSeq[iIdx + 2];
+        szBuf[3] = 0;
+        CU_ASSERT(strcmp(aStr[1], szBuf) == 0);
+
+        free(aStr[0]);
+        free(aStr[1]);
+        free(aStr);
+    }
+
+    /* Delete the strings with 2 bytes. */
+    for (iIdx = 0 ; iIdx < iLen - 2 ; ++iIdx) {
+        memset(szBuf, 0, sizeof(char) * 3);
+        strncpy(szBuf, szSeq + iIdx, 2);
+        CU_ASSERT(pTrie->delete(pTrie, szBuf) == SUCC);
+    }
+
+    /* Check if the previous deletion will affect the process to find strings
+       matching the designated prefixes. */
+    for (iIdx = 0 ; iIdx < iLen ; ++iIdx) {
+        szBuf[0] = szSeq[iIdx];
+        szBuf[1] = 0;
+        CU_ASSERT(pTrie->get_prefix_as(pTrie, szBuf, &aStr, &iSizeArr) == SUCC);
+
+        switch (szBuf[0]) {
+            case 'a':
+                CU_ASSERT_EQUAL(iSizeArr, 1);
+                szBuf[1] = szBuf[0] + 1;
+                szBuf[2] = szBuf[0] + 2;
+                szBuf[3] = 0;
+                CU_ASSERT(strcmp(aStr[0], szBuf) == SUCC);
+                break;
+
+            case 'b':
+                CU_ASSERT_EQUAL(iSizeArr, 2);
+                szBuf[1] = szBuf[0] - 1;
+                szBuf[2] = szBuf[0];
+                szBuf[3] = 0;
+                CU_ASSERT(strcmp(aStr[0], szBuf) == SUCC);
+                szBuf[1] = szBuf[0] + 1;
+                szBuf[2] = szBuf[0] + 2;
+                szBuf[3] = 0;
+                CU_ASSERT(strcmp(aStr[1], szBuf) == SUCC);
+                free(aStr[1]);
+                break;
+
+            case 'y':
+                CU_ASSERT_EQUAL(iSizeArr, 2);
+                szBuf[1] = szBuf[0] - 1;
+                szBuf[2] = szBuf[0] - 2;
+                szBuf[3] = 0;
+                CU_ASSERT(strcmp(aStr[0], szBuf) == SUCC);
+                szBuf[1] = szBuf[0] + 1;
+                szBuf[2] = szBuf[0];
+                szBuf[3] = 0;
+                CU_ASSERT(strcmp(aStr[1], szBuf) == SUCC);
+                free(aStr[1]);
+                break;
+
+            case 'z':
+                CU_ASSERT_EQUAL(iSizeArr, 1);
+                szBuf[1] = szBuf[0] - 1;
+                szBuf[2] = szBuf[0] - 2;
+                szBuf[3] = 0;
+                CU_ASSERT(strcmp(aStr[0], szBuf) == SUCC);
+                break;
+
+            default:
+                CU_ASSERT_EQUAL(iSizeArr, 2);
+                szBuf[1] = szBuf[0] - 1;
+                szBuf[2] = szBuf[0] - 2;
+                szBuf[3] = 0;
+                CU_ASSERT(strcmp(aStr[0], szBuf) == SUCC);
+                szBuf[1] = szBuf[0] + 1;
+                szBuf[2] = szBuf[0] + 2;
+                szBuf[3] = 0;
+                CU_ASSERT(strcmp(aStr[1], szBuf) == SUCC);
+                free(aStr[1]);
+        }
+
+        free(aStr[0]);
+        free(aStr);
+    }
 
     TrieDeinit(&pTrie);
 }
