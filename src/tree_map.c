@@ -197,7 +197,7 @@ int32_t TreeMapInit(TreeMap **ppObj)
     pObj->pData->iSize_ = 0;
     pObj->pData->pRoot_ = pData->pNull_;
     pObj->pData->pCompare_ = _TreeMapCompare;
-    pObj->pData->pDestroy_ = _TreeMapDestroy;
+    pObj->pData->pDestroy_ = NULL;
     pObj->pData->pStack_ = NULL;
 
     pObj->put = TreeMapPut;
@@ -277,7 +277,8 @@ int32_t TreeMapPut(TreeMap *self, Pair *pPair)
         else {
             /* Conflict with the already stored key value pair. */
             free(pNew);
-            pData->pDestroy_(pCurr->pPair);
+            if (pData->pDestroy_)
+                pData->pDestroy_(pCurr->pPair);
             pCurr->pPair = pPair;
             return SUCC;
         }
@@ -354,7 +355,8 @@ int32_t TreeMapRemove(TreeMap *self, Key key)
         bColor = pCurr->bColor;
         pChild = pNull;
         pChild->pParent = pCurr->pParent;
-        pData->pDestroy_(pCurr->pPair);
+        if (pData->pDestroy_)
+            pData->pDestroy_(pCurr->pPair);
         free(pCurr);
     } else {
         /* The specified node has two children. */
@@ -373,7 +375,8 @@ int32_t TreeMapRemove(TreeMap *self, Key key)
                 pSucc->pParent->pRight = pChild;
 
             bColor = pSucc->bColor;
-            pData->pDestroy_(pCurr->pPair);
+            if (pData->pDestroy_)
+                pData->pDestroy_(pCurr->pPair);
             pCurr->pPair = pSucc->pPair;
             free(pSucc);
         }
@@ -394,7 +397,8 @@ int32_t TreeMapRemove(TreeMap *self, Key key)
                 pData->pRoot_ = pChild;
 
             bColor = pCurr->bColor;
-            pData->pDestroy_(pCurr->pPair);
+            if (pData->pDestroy_)
+                pData->pDestroy_(pCurr->pPair);
             free(pCurr);
         }
     }
@@ -552,7 +556,7 @@ int32_t TreeMapReverseIterate(TreeMap *self, bool bReset, Pair **ppPair)
         pData->pStack_ = (TreeNode**)malloc(sizeof(TreeNode*) * pData->iSize_);
         if (!(pData->pStack_)) {
             *ppPair = NULL;
-            return ERR_NOMEM;
+            return END;
         }
         pData->pIter_ = pData->pRoot_;
         pData->iTop_ = 0;
@@ -567,7 +571,7 @@ int32_t TreeMapReverseIterate(TreeMap *self, bool bReset, Pair **ppPair)
         if (pData->pIter_ != pData->pNull_) {
             if (pData->iTop_ == pData->iSize_) {
                 *ppPair = NULL;
-                return ERR_ITER;
+                return END;
             }
             pData->pStack_[pData->iTop_] = pData->pIter_;
             pData->iTop_++;
@@ -629,7 +633,8 @@ void _TreeMapDeinit(TreeMapData *pData)
         else if (pCurr->pRight != pNull)
             stack[iSize++] = &(pCurr->pRight);
         else {
-            pData->pDestroy_(pCurr->pPair);
+            if (pData->pDestroy_)
+                pData->pDestroy_(pCurr->pPair);
             TreeNode *pParent = pCurr->pParent;
             if (pCurr == pParent->pLeft)
                 pParent->pLeft = pNull;
@@ -1033,5 +1038,3 @@ int32_t _TreeMapCompare(Key keySrc, Key keyTge)
         return 0;
     return (keySrc > keyTge)? 1 : (-1);
 }
-
-void _TreeMapDestroy(Pair *pPair) { free(pPair); }
