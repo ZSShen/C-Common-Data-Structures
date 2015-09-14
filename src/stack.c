@@ -78,11 +78,11 @@ void StackDeinit(Stack **ppObj)
     if (!(pData->pDestroy_))
         goto FREE_ARRAY;
 
-	int32_t iIdx = 0;
-	while (iIdx < pData->iSize_) {
-		pData->pDestroy_(pData->aItem_[iIdx]);
-		iIdx++;
-	}
+    int32_t iIdx = 0;
+    while (iIdx < pData->iSize_) {
+        pData->pDestroy_(pData->aItem_[iIdx]);
+        iIdx++;
+    }
 
 FREE_ARRAY:
     free(pData->aItem_);
