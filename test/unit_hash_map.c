@@ -133,30 +133,54 @@ void TestManipulate()
     CU_ASSERT(HashMapInit(&pMap) == SUCC);
     CU_ASSERT(pMap->set_destroy(pMap, DestroyPair) == SUCC);
 
+    /* Insert the dummy pair with zero key length. */
+    CU_ASSERT(pMap->put(pMap, NULL, 0) == ERR_KEYSIZE);
+
     /* Insert the full data. */
+    Pair *pPair;
+    Employ *pEmploy;
     int32_t iIdx;
     for (iIdx = 0 ; iIdx < SIZE_MID_TEST ; iIdx++) {
-        Pair *pPair = (Pair*)malloc(sizeof(Pair));
-        Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
+        pPair = (Pair*)malloc(sizeof(Pair));
+        pEmploy = (Employ*)malloc(sizeof(Employ));
 
         pEmploy->cYear = iIdx % MASK_YEAR;
         pEmploy->cLevel = iIdx % MASK_LEVEL;
         pEmploy->iId = iIdx;
 
-        pPair->key = aName[iIdx];
+        pPair->key = (Key)aName[iIdx];
         pPair->value = (Value)pEmploy;
         CU_ASSERT(pMap->put(pMap, pPair, SIZE_MID_STR) == SUCC);
     }
 
+    /* Insert the duplicated pair, it will trigger the code path to clean the
+       existing old pair. */
+    iIdx = SIZE_MID_TEST - 1;
+    pPair = (Pair*)malloc(sizeof(Pair));
+    pEmploy = (Employ*)malloc(sizeof(Employ));
+    pEmploy->cYear = iIdx % MASK_YEAR;
+    pEmploy->cLevel = iIdx % MASK_LEVEL;
+    pEmploy->iId = iIdx;
+    pPair->key = (Key)aName[iIdx];
+    pPair->value = (Value)pEmploy;
+    CU_ASSERT(pMap->put(pMap, pPair, SIZE_MID_STR) == SUCC);
+
+    /* Search and Retrieve map using invaid parameters. */
+    Value valueRetv;
+    CU_ASSERT(pMap->get(pMap, (Key)aName[0], SIZE_MID_TEST, NULL) == ERR_GET);
+    CU_ASSERT(pMap->get(pMap, (Key)aName[0], 0, &valueRetv) == ERR_KEYSIZE);
+    CU_ASSERT(pMap->find(pMap, (Key)aName[0], 0) == ERR_KEYSIZE);
+
     /* Search and Retrieve the first half of the data. It should succeed. */
     for (iIdx = 0 ; iIdx < SIZE_MID_TEST / 2 ; iIdx++) {
-        Value valueRetv;
         CU_ASSERT(pMap->find(pMap, aName[iIdx], SIZE_MID_STR) == SUCC);
         CU_ASSERT(pMap->get(pMap, aName[iIdx], SIZE_MID_STR, &valueRetv) == SUCC);
         CU_ASSERT_EQUAL(iIdx, ((Employ*)valueRetv)->iId);
     }
-
     CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST);
+
+    /* Delete pair using zero key length. */
+    CU_ASSERT(pMap->remove(pMap, (Key)aName[iIdx], 0) == ERR_KEYSIZE);
 
     /* Delete the second half of the data.  */
     for (iIdx = SIZE_MID_TEST / 2 ; iIdx < SIZE_MID_TEST ; iIdx++)
@@ -164,7 +188,6 @@ void TestManipulate()
 
     /* Search and Retrieve the second half of the data. It should fail. */
     for (iIdx = SIZE_MID_TEST / 2 ; iIdx < SIZE_MID_TEST ; iIdx++) {
-        Value valueRetv;
         CU_ASSERT(pMap->find(pMap, aName[iIdx], SIZE_MID_STR) == NOKEY);
         CU_ASSERT(pMap->get(pMap, aName[iIdx], SIZE_MID_STR, &valueRetv) == ERR_NODATA);
         CU_ASSERT_EQUAL(valueRetv, NULL);
@@ -172,7 +195,6 @@ void TestManipulate()
 
     /* But the searching for the first half should not be affected. */
     for (iIdx = 0 ; iIdx < SIZE_MID_TEST / 2 ; iIdx++) {
-        Value valueRetv;
         CU_ASSERT(pMap->find(pMap, aName[iIdx], SIZE_MID_STR) == SUCC);
         CU_ASSERT(pMap->get(pMap, aName[iIdx], SIZE_MID_STR, &valueRetv) == SUCC);
         CU_ASSERT_EQUAL(iIdx, ((Employ*)valueRetv)->iId);
@@ -192,6 +214,10 @@ void TestIterator()
 {
     HashMap *pMap;
     CU_ASSERT(HashMapInit(&pMap) == SUCC);
+
+    /* Test the operator to set custom hash function. */
+    CU_ASSERT(pMap->set_hash(pMap, HashMurMur32) == SUCC);
+
     CU_ASSERT(pMap->set_destroy(pMap, DestroyPair) == SUCC);
     CU_ASSERT_EQUAL(pMap->size(pMap), 0);
 
@@ -225,6 +251,7 @@ void TestIterator()
 
     /* Iterate through the map. */
     CU_ASSERT(pMap->iterate(pMap, true, NULL) == SUCC);
+    CU_ASSERT(pMap->iterate(pMap, false, NULL) == ERR_GET);
     while (pMap->iterate(pMap, false, &pPair) == CONTINUE);
     CU_ASSERT_EQUAL(pPair, NULL);
 
