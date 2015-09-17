@@ -260,9 +260,29 @@ void TestIntersectOperation()
 
     CU_ASSERT_EQUAL(pInter->size(pInter), COUNT_ITER / 2);
 
+    HashSetDeinit(&pInter);
+
+    CU_ASSERT(HashSetIntersect(pSrcSnd, pSrcFst, &pInter) == SUCC);
+
+    iBgn = 0;
+    iEnd = COUNT_ITER / 4;
+    for (iIdx = iBgn ; iIdx < iEnd ; iIdx++)
+        CU_ASSERT(pInter->find(pInter, (Key)aName[iIdx], SIZE_MID_STR) == NOKEY);
+    iBgn = COUNT_ITER / 4;
+    iEnd = COUNT_ITER * 3 / 4;
+    for (iIdx = iBgn ; iIdx < iEnd ; iIdx++)
+        CU_ASSERT(pInter->find(pInter, (Key)aName[iIdx], SIZE_MID_STR) == SUCC);
+    iBgn = COUNT_ITER * 3 / 4;
+    iEnd = COUNT_ITER;
+    for (iIdx = iBgn ; iIdx < iEnd ; iIdx++)
+        CU_ASSERT(pInter->find(pInter, (Key)aName[iIdx], SIZE_MID_STR) == NOKEY);
+
+    CU_ASSERT_EQUAL(pInter->size(pInter), COUNT_ITER / 2);
+
+    HashSetDeinit(&pInter);
+
     HashSetDeinit(&pSrcFst);
     HashSetDeinit(&pSrcSnd);
-    HashSetDeinit(&pInter);
 }
 
 void TestDifferenceOperation()
