@@ -323,6 +323,7 @@ void TestForceError()
 
     CU_ASSERT(pSet->add(pSet, (Key)aName[0], 0) == ERR_KEYSIZE);
     CU_ASSERT(pSet->find(pSet, (Key)aName[0], 0) == ERR_KEYSIZE);
+    CU_ASSERT(pSet->remove(pSet, (Key)aName[0], 0) == ERR_KEYSIZE);
     CU_ASSERT(pSet->iterate(pSet, false, NULL) == ERR_GET);
 
     HashSetDeinit(&pSet);
@@ -343,6 +344,10 @@ void TestDestroy()
     int32_t iIdx;
     for (iIdx = 0 ; iIdx < SIZE_MID_TEST ; iIdx++)
         CU_ASSERT(pSet->add(pSet, (Key)aName[iIdx], SIZE_MID_STR) == SUCC);
+
+    /* Insert duplicate item */
+    char *dup_str = strdup(aName[0]);
+    CU_ASSERT(pSet->add(pSet, (Key)dup_str, SIZE_MID_STR) == SUCC);
 
     /* Delete the second half of the data. */
     for (iIdx = SIZE_MID_TEST / 2 ; iIdx < SIZE_MID_TEST ; iIdx++)
