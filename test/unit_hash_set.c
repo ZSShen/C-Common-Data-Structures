@@ -25,10 +25,10 @@ void TestUnionOperation();
 void TestIntersectOperation();
 void TestDifferenceOperation();
 void TestForceError();
-/* This should be the last test suite. */
 void TestDestroy();
 
 int32_t PrepareTestData();
+void ReleaseTestData();
 
 
 int32_t main()
@@ -87,13 +87,9 @@ int32_t PrepareTestData()
     return SUCC;
 }
 
-void ReleaseTestData()
+void ReleaseTestData(Key key)
 {
-    int32_t iIdx;
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST ; iIdx++) {
-        if (aName[iIdx])
-            free(aName[iIdx]);
-    }
+    free((void*)key);
 }
 
 int32_t AddSuite()
@@ -212,16 +208,16 @@ void TestUnionOperation()
     for (iIdx = COUNT_ITER - 1 ; iIdx >= COUNT_ITER / 2 ; iIdx--)
         CU_ASSERT(pSrcSnd->add(pSrcSnd, (Key)aName[iIdx], SIZE_MID_STR) == SUCC);
 
-    HashSet *pInter;
-    CU_ASSERT(HashSetUnion(pSrcFst, pSrcSnd, &pInter) == SUCC);
+    HashSet *pUnion;
+    CU_ASSERT(HashSetUnion(pSrcFst, pSrcSnd, &pUnion) == SUCC);
 
     for (iIdx = 0 ; iIdx < COUNT_ITER ; iIdx++)
-        CU_ASSERT(pInter->find(pInter, (Key)aName[iIdx], SIZE_MID_STR) == SUCC);
-    CU_ASSERT_EQUAL(pInter->size(pInter), COUNT_ITER);
+        CU_ASSERT(pUnion->find(pUnion, (Key)aName[iIdx], SIZE_MID_STR) == SUCC);
+    CU_ASSERT_EQUAL(pUnion->size(pUnion), COUNT_ITER);
 
+    HashSetDeinit(&pUnion);
     HashSetDeinit(&pSrcFst);
     HashSetDeinit(&pSrcSnd);
-    HashSetDeinit(&pInter);
 }
 
 void TestIntersectOperation()
@@ -231,9 +227,8 @@ void TestIntersectOperation()
     int32_t iBgn = 0;
     int32_t iEnd = COUNT_ITER * 3 / 4;
     int32_t iIdx;
-    for (iIdx = 0 ; iIdx < iEnd ; iIdx++) {
+    for (iIdx = 0 ; iIdx < iEnd ; iIdx++)
         CU_ASSERT(pSrcFst->add(pSrcFst, (Key)aName[iIdx], SIZE_MID_STR) == SUCC);
-    }
 
     HashSet *pSrcSnd;
     CU_ASSERT(HashSetInit(&pSrcSnd) == SUCC);
@@ -259,28 +254,41 @@ void TestIntersectOperation()
         CU_ASSERT(pInter->find(pInter, (Key)aName[iIdx], SIZE_MID_STR) == NOKEY);
 
     CU_ASSERT_EQUAL(pInter->size(pInter), COUNT_ITER / 2);
-
     HashSetDeinit(&pInter);
+    HashSetDeinit(&pSrcFst);
+    HashSetDeinit(&pSrcSnd);
 
-    CU_ASSERT(HashSetIntersect(pSrcSnd, pSrcFst, &pInter) == SUCC);
+    /* The size of the first set is smaller than the second set. */
+
+    CU_ASSERT(HashSetInit(&pSrcFst) == SUCC);
+    iBgn = 0;
+    iEnd = COUNT_ITER / 2;
+    for (iIdx = 0 ; iIdx < iEnd ; iIdx++)
+        CU_ASSERT(pSrcFst->add(pSrcFst, (Key)aName[iIdx], SIZE_MID_STR) == SUCC);
+
+    CU_ASSERT(HashSetInit(&pSrcSnd) == SUCC);
+    iBgn = COUNT_ITER / 4;
+    iEnd = COUNT_ITER - 1;
+    for (iIdx = iEnd ; iIdx >= iBgn ; iIdx--)
+        CU_ASSERT(pSrcSnd->add(pSrcSnd, (Key)aName[iIdx], SIZE_MID_STR) == SUCC);
+
+    CU_ASSERT(HashSetIntersect(pSrcFst, pSrcSnd, &pInter) == SUCC);
 
     iBgn = 0;
     iEnd = COUNT_ITER / 4;
     for (iIdx = iBgn ; iIdx < iEnd ; iIdx++)
         CU_ASSERT(pInter->find(pInter, (Key)aName[iIdx], SIZE_MID_STR) == NOKEY);
     iBgn = COUNT_ITER / 4;
-    iEnd = COUNT_ITER * 3 / 4;
+    iEnd = COUNT_ITER / 2;
     for (iIdx = iBgn ; iIdx < iEnd ; iIdx++)
         CU_ASSERT(pInter->find(pInter, (Key)aName[iIdx], SIZE_MID_STR) == SUCC);
-    iBgn = COUNT_ITER * 3 / 4;
+    iBgn = COUNT_ITER / 2;
     iEnd = COUNT_ITER;
     for (iIdx = iBgn ; iIdx < iEnd ; iIdx++)
         CU_ASSERT(pInter->find(pInter, (Key)aName[iIdx], SIZE_MID_STR) == NOKEY);
 
-    CU_ASSERT_EQUAL(pInter->size(pInter), COUNT_ITER / 2);
-
+    CU_ASSERT_EQUAL(pInter->size(pInter), COUNT_ITER / 4);
     HashSetDeinit(&pInter);
-
     HashSetDeinit(&pSrcFst);
     HashSetDeinit(&pSrcSnd);
 }
@@ -349,16 +357,13 @@ void TestForceError()
     HashSetDeinit(&pSet);
 }
 
-static void TestDataFree(Key k) {
-    free((void *)k);
-}
-
 void TestDestroy()
 {
     HashSet *pSet;
     CU_ASSERT(HashSetInit(&pSet) == SUCC);
-    
-    CU_ASSERT(pSet->set_destroy(pSet, TestDataFree) == SUCC);
+
+    CU_ASSERT(pSet->set_hash(pSet, HashMurMur32) == SUCC);
+    CU_ASSERT(pSet->set_destroy(pSet, ReleaseTestData) == SUCC);
 
     /* Insert the full data set. */
     int32_t iIdx;
@@ -368,10 +373,6 @@ void TestDestroy()
     /* Insert duplicate item */
     char *dup_str = strdup(aName[0]);
     CU_ASSERT(pSet->add(pSet, (Key)dup_str, SIZE_MID_STR) == SUCC);
-
-    /* Delete the second half of the data. */
-    for (iIdx = SIZE_MID_TEST / 2 ; iIdx < SIZE_MID_TEST ; iIdx++)
-        CU_ASSERT(pSet->remove(pSet, (Key)aName[iIdx], SIZE_MID_STR) == SUCC);
 
     /* Deinit will delete the first half of the data. */
     HashSetDeinit(&pSet);
