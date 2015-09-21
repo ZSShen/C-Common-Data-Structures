@@ -28,7 +28,6 @@ void TestForceError();
 void TestDestroy();
 
 int32_t PrepareTestData();
-void ReleaseTestData();
 
 
 int32_t main()
