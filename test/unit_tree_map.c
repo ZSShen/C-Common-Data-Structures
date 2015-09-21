@@ -121,7 +121,9 @@ void TestBasicInsert()
     TreeMap *pMap;
     CU_ASSERT(TreeMapInit(&pMap) == SUCC);
 
-    CU_ASSERT(pMap->set_compare(pMap, CompareBasicKey) == SUCC);
+    /* We do not set the item comparison method here because we want to test
+       the default comparison method. */
+
     CU_ASSERT(pMap->set_destroy(pMap, DestroyBasicPair) == SUCC);
 
     /**
@@ -170,6 +172,11 @@ void TestBasicInsert()
     pPair->key = (Key)4; pPair->value = 0;
     CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
 
+    pPair = (Pair*)malloc(sizeof(Pair));
+    pPair->key = (Key)7; pPair->value = 0;
+    CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+
+    /* This duplicated pair will replace the above one in the map. */
     pPair = (Pair*)malloc(sizeof(Pair));
     pPair->key = (Key)7; pPair->value = 0;
     CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
@@ -237,6 +244,7 @@ void TestBoundary()
 
     /* Search data from the empty map. */
     Value value;
+    CU_ASSERT(pMap->get(pMap, (Key)0, NULL) == ERR_GET);
     CU_ASSERT(pMap->get(pMap, (Key)0, &value) == ERR_NODATA);
     CU_ASSERT_EQUAL(value, NULL);
     CU_ASSERT(pMap->find(pMap, (Key)0) == NOKEY);
@@ -261,11 +269,15 @@ void TestBoundary()
     CU_ASSERT(pMap->find(pMap, (Key)0) == NOKEY);
 
     /* Test boundary cases. */
+    CU_ASSERT(pMap->predecessor(pMap, (Key)0, NULL) == ERR_GET);
+    CU_ASSERT(pMap->successor(pMap, (Key)0, NULL) == ERR_GET);
     CU_ASSERT(pMap->predecessor(pMap, (Key)0, &pPair) == ERR_NODATA);
     CU_ASSERT(pMap->successor(pMap, (Key)0, &pPair) == ERR_NODATA);
     CU_ASSERT(pMap->predecessor(pMap, (Key)1, &pPair) == ERR_NODATA);
     CU_ASSERT(pMap->successor(pMap, (Key)1, &pPair) == ERR_NODATA);
 
+    CU_ASSERT(pMap->maximum(pMap, NULL) == ERR_GET);
+    CU_ASSERT(pMap->minimum(pMap, NULL) == ERR_GET);
     CU_ASSERT(pMap->remove(pMap, (Key)1) == SUCC);
     CU_ASSERT(pMap->maximum(pMap, &pPair) == ERR_IDX);
     CU_ASSERT(pMap->minimum(pMap, &pPair) == ERR_IDX);
@@ -282,8 +294,15 @@ void TestIterator()
     CU_ASSERT(pMap->set_destroy(pMap, DestroyBasicPair) == SUCC);
     CU_ASSERT_EQUAL(pMap->size(pMap), 0);
 
-    /* Insert the test data. */
+    /* Iterate through the empty map. */
     Pair *pPair;
+    CU_ASSERT(pMap->iterate(pMap, true, NULL) == SUCC);
+    CU_ASSERT(pMap->iterate(pMap, false, &pPair) == END);
+    CU_ASSERT(pMap->reverse_iterate(pMap, true, NULL) == SUCC);
+    CU_ASSERT(pMap->reverse_iterate(pMap, false, &pPair) == END);
+    CU_ASSERT(pMap->iterate(pMap, true, NULL) == SUCC);
+
+    /* Insert the test data. */
     int32_t iIdx;
     for (iIdx = COUNT_ITER / 2 ; iIdx > 0 ; iIdx--) {
         pPair = (Pair*)malloc(sizeof(Pair));
@@ -318,6 +337,9 @@ void TestIterator()
         iIdx++;
     }
     CU_ASSERT_EQUAL(pPair, NULL);
+    CU_ASSERT(pMap->iterate(pMap, false, NULL) == ERR_GET);
+    CU_ASSERT(pMap->iterate(pMap, false, &pPair) == END);
+    CU_ASSERT_EQUAL(pPair, NULL);
 
     /* Reversely iterate through the map. */
     iIdx = COUNT_ITER;
@@ -330,6 +352,9 @@ void TestIterator()
         #endif
         iIdx--;
     }
+    CU_ASSERT_EQUAL(pPair, NULL);
+    CU_ASSERT(pMap->reverse_iterate(pMap, false, NULL) == ERR_GET);
+    CU_ASSERT(pMap->reverse_iterate(pMap, false, &pPair) == END);
     CU_ASSERT_EQUAL(pPair, NULL);
 
     TreeMapDeinit(&pMap);
@@ -463,7 +488,7 @@ void TestBulkManipulate()
     }
 
     /* Search and Retrieve the first half of the data. It should succeed. */
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++) {
+    for (iIdx = 0 ; iIdx < SIZE_MID_TEST / 2 ; iIdx++) {
         Value valueRetv;
         CU_ASSERT(pMap->find(pMap, aName[iIdx]) == SUCC);
         CU_ASSERT(pMap->get(pMap, aName[iIdx], &valueRetv) == SUCC);
@@ -475,11 +500,11 @@ void TestBulkManipulate()
     CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST);
 
     /* Delete the second half of the data.  */
-    for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
+    for (iIdx = SIZE_MID_TEST / 2 ; iIdx < SIZE_MID_TEST ; iIdx++)
         CU_ASSERT(pMap->remove(pMap, (Key)aName[iIdx]) == SUCC);
 
     /* Search and Retrieve the second half of the data. It should fail. */
-    for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++) {
+    for (iIdx = SIZE_MID_TEST / 2 ; iIdx < SIZE_MID_TEST ; iIdx++) {
         Value valueRetv;
         CU_ASSERT(pMap->find(pMap, aName[iIdx]) == NOKEY);
         CU_ASSERT(pMap->get(pMap, aName[iIdx], &valueRetv) == ERR_NODATA);
@@ -487,7 +512,7 @@ void TestBulkManipulate()
     }
 
     /* But the searching for the first half should not be affected. */
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST/2 ; iIdx++) {
+    for (iIdx = 0 ; iIdx < SIZE_MID_TEST / 2 ; iIdx++) {
         Value valueRetv;
         CU_ASSERT(pMap->find(pMap, aName[iIdx]) == SUCC);
         CU_ASSERT(pMap->get(pMap, aName[iIdx], &valueRetv) == SUCC);
@@ -497,8 +522,26 @@ void TestBulkManipulate()
     }
 
     /* Delete the already deleted second half of the data. It should fail. */
-    for (iIdx = SIZE_MID_TEST/2 ; iIdx < SIZE_MID_TEST ; iIdx++)
+    for (iIdx = SIZE_MID_TEST / 2 ; iIdx < SIZE_MID_TEST ; iIdx++)
         CU_ASSERT(pMap->remove(pMap, (Key)aName[iIdx]) == ERR_NODATA);
+
+    /* Delete the first half of the data. */
+    for (iIdx = 0 ; iIdx < SIZE_MID_TEST / 2 ; iIdx++)
+        CU_ASSERT(pMap->remove(pMap, (Key)aName[iIdx]) == SUCC);
+
+    /* Re-insert the first half of the data. Just we to test the destructor. */
+    for (iIdx = 0 ; iIdx < SIZE_MID_TEST / 2; iIdx++) {
+        Pair *pPair = (Pair*)malloc(sizeof(Pair));
+        Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
+
+        pEmploy->cYear = aNum[iIdx] / MASK_YEAR;
+        pEmploy->cLevel = aNum[iIdx] / MASK_LEVEL;
+        pEmploy->iId = aNum[iIdx];
+
+        pPair->key = aName[iIdx];
+        pPair->value = (Value)pEmploy;
+        CU_ASSERT(pMap->put(pMap, pPair) == SUCC);
+    }
 
     CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST/2);
 

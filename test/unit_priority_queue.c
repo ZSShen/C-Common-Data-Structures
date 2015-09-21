@@ -34,31 +34,32 @@ void CleanNonPrim(Item);
 /* The functions to register simple and advanced test suites. */
 int32_t AddSimpleSuite();
 int32_t AddAdvancedSuit();
-void TestSimpleManipulate();
-void TestAdvancedManipulate();
+void TestSimpleOrder();
+void TestSimpleMixOp();
+void TestAdvancedMixOp();
 
 
 int32_t main()
 {
-    int32_t iRtnCode = SUCC;
+    int32_t rc = SUCC;
 
-    iRtnCode = PrepareTestData();
-    if (iRtnCode != SUCC)
+    rc = PrepareTestData();
+    if (rc != SUCC)
         goto EXIT;
 
     if (CU_initialize_registry() != CUE_SUCCESS) {
-        iRtnCode = CU_get_error();
+        rc = CU_get_error();
         goto EXIT;
     }
 
     /* Prepare the test suite for primitive item manipulation. */
-    iRtnCode = AddSimpleSuite();
-    if (iRtnCode != SUCC)
+    rc = AddSimpleSuite();
+    if (rc != SUCC)
         goto CLEAN;
 
     /* Prepare the test suite for non-primitive item manipulation. */
-    iRtnCode = AddAdvancedSuit();
-    if (iRtnCode != SUCC)
+    rc = AddAdvancedSuit();
+    if (rc != SUCC)
         goto CLEAN;
 
     /* Launch all the tests. */
@@ -69,13 +70,13 @@ CLEAN:
     CU_cleanup_registry();
 EXIT:
     ReleaseTestData();
-    return iRtnCode;
+    return rc;
 }
 
 
 int32_t PrepareTestData()
 {
-    int32_t iRtnCode = SUCC;
+    int32_t rc = SUCC;
 
     int32_t idx = 0;
     while (idx < SIZE_MID_TEST)
@@ -89,7 +90,7 @@ int32_t PrepareTestData()
     while (idx < SIZE_MID_TEST) {
         aNoPrim[idx] = (Employ*)malloc(sizeof(Employ));
         if (!(aNoPrim[idx])) {
-            iRtnCode = ERR_NOMEM;
+            rc = ERR_NOMEM;
             break;
         }
         idxRev = SIZE_MID_TEST - idx;
@@ -99,7 +100,7 @@ int32_t PrepareTestData()
         idx++;
     }
 
-    return iRtnCode;
+    return rc;
 }
 
 
@@ -113,14 +114,19 @@ void ReleaseTestData()
 
 int32_t AddSimpleSuite()
 {
-    CU_pSuite pSuite = CU_add_suite("Primitive Input Type", NULL, NULL);
+    CU_pSuite pSuite = CU_add_suite("Primitive Input Item", NULL, NULL);
     if (!pSuite)
-        return ERR_NOMEM;
+        return ERR_REG;
 
-    char *szMsg = "Order Examination with sequence of push(), pop(), and top() operations.";
-    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestSimpleManipulate);
+    char *szMsg = "Test basic ordering with default item comparison utility.";
+    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestSimpleOrder);
     if (!pTest)
-        return ERR_NOMEM;
+        return ERR_REG;
+
+    szMsg = "Test bulk data ordering with mix of push(), pop(), and top() operations.";
+    pTest = CU_add_test(pSuite, szMsg, TestSimpleMixOp);
+    if (!pTest)
+        return ERR_REG;
 
     return SUCC;
 }
@@ -128,20 +134,53 @@ int32_t AddSimpleSuite()
 
 int32_t AddAdvancedSuit()
 {
-    CU_pSuite pSuite = CU_add_suite("Non-Primitive Input Type", NULL, NULL);
+    CU_pSuite pSuite = CU_add_suite("Non-Primitive Input Item", NULL, NULL);
     if (!pSuite)
-        return ERR_NOMEM;
+        return ERR_REG;
 
-    char *szMsg = "Order Examination with sequence of push(), pop(), and top() operations.";
-    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestAdvancedManipulate);
+    char *szMsg = "Test bulk data ordering with mix of push(), pop(), and top() operations.";
+    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestAdvancedMixOp);
     if (!pTest)
-        return ERR_NOMEM;
+        return ERR_REG;
 
     return SUCC;
 }
 
 
-void TestSimpleManipulate()
+void TestSimpleOrder()
+{
+    PriorityQueue *pQueue;
+    CU_ASSERT(PriorityQueueInit(&pQueue) == SUCC);
+
+    CU_ASSERT(pQueue->push(pQueue, (Item)0) == SUCC);
+    CU_ASSERT(pQueue->push(pQueue, (Item)5) == SUCC);
+    CU_ASSERT(pQueue->push(pQueue, (Item)10) == SUCC);
+    CU_ASSERT(pQueue->push(pQueue, (Item)10) == SUCC);
+
+    Item item;
+    CU_ASSERT(pQueue->top(pQueue, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)10);
+    CU_ASSERT(pQueue->pop(pQueue) == SUCC);
+
+    CU_ASSERT(pQueue->top(pQueue, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)10);
+    CU_ASSERT(pQueue->pop(pQueue) == SUCC);
+
+    CU_ASSERT(pQueue->top(pQueue, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)5);
+    CU_ASSERT(pQueue->pop(pQueue) == SUCC);
+
+    CU_ASSERT(pQueue->top(pQueue, &item) == SUCC);
+    CU_ASSERT_EQUAL(item, (Item)0);
+    CU_ASSERT(pQueue->pop(pQueue) == SUCC);
+
+    CU_ASSERT(pQueue->top(pQueue, NULL) == ERR_GET);
+    CU_ASSERT(pQueue->top(pQueue, &item) == ERR_IDX);
+
+    PriorityQueueDeinit(&pQueue);
+}
+
+void TestSimpleMixOp()
 {
     PriorityQueue *pQueue;
     CU_ASSERT(PriorityQueueInit(&pQueue) == SUCC);
@@ -214,7 +253,7 @@ void TestSimpleManipulate()
 }
 
 
-void TestAdvancedManipulate()
+void TestAdvancedMixOp()
 {
     PriorityQueue *pQueue;
     CU_ASSERT(PriorityQueueInit(&pQueue) == SUCC);

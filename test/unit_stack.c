@@ -91,7 +91,7 @@ void TestManipulate()
     CU_ASSERT_EQUAL(pStack->size(pStack), SIZE_DATA);
 
     /* Sequentially retrieve the stack top data and delete it. */
-    for (iIdx = SIZE_DATA - 1 ; iIdx >= 0 ; iIdx--) {
+    for (iIdx = SIZE_DATA - 1 ; iIdx >= SIZE_DATA >> 1 ; iIdx--) {
         Item item;
         CU_ASSERT(pStack->top(pStack, &item) == SUCC);
         CU_ASSERT_EQUAL(((Employ*)item)->iId, iIdx);
@@ -99,6 +99,7 @@ void TestManipulate()
     }
     CU_ASSERT_EQUAL(pStack->size(pStack), 0);
 
+    /* The rest data will be cleaned by the destructor. */
     StackDeinit(&pStack);
 }
 
