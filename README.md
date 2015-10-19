@@ -68,7 +68,7 @@ Assume that you apply gcc for compilation, then you need the following options:
 -lcds
 ```
 Now you successfully link LibCDS with your project!
-But wait, to run your project, you need to tell the loader where to find LibCDS:
+But wait, to run your project, you need to tell the dynamic linker where to find LibCDS:
 ```
 LD_LIBRARY_PATH=/path/to/your/destination/lib/
 ```
