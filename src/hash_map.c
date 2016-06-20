@@ -51,9 +51,8 @@ struct _HashMapData {
  * @brief Extend the slot array and re-distribute the stored pairs.
  *
  * @param pData         The pointer to the map private data
- * @param size          Size of the data pointed by the key in bytes
  */
-void _HashMapReHash(HashMapData *pData, size_t size);
+void _HashMapReHash(HashMapData *pData);
 
 
 /*===========================================================================*
@@ -149,7 +148,7 @@ int32_t HashMapPut(HashMap *self, Pair *pPair, size_t size)
     HashMapData *pData = self->pData;
     double dCurrLoad = (double)pData->iSize_ / pData->uiCountSlot_;
     if (dCurrLoad >= dLoadFactor)
-        _HashMapReHash(pData, size);
+        _HashMapReHash(pData);
 
     /* Calculate the slot index. */
     uint32_t uiValue = pData->pHash_(pPair->key, size);
@@ -340,7 +339,7 @@ int32_t HashMapSetHash(HashMap *self, uint32_t (*pFunc) (Key, size_t))
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
-void _HashMapReHash(HashMapData *pData, size_t size)
+void _HashMapReHash(HashMapData *pData)
 {
     uint32_t uiCountNew;
 
@@ -377,7 +376,7 @@ void _HashMapReHash(HashMapData *pData, size_t size)
             pCurr = pCurr->pNext;
 
             /* Migrate each pair to the new slot. */
-            uint32_t uiValue = pData->pHash_(pPred->pPair->key, size);
+            uint32_t uiValue = pData->pHash_(pPred->pPair->key, pPred->sizeKey);
             uiValue = uiValue % uiCountNew;
             if (!aSlotNew[uiValue]) {
                 pPred->pNext = NULL;
