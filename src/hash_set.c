@@ -62,9 +62,8 @@ int32_t _HashSetInit(HashSet **ppObj, int32_t iIdxPrime);
  * @brief Extend the slot array and re-distribute the stored keys.
  *
  * @param pData         The pointer to the set private data
- * @param size          Size of the data pointed by the key in bytes
  */
-void _HashSetReHash(HashSetData *pData, size_t size);
+void _HashSetReHash(HashSetData *pData);
 
 
 /*===========================================================================*
@@ -121,7 +120,7 @@ int32_t HashSetAdd(HashSet *self, Key key, size_t size)
     HashSetData *pData = self->pData;
     double dCurrLoad = (double)pData->iSize_ / pData->uiCountSlot_;
     if (dCurrLoad >= dLoadFactor_)
-        _HashSetReHash(pData, size);
+        _HashSetReHash(pData);
 
     /* Calculate the slot index. */
     uint32_t uiValue = pData->pHash_(key, size);
@@ -487,7 +486,7 @@ int32_t _HashSetInit(HashSet **ppObj, int32_t iIdxPrime)
     return SUCC;
 }
 
-void _HashSetReHash(HashSetData *pData, size_t size)
+void _HashSetReHash(HashSetData *pData)
 {
     uint32_t uiCountNew;
 
@@ -524,7 +523,7 @@ void _HashSetReHash(HashSetData *pData, size_t size)
             pCurr = pCurr->pNext;
 
             /* Migrate each pair to the new slot. */
-            uint32_t uiValue = pData->pHash_(pPred->key, size);
+            uint32_t uiValue = pData->pHash_(pPred->key, pPred->sizeKey);
             uiValue = uiValue % uiCountNew;
             if (!aSlotNew[uiValue]) {
                 pPred->pNext = NULL;
