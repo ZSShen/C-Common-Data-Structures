@@ -7,6 +7,10 @@
 
 #include "../util.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** LinkedListData is the data type for the container private information. */
 typedef struct _LinkedListData LinkedListData;
 
@@ -35,9 +39,9 @@ typedef struct _LinkedList {
         @see LinkedListPopBack */
     int32_t (*pop_back) (struct _LinkedList*);
 
-    /** Delete an item from the designated index of the list
-        @see LinkedListDelete */
-    int32_t (*delete) (struct _LinkedList*, int32_t);
+    /** Remove an item from the designated index of the list
+        @see LinkedListRemove */
+    int32_t (*remove) (struct _LinkedList*, int32_t);
 
     /** Replace an item at the head of the list.
         @see LinkedListSetFront */
@@ -214,7 +218,7 @@ int32_t LinkedListPopBack(LinkedList *self);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_IDX      Out of range indexing
  */
-int32_t LinkedListDelete(LinkedList *self, int32_t iIdx);
+int32_t LinkedListRemove(LinkedList *self, int32_t iIdx);
 
 /**
  * @brief Replace an item at the head of the list.
@@ -408,5 +412,9 @@ int32_t LinkedListReplace(LinkedList *self, Item item);
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t LinkedListSetDestroy(LinkedList *self, void (*pFunc) (Item));
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

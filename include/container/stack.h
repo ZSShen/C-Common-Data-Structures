@@ -7,6 +7,10 @@
 
 #include "../util.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** StackData is the data type for the container private information. */
 typedef struct _StackData StackData;
 
@@ -126,5 +130,9 @@ int32_t StackSize(Stack *self);
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t StackSetDestroy(Stack *self, void (*pFunc) (Item));
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

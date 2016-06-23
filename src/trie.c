@@ -183,7 +183,7 @@ int32_t TrieInit(Trie **ppObj)
     pObj->has_exact = TrieHasExact;
     pObj->has_prefix_as = TrieHasPrefixAs;
     pObj->get_prefix_as = TrieGetPrefixAs;
-    pObj->delete = TrieDelete;
+    pObj->remove = TrieRemove;
     pObj->size = TrieSize;
 
     return SUCC;
@@ -542,7 +542,7 @@ EXIT:
     return iRtn;
 }
 
-int32_t TrieDelete(Trie *self, char *str)
+int32_t TrieRemove(Trie *self, char *str)
 {
     CHECK_INIT(self);
     if (!str)

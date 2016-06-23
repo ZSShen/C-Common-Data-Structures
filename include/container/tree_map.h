@@ -7,6 +7,10 @@
 
 #include "../util.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** TreeMapData is the data type for the container private information. */
 typedef struct _TreeMapData TreeMapData;
 
@@ -290,5 +294,9 @@ int32_t TreeMapSetCompare(TreeMap *self, int32_t (*pFunc) (Key, Key));
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t TreeMapSetDestroy(TreeMap *self, void (*pFunc) (Pair*));
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

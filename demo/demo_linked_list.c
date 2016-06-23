@@ -155,8 +155,8 @@ int main()
     pList->pop_back(pList);
 
     /* Delete the item from the designated indexes. */
-    pList->delete(pList, 1);
-    pList->delete(pList, -1);
+    pList->remove(pList, 1);
+    pList->remove(pList, -1);
 
     /* Get the list size. And the remaining item should be (-4). */
     int32_t iSize = pList->size(pList);

@@ -45,7 +45,7 @@ int32_t SuitePrimitive()
     if (!pTest)
         return ERR_NOMEM;
 
-    pTest = CU_add_test(pSuite, "Item deletion via delete().", TestPrimDelete);
+    pTest = CU_add_test(pSuite, "Item deletion via remove().", TestPrimDelete);
     if (!pTest)
         return ERR_NOMEM;
 
@@ -213,8 +213,8 @@ void TestPrimDelete()
     CU_ASSERT(pVec->push_back(pVec, (Item)3) == SUCC);
 
     /* Delete the head and tail. */
-    CU_ASSERT(pVec->delete(pVec, 3) == SUCC);
-    CU_ASSERT(pVec->delete(pVec, 0) == SUCC);
+    CU_ASSERT(pVec->remove(pVec, 3) == SUCC);
+    CU_ASSERT(pVec->remove(pVec, 0) == SUCC);
 
     /* Check item shifting sequence. */
     Item item;
@@ -228,8 +228,8 @@ void TestPrimDelete()
     CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
 
     /* Check illegal deletion. */
-    CU_ASSERT(pVec->delete(pVec, -1) == ERR_IDX);
-    CU_ASSERT(pVec->delete(pVec, 2) == ERR_IDX);
+    CU_ASSERT(pVec->remove(pVec, -1) == ERR_IDX);
+    CU_ASSERT(pVec->remove(pVec, 2) == ERR_IDX);
 
     VectorDeinit(&pVec);
 }

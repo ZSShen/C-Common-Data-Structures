@@ -68,12 +68,12 @@ int32_t SuitePrimitive()
     if (!pTest)
         return ERR_NOMEM;
 
-    pTest = CU_add_test(pSuite, "Item removal via delete() with forward indexing",
+    pTest = CU_add_test(pSuite, "Item removal via remove() with forward indexing",
             TestPrimDeleteForward);
     if (!pTest)
         return ERR_NOMEM;
 
-    pTest = CU_add_test(pSuite, "Item removal via delete() with backward indexing",
+    pTest = CU_add_test(pSuite, "Item removal via remove() with backward indexing",
             TestPrimDeleteBackward);
     if (!pTest)
         return ERR_NOMEM;
@@ -108,7 +108,7 @@ int32_t SuiteNonPrimitive()
     if (!pTest)
         return ERR_NOMEM;
 
-    szMsg = "Item removal via sequence of delete().";
+    szMsg = "Item removal via sequence of remove().";
     pTest = CU_add_test(pSuite, szMsg, TestNonPrimDelete);
     if (!pTest)
         return ERR_NOMEM;
@@ -446,7 +446,7 @@ void TestPrimDeleteForward()
     /* Remove items from the designated index and check the remaining
        item sequence. */
     Item item;
-    CU_ASSERT(pList->delete(pList, 0) == SUCC);
+    CU_ASSERT(pList->remove(pList, 0) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
     CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
@@ -454,7 +454,7 @@ void TestPrimDeleteForward()
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)5);
 
-    CU_ASSERT(pList->delete(pList, 1) == SUCC);
+    CU_ASSERT(pList->remove(pList, 1) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
     CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
@@ -464,7 +464,7 @@ void TestPrimDeleteForward()
     CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
 
-    CU_ASSERT(pList->delete(pList, 2) == SUCC);
+    CU_ASSERT(pList->remove(pList, 2) == SUCC);
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)4);
     CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
@@ -472,8 +472,8 @@ void TestPrimDeleteForward()
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)4);
 
-    CU_ASSERT(pList->delete(pList, 0) == SUCC);
-    CU_ASSERT(pList->delete(pList, 0) == SUCC);
+    CU_ASSERT(pList->remove(pList, 0) == SUCC);
+    CU_ASSERT(pList->remove(pList, 0) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, 0) == ERR_IDX);
 
     /* Re-insert the item again to check if the list is well handled in
@@ -503,7 +503,7 @@ void TestPrimDeleteBackward()
     /* Remove items from the designated index and check the remaining
        item sequence. */
     Item item;
-    CU_ASSERT(pList->delete(pList, -5) == SUCC);
+    CU_ASSERT(pList->remove(pList, -5) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
     CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
@@ -511,7 +511,7 @@ void TestPrimDeleteBackward()
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)5);
 
-    CU_ASSERT(pList->delete(pList, -3) == SUCC);
+    CU_ASSERT(pList->remove(pList, -3) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
     CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
@@ -521,7 +521,7 @@ void TestPrimDeleteBackward()
     CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)2);
 
-    CU_ASSERT(pList->delete(pList, -1) == SUCC);
+    CU_ASSERT(pList->remove(pList, -1) == SUCC);
     CU_ASSERT(pList->get_back(pList, &item) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)4);
     CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
@@ -529,8 +529,8 @@ void TestPrimDeleteBackward()
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT_EQUAL(item, (Item)4);
 
-    CU_ASSERT(pList->delete(pList, 0) == SUCC);
-    CU_ASSERT(pList->delete(pList, 0) == SUCC);
+    CU_ASSERT(pList->remove(pList, 0) == SUCC);
+    CU_ASSERT(pList->remove(pList, 0) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, 0) == ERR_IDX);
 
     /* Re-insert the item again to check if the list is well handled in
@@ -795,7 +795,7 @@ void TestNonPrimDelete()
     /* Remove items from the designated index and check the remaining
        item sequence. */
     Item item;
-    CU_ASSERT(pList->delete(pList, 0) == SUCC);
+    CU_ASSERT(pList->remove(pList, 0) == SUCC);
     CU_ASSERT(pList->get_front(pList, &item) == SUCC);
     CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
     CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
@@ -805,7 +805,7 @@ void TestNonPrimDelete()
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
     CU_ASSERT(strcmp(((Employ*)item)->szName, "mno") == 0);
 
-    CU_ASSERT(pList->delete(pList, 1) == SUCC);
+    CU_ASSERT(pList->remove(pList, 1) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
     CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
     CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
@@ -815,7 +815,7 @@ void TestNonPrimDelete()
     CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
     CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
 
-    CU_ASSERT(pList->delete(pList, 2) == SUCC);
+    CU_ASSERT(pList->remove(pList, 2) == SUCC);
     CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
     CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
     CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
@@ -967,8 +967,8 @@ void TestBoundary()
     CU_ASSERT(pList->pop_front(pList) == ERR_IDX);
     CU_ASSERT(pList->pop_back(pList) == ERR_IDX);
 
-    CU_ASSERT(pList->delete(pList, 0) == ERR_IDX);
-    CU_ASSERT(pList->delete(pList, -1) == ERR_IDX);
+    CU_ASSERT(pList->remove(pList, 0) == ERR_IDX);
+    CU_ASSERT(pList->remove(pList, -1) == ERR_IDX);
     CU_ASSERT(pList->insert(pList, (Item)1, 1) == ERR_IDX);
     CU_ASSERT(pList->insert(pList, (Item)1, -1) == ERR_IDX);
 

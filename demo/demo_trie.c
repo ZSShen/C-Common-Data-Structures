@@ -47,7 +47,7 @@ int main()
     assert(pTrie->has_prefix_as(pTrie, "BCD") == NOKEY);
 
     /* Delete the string in the trie. */
-    pTrie->delete(pTrie, aStrNum[3]);
+    pTrie->remove(pTrie, aStrNum[3]);
 
     /* Get the array of strings matching the designated prefix. */
     char **aStr;

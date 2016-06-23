@@ -6,6 +6,10 @@
 
 #include "../util.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** TrieData is the data type for the container private information. */
 typedef struct TrieData_ TrieData;
 
@@ -34,9 +38,9 @@ typedef struct _Trie {
         @see TrieGetPrefixAs */
     int32_t (*get_prefix_as) (struct _Trie*, char*, char***, int*);
 
-    /** Delete a string from the trie.
-        @see TrieDelete */
-    int32_t (*delete) (struct _Trie*, char*);
+    /** Remove a string from the trie.
+        @see TrieRemove */
+    int32_t (*remove) (struct _Trie*, char*);
 
     /** Return the number of strings stored in the trie.
         @see TrieSize */
@@ -152,7 +156,7 @@ int32_t TrieGetPrefixAs(Trie *self, char* str, char ***paStr, int *piNum);
  * @retval ERR_NOINIT   Uninitialized container
  * @retval ERR_NODATA   Non-existent string
  */
-int32_t TrieDelete(Trie *self, char *str);
+int32_t TrieRemove(Trie *self, char *str);
 
 /**
  * @brief Return the number of strings stored in the trie.
@@ -163,5 +167,9 @@ int32_t TrieDelete(Trie *self, char *str);
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t TrieSize(Trie *self);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -92,7 +92,7 @@ int32_t VectorInit(Vector **ppObj, int32_t iCap)
     pObj->push_back = VectorPushBack;
     pObj->pop_back = VectorPopBack;
     pObj->insert = VectorInsert;
-    pObj->delete = VectorDelete;
+    pObj->remove = VectorRemove;
     pObj->resize = VectorResize;
     pObj->size = VectorSize;
     pObj->capacity = VectorCapacity;
@@ -191,7 +191,7 @@ int32_t VectorPopBack(Vector *self)
     return SUCC;
 }
 
-int32_t VectorDelete(Vector *self, int32_t iIdx)
+int32_t VectorRemove(Vector *self, int32_t iIdx)
 {
     CHECK_INIT(self);
     VectorData *pData = self->pData;

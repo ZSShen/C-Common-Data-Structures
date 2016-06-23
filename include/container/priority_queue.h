@@ -7,6 +7,10 @@
 
 #include "../util.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** PriorityQueueData is the data type for the container private information. */
 typedef struct _PriorityQueueData PriorityQueueData;
 
@@ -141,5 +145,9 @@ int32_t PriorityQueueSetCompare(PriorityQueue *self, int32_t (*pFunc) (Item, Ite
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t PriorityQueueSetDestroy(PriorityQueue *self, void (*pFunc) (Item));
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

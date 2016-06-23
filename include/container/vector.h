@@ -7,6 +7,10 @@
 
 #include "../util.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** VectorData is the data type for the container private information. */
 typedef struct _VectorData VectorData;
 
@@ -27,9 +31,9 @@ typedef struct _Vector {
         @see VectorPopBack */
     int32_t (*pop_back) (struct _Vector*);
 
-    /** Delete an item from the designated index of the vector.
-        @see VectorDelete */
-    int32_t (*delete) (struct _Vector*, int32_t);
+    /** Remove an item from the designated index of the vector.
+        @see VectorRemove */
+    int32_t (*remove) (struct _Vector*, int32_t);
 
     /** Set an item at the designated index of the vector.
         @see VectorSet */
@@ -167,7 +171,7 @@ int32_t VectorPopBack(Vector *self);
  * should not be negative. If the index is equal to the vector size minus one,
  * the operation is equivalent to pop_back().
  */
-int32_t VectorDelete(Vector *self, int32_t iIdx);
+int32_t VectorRemove(Vector *self, int32_t iIdx);
 
 /**
  * @brief Set an item at the designated index of the vector.
@@ -307,5 +311,9 @@ int32_t VectorReverseIterate(Vector *self, bool bReset, Item *pItem);
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t VectorSetDestroy(Vector *self, void (*pFunc) (Item));
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

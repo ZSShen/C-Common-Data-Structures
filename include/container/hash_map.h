@@ -7,6 +7,10 @@
 
 #include "../util.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** HashMapData is the data type for the container private information. */
 typedef struct _HashMapData HashMapData;
 
@@ -209,5 +213,9 @@ int32_t HashMapSetDestroy(HashMap *self, void (*pFunc) (Pair*));
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t HashMapSetHash(HashMap *self, uint32_t (*pFunc) (Key, size_t));
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

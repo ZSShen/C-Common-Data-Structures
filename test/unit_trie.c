@@ -321,12 +321,12 @@ void TestDeleteThenVerify()
     for (iIdx = 0 ; iIdx < iLen - 2 ; ++iIdx) {
         memset(szBuf, 0, sizeof(char) * 4);
         strncpy(szBuf, szSeq + iIdx, 3);
-        CU_ASSERT(pTrie->delete(pTrie, szBuf) == SUCC);
-        CU_ASSERT(pTrie->delete(pTrie, szBuf) == NOKEY);
+        CU_ASSERT(pTrie->remove(pTrie, szBuf) == SUCC);
+        CU_ASSERT(pTrie->remove(pTrie, szBuf) == NOKEY);
     }
 
-    CU_ASSERT(pTrie->delete(pTrie, NULL) == NOKEY);
-    CU_ASSERT(pTrie->delete(pTrie, "\0") == NOKEY);
+    CU_ASSERT(pTrie->remove(pTrie, NULL) == NOKEY);
+    CU_ASSERT(pTrie->remove(pTrie, "\0") == NOKEY);
     CU_ASSERT_EQUAL(pTrie->size(pTrie), iLen - 1);
 
     /* Search for the existing strings. */
@@ -357,7 +357,7 @@ void TestDeleteThenVerify()
     for (iIdx = 0 ; iIdx < iLen - 1 ; ++iIdx) {
         memset(szBuf, 0, sizeof(char) * 3);
         strncpy(szBuf, szSeq + iIdx, 2);
-        CU_ASSERT(pTrie->delete(pTrie, szBuf) == SUCC);
+        CU_ASSERT(pTrie->remove(pTrie, szBuf) == SUCC);
     }
     CU_ASSERT_EQUAL(pTrie->size(pTrie), 0);
 
@@ -442,7 +442,7 @@ void TestGetPrefix()
     for (iIdx = 0 ; iIdx < iLen - 2 ; ++iIdx) {
         memset(szBuf, 0, sizeof(char) * 3);
         strncpy(szBuf, szSeq + iIdx, 2);
-        CU_ASSERT(pTrie->delete(pTrie, szBuf) == SUCC);
+        CU_ASSERT(pTrie->remove(pTrie, szBuf) == SUCC);
     }
 
     /* Check if the previous deletion will affect the process to find strings
@@ -516,7 +516,7 @@ void TestGetPrefix()
     for (iIdx = 0 ; iIdx < iLen - 2 ; ++iIdx) {
         memset(szBuf, 0, sizeof(char) * 4);
         strncpy(szBuf, szSeq + iIdx, 3);
-        CU_ASSERT(pTrie->delete(pTrie, szBuf) == SUCC);
+        CU_ASSERT(pTrie->remove(pTrie, szBuf) == SUCC);
     }
 
     /* Then, all the get_prefix_as() should return NOKEY. */

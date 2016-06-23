@@ -7,6 +7,10 @@
 
 #include "../util.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** QueueData is the data type for the container private information. */
 typedef struct _QueueData QueueData;
 
@@ -148,5 +152,9 @@ int32_t QueueSize(Queue *self);
  * @retval ERR_NOINIT   Uninitialized container
  */
 int32_t QueueSetDestroy(Queue *self, void (*pFunc) (Item));
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

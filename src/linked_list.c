@@ -110,7 +110,7 @@ int32_t LinkedListInit(LinkedList **ppObj)
 
     pObj->pop_front = LinkedListPopFront;
     pObj->pop_back = LinkedListPopBack;
-    pObj->delete = LinkedListDelete;
+    pObj->remove = LinkedListRemove;
 
     pObj->set_front = LinkedListSetFront;
     pObj->set_back = LinkedListSetBack;
@@ -285,7 +285,7 @@ int32_t LinkedListPopBack(LinkedList *self)
     return SUCC;
 }
 
-int32_t LinkedListDelete(LinkedList *self, int32_t iIdx)
+int32_t LinkedListRemove(LinkedList *self, int32_t iIdx)
 {
     CHECK_INIT(self);
 

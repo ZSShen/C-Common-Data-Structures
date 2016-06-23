@@ -120,8 +120,8 @@ int main()
      *---------------------------------------------------------------*/
 
     /* Delete the item at the designated index. */
-    pVec->delete(pVec, 3);
-    pVec->delete(pVec, 0);
+    pVec->remove(pVec, 3);
+    pVec->remove(pVec, 0);
 
     /*---------------------------------------------------------------*
      * Now the vector should be: [3] | [10]                          *

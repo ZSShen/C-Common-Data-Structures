@@ -7,6 +7,10 @@
 
 #include "../util.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** HashSetData is the data type for the container private information. */
 typedef struct _HashSetData HashSetData;
 
@@ -243,5 +247,9 @@ int32_t HashSetIntersect(HashSet *pFst, HashSet *pSnd, HashSet **ppDst);
  *  difference operation.
  */
 int32_t HashSetDifference(HashSet *pFst, HashSet *pSnd, HashSet **ppDst);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
