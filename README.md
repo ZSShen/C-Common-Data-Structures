@@ -1,36 +1,31 @@
-LibCDS
-=============
+[![Integration Test] (https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures) [![Coverage Status](https://coveralls.io/repos/ZSShen/C-Common-Data-Structures/badge.svg?branch=master&service=github)](https://coveralls.io/github/ZSShen/C-Common-Data-Structures?branch=master) 
 
-Integration Test (Travis CI)
-+ [![Integration Test] (https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)  
+# **LibCDS**
 
-Unit Test Coverage Status (Coveralls.io)
-+ [![Coverage Status](https://coveralls.io/repos/ZSShen/C-Common-Data-Structures/badge.svg?branch=master&service=github)](https://coveralls.io/github/ZSShen/C-Common-Data-Structures?branch=master)  
-
-##API Document
+## **API Reference**
 [Link of the API Manual] (http://zsshen.github.io/C-Common-Data-Structures/html/index.html)
 
-##Container Category
- - Sequential Container
-   - Vector --- The dynamically growable array
-   - LinkedList --- The doubly linked list
- - Associative Container
-   - TreeMap --- The ordered map to store key value pairs
-   - HashMap --- The unordered map to store key value pairs
-   - HashSet --- The unordered set to store unique elements
-   - Trie --- The string dictionary
- - Simple Collection Container
-   - Queue --- The FIFO queue
-   - Stack --- The LIFO stack
-   - PriorityQueue --- The queue to maintain priority ordering for elements
+## **Container Category**
+ + Sequential Container
+   + **Vector** --- The dynamically growable array
+   + **LinkedList** --- The doubly linked list
+ + Associative Container
+   + **TreeMap** --- The ordered map to store key value pairs
+   + **HashMap** --- The unordered map to store key value pairs
+   + **HashSet** --- The unordered set to store unique elements
+   + **Trie** --- The string dictionary
+ + Simple Collection Container
+   + **Queue** --- The FIFO queue
+   + **Stack** --- The LIFO stack
+   + **PriorityQueue** --- The queue to maintain priority ordering for elements
 
-##Installation
-***This chapter illustrates how to install LibCDS to your working directory.***
+## **Installation**
+**This section illustrates how to install LibCDS to your working directory.**
 
 First of all, we need to prepare the following utilities:
-- [CMake] - A cross platform build system.
-- [Valgrind] - An instrumentation framework help for memory debug.
-- [CUnit] - An unit test framework for C.
++ [CMake] - A cross platform build system.
++ [Valgrind] - An instrumentation framework help for memory debug.
++ [CUnit] - An unit test framework for C.
 
 For Ubuntu 12.04 and above, it should be easy:
 ``` sh
@@ -46,16 +41,18 @@ $ cmake .. -DCMAKE_INSTALL_PREFIX=/path/to/your/destination
 $ make
 $ make install
 ```
-Upon finishing, the public header will reside in `/path/to/your/destination/include/`.
-And the shared library will reside in `/path/to/your/destination/lib/`.
+Upon finishing, the public header should locate at  
+`/path/to/your/destination/include/`  
+And the shared library should locate at  
+`/path/to/your/destination/lib/`  
 
-If you plan for debug build, you can specify the cmake argument list like this:
+If you plan for debug build, you can specify the CMake argument list like this:
 ``` sh
 $ cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/path/to/your/destination
 ```
 
-##Usage
-***This chapter illustrates how to link and apply LibCDS in your source code.***
+## **Usage**
+**This chapter illustrates how to link and apply LibCDS in your project.**
 
 For header file, you just need to include the main header:
 ```
@@ -72,10 +69,11 @@ But wait, to run your project, you need to tell the dynamic linker where to find
 ```
 LD_LIBRARY_PATH=/path/to/your/destination/lib/
 ```
-That's all the related stuff!
-
 For detailed API usage, you can refer to the manual or check the `demo programs`.
 
+
+## **Contact**
+Please contact me via the mail ***andy.zsshen@gmail.com***.  
 
 [CMake]:http://www.cmake.org/
 [Valgrind]:http://valgrind.org/
