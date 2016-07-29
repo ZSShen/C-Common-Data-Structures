@@ -1,25 +1,25 @@
 #include "math/hash.h"
 
 
-uint32_t HashMurMur32(Key key, size_t size)
+unsigned HashMurMur32(void* key, size_t size)
 {
     if (!key || size == 0)
         return 0;
 
-    const uint32_t c1 = 0xcc9e2d51;
-    const uint32_t c2 = 0x1b873593;
-    const uint32_t r1 = 15;
-    const uint32_t r2 = 13;
-    const uint32_t m = 5;
-    const uint32_t n = 0xe6546b64;
+    const unsigned c1 = 0xcc9e2d51;
+    const unsigned c2 = 0x1b873593;
+    const unsigned r1 = 15;
+    const unsigned r2 = 13;
+    const unsigned m = 5;
+    const unsigned n = 0xe6546b64;
 
-    uint32_t hash = 0xdeadbeef;
+    unsigned hash = 0xdeadbeef;
 
-    const int32_t nblocks = size / 4;
-    const uint32_t *blocks = (const uint32_t*)key;
-    int32_t i;
+    const int nblocks = size / 4;
+    const unsigned *blocks = (const unsigned*)key;
+    int i;
     for (i = 0; i < nblocks; i++) {
-        uint32_t k = blocks[i];
+        unsigned k = blocks[i];
         k *= c1;
         k = (k << r1) | (k >> (32 - r1));
         k *= c2;
@@ -29,7 +29,7 @@ uint32_t HashMurMur32(Key key, size_t size)
     }
 
     const uint8_t *tail = (const uint8_t*) (key + nblocks * 4);
-    uint32_t k1 = 0;
+    unsigned k1 = 0;
 
     switch (size & 3) {
         case 3:

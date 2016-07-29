@@ -22,7 +22,7 @@
  *
  * @note The key should be the pointer to the data you plan to hash for.
  */
-uint32_t HashMurMur32(Key key, size_t size);
+unsigned HashMurMur32(void* key, size_t size);
 
 /**
  * @brief Hash function proposed by Bob Jenkins in 1997.
@@ -32,6 +32,6 @@ uint32_t HashMurMur32(Key key, size_t size);
  *
  * @note The key should be the pointer to the data you plan to hash for.
  */
-uint32_t HashJenkins(Key key, size_t size);
+unsigned HashJenkins(void* key, size_t size);
 
 #endif

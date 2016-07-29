@@ -56,8 +56,8 @@ typedef const void* Value;
 
 /** Pair is the key value pair stored in associative data structures. */
 typedef struct _Pair {
-    Key key;
-    Value value;
+    void* key;
+    void* value;
 } Pair;
 
 #endif

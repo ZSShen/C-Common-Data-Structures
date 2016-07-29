@@ -7,38 +7,309 @@
 /*------------------------------------------------------------*
  *    Test Function Declaration for Structure Verification    *
  *------------------------------------------------------------*/
-#define COUNT_ITER          (1000)
-#define SIZE_MID_TEST       (10000)
-#define SIZE_MID_STR        (32)
-#define RANGE_CHAR          (26)
-#define BASE_CHAR           (97)
-#define MASK_YEAR           (50)
-#define MASK_LEVEL          (100)
+static const int COUNT_ITER = 1000;
+static const int SIZE_TNY_TEST = 128;
+static const int SIZE_SML_TEST = 512;
+static const int SIZE_MID_TEST = 1024;
+static const int SIZE_MID_STR = 32;
+
+static const int RANGE_CHAR = 26;
+static const int BASE_CHAR = 97;
+
+static const int MASK_YEAR = 50;
+static const int MASK_LEVEL = 100;
 
 typedef struct Employ_ {
-    int8_t cYear;
-    int8_t cLevel;
-    int32_t iId;
+    int year;
+    int level;
+    int id;
 } Employ;
 
-char* aName[SIZE_MID_TEST];
 
-int32_t AddSuite();
-void TestManipulate();
-void TestIterator();
-
-int32_t PrepareTestData();
-void ReleaseTestData();
-void DestroyPair(Pair*);
-
-
-int32_t main()
+/*-----------------------------------------------------------------------------*
+ * The utilities for hash value generation, key comparison, and resource clean *
+ *-----------------------------------------------------------------------------*/
+/**
+ * The famous djb2 string hash function directly pulled from:
+ * http://www.cse.yorku.ca/~oz/hash.html
+ */
+unsigned HashKey(void* key)
 {
-    int32_t rc = SUCC;
+    char* str = (char*)key;
+    unsigned long hash = 5381;
+    int c;
 
-    rc = PrepareTestData();
-    if (rc != SUCC)
-        goto EXIT;
+    while (c = *str++)
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+    return hash;
+}
+
+int CompareKey(void* lhs, void* rhs)
+{
+    return strcmp((char*)lhs, (char*)rhs);
+}
+
+void CleanKey(void* key)
+{
+    free(key);
+}
+
+void CleanValue(void* value)
+{
+    free(value);
+}
+
+
+/*-----------------------------------------------------------------------------*
+ *            Unit tests relevant to basic structure verification              *
+ *-----------------------------------------------------------------------------*/
+void TestNewDelete()
+{
+    HashMap* map;
+    CU_ASSERT((map = HashMapInit()) != NULL);
+
+    /* Enlarge the map size to test the destructor. */
+    int i;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i)
+        CU_ASSERT(map->put(map, (void*)(intptr_t)i, (void*)(intptr_t)i) == true);
+
+    HashMapDeinit(map);
+}
+
+void TestPutGetNum()
+{
+    HashMap* map = HashMapInit();
+    int i;
+    for (i = 0 ; i < SIZE_TNY_TEST ; ++i)
+        map->put(map, (void*)(intptr_t)i, (void*)(intptr_t)i);
+
+    for (i = 0 ; i < SIZE_TNY_TEST ; ++i) {
+        CU_ASSERT(map->find(map, (void*)(intptr_t)i) == true);
+        int val = (int)(intptr_t)map->get(map, (void*)(intptr_t)i);
+        CU_ASSERT_EQUAL(i, val);
+    }
+    HashMapDeinit(map);
+}
+
+void TestRemoveNum()
+{
+    HashMap* map = HashMapInit();
+
+    int i;
+    for (i = 0 ; i < SIZE_TNY_TEST ; ++i)
+        map->put(map, (void*)(intptr_t)i, (void*)(intptr_t)i);
+
+    /* Remove the first half of the key value pairs. */
+    for (i = 0 ; i < SIZE_TNY_TEST >> 1 ; ++i)
+        CU_ASSERT(map->remove(map, (void*)(intptr_t)i) == true);
+
+    /* Querying for the keys that are already removed should fail. */
+    for (i = 0 ; i < SIZE_TNY_TEST >> 1 ; ++i) {
+        CU_ASSERT(map->remove(map, (void*)(intptr_t)i) == false);
+        CU_ASSERT(map->find(map, (void*)(intptr_t)i) == false);
+    }
+
+    /* Querying for the keys that still exist should success. */
+    for (i = SIZE_TNY_TEST >> 1 ; i < SIZE_TNY_TEST ; ++i)
+        CU_ASSERT(map->find(map, (void*)(intptr_t)i) == true);
+
+    CU_ASSERT_EQUAL(map->size(map), SIZE_TNY_TEST >> 1);
+
+    HashMapDeinit(map);
+}
+
+void TestIterateNum()
+{
+    HashMap* map = HashMapInit();
+
+    int i;
+    for (i = 0 ; i < SIZE_TNY_TEST ; ++i)
+        map->put(map, (void*)(intptr_t)i, (void*)(intptr_t)i);
+
+    /* Since the data size won't trigger re-hashing, we can predict the
+       data distribution. */
+    i = 0;
+    Pair* ptr_pair;
+    map->first(map);
+    while ((ptr_pair = map->next(map)) != NULL) {
+        CU_ASSERT_EQUAL(i, (int)(intptr_t)ptr_pair->key);
+        ++i;
+    }
+    CU_ASSERT(map->next(map) == NULL);
+
+    /* The previous iteration should not change the structure layout. */
+    i = 0;
+    map->first(map);
+    while ((ptr_pair = map->next(map)) != NULL) {
+        CU_ASSERT_EQUAL(i, (int)(intptr_t)ptr_pair->key);
+        ++i;
+    }
+
+    HashMapDeinit(map);
+}
+
+void TestPutGetTxt()
+{
+    char buf[SIZE_TNY_TEST];
+    char* keys[SIZE_TNY_TEST];
+    HashMap* map = HashMapInit();
+    map->set_hash(map, HashKey);
+    map->set_compare(map, CompareKey);
+
+    int i;
+    for (i = 0 ; i < SIZE_TNY_TEST ; ++i) {
+        snprintf(buf, SIZE_TNY_TEST, "key -> %d", i);
+        keys[i] = strdup(buf);
+        map->put(map, (void*)keys[i], (void*)(intptr_t)i);
+    }
+
+    for (i = 0 ; i < SIZE_TNY_TEST ; ++i) {
+        CU_ASSERT(map->find(map, (void*)keys[i]) == true);
+        int val = (int)(intptr_t)map->get(map, (void*)keys[i]);
+        CU_ASSERT_EQUAL(i, val);
+        free(keys[i]);
+    }
+
+    HashMapDeinit(map);
+}
+
+void TestRemoveTxt()
+{
+    char buf[SIZE_TNY_TEST];
+    char* keys[SIZE_TNY_TEST];
+    HashMap* map = HashMapInit();
+    map->set_hash(map, HashKey);
+    map->set_compare(map, CompareKey);
+    map->set_clean_key(map, CleanKey);
+    map->set_clean_value(map, CleanValue);
+
+    int i;
+    for (i = 0 ; i < SIZE_TNY_TEST ; ++i) {
+        snprintf(buf, SIZE_TNY_TEST, "key -> %d", i);
+        keys[i] = strdup(buf);
+        Employ* employ = (Employ*)malloc(sizeof(Employ));
+        employ->year = i;
+        employ->level = i;
+        employ->id = i;
+        map->put(map, (void*)keys[i], (void*)employ);
+    }
+
+    /* Remove the first half of the key value pairs. */
+    for (i = 0 ; i < SIZE_TNY_TEST >> 1 ; ++i)
+        CU_ASSERT(map->remove(map, (void*)keys[i]) == true);
+
+    /* Querying for the keys that are already removed should fail. */
+    for (i = 0 ; i < SIZE_TNY_TEST >> 1 ; ++i) {
+        snprintf(buf, SIZE_TNY_TEST, "key -> %d", i);
+        CU_ASSERT(map->remove(map, (void*)buf) == false);
+        CU_ASSERT(map->find(map, (void*)buf) == false);
+    }
+
+    /* Querying for the keys that still exist should success. */
+    for (i = SIZE_TNY_TEST >> 1 ; i < SIZE_TNY_TEST ; ++i)
+        CU_ASSERT(map->find(map, (void*)keys[i]) == true);
+
+    HashMapDeinit(map);
+}
+
+void TestPutDupText()
+{
+    char buf[SIZE_TNY_TEST];
+    char* keys[SIZE_TNY_TEST];
+    HashMap* map = HashMapInit();
+    map->set_hash(map, HashKey);
+    map->set_compare(map, CompareKey);
+    map->set_clean_key(map, CleanKey);
+    map->set_clean_value(map, CleanValue);
+
+    int i;
+    for (i = 0 ; i < SIZE_TNY_TEST ; ++i) {
+        snprintf(buf, SIZE_TNY_TEST, "key -> %d", i);
+        keys[i] = strdup(buf);
+        Employ* employ = (Employ*)malloc(sizeof(Employ));
+        employ->year = i;
+        employ->level = i;
+        employ->id = i;
+        map->put(map, (void*)keys[i], (void*)employ);
+    }
+
+    /* Insert the new key value pairs with the same key set. */
+    for (i = 0 ; i < SIZE_TNY_TEST ; ++i) {
+        snprintf(buf, SIZE_TNY_TEST, "key -> %d", i);
+        keys[i] = strdup(buf);
+        Employ* employ = (Employ*)malloc(sizeof(Employ));
+        employ->year = SIZE_TNY_TEST - i;
+        employ->level = SIZE_TNY_TEST - i;
+        employ->id = SIZE_TNY_TEST - i;
+        CU_ASSERT(map->put(map, (void*)keys[i], (void*)employ) == true);
+    }
+
+    /* Now the values of the existing pairs should be replaced. */
+    for (i = 0 ; i < SIZE_TNY_TEST ; ++i) {
+        Employ* employ = map->get(map, (void*)keys[i]);
+        CU_ASSERT_EQUAL(SIZE_TNY_TEST - i, employ->year);
+        CU_ASSERT_EQUAL(SIZE_TNY_TEST - i, employ->level);
+        CU_ASSERT_EQUAL(SIZE_TNY_TEST - i, employ->id);
+    }
+
+    HashMapDeinit(map);
+}
+
+
+/*-----------------------------------------------------------------------------*
+ *                      The driver for HashMap unit test                       *
+ *-----------------------------------------------------------------------------*/
+bool AddSuite()
+{
+    {
+        /* Verify the basic operations and the structural correctness. */
+        CU_pSuite suite = CU_add_suite("Structure Verification", NULL, NULL);
+        if (!suite)
+            return false;
+
+        CU_pTest unit = CU_add_test(suite, "New and Delete", TestNewDelete);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Numerics Put and Get", TestPutGetNum);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Numerics Remove", TestRemoveNum);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Numerics Iterator", TestIterateNum);
+        if (!unit)
+            return false;
+    }
+    {
+        /* Test its robustness to maintain complex data types and large data set. */
+        CU_pSuite suite = CU_add_suite("Complex Data Maintenance", NULL, NULL);
+        if (!suite)
+            return false;
+
+        CU_pTest unit = CU_add_test(suite, "Text Put and Get", TestPutGetTxt);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Pair Replacement", TestPutDupText);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Text Remove and Garbage Collection", TestRemoveTxt);
+        if (!unit)
+            return false;
+
+
+    }
+    return true;
+}
+
+int main()
+{
+    int rc = 0;
 
     if (CU_initialize_registry() != CUE_SUCCESS) {
         rc = CU_get_error();
@@ -46,7 +317,7 @@ int32_t main()
     }
 
     /* Register the test suite for map structure verification. */
-    if (AddSuite() != SUCC) {
+    if (AddSuite() == false) {
         rc = CU_get_error();
         goto CLEAN;
     }
@@ -58,205 +329,6 @@ int32_t main()
 CLEAN:
     CU_cleanup_registry();
 EXIT:
-    ReleaseTestData();
     return rc;
 }
 
-
-/*------------------------------------------------------------*
- *  Test Function Implementation for Structure Verification   *
- *------------------------------------------------------------*/
-void DestroyPair(Pair *pPair)
-{
-    free((Employ*)pPair->value);
-    free(pPair);
-}
-
-int32_t PrepareTestData()
-{
-    srand(time(NULL));
-
-    int32_t iIdx;
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST ; iIdx++)
-        aName[iIdx] = NULL;
-
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST ; iIdx++) {
-        aName[iIdx] = (char*)malloc(sizeof(char) * (SIZE_MID_STR + 1));
-        if (!aName[iIdx])
-            return ERR_NOMEM;
-        int iOfst;
-        for (iOfst = 0 ; iOfst < SIZE_MID_STR ; iOfst++) {
-            char cToken = BASE_CHAR + rand() % RANGE_CHAR;
-            aName[iIdx][iOfst] = cToken;
-        }
-        aName[iIdx][SIZE_MID_STR] = 0;
-    }
-
-    return SUCC;
-}
-
-void ReleaseTestData()
-{
-    int32_t iIdx;
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST ; iIdx++) {
-        if (aName[iIdx])
-            free(aName[iIdx]);
-    }
-}
-
-int32_t AddSuite()
-{
-    int32_t rc = SUCC;
-
-    CU_pSuite pSuite = CU_add_suite("Structure Verification", NULL, NULL);
-    if (!pSuite) {
-        rc = ERR_REG;
-        goto EXIT;
-    }
-
-    char *szMsg = "Combination with insertion, deletion, and searching.";
-    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestManipulate);
-    if (!pTest)
-        rc = ERR_REG;
-
-    pTest = CU_add_test(pSuite, "Map iterator.", TestIterator);
-    if (!pTest)
-        rc = ERR_REG;
-
-EXIT:
-    return rc;
-}
-
-void TestManipulate()
-{
-    HashMap *pMap;
-    CU_ASSERT(HashMapInit(&pMap) == SUCC);
-    CU_ASSERT(pMap->set_destroy(pMap, DestroyPair) == SUCC);
-
-    /* Insert the dummy pair with zero key length. */
-    CU_ASSERT(pMap->put(pMap, NULL, 0) == ERR_KEYSIZE);
-
-    /* Insert the full data. */
-    Pair *pPair;
-    Employ *pEmploy;
-    int32_t iIdx;
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST ; iIdx++) {
-        pPair = (Pair*)malloc(sizeof(Pair));
-        pEmploy = (Employ*)malloc(sizeof(Employ));
-
-        pEmploy->cYear = iIdx % MASK_YEAR;
-        pEmploy->cLevel = iIdx % MASK_LEVEL;
-        pEmploy->iId = iIdx;
-
-        pPair->key = (Key)aName[iIdx];
-        pPair->value = (Value)pEmploy;
-        CU_ASSERT(pMap->put(pMap, pPair, SIZE_MID_STR) == SUCC);
-    }
-
-    /* Insert the duplicated pair, it will trigger the code path to clean the
-       existing old pair. */
-    iIdx = SIZE_MID_TEST - 1;
-    pPair = (Pair*)malloc(sizeof(Pair));
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->cYear = iIdx % MASK_YEAR;
-    pEmploy->cLevel = iIdx % MASK_LEVEL;
-    pEmploy->iId = iIdx;
-    pPair->key = (Key)aName[iIdx];
-    pPair->value = (Value)pEmploy;
-    CU_ASSERT(pMap->put(pMap, pPair, SIZE_MID_STR) == SUCC);
-
-    /* Search and Retrieve map using invaid parameters. */
-    Value valueRetv;
-    CU_ASSERT(pMap->get(pMap, (Key)aName[0], SIZE_MID_TEST, NULL) == ERR_GET);
-    CU_ASSERT(pMap->get(pMap, (Key)aName[0], 0, &valueRetv) == ERR_KEYSIZE);
-    CU_ASSERT(pMap->find(pMap, (Key)aName[0], 0) == ERR_KEYSIZE);
-
-    /* Search and Retrieve the first half of the data. It should succeed. */
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST / 2 ; iIdx++) {
-        CU_ASSERT(pMap->find(pMap, aName[iIdx], SIZE_MID_STR) == SUCC);
-        CU_ASSERT(pMap->get(pMap, aName[iIdx], SIZE_MID_STR, &valueRetv) == SUCC);
-        CU_ASSERT_EQUAL(iIdx, ((Employ*)valueRetv)->iId);
-    }
-    CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST);
-
-    /* Delete pair using zero key length. */
-    CU_ASSERT(pMap->remove(pMap, (Key)aName[iIdx], 0) == ERR_KEYSIZE);
-
-    /* Delete the second half of the data.  */
-    for (iIdx = SIZE_MID_TEST / 2 ; iIdx < SIZE_MID_TEST ; iIdx++)
-        CU_ASSERT(pMap->remove(pMap, (Key)aName[iIdx], SIZE_MID_STR) == SUCC);
-
-    /* Search and Retrieve the second half of the data. It should fail. */
-    for (iIdx = SIZE_MID_TEST / 2 ; iIdx < SIZE_MID_TEST ; iIdx++) {
-        CU_ASSERT(pMap->find(pMap, aName[iIdx], SIZE_MID_STR) == NOKEY);
-        CU_ASSERT(pMap->get(pMap, aName[iIdx], SIZE_MID_STR, &valueRetv) == ERR_NODATA);
-        CU_ASSERT_EQUAL(valueRetv, NULL);
-    }
-
-    /* But the searching for the first half should not be affected. */
-    for (iIdx = 0 ; iIdx < SIZE_MID_TEST / 2 ; iIdx++) {
-        CU_ASSERT(pMap->find(pMap, aName[iIdx], SIZE_MID_STR) == SUCC);
-        CU_ASSERT(pMap->get(pMap, aName[iIdx], SIZE_MID_STR, &valueRetv) == SUCC);
-        CU_ASSERT_EQUAL(iIdx, ((Employ*)valueRetv)->iId);
-    }
-
-    /* Delete the already deleted second half of the data. It should fail. */
-    for (iIdx = SIZE_MID_TEST / 2 ; iIdx < SIZE_MID_TEST ; iIdx++)
-        CU_ASSERT(pMap->remove(pMap, (Key)aName[iIdx], SIZE_MID_STR) == ERR_NODATA);
-
-    CU_ASSERT_EQUAL(pMap->size(pMap), SIZE_MID_TEST/2);
-
-    HashMapDeinit(&pMap);
-}
-
-
-void TestIterator()
-{
-    HashMap *pMap;
-    CU_ASSERT(HashMapInit(&pMap) == SUCC);
-
-    /* Test the operator to set custom hash function. */
-    CU_ASSERT(pMap->set_hash(pMap, HashMurMur32) == SUCC);
-
-    CU_ASSERT(pMap->set_destroy(pMap, DestroyPair) == SUCC);
-    CU_ASSERT_EQUAL(pMap->size(pMap), 0);
-
-    /* Insert the test data. */
-    Pair *pPair;
-    int32_t iIdx;
-    for (iIdx = COUNT_ITER / 2 ; iIdx > 0 ; iIdx--) {
-        Pair *pPair = (Pair*)malloc(sizeof(Pair));
-        Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
-
-        pEmploy->cYear = iIdx % MASK_YEAR;
-        pEmploy->cLevel = iIdx % MASK_LEVEL;
-        pEmploy->iId = iIdx;
-
-        pPair->key = aName[iIdx];
-        pPair->value = (Value)pEmploy;
-        CU_ASSERT(pMap->put(pMap, pPair, SIZE_MID_STR) == SUCC);
-    }
-    for (iIdx = COUNT_ITER / 2 + 1 ; iIdx <= COUNT_ITER ; iIdx++) {
-        Pair *pPair = (Pair*)malloc(sizeof(Pair));
-        Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
-
-        pEmploy->cYear = iIdx % MASK_YEAR;
-        pEmploy->cLevel = iIdx % MASK_LEVEL;
-        pEmploy->iId = iIdx;
-
-        pPair->key = aName[iIdx];
-        pPair->value = (Value)pEmploy;
-        CU_ASSERT(pMap->put(pMap, pPair, SIZE_MID_STR) == SUCC);
-    }
-
-    /* Iterate through the map. */
-    CU_ASSERT(pMap->iterate(pMap, true, NULL) == SUCC);
-    CU_ASSERT(pMap->iterate(pMap, false, NULL) == ERR_GET);
-    while (pMap->iterate(pMap, false, &pPair) == CONTINUE);
-    CU_ASSERT_EQUAL(pPair, NULL);
-
-    CU_ASSERT(pMap->iterate(pMap, false, &pPair) == END);
-    CU_ASSERT_EQUAL(pPair, NULL);
-
-    HashMapDeinit(&pMap);
-}

@@ -5,391 +5,409 @@
 /*===========================================================================*
  *                        The container private data                         *
  *===========================================================================*/
-static const uint32_t aMagicPrimes[] = {
+static const unsigned magic_primes[] = {
     769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433,
     1572869, 3145739, 6291469, 12582917, 25165843, 50331653, 100663319,
     201326611, 402653189, 805306457, 1610612741,
 };
-static const int32_t iCountPrime_ = sizeof(aMagicPrimes) / sizeof(uint32_t);
-static const double dLoadFactor = 0.75;
+static const int num_prime = sizeof(magic_primes) / sizeof(unsigned);
+static const double load_factor = 0.75;
 
 
 typedef struct _SlotNode {
-    size_t sizeKey;
-    Pair *pPair;
-    struct _SlotNode *pNext;
+    Pair pair_;
+    struct _SlotNode* next_;
 } SlotNode;
 
 struct _HashMapData {
-    bool bEnd_;
-    int32_t iSize_;
-    int32_t iIdxPrime_;
-    uint32_t uiIterIdx_;
-    uint32_t uiCountSlot_;
-    SlotNode **aSlot_;
-    SlotNode *pIterNode_;
-    uint32_t (*pHash_) (Key, size_t);
-    void (*pDestroy_) (Pair*);
+    int size_;
+    int idx_prime_;
+    unsigned num_slot_;
+    unsigned curr_limit_;
+    unsigned iter_slot_;
+    SlotNode** arr_slot_;
+    SlotNode* iter_node_;
+    HashMapHash func_hash_;
+    HashMapCompare func_cmp_;
+    HashMapCleanKey func_clean_key_;
+    HashMapCleanValue func_clean_val_;
 };
 
 
 /*===========================================================================*
  *                  Definition for internal operations                       *
  *===========================================================================*/
-#define CHECK_INIT(self)                                                        \
-            do {                                                                \
-                if (!self)                                                      \
-                    return ERR_NOINIT;                                          \
-                if (!(self->pData))                                             \
-                    return ERR_NOINIT;                                          \
-                if (!(self->pData->aSlot_))                                     \
-                    return ERR_NOINIT;                                          \
-            } while (0);
+#define likely(x)       __builtin_expect(!!(x), 1)
+#define unlikely(x)     __builtin_expect(!!(x), 0)
 
+/**
+ * @brief The default hash function.
+ *
+ * @param key           The designated key
+ *
+ * @retval Hash         The corresponding hash value
+ */
+unsigned _HashMapHash(void* key);
+
+/**
+ * @brief The default hash key comparison function.
+ *
+ * @param lhs           The source key
+ * @param rhs           The target key
+ *
+ * @retval  1           The source key should go after the target one.
+ * @retval  0           The source key is equal to the target one.
+ * @retval -1           The source key should go before the target one.
+ */
+int _HashMapCompare(void* lhs, void* rhs);
 
 /**
  * @brief Extend the slot array and re-distribute the stored pairs.
  *
- * @param pData         The pointer to the map private data
+ * @param data         The pointer to the map private data
  */
-void _HashMapReHash(HashMapData *pData);
+void _HashMapReHash(HashMapData* data);
 
 
 /*===========================================================================*
  *               Implementation for the exported operations                  *
  *===========================================================================*/
-int32_t HashMapInit(HashMap **ppObj)
+HashMap* HashMapInit()
 {
-    *ppObj = (HashMap*)malloc(sizeof(HashMap));
-    if (!(*ppObj))
-        return ERR_NOMEM;
-    HashMap *pObj = *ppObj;
+    HashMap* obj = (HashMap*)malloc(sizeof(HashMap));
+    if (unlikely(!obj))
+        return NULL;
 
-    pObj->pData = (HashMapData*)malloc(sizeof(HashMapData));
-    if (!(pObj->pData)) {
-        free(*ppObj);
-        *ppObj = NULL;
-        return ERR_NOMEM;
+    HashMapData* data = (HashMapData*)malloc(sizeof(HashMapData));
+    if (unlikely(!data)) {
+        free(obj);
+        return NULL;
     }
-    HashMapData *pData = pObj->pData;
 
-    pData->aSlot_ = (SlotNode**)malloc(sizeof(SlotNode*) * aMagicPrimes[0]);
-    if (!(pData->aSlot_)) {
-        free(pObj->pData);
-        free(*ppObj);
-        *ppObj = NULL;
-        return ERR_NOMEM;
+    SlotNode** arr_slot = (SlotNode**)malloc(sizeof(SlotNode*) * magic_primes[0]);
+    if (unlikely(!arr_slot)) {
+        free(data);
+        free(obj);
+        return NULL;
     }
-    int32_t iIdx;
-    for (iIdx = 0 ; iIdx < aMagicPrimes[0] ; iIdx++)
-        pData->aSlot_[iIdx] = NULL;
+    int i;
+    for (i = 0 ; i < magic_primes[0] ; ++i)
+        arr_slot[i] = NULL;
 
-    pData->iSize_ = 0;
-    pData->iIdxPrime_ = 0;
-    pData->uiCountSlot_ = aMagicPrimes[0];
-    pData->pHash_ = HashMurMur32;
-    pData->pDestroy_ = NULL;
+    data->size_ = 0;
+    data->idx_prime_ = 0;
+    data->num_slot_ = magic_primes[0];
+    data->curr_limit_ = (unsigned)((double)magic_primes[0] * load_factor);
+    data->arr_slot_ = arr_slot;
+    data->func_hash_ = _HashMapHash;
+    data->func_cmp_ = _HashMapCompare;
+    data->func_clean_key_ = NULL;
+    data->func_clean_val_ = NULL;
 
-    pObj->put = HashMapPut;
-    pObj->get = HashMapGet;
-    pObj->find = HashMapFind;
-    pObj->remove = HashMapRemove;
-    pObj->size = HashMapSize;
-    pObj->iterate = HashMapIterate;
-    pObj->set_destroy = HashMapSetDestroy;
-    pObj->set_hash = HashMapSetHash;
+    obj->data = data;
+    obj->put = HashMapPut;
+    obj->get = HashMapGet;
+    obj->find = HashMapFind;
+    obj->remove = HashMapRemove;
+    obj->size = HashMapSize;
+    obj->first = HashMapFirst;
+    obj->next = HashMapNext;
+    obj->set_hash = HashMapSetHash;
+    obj->set_compare = HashMapSetCompare;
+    obj->set_clean_key = HashMapSetCleanKey;
+    obj->set_clean_value = HashMapSetCleanValue;
 
-    return SUCC;
+    return obj;
 }
 
-void HashMapDeinit(HashMap **ppObj)
+void HashMapDeinit(HashMap* obj)
 {
-    if (!(*ppObj))
+    if (unlikely(!obj))
         goto EXIT;
-
-    HashMap *pObj = *ppObj;
-    if (!(pObj->pData))
+    if (unlikely(!(obj->data)))
         goto FREE_MAP;
-
-    HashMapData *pData = pObj->pData;
-    if (!(pData->aSlot_))
+    if (unlikely(!(obj->data->arr_slot_)))
         goto FREE_DATA;
 
-    uint32_t uiIdx;
-    for (uiIdx = 0 ; uiIdx < pData->uiCountSlot_ ; uiIdx++) {
-        SlotNode *pPred;
-        SlotNode *pCurr = pData->aSlot_[uiIdx];
-        while (pCurr) {
-            pPred = pCurr;
-            pCurr = pCurr->pNext;
-            if (pData->pDestroy_)
-                pData->pDestroy_(pPred->pPair);
-            free(pPred);
+    HashMapData* data = obj->data;
+    SlotNode** arr_slot = data->arr_slot_;
+    HashMapCleanKey func_clean_key = data->func_clean_key_;
+    HashMapCleanValue func_clean_val = data->func_clean_val_;
+
+    unsigned num_slot = data->num_slot_;
+    unsigned i;
+    for (i = 0 ; i < num_slot ; ++i) {
+        SlotNode *pred;
+        SlotNode *curr = arr_slot[i];
+        while (curr) {
+            pred = curr;
+            curr = curr->next_;
+            if (func_clean_key)
+                func_clean_key(pred->pair_.key);
+            if (func_clean_val)
+                func_clean_val(pred->pair_.value);
+            free(pred);
         }
     }
-    free(pData->aSlot_);
 
+    free(arr_slot);
 FREE_DATA:
-    free(pObj->pData);
+    free(data);
 FREE_MAP:
-    free(*ppObj);
-    *ppObj = NULL;
+    free(obj);
 EXIT:
     return;
 }
 
-int32_t HashMapPut(HashMap *self, Pair *pPair, size_t size)
+bool HashMapPut(HashMap* self, void* key, void* value)
 {
-    CHECK_INIT(self);
-    if (size == 0)
-        return ERR_KEYSIZE;
-
     /* Check the loading factor for rehashing. */
-    HashMapData *pData = self->pData;
-    double dCurrLoad = (double)pData->iSize_ / pData->uiCountSlot_;
-    if (dCurrLoad >= dLoadFactor)
-        _HashMapReHash(pData);
+    HashMapData* data = self->data;
+    if (data->size_ >= data->curr_limit_)
+        _HashMapReHash(data);
 
     /* Calculate the slot index. */
-    uint32_t uiValue = pData->pHash_(pPair->key, size);
-    uiValue = uiValue % pData->uiCountSlot_;
+    unsigned hash = data->func_hash_(key);
+    hash = hash % data->num_slot_;
 
     /* Check if the pair conflicts with a certain one stored in the map. If yes,
        replace that one. */
-    SlotNode **aSlot = pData->aSlot_;
-    SlotNode *pCurr = aSlot[uiValue];
-    while (pCurr) {
-        if ((pCurr->sizeKey == size) &&
-            (memcmp(pCurr->pPair->key, pPair->key, size) == 0)) {
-            if (pData->pDestroy_)
-                pData->pDestroy_(pCurr->pPair);
-            pCurr->pPair = pPair;
-            return SUCC;
+    HashMapCompare func_cmp = data->func_cmp_;
+    SlotNode** arr_slot = data->arr_slot_;
+    SlotNode* curr = arr_slot[hash];
+    while (curr) {
+        if (func_cmp(key, curr->pair_.key) == 0) {
+            if (data->func_clean_key_)
+                data->func_clean_key_(curr->pair_.key);
+            if (data->func_clean_val_)
+                data->func_clean_val_(curr->pair_.value);
+            curr->pair_.key = key;
+            curr->pair_.value = value;
+            return true;
         }
-        pCurr = pCurr->pNext;
+        curr = curr->next_;
     }
 
     /* Insert the new pair into the slot list. */
-    SlotNode *pNew = (SlotNode*)malloc(sizeof(SlotNode));
-    pNew->sizeKey = size;
-    pNew->pPair = pPair;
-    if (!(aSlot[uiValue])) {
-        pNew->pNext = NULL;
-        aSlot[uiValue] = pNew;
+    SlotNode* node = (SlotNode*)malloc(sizeof(SlotNode));
+    if (unlikely(!node))
+        return false;
+
+    node->pair_.key = key;
+    node->pair_.value = value;
+    if (!(arr_slot[hash])) {
+        node->next_ = NULL;
+        arr_slot[hash] = node;
     } else {
-        pNew->pNext = aSlot[uiValue];
-        aSlot[uiValue] = pNew;
+        node->next_ = arr_slot[hash];
+        arr_slot[hash] = node;
     }
-    pData->iSize_++;
+    data->size_++;
 
-    return SUCC;
+    return true;
 }
 
-int32_t HashMapGet(HashMap *self, Key key, size_t size, Value *pValue)
+void* HashMapGet(HashMap* self, void* key)
 {
-    CHECK_INIT(self);
-    if (!pValue)
-        return ERR_GET;
-    if (size == 0)
-        return ERR_KEYSIZE;
-
-    HashMapData *pData = self->pData;
+    HashMapData* data = self->data;
 
     /* Calculate the slot index. */
-    uint32_t uiValue = pData->pHash_(key, size);
-    uiValue = uiValue % pData->uiCountSlot_;
+    unsigned hash = data->func_hash_(key);
+    hash = hash % data->num_slot_;
 
     /* Search the slot list to check if there is a pair having the same key
        with the designated one. */
-    SlotNode *pCurr = pData->aSlot_[uiValue];
-    while (pCurr) {
-        if ((pCurr->sizeKey == size) &&
-            (memcmp(pCurr->pPair->key, key, size) == 0)) {
-            *pValue = pCurr->pPair->value;
-            return SUCC;
-        }
-        pCurr = pCurr->pNext;
+    HashMapCompare func_cmp = data->func_cmp_;
+    SlotNode* curr = data->arr_slot_[hash];
+    while (curr) {
+        if (func_cmp(key, curr->pair_.key) == 0)
+            return curr->pair_.value;
+        curr = curr->next_;
     }
 
-    *pValue = NULL;
-    return ERR_NODATA;
+    return NULL;
 }
 
-int32_t HashMapFind(HashMap *self, Key key, size_t size)
+bool HashMapFind(HashMap* self, void* key)
 {
-    CHECK_INIT(self);
-    if (size == 0)
-        return ERR_KEYSIZE;
-
-    HashMapData *pData = self->pData;
+    HashMapData* data = self->data;
 
     /* Calculate the slot index. */
-    uint32_t uiValue = pData->pHash_(key, size);
-    uiValue = uiValue % pData->uiCountSlot_;
+    unsigned hash = data->func_hash_(key);
+    hash = hash % data->num_slot_;
 
     /* Search the slot list to check if there is a pair having the same key
        with the designated one. */
-    SlotNode *pCurr = pData->aSlot_[uiValue];
-    while (pCurr) {
-        if ((pCurr->sizeKey == size) &&
-            (memcmp(pCurr->pPair->key, key, size) == 0))
-            return SUCC;
-        pCurr = pCurr->pNext;
+    HashMapCompare func_cmp = data->func_cmp_;
+    SlotNode* curr = data->arr_slot_[hash];
+    while (curr) {
+        if (func_cmp(key, curr->pair_.key) == 0)
+            return true;
+        curr = curr->next_;
     }
 
-    return NOKEY;
+    return false;
 }
 
-int32_t HashMapRemove(HashMap *self, Key key, size_t size)
+bool HashMapRemove(HashMap* self, void* key)
 {
-    CHECK_INIT(self);
-    if (size == 0)
-        return ERR_KEYSIZE;
-
-    HashMapData *pData = self->pData;
-    SlotNode **aSlot = pData->aSlot_;
+    HashMapData* data = self->data;
 
     /* Calculate the slot index. */
-    uint32_t uiValue = pData->pHash_(key, size);
-    uiValue = uiValue % pData->uiCountSlot_;
+    unsigned hash = data->func_hash_(key);
+    hash = hash % data->num_slot_;
 
     /* Search the slot list for the deletion target. */
-    SlotNode *pPred = NULL;
-    SlotNode *pCurr = aSlot[uiValue];
-    while (pCurr) {
-        if ((pCurr->sizeKey == size) &&
-            (memcmp(pCurr->pPair->key, key, size) == 0)) {
-            if (pData->pDestroy_)
-                pData->pDestroy_(pCurr->pPair);
-            if (!pPred)
-                aSlot[uiValue] = pCurr->pNext;
+    HashMapCompare func_cmp = data->func_cmp_;
+    SlotNode* pred = NULL;
+    SlotNode** arr_slot = data->arr_slot_;
+    SlotNode* curr = arr_slot[hash];
+    while (curr) {
+        if (func_cmp(key, curr->pair_.key) == 0) {
+            if (data->func_clean_key_)
+                data->func_clean_key_(curr->pair_.key);
+            if (data->func_clean_val_)
+                data->func_clean_val_(curr->pair_.value);
+
+            if (!pred)
+                arr_slot[hash] = curr->next_;
             else
-                pPred->pNext = pCurr->pNext;
-            free(pCurr);
-            pData->iSize_--;
-            return SUCC;
+                pred->next_ = curr->next_;
+
+            free(curr);
+            data->size_--;
+            return true;
         }
-        pPred = pCurr;
-        pCurr = pCurr->pNext;
+        pred = curr;
+        curr = curr->next_;
     }
 
-    return ERR_NODATA;
+    return false;
 }
 
-int32_t HashMapSize(HashMap *self)
+unsigned HashMapSize(HashMap* self)
 {
-    CHECK_INIT(self);
-    return self->pData->iSize_;
+    return self->data->size_;
 }
 
-int32_t HashMapIterate(HashMap *self, bool bReset, Pair **ppPair)
+void HashMapFirst(HashMap* self)
 {
-    CHECK_INIT(self);
+    HashMapData* data = self->data;
+    data->iter_slot_ = 0;
+    data->iter_node_ = data->arr_slot_[0];
+    return;
+}
 
-    HashMapData *pData = self->pData;
+Pair* HashMapNext(HashMap* self)
+{
+    HashMapData* data = self->data;
 
-    if (bReset) {
-        pData->uiIterIdx_ = 0;
-        pData->pIterNode_ = pData->aSlot_[0];
-        pData->bEnd_ = false;
-        return SUCC;
-    }
-
-    if (!ppPair)
-        return ERR_GET;
-
-    if (pData->bEnd_) {
-        *ppPair = NULL;
-        return END;
-    }
-
-    SlotNode **aSlot = pData->aSlot_;
-    while (true) {
-        while (pData->pIterNode_) {
-            *ppPair = pData->pIterNode_->pPair;
-            pData->pIterNode_ = pData->pIterNode_->pNext;
-            return CONTINUE;
+    SlotNode** arr_slot = data->arr_slot_;
+    while (data->iter_slot_ < data->num_slot_) {
+        if (data->iter_node_) {
+            Pair* ptr_pair = &(data->iter_node_->pair_);
+            data->iter_node_ = data->iter_node_->next_;
+            return ptr_pair;
         }
-        pData->uiIterIdx_++;
-        if (pData->uiIterIdx_ == pData->uiCountSlot_)
+        data->iter_slot_++;
+        if (data->iter_slot_ == data->num_slot_)
             break;
-        pData->pIterNode_ = aSlot[pData->uiIterIdx_];
+        data->iter_node_ = arr_slot[data->iter_slot_];
     }
-
-    pData->bEnd_ = true;
-    *ppPair = NULL;
-    return END;
+    return NULL;
 }
 
-int32_t HashMapSetDestroy(HashMap *self, void (*pFunc) (Pair*))
+void HashMapSetHash(HashMap* self, HashMapHash func)
 {
-    CHECK_INIT(self);
-    self->pData->pDestroy_ = pFunc;
-    return SUCC;
+    self->data->func_hash_ = func;
 }
 
-int32_t HashMapSetHash(HashMap *self, uint32_t (*pFunc) (Key, size_t))
+void HashMapSetCompare(HashMap* self, HashMapCompare func)
 {
-    CHECK_INIT(self);
-    self->pData->pHash_ = pFunc;
-    return SUCC;
+    self->data->func_cmp_ = func;
+}
+
+void HashMapSetCleanKey(HashMap* self, HashMapCleanKey func)
+{
+    self->data->func_clean_key_ = func;
+}
+
+void HashMapSetCleanValue(HashMap* self, HashMapCleanValue func)
+{
+    self->data->func_clean_val_ = func;
 }
 
 
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
-void _HashMapReHash(HashMapData *pData)
+unsigned _HashMapHash(void* key)
 {
-    uint32_t uiCountNew;
+    return (unsigned)(intptr_t)key;
+}
+
+int _HashMapCompare(void* lhs, void* rhs)
+{
+    if ((intptr_t)lhs == (intptr_t)rhs)
+        return 0;
+    return ((intptr_t)lhs >= (intptr_t)rhs)? 1 : (-1);
+}
+
+void _HashMapReHash(HashMapData *data)
+{
+    unsigned num_slot_new;
 
     /* Consume the next prime for slot array extension. */
-    if (pData->iIdxPrime_ < (iCountPrime_ - 1)) {
-        pData->iIdxPrime_++;
-        uiCountNew = aMagicPrimes[pData->iIdxPrime_];
+    if (likely(data->idx_prime_ < (num_prime - 1))) {
+        data->idx_prime_++;
+        num_slot_new = magic_primes[data->idx_prime_];
     }
     /* If the prime list is completely consumed, we simply extend the slot array
        with treble capacity.*/
     else {
-        pData->iIdxPrime_ = iCountPrime_;
-        uiCountNew = pData->uiCountSlot_ * 3;
+        data->idx_prime_ = num_prime;
+        num_slot_new = data->num_slot_ * 3;
     }
 
     /* Try to allocate the new slot array. The rehashing should be canceled due
        to insufficient memory space.  */
-    SlotNode **aSlotNew = (SlotNode**)malloc(sizeof(SlotNode*) * uiCountNew);
-    if (!aSlotNew) {
-        if (pData->iIdxPrime_ < iCountPrime_)
-            pData->iIdxPrime_--;
+    SlotNode** arr_slot_new = (SlotNode**)malloc(sizeof(SlotNode*) * num_slot_new);
+    if (unlikely(!arr_slot_new)) {
+        if (data->idx_prime_ < num_prime)
+            data->idx_prime_--;
         return;
     }
 
-    uint32_t uiIdx;
-    for (uiIdx = 0  ; uiIdx < uiCountNew ; uiIdx++)
-        aSlotNew[uiIdx] = NULL;
+    unsigned i;
+    for (i = 0 ; i < num_slot_new ; ++i)
+        arr_slot_new[i] = NULL;
 
-    for (uiIdx = 0 ; uiIdx < pData->uiCountSlot_ ; uiIdx++) {
-        SlotNode *pPred;
-        SlotNode *pCurr = pData->aSlot_[uiIdx];
-        while (pCurr) {
-            pPred = pCurr;
-            pCurr = pCurr->pNext;
+    HashMapHash func_hash = data->func_hash_;
+    SlotNode** arr_slot = data->arr_slot_;
+    unsigned num_slot = data->num_slot_;
+    for (i = 0 ; i < num_slot ; ++i) {
+        SlotNode *pred;
+        SlotNode *curr = arr_slot[i];
+        while (curr) {
+            pred = curr;
+            curr = curr->next_;
 
-            /* Migrate each pair to the new slot. */
-            uint32_t uiValue = pData->pHash_(pPred->pPair->key, pPred->sizeKey);
-            uiValue = uiValue % uiCountNew;
-            if (!aSlotNew[uiValue]) {
-                pPred->pNext = NULL;
-                aSlotNew[uiValue] = pPred;
+            /* Migrate each key value pair to the new slot. */
+            unsigned hash = func_hash(pred->pair_.key);
+            hash = hash % num_slot_new;
+            if (!arr_slot_new[hash]) {
+                pred->next_ = NULL;
+                arr_slot_new[hash] = pred;
             } else {
-                pPred->pNext = aSlotNew[uiValue];
-                aSlotNew[uiValue] = pPred;
+                pred->next_ = arr_slot_new[hash];
+                arr_slot_new[hash] = pred;
             }
         }
     }
 
-    free(pData->aSlot_);
-    pData->aSlot_ = aSlotNew;
-    pData->uiCountSlot_ = uiCountNew;
+    free(arr_slot);
+    data->arr_slot_ = arr_slot_new;
+    data->num_slot_ = num_slot_new;
+    data->curr_limit_ = (unsigned)((double)num_slot_new * load_factor);
     return;
 }
