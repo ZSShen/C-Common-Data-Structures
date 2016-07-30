@@ -2,86 +2,143 @@
 
 
 typedef struct Employ_ {
-    int8_t cYear;
-    int8_t cLevel;
-    int32_t iId;
+    int year;
+    int level;
+    int id;
 } Employ;
 
 
-void DestroyPair(Pair *pPair)
+unsigned HashKey(void* key)
 {
-    free((Employ*)pPair->value);
-    free(pPair);
+    return HashDjb2((char*)key);
+}
+
+int CompareKey(void* lhs, void* rhs)
+{
+    return strcmp((char*)lhs, (char*)rhs);
+}
+
+void CleanKey(void* key)
+{
+    free(key);
+}
+
+void CleanValue(void* value)
+{
+    free(value);
 }
 
 
-int main()
+void ManipulateNumerics()
 {
-    char *aName[3] = {"Alice\0", "Bob\0", "Wesker\0"};
-    HashMap *pMap;
+    /* We should initialize the container before any operations. */
+    HashMap* map = HashMapInit();
 
-    /* You should initialize the DS before any operations. */
-    int32_t rc = HashMapInit(&pMap);
-    if (rc != SUCC)
-        return rc;
-
-    /* If you plan to delegate the resource clean task to the DS, please set the
-       custom clean method. */
-    pMap->set_destroy(pMap, DestroyPair);
-
-    /* Insert key value pairs into the map. */
-    Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 1;
-    pEmploy->cYear = 25;
-    pEmploy->cLevel = 100;
-    Pair *pPair = (Pair*)malloc(sizeof(Pair));
-    pPair->key = (Key)aName[0];
-    pPair->value = (Value)pEmploy;
-    pMap->put(pMap, pPair, strlen(aName[0]));
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 2;
-    pEmploy->cYear = 25;
-    pEmploy->cLevel = 90;
-    pPair = (Pair*)malloc(sizeof(Pair));
-    pPair->key = (Key)aName[1];
-    pPair->value = (Value)pEmploy;
-    pMap->put(pMap, pPair, strlen(aName[1]));
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 3;
-    pEmploy->cYear = 25;
-    pEmploy->cLevel = 80;
-    pPair = (Pair*)malloc(sizeof(Pair));
-    pPair->key = (Key)aName[2];
-    pPair->value = (Value)pEmploy;
-    pMap->put(pMap, pPair, strlen(aName[2]));
+    /* Insert numerics into the map. */
+    HashMapPut(map, (void*)(intptr_t)1, (void*)(intptr_t)999);
+    HashMapPut(map, (void*)(intptr_t)2, (void*)(intptr_t)99);
+    HashMapPut(map, (void*)(intptr_t)3, (void*)(intptr_t)9);
 
     /* Retrieve the value with the designated key. */
-    Value value;
-    pMap->get(pMap, (Key)aName[0], strlen(aName[0]), &value);
-    assert(((Employ*)value)->iId == 1);
-    assert(((Employ*)value)->cYear == 25);
-    assert(((Employ*)value)->cLevel == 100);
+    int val = (int)(intptr_t)HashMapGet(map, (void*)(intptr_t)1);
+    assert(val == 999);
 
-    pMap->iterate(pMap, true, NULL);
-    while (pMap->iterate(pMap, false, &pPair) == CONTINUE) {
-        /* Do what you plan to do for the retrieved pair. */
+    /* Iterate through the map. */
+    Pair* ptr_pair;
+    HashMapFirst(map);
+    while ((ptr_pair = HashMapNext(map)) != NULL) {
+        int key = (int)(intptr_t)ptr_pair->key;
+        int val = (int)(intptr_t)ptr_pair->value;
     }
 
     /* Remove the key value pair with the designated key. */
-    pMap->remove(pMap, (Key)aName[1], strlen(aName[1]));
+    HashMapRemove(map, (void*)(intptr_t)2);
 
-    assert(pMap->find(pMap, (Key)aName[0], strlen(aName[0])) == SUCC);
-    assert(pMap->find(pMap, (Key)aName[1], strlen(aName[1])) == NOKEY);
-    assert(pMap->find(pMap, (Key)aName[2], strlen(aName[2])) == SUCC);
+    /* Check the map keys. */
+    assert(HashMapFind(map, (void*)(intptr_t)1) == true);
+    assert(HashMapFind(map, (void*)(intptr_t)2) == false);
+    assert(HashMapFind(map, (void*)(intptr_t)3) == true);
 
     /* Check the pair count in the map. */
-    int32_t iSize = pMap->size(pMap);
-    assert(iSize == 2);
+    unsigned size = HashMapSize(map);
+    assert(size == 2);
 
-    /* You should deinitialize the DS after all the relevant tasks. */
-    HashMapDeinit(&pMap);
+    /* We should deinitialize the container after all the relevant operations. */
+    HashMapDeinit(map);
+}
 
-    return SUCC;
+void ManipulateTexts()
+{
+    char* names[3] = {"Alice\0", "Bob\0", "Chris\0"};
+
+    /* We should initialize the container before any operations. */
+    HashMap* map = HashMapInit();
+
+    /* Set the custom hash value generator and key comparison functions. */
+    HashMapSetHash(map, HashKey);
+    HashMapSetCompare(map, CompareKey);
+
+    /* If we plan to delegate the resource clean task to the container, set the
+       custom clean functions. */
+    HashMapSetCleanKey(map, CleanKey);
+    HashMapSetCleanValue(map, CleanValue);
+
+    /* Insert complex data payload into the map. */
+    char* key = strdup(names[0]);
+    Employ* employ = (Employ*)malloc(sizeof(Employ));
+    employ->id = 1;
+    employ->year = 25;
+    employ->level = 100;
+    HashMapPut(map, (void*)key, (void*)employ);
+
+    key = strdup(names[1]);
+    employ = (Employ*)malloc(sizeof(Employ));
+    employ->id = 2;
+    employ->year = 25;
+    employ->level = 90;
+    HashMapPut(map, (void*)key, (void*)employ);
+
+    key = strdup(names[2]);
+    employ = (Employ*)malloc(sizeof(Employ));
+    employ->id = 3;
+    employ->year = 25;
+    employ->level = 80;
+    HashMapPut(map, (void*)key, (void*)employ);
+
+    /* Retrieve the value with the designated key. */
+    employ = (Employ*)HashMapGet(map, (void*)names[0]);
+    assert(employ != NULL);
+    assert(employ->id == 1);
+    assert(employ->year == 25);
+    assert(employ->level == 100);
+
+    /* Iterate through the map. */
+    Pair* ptr_pair;
+    HashMapFirst(map);
+    while ((ptr_pair = HashMapNext(map)) != NULL) {
+        char* name = (char*)ptr_pair->key;
+        employ = (Employ*)ptr_pair->value;
+    }
+
+    /* Remove the key value pair with the designated key. */
+    HashMapRemove(map, (void*)names[1]);
+
+    /* Check the map keys. */
+    assert(HashMapFind(map, (void*)names[0]) == true);
+    assert(HashMapFind(map, (void*)names[1]) == false);
+    assert(HashMapFind(map, (void*)names[2]) == true);
+
+    /* Check the pair count in the map. */
+    unsigned size = HashMapSize(map);
+    assert(size == 2);
+
+    /* We should deinitialize the container after all the relevant operations. */
+    HashMapDeinit(map);
+}
+
+int main()
+{
+    ManipulateNumerics();
+    ManipulateTexts();
+    return 0;
 }

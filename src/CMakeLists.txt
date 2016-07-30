@@ -51,7 +51,6 @@ function(SUB_BUILD_ENTIRE)
                     WORLD_EXECUTE
         LIBRARY DESTINATION lib
     )
-
 endfunction()
 
 #==================================================================#

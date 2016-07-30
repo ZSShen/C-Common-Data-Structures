@@ -20,9 +20,9 @@
  * @param key           The designated key
  * @param size          Size of the data pointed by the key in bytes
  *
- * @note The key should be the pointer to the data you plan to hash for.
+ * @retval hash         The corresponding hash vale
  */
-uint32_t HashMurMur32(Key key, size_t size);
+unsigned HashMurMur32(void* key, size_t size);
 
 /**
  * @brief Hash function proposed by Bob Jenkins in 1997.
@@ -30,8 +30,19 @@ uint32_t HashMurMur32(Key key, size_t size);
  * @param key           The designated key
  * @param size          Size of the data pointed by the key in bytes
  *
- * @note The key should be the pointer to the data you plan to hash for.
+ * @retval hash         The corresponding hash vale
  */
-uint32_t HashJenkins(Key key, size_t size);
+unsigned HashJenkins(void* key, size_t size);
+
+/**
+ * @breif Frequently applied hash function for strings.
+ *
+ * http://www.cse.yorku.ca/~oz/hash.html
+ *
+ * @param key           The designated key
+ *
+ * @retval hash         The corresponding hash vale
+ */
+unsigned HashDjb2(char* key);
 
 #endif

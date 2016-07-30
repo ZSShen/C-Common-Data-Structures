@@ -14,42 +14,67 @@ extern "C" {
 /** HashMapData is the data type for the container private information. */
 typedef struct _HashMapData HashMapData;
 
+/** Calculate the hash of the given key. */
+typedef unsigned (*HashMapHash) (void*);
+
+/** Compare the equality of two keys. */
+typedef int (*HashMapCompare) (void*, void*);
+
+/** Key cleanup function called whenever a live entry is removed. */
+typedef void (*HashMapCleanKey) (void*);
+
+/** Value cleanup function called whenever a live entry is removed. */
+typedef void (*HashMapCleanValue) (void*);
+
+
 /** The implementation for hash map. */
 typedef struct _HashMap {
     /** The container private information */
-    HashMapData *pData;
+    HashMapData *data;
 
     /** Insert a key value pair into the map.
         @see HashMapPut */
-    int32_t (*put) (struct _HashMap*, Pair*, size_t);
+    bool (*put) (struct _HashMap*, void*, void*);
 
     /** Retrieve the value corresponding to the designated key.
         @see HashMapGet */
-    int32_t (*get) (struct _HashMap*, Key, size_t, Value*);
+    void* (*get) (struct _HashMap*, void*);
 
     /** Check if the map contains the designated key.
         @see HashMapFind */
-    int32_t (*find) (struct _HashMap*, Key, size_t);
+    bool (*find) (struct _HashMap*, void*);
 
-    /** Delete the key value pair corresponding to the designated key.
+    /** Remove the key value pair corresponding to the designated key.
         @see HashMapRemove */
-    int32_t (*remove) (struct _HashMap*, Key, size_t);
+    bool (*remove) (struct _HashMap*, void*);
 
     /** Return the number of stored key value pairs.
         @see HashMapSize */
-    int32_t (*size) (struct _HashMap*);
+    unsigned (*size) (struct _HashMap*);
 
-    /** Iterate through the map to retrieve each key value pair.
-        @see HashMapIterate */
-    int32_t (*iterate) (struct _HashMap*, bool, Pair**);
+    /** Initialize the map iterator.
+        @see HashMapFirst */
+    void (*first) (struct _HashMap*);
 
-    /** Set the custom key value pair resource clean method.
-        @see HashMapSetDestroy */
-    int32_t (*set_destroy) (struct _HashMap*, void (*) (Pair*));
+    /** Get the key value pair pointed by the iterator and advance the iterator
+        @see HashMapNext */
+    Pair* (*next) (struct _HashMap*);
 
     /** Set the custom hash function.
         @see HashMapSetHash */
-    int32_t (*set_hash) (struct _HashMap*, uint32_t (*) (Key, size_t));
+    void (*set_hash) (struct _HashMap*, HashMapHash);
+
+    /** Set the custom key comparison function.
+        @see HashMapSetCompare */
+    void (*set_compare) (struct _HashMap*, HashMapCompare);
+
+    /** Set the custom key cleanup function.
+        @see HashMapSetCleanKey */
+    void (*set_clean_key) (struct _HashMap*, HashMapCleanKey);
+
+    /** Set the custom value cleanup function.
+        @see HashMapSetCleanValue */
+    void (*set_clean_value) (struct _HashMap*, HashMapCleanValue);
 } HashMap;
 
 
@@ -59,160 +84,135 @@ typedef struct _HashMap {
 /**
  * @brief The constructor for HashMap.
  *
- * @param ppObj         The double pointer to the to be constructed map
- *
- * @retval SUCC
- * @retval ERR_NOMEM    Insufficient memory for map construction
+ * @retval obj          The successfully constructed map
+ * @retval NULL         Insufficient memory for map construction
  */
-int32_t HashMapInit(HashMap **ppObj);
+HashMap* HashMapInit();
 
 /**
  * @brief The destructor for HashMap.
  *
- * If the custom resource clean method is set, it also runs the clean method
- * for each pair.
- *
- * @param ppObj         The double pointer to the to be destructed map
+ * @param obj           The pointer to the to be destructed map
  */
-void HashMapDeinit(HashMap **ppObj);
+void HashMapDeinit(HashMap* obj);
 
 /**
  * @brief Insert a key value pair into the map.
  *
- * This function inserts a key value pair into the map. If the hash key of the
- * designated pair is the same with a certain one stored in the map, that pair
- * will be replaced. Also, if the custom resource clean method is set, it runs
- * the resource clean method for the replaced pair.
+ * This function inserts a key value pair into the map. If the designated key is
+ * equal to a certain one stored in the map, the existing pair will be replaced.
+ * Also, the cleanup functions are invoked for that replaced pair.
  *
  * @param self          The pointer to HashMap structure
- * @param pPair         The pointer to the designated pair
- * @param size          Key size in bytes
+ * @param key           The designated key
+ * @param value         The designated value
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NOMEM    Insufficient memory for map extension
- * @retval ERR_KEYSIZE  Invalid key size
+ * @retval true         The pair is successfully inserted
+ * @retval false        The pair cannot be inserted due to insufficient memory
  */
-int32_t HashMapPut(HashMap *self, Pair *pPair, size_t size);
+bool HashMapPut(HashMap* self, void* key, void* value);
 
 /**
  * @brief Retrieve the value corresponding to the designated key.
  *
- * This function retrieves the value corresponding to the designated key from
- * the map. If the key can be found, the value will be returned by the fourth
- * parameter. Otherwise, the error code is returned and the fourth parameter is
- * updated with NULL.
- *
  * @param self          The pointer to HashMap structure
  * @param key           The designated key
- * @param size          Key size in bytes
- * @param pValue        The pointer to the returned value
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NODATA   No map entry can be found
- * @retval ERR_GET      Invalid parameter to store returned value
- * @retval ERR_KEYSIZE  Invalid key size
- *
- * @note The key should be the pointer to the data you plan to hash for.
+ * @retval value        The corresponding value
+ * @retval NULL         The key cannot be found
  */
-int32_t HashMapGet(HashMap *self, Key key, size_t size, Value *pValue);
+void* HashMapGet(HashMap* self, void* key);
 
 /**
  * @brief Check if the map contains the designated key.
  *
  * @param self          The pointer to HashMap structure
  * @param key           The designated key
- * @param size          Key size in bytes
  *
- * @retval SUCC         The key can be found
- * @retval NOKEY        The key cannot be found
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_KEYSIZE  Invalid key size
- *
- * @note The key should be the pointer to the data you plan to hash for.
+ * @retval true         The key can be found
+ * @retval false        The key cannot be found
  */
-int32_t HashMapFind(HashMap *self, Key key, size_t size);
+bool HashMapFind(HashMap* self, void* key);
 
 /**
- * @brief Delete the key value pair corresponding to the designated key.
+ * @brief Remove the key value pair corresponding to the designated key.
  *
- * This function deletes the key value pair corresponding to the designated key.
- * If the custom resource clean method is set, it also runs the clean method for
- * the deleted pair.
+ * This function removes the key value pair corresponding to the designated key.
+ * Also, the cleanup functions are invoked for that removed pair.
  *
  * @param self          The pointer to HashMap structure
  * @param key           The designated key
- * @param size          Key size in bytes
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NODATA   No map entry can be found
- * @retval ERR_KEYSIZE  Invalid key size
- *
- * @note The key should be the pointer to the data you plan to hash for.
+ * @retval true         The pair is successfully removed
+ * @retval false        The key cannot be found
  */
-int32_t HashMapRemove(HashMap *self, Key key, size_t size);
+bool HashMapRemove(HashMap* self, void* key);
 
 /**
  * @brief Return the number of stored key value pairs.
  *
  * @param self          The pointer to HashMap structure
  *
- * @return              The number of stored pairs
- * @retval ERR_NOINIT   Uninitialized container
+ * @retval size         The number of stored pairs
  */
-int32_t HashMapSize(HashMap *self);
+unsigned HashMapSize(HashMap* self);
 
 /**
- * @brief Iterate through the map to retrieve each key value pair.
- *
- * Before iterating through the map, it is necessary to pass:
- *  - bReset = true
- *  - pPair = NULL
- * for iterator initialization.
- *
- * After initialization, you can pass:
- *  - bReset = false
- *  - pPair = the pointer to get the returned pair at each iteration.
+ * @brief Initialize the map iterator.
  *
  * @param self          The pointer to HashMap structure
- * @param bReset        The knob to restart the iteration
- * @param ppPair        The double pointer to the returned pair
- *
- * @retval SUCC         Iterator initialized successfully
- * @retval CONTINUE     Iteration in progress
- * @retval END          Iteration terminiated
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_GET      Invalid parameter to store returned pair
- *
- * @note Please do not insert or delete pairs during map traversal
  */
-int32_t HashMapIterate(HashMap *self, bool bReset, Pair **ppPair);
+void HashMapFirst(HashMap* self);
 
 /**
- * @brief Set the custom key value pair resource clean method.
+ * @brief Get the key value pair pointed by the iterator and advance the iterator.
  *
  * @param self          The pointer to HashMap structure
- * @param pFunc         The function pointer to the custom method
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
+ * @retval ptr_pair     The pointer to the current key value pair
+ * @retval NULL         The map end is reached
  */
-int32_t HashMapSetDestroy(HashMap *self, void (*pFunc) (Pair*));
+Pair* HashMapNext(HashMap* self);
 
 /**
  * @brief Set the custom hash function.
  *
- * The default hash function is HashMurMur32.
+ * By default, the hash function is HashMurMur32.
  *
  * @param self          The pointer to HashMap structure
- * @param pFunc         The function pointer to the custom method
- *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
+ * @param func          The custom function
  */
-int32_t HashMapSetHash(HashMap *self, uint32_t (*pFunc) (Key, size_t));
+void HashMapSetHash(HashMap* self, HashMapHash func);
+
+/**
+ * @brief Set the custom key comparison function.
+ *
+ * By default, key is treated as integer.
+ *
+ * @param self          The pointer to HashMap structure
+ * @param func          The custom function
+ */
+void HashMapSetCompare(HashMap* self, HashMapCompare func);
+
+/**
+ * @brief Set the custom key cleanup function.
+ *
+ * By default, no cleanup operation for key.
+ *
+ * @param self          The pointer to HashMap structure
+ * @param func          The custom function
+ */
+void HashMapSetCleanKey(HashMap* self, HashMapCleanKey func);
+
+/**
+ * @brief Set the custom value cleanup function.
+ *
+ * By default, no cleanup operation for value.
+ *
+ * @param self          The pointer to HashMap structure
+ * @param func          The custom function
+ */
+void HashMapSetCleanValue(HashMap* self, HashMapCleanValue func);
 
 #ifdef __cplusplus
 }
