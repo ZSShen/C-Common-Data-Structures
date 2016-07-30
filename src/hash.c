@@ -54,3 +54,14 @@ unsigned HashMurMur32(void* key, size_t size)
 
     return hash;
 }
+
+unsigned HashDjb2(char* key)
+{
+    unsigned hash = 5381;
+    int c;
+
+    while (c = *key++)
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+    return hash;
+}
