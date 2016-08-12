@@ -5,17 +5,17 @@
 
 ## **Container Category**
  + Sequential Container
-   + **Vector** --- The dynamically growable array
-   + **LinkedList** --- The doubly linked list
+   + **Vector** --- The dynamically growable array (under API refinement)  
+   + **LinkedList** --- The doubly linked list (under API refinement)  
  + Associative Container
-   + **TreeMap** --- The ordered map to store key value pairs
+   + **TreeMap** --- The ordered map to store key value pairs (under API refinement)  
    + **HashMap** --- The unordered map to store key value pairs
-   + **HashSet** --- The unordered set to store unique elements
-   + **Trie** --- The string dictionary
+   + **HashSet** --- The unordered set to store unique elements (under API refinement)  
+   + **Trie** --- The string dictionary (under API refinement)  
  + Simple Collection Container
-   + **Queue** --- The FIFO queue
-   + **Stack** --- The LIFO stack
-   + **PriorityQueue** --- The queue to maintain priority ordering for elements
+   + **Queue** --- The FIFO queue (under API refinement)  
+   + **Stack** --- The LIFO stack (under API refinement)  
+   + **PriorityQueue** --- The queue to maintain priority ordering for elements (under API refinement)  
 
 ## **Installation**
 **This section illustrates how to install LibCDS to your working directory.**
