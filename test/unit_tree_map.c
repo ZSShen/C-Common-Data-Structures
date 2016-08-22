@@ -382,6 +382,124 @@ void TestReverseIterate()
     TreeMapDeinit(map);
 }
 
+void TestPutDupText()
+{
+    char buf[SIZE_TNY_TEST];
+    char* keys[SIZE_TNY_TEST];
+    TreeMap* map = TreeMapInit();
+    map->set_compare(map, CompareKey);
+    map->set_clean_key(map, CleanKey);
+    map->set_clean_value(map, CleanValue);
+
+    int i;
+    for (i = 0 ; i < SIZE_TNY_TEST ; ++i) {
+        snprintf(buf, SIZE_TNY_TEST, "key -> %d", i);
+        keys[i] = strdup(buf);
+        Employ* employ = (Employ*)malloc(sizeof(Employ));
+        employ->year = i;
+        employ->level = i;
+        employ->id = i;
+        map->put(map, (void*)keys[i], (void*)employ);
+    }
+
+    /* Insert the new key value pairs with the same key set. */
+    for (i = 0 ; i < SIZE_TNY_TEST ; ++i) {
+        snprintf(buf, SIZE_TNY_TEST, "key -> %d", i);
+        keys[i] = strdup(buf);
+        Employ* employ = (Employ*)malloc(sizeof(Employ));
+        employ->year = SIZE_TNY_TEST - i;
+        employ->level = SIZE_TNY_TEST - i;
+        employ->id = SIZE_TNY_TEST - i;
+        CU_ASSERT(map->put(map, (void*)keys[i], (void*)employ) == true);
+    }
+
+    /* Now the values of the existing pairs should be replaced. */
+    for (i = 0 ; i < SIZE_TNY_TEST ; ++i) {
+        Employ* employ = map->get(map, (void*)keys[i]);
+        CU_ASSERT_EQUAL(SIZE_TNY_TEST - i, employ->year);
+        CU_ASSERT_EQUAL(SIZE_TNY_TEST - i, employ->level);
+        CU_ASSERT_EQUAL(SIZE_TNY_TEST - i, employ->id);
+    }
+
+    TreeMapDeinit(map);
+}
+
+void TestRemoveTxt()
+{
+    char buf[SIZE_TNY_TEST];
+    char* keys[SIZE_TNY_TEST];
+    TreeMap* map = TreeMapInit();
+    map->set_compare(map, CompareKey);
+    map->set_clean_key(map, CleanKey);
+    map->set_clean_value(map, CleanValue);
+
+    int i;
+    for (i = 0 ; i < SIZE_TNY_TEST ; ++i) {
+        snprintf(buf, SIZE_TNY_TEST, "key -> %d", i);
+        keys[i] = strdup(buf);
+        Employ* employ = (Employ*)malloc(sizeof(Employ));
+        employ->year = i;
+        employ->level = i;
+        employ->id = i;
+        map->put(map, (void*)keys[i], (void*)employ);
+    }
+
+    /* Remove the first half of the key value pairs. */
+    for (i = 0 ; i < SIZE_TNY_TEST >> 1 ; ++i)
+        CU_ASSERT(map->remove(map, (void*)keys[i]) == true);
+
+    /* Querying for the keys that are already removed should fail. */
+    for (i = 0 ; i < SIZE_TNY_TEST >> 1 ; ++i) {
+        snprintf(buf, SIZE_TNY_TEST, "key -> %d", i);
+        CU_ASSERT(map->remove(map, (void*)buf) == false);
+        CU_ASSERT(map->find(map, (void*)buf) == false);
+    }
+
+    /* Querying for the keys that still exist should success. */
+    for (i = SIZE_TNY_TEST >> 1 ; i < SIZE_TNY_TEST ; ++i)
+        CU_ASSERT(map->find(map, (void*)keys[i]) == true);
+
+    TreeMapDeinit(map);
+}
+
+void TestBulkTxt()
+{
+    char buf[SIZE_MID_TEST];
+    char* keys[SIZE_MID_TEST];
+    TreeMap* map = TreeMapInit();
+    map->set_compare(map, CompareKey);
+    map->set_clean_key(map, CleanKey);
+    map->set_clean_value(map, CleanValue);
+
+    int i;
+    for (i = 0 ; i < SIZE_MID_TEST ; ++i) {
+        snprintf(buf, SIZE_MID_TEST, "key -> %d", i);
+        keys[i] = strdup(buf);
+        Employ* employ = (Employ*)malloc(sizeof(Employ));
+        employ->year = i;
+        employ->level = i;
+        employ->id = i;
+        map->put(map, (void*)keys[i], (void*)employ);
+    }
+
+    /* Remove the first half of the key value pairs. */
+    for (i = 0 ; i < SIZE_MID_TEST >> 1 ; ++i)
+        CU_ASSERT(map->remove(map, (void*)keys[i]) == true);
+
+    /* Querying for the keys that are already removed should fail. */
+    for (i = 0 ; i < SIZE_MID_TEST >> 1 ; ++i) {
+        snprintf(buf, SIZE_MID_TEST, "key -> %d", i);
+        CU_ASSERT(map->remove(map, (void*)buf) == false);
+        CU_ASSERT(map->find(map, (void*)buf) == false);
+    }
+
+    /* Querying for the keys that still exist should success. */
+    for (i = SIZE_MID_TEST >> 1 ; i < SIZE_MID_TEST ; ++i)
+        CU_ASSERT(map->find(map, (void*)keys[i]) == true);
+
+    TreeMapDeinit(map);
+}
+
 
 /*-----------------------------------------------------------------------------*
  *                      The driver for TreeMap unit test                       *
@@ -415,6 +533,24 @@ bool AddSuite()
             return false;
 
         unit = CU_add_test(suite, "Reverse Iterator", TestReverseIterate);
+        if (!unit)
+            return false;
+    }
+    {
+        /* Test its robustness to maintain complex data types and large data set. */
+        CU_pSuite suite = CU_add_suite("Complex Data Maintenance", NULL, NULL);
+        if (!suite)
+            return false;
+
+        CU_pTest unit = CU_add_test(suite, "Pair Replacement", TestPutDupText);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Text Remove and Garbage Collection", TestRemoveTxt);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Bulk Text Maintenance", TestBulkTxt);
         if (!unit)
             return false;
     }

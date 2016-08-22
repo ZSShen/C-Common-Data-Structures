@@ -600,6 +600,9 @@ void _TreeMapDeinit(TreeMapData* data)
     if (data->root_ == null)
         return;
 
+    TreeMapCleanKey func_clean_key = data->func_clean_key_;
+    TreeMapCleanValue func_clean_val = data->func_clean_val_;
+
     char direct = DOWN_LEFT;
     TreeNode* curr = data->root_;
     while (direct != STOP) {
@@ -621,6 +624,11 @@ void _TreeMapDeinit(TreeMapData* data)
                 direct = STOP;
             else
                 direct = (temp == curr->left_)? UP_LEFT : UP_RIGHT;
+
+            if (func_clean_key)
+                func_clean_key(temp->pair_.key);
+            if (func_clean_val)
+                func_clean_val(temp->pair_.value);
             free(temp);
             continue;
         }
@@ -638,6 +646,11 @@ void _TreeMapDeinit(TreeMapData* data)
                 direct = STOP;
             else
                 direct = (temp == curr->left_)? UP_LEFT : UP_RIGHT;
+
+            if (func_clean_key)
+                func_clean_key(temp->pair_.key);
+            if (func_clean_val)
+                func_clean_val(temp->pair_.value);
             free(temp);
             continue;
         }
@@ -648,8 +661,12 @@ void _TreeMapDeinit(TreeMapData* data)
             direct = STOP;
         else
             direct = (temp == curr->left_)? UP_LEFT : UP_RIGHT;
+
+        if (func_clean_key)
+            func_clean_key(temp->pair_.key);
+        if (func_clean_val)
+            func_clean_val(temp->pair_.value);
         free(temp);
-        continue;
     }
 
     return;
