@@ -1,86 +1,119 @@
+/**
+ *   The MIT License (MIT)
+ *   Copyright (C) 2016 ZongXian Shen <andy.zsshen@gmail.com>
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *   IN THE SOFTWARE.
+ */
+
 #include "container/tree_map.h"
 
 
 /*===========================================================================*
  *                        The container private data                         *
  *===========================================================================*/
+static const char DIRECT_LEFT = 0;
+static const char DIRECT_RIGHT = 1;
+
+static const char COLOR_RED = 0;
+static const char COLOR_BLACK = 1;
+
+static const char STOP = 0;
+static const char DOWN_LEFT = 1;
+static const char DOWN_RIGHT = 2;
+static const char UP_LEFT = 3;
+static const char UP_RIGHT = 4;
+
+
 typedef struct _TreeNode {
-    bool bColor;
-    Pair *pPair;
-    struct _TreeNode *pParent;
-    struct _TreeNode *pLeft;
-    struct _TreeNode *pRight;
+    char color_;
+    Pair pair_;
+    struct _TreeNode* parent_;
+    struct _TreeNode* left_;
+    struct _TreeNode* right_;
 } TreeNode;
 
 struct _TreeMapData {
-    bool bEnd_;
-    int32_t iSize_;
-    int32_t iTop_;
-    TreeNode *pRoot_;
-    TreeNode *pNull_;
-    TreeNode *pIter_;
-    TreeNode **pStack_;
-    int32_t (*pCompare_) (Key, Key);
-    void (*pDestroy_) (Pair*);
+    char iter_direct_;
+    int size_;
+    TreeNode* root_;
+    TreeNode* null_;
+    TreeNode* iter_node_;
+    TreeMapCompare func_cmp_;
+    TreeMapCleanKey func_clean_key_;
+    TreeMapCleanValue func_clean_val_;
 };
-
-#define DIRECT_LEFT      (0)
-#define DIRECT_RIGHT     (1)
-
-#define COLOR_RED        (0)
-#define COLOR_BLACK      (1)
 
 
 /*===========================================================================*
  *                  Definition for internal operations                       *
  *===========================================================================*/
+#define likely(x)       __builtin_expect(!!(x), 1)
+#define unlikely(x)     __builtin_expect(!!(x), 0)
+
 /**
  * @brief Traverse all the tree nodes and clean the allocated resource.
  *
- * If the custom resource clean method is set, it also runs the clean method for
- * the pair stored in each node.
- *
- * @param pData         The pointer to the map private data
+ * @param data          The pointer to the map private data
  */
-void _TreeMapDeinit(TreeMapData *pData);
+void _TreeMapDeinit(TreeMapData* data);
 
 /**
  * @brief Return the node having the maximal order in the subtree rooted by the
  * designated node. The node order is determined by its stored key.
  *
- * @param pCurr         The pointer to the designated node
+ * @param curr          The pointer to the designated node
  *
- * @return              The pointer to the returned node or NULL
+ * @retval node         The target node
+ * @retval null         The subtree is empty
  */
-TreeNode* _TreeMapMaximal(TreeNode *pNull, TreeNode *pCurr);
+TreeNode* _TreeMapMaximal(TreeNode* null, TreeNode* curr);
 
 /**
  * @brief Return the node having the minimal order in the subtree rooted by the
  * designated node. The node order is determined by its stored key.
  *
- * @param pCurr         The pointer to the designated node
+ * @param curr          The pointer to the designated node
  *
- * @return              The pointer to the returned node or NULL
+ * @retval node         The target node
+ * @retval null         The subtree is empty
  */
-TreeNode* _TreeMapMinimal(TreeNode *pNull, TreeNode *pCurr);
+TreeNode* _TreeMapMinimal(TreeNode* null, TreeNode* curr);
 
 /**
  * @brief Return the immediate successor of the designated node.
  *
- * @param pCurr         The pointer to the designated node
+ * @param curr          The pointer to the designated node
  *
- * @return              The pointer to the returned node or NULL
+ * @retval node         The target node
+ * @retval null         The tree is empty
  */
-TreeNode* _TreeMapSuccessor(TreeNode *pNull, TreeNode *pCurr);
+TreeNode* _TreeMapSuccessor(TreeNode* null, TreeNode* curr);
 
 /**
  * @brief Return the immediate predecessor of the designated node.
  *
- * @param pCurr         The pointer to the designated node
+ * @param curr          The pointer to the designated node
  *
- * @return              The pointer to the returned node or NULL
+ * @retval node         The target node
+ * @retval null         The tree is empty
  */
-TreeNode* _TreeMapPredecessor(TreeNode *pNull, TreeNode *pCurr);
+TreeNode* _TreeMapPredecessor(TreeNode* null, TreeNode* curr);
 
 /**
  * @brief Make right rotation for the subtree rooted by the designated node.
@@ -88,10 +121,10 @@ TreeNode* _TreeMapPredecessor(TreeNode *pNull, TreeNode *pCurr);
  * After rotation, the designated node will be the right child of its original
  * left child.
  *
- * @param pData         The pointer to the tree private data
- * @param pCurr         The pointer to the designated node
+ * @param data          The pointer to the tree private data
+ * @param curr          The pointer to the designated node
  */
-void _TreeMapRightRotate(TreeMapData *pData, TreeNode *pCurr);
+void _TreeMapRightRotate(TreeMapData* data, TreeNode* curr);
 
 /**
  * @brief Make left rotation for the subtree rooted by the designated node.
@@ -99,616 +132,629 @@ void _TreeMapRightRotate(TreeMapData *pData, TreeNode *pCurr);
  * After rotation, the designated node will be the left child of its original
  * right child.
  *
- * @param pData         The pointer to the tree private data
- * @param pCurr         The pointer to the designated node
+ * @param data          The pointer to the tree private data
+ * @param curr          The pointer to the designated node
  */
-void _TreeMapLeftRotate(TreeMapData *pData, TreeNode *pCurr);
+void _TreeMapLeftRotate(TreeMapData* data, TreeNode* curr);
 
 /**
  * @brief Maintain the red black tree property after node insertion.
  *
- * @param pData         The pointer to the tree private data
- * @param pCurr         The pointer to the designated node
+ * @param data          The pointer to the tree private data
+ * @param curr          The pointer to the designated node
  */
-void _TreeMapInsertFixup(TreeMapData *pData, TreeNode *pCurr);
+void _TreeMapInsertFixup(TreeMapData* data, TreeNode* curr);
 
 /**
  * @brief Maintain the red black tree property after node deletion.
  *
- * @param pData         The pointer to the tree private data
- * @param pCurr         The pointer to the designated node
+ * @param data          The pointer to the tree private data
+ * @param curr          The pointer to the designated node
  */
-void _TreeMapDeleteFixup(TreeMapData *pData, TreeNode *pCurr);
+void _TreeMapDeleteFixup(TreeMapData* data, TreeNode* curr);
 
 /**
  * @brief Get the node which stores the key having the same order with the
  * designated one.
  *
- * @param pData         The pointer to tree private data
+ * @param data          The pointer to tree private data
  * @param key           The designated key
  *
- * @return              The pointer to the returned node or NULL
+ * @retval node         The target node
+ * @retval NULL         The key cannot be found
  */
-TreeNode* _TreeMapSearch(TreeMapData *pData, Key key);
+TreeNode* _TreeMapSearch(TreeMapData* data, void* key);
 
 /**
- * @brief The default key comparison method.
+ * @brief The default hash key comparison function.
  *
- * @param keySrc         The source key
- * @param keyTge         The target key
+ * @param lhs           The source key
+ * @param rhs           The target key
  *
- * @retval 1             The source key has the larger order
- * @retval 0             Both the keys have the same order
- * @retval -1            The source key has the smaller order
+ * @retval  1           The source key should go after the target one.
+ * @retval  0           The source key is equal to the target one.
+ * @retval -1           The source key should go before the target one.
  */
-int32_t _TreeMapCompare(Key keySrc, Key keyTge);
-
-/**
- * @brief The default resource clean method for a key value pair.
- *
- * @param pPair          The pointer to the designated pair
- */
-void _TreeMapDestroy(Pair *pPair);
-
-
-#define CHECK_INIT(self)                                                        \
-            do {                                                                \
-                if (!self)                                                      \
-                    return ERR_NOINIT;                                          \
-                if (!(self->pData))                                             \
-                    return ERR_NOINIT;                                          \
-                if (!(self->pData->pNull_))                                     \
-                    return ERR_NOINIT;                                          \
-            } while (0);
+int _TreeMapCompare(void* lhs, void* rhs);
 
 
 /*===========================================================================*
  *               Implementation for the exported operations                  *
  *===========================================================================*/
-int32_t TreeMapInit(TreeMap **ppObj)
+TreeMap* TreeMapInit()
 {
-    *ppObj = (TreeMap*)malloc(sizeof(TreeMap));
-    if (!(*ppObj))
-        return ERR_NOMEM;
-    TreeMap *pObj = *ppObj;
+    TreeMap* obj = (TreeMap*)malloc(sizeof(TreeMap));
+    if (unlikely(!obj))
+        return NULL;
 
-    pObj->pData = (TreeMapData*)malloc(sizeof(TreeMapData));
-    if (!(pObj->pData)) {
-        free(*ppObj);
-        *ppObj = NULL;
-        return ERR_NOMEM;
+    TreeMapData* data = (TreeMapData*)malloc(sizeof(TreeMapData));
+    if (unlikely(!data)) {
+        free(obj);
+        return NULL;
     }
-    TreeMapData *pData = pObj->pData;
 
     /* Create the dummy node representing the NULL pointer of the tree. */
-    pData->pNull_ = (TreeNode*)malloc(sizeof(TreeNode));
-    if (!(pData->pNull_)) {
-        free(pObj->pData);
-        free(*ppObj);
-        *ppObj = NULL;
-        return ERR_NOMEM;
+    TreeNode* null = (TreeNode*)malloc(sizeof(TreeNode));
+    if (unlikely(!null)) {
+        free(data);
+        free(obj);
+        return NULL;
     }
-    pData->pNull_->bColor = COLOR_BLACK;
-    pData->pNull_->pPair = NULL;
-    pData->pNull_->pParent = pData->pNull_;
-    pData->pNull_->pRight = pData->pNull_;
-    pData->pNull_->pLeft = pData->pNull_;
 
-    pObj->pData->iSize_ = 0;
-    pObj->pData->pRoot_ = pData->pNull_;
-    pObj->pData->pCompare_ = _TreeMapCompare;
-    pObj->pData->pDestroy_ = NULL;
-    pObj->pData->pStack_ = NULL;
+    null->color_ = COLOR_BLACK;
+    null->parent_ = NULL;
+    null->parent_ = null;
+    null->right_ = null;
+    null->left_ = null;
 
-    pObj->put = TreeMapPut;
-    pObj->get = TreeMapGet;
-    pObj->find = TreeMapFind;
-    pObj->remove = TreeMapRemove;
-    pObj->size = TreeMapSize;
-    pObj->minimum = TreeMapMinimum;
-    pObj->maximum = TreeMapMaximum;
-    pObj->predecessor = TreeMapPredecessor;
-    pObj->successor = TreeMapSuccessor;
-    pObj->iterate = TreeMapIterate;
-    pObj->reverse_iterate = TreeMapReverseIterate;
-    pObj->set_compare = TreeMapSetCompare;
-    pObj->set_destroy = TreeMapSetDestroy;
+    data->size_ = 0;
+    data->null_ = null;
+    data->root_ = null;
+    data->func_cmp_ = _TreeMapCompare;
+    data->func_clean_key_ = NULL;
+    data->func_clean_val_ = NULL;
 
-    return SUCC;
+    obj->data = data;
+    obj->put = TreeMapPut;
+    obj->get = TreeMapGet;
+    obj->find = TreeMapFind;
+    obj->remove = TreeMapRemove;
+    obj->size = TreeMapSize;
+    obj->minimum = TreeMapMinimum;
+    obj->maximum = TreeMapMaximum;
+    obj->predecessor = TreeMapPredecessor;
+    obj->successor = TreeMapSuccessor;
+    obj->first = TreeMapFirst;
+    obj->next = TreeMapNext;
+    obj->reverse_next = TreeMapReverseNext;
+    obj->set_compare = TreeMapSetCompare;
+    obj->set_clean_key = TreeMapSetCleanKey;
+    obj->set_clean_value = TreeMapSetCleanValue;
+
+    return obj;
 }
 
-void TreeMapDeinit(TreeMap **ppObj)
+void TreeMapDeinit(TreeMap* obj)
 {
-    if (!(*ppObj))
-        goto EXIT;
+    if (unlikely(!obj))
+        return;
 
-    TreeMap *pObj = *ppObj;
-    if (!(pObj->pData))
-        goto FREE_MAP;
-
-    TreeMapData *pData = pObj->pData;
-    if (!(pData->pNull_))
-        goto FREE_DATA;
-
-    _TreeMapDeinit(pData);
-    free(pData->pNull_);
-    if (pData->pStack_)
-        free(pData->pStack_);
-
-FREE_DATA:
-    free(pObj->pData);
-FREE_MAP:
-    free(*ppObj);
-    *ppObj = NULL;
-EXIT:
+    TreeMapData* data = obj->data;
+    _TreeMapDeinit(data);
+    free(data->null_);
+    free(data);
+    free(obj);
     return;
 }
 
-int32_t TreeMapPut(TreeMap *self, Pair *pPair)
+bool TreeMapPut(TreeMap* self, void* key, void* value)
 {
-    CHECK_INIT(self);
+    TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));
+    if (unlikely(!node))
+        return false;
 
-    bool bDirect;
-    int32_t iOrder;
-    TreeNode *pNew, *pCurr, *pParent;
-    pNew = (TreeNode*)malloc(sizeof(TreeNode));
-    if (!pNew)
-        return ERR_NOMEM;
-    TreeMapData *pData = self->pData;
-    pNew->pPair = pPair;
-    pNew->bColor = COLOR_RED;
-    pNew->pParent = pData->pNull_;
-    pNew->pLeft = pData->pNull_;
-    pNew->pRight = pData->pNull_;
+    TreeMapData* data = self->data;
+    TreeNode* null = data->null_;
+    node->pair_.key = key;
+    node->pair_.value = value;
+    node->color_ = COLOR_RED;
+    node->parent_ = null;
+    node->left_ = null;
+    node->right_ = null;
 
-    pParent = pData->pNull_;
-    pCurr = pData->pRoot_;
-    while (pCurr != pData->pNull_) {
-        pParent = pCurr;
-        iOrder = pData->pCompare_(pPair->key, pCurr->pPair->key);
-        if (iOrder > 0) {
-            pCurr = pCurr->pRight;
-            bDirect = DIRECT_RIGHT;
+    TreeMapCompare func_cmp = data->func_cmp_;
+    TreeNode* parent = null;
+    TreeNode* curr = data->root_;
+    char direct;
+    while (curr != null) {
+        parent = curr;
+        int order = func_cmp(key, curr->pair_.key);
+        if (order > 0) {
+            curr = curr->right_;
+            direct = DIRECT_RIGHT;
         }
-        else if (iOrder < 0) {
-            pCurr = pCurr->pLeft;
-            bDirect = DIRECT_LEFT;
+        else if (order < 0) {
+            curr = curr->left_;
+            direct = DIRECT_LEFT;
         }
         else {
             /* Conflict with the already stored key value pair. */
-            free(pNew);
-            if (pData->pDestroy_)
-                pData->pDestroy_(pCurr->pPair);
-            pCurr->pPair = pPair;
-            return SUCC;
+            free(node);
+            if (data->func_clean_key_)
+                data->func_clean_key_(curr->pair_.key);
+            if (data->func_clean_val_)
+                data->func_clean_val_(curr->pair_.value);
+
+            curr->pair_.key = key;
+            curr->pair_.value = value;
+            return true;
         }
     }
 
     /* Arrive at the proper position. */
-    pNew->pParent = pParent;
-    if (pParent != pData->pNull_) {
-        if (bDirect == DIRECT_LEFT)
-            pParent->pLeft = pNew;
+    node->parent_ = parent;
+    if (parent != null) {
+        if (direct == DIRECT_LEFT)
+            parent->left_ = node;
         else
-            pParent->pRight = pNew;
+            parent->right_ = node;
     } else
-        self->pData->pRoot_ = pNew;
+        data->root_ = node;
 
-    /* Increase the size. */
-    pData->iSize_++;
+    data->size_++;
 
     /* Maintain the red black tree structure. */
-    _TreeMapInsertFixup(self->pData, pNew);
+    _TreeMapInsertFixup(data, node);
 
-    return SUCC;
+    return true;
 }
 
-int32_t TreeMapGet(TreeMap *self, Key key, Value *pValue)
+void* TreeMapGet(TreeMap* self, void* key)
 {
-    CHECK_INIT(self);
-
-    if (!pValue)
-        return ERR_GET;
-    *pValue = NULL;
-
-    TreeNode *pFind;
-    pFind = _TreeMapSearch(self->pData, key);
-    if (pFind != self->pData->pNull_) {
-        *pValue = pFind->pPair->value;
-        return SUCC;
-    }
-
-    *pValue = NULL;
-    return ERR_NODATA;
+    TreeNode* node = _TreeMapSearch(self->data, key);
+    if (node != self->data->null_)
+        return node->pair_.value;
+    return NULL;
 }
 
-int32_t TreeMapFind(TreeMap *self, Key key)
+bool TreeMapFind(TreeMap* self, void* key)
 {
-    CHECK_INIT(self);
-    TreeNode *pFind;
-    pFind = _TreeMapSearch(self->pData, key);
-    return (pFind != self->pData->pNull_)? SUCC : NOKEY;
+    TreeNode* node = _TreeMapSearch(self->data, key);
+    return (node != self->data->null_)? true : false;
 }
 
-int32_t TreeMapRemove(TreeMap *self, Key key)
+bool TreeMapRemove(TreeMap* self, void* key)
 {
-    CHECK_INIT(self);
+    TreeMapData* data = self->data;
+    TreeNode* null = data->null_;
+    TreeNode* curr = _TreeMapSearch(data, key);
+    if (curr == null)
+        return false;
 
-    TreeNode *pCurr, *pChild, *pSucc;
-    TreeMapData *pData = self->pData;
-    TreeNode *pNull = pData->pNull_;
-    pCurr = _TreeMapSearch(pData, key);
-    if (pCurr == pNull)
-        return ERR_NODATA;
-
-    bool bColor;
+    TreeNode* child;
+    char color;
     /* The specified node has no child. */
-    if ((pCurr->pLeft == pNull) && (pCurr->pRight == pNull)) {
-        if (pCurr->pParent != pNull) {
-            if (pCurr == pCurr->pParent->pLeft)
-                pCurr->pParent->pLeft = pNull;
+    if ((curr->left_ == null) && (curr->right_ == null)) {
+        if (curr->parent_ != null) {
+            if (curr == curr->parent_->left_)
+                curr->parent_->left_ = null;
             else
-                pCurr->pParent->pRight = pNull;
+                curr->parent_->right_ = null;
         } else
-            pData->pRoot_ = pNull;
+            data->root_ = null;
 
-        bColor = pCurr->bColor;
-        pChild = pNull;
-        pChild->pParent = pCurr->pParent;
-        if (pData->pDestroy_)
-            pData->pDestroy_(pCurr->pPair);
-        free(pCurr);
+        color = curr->color_;
+        child = null;
+        child->parent_ = curr->parent_;
+        if (data->func_clean_key_)
+            data->func_clean_key_(curr->pair_.key);
+        if (data->func_clean_val_)
+            data->func_clean_val_(curr->pair_.value);
+        free(curr);
     } else {
         /* The specified node has two children. */
-        if ((pCurr->pLeft != pNull) && (pCurr->pRight != pNull)) {
-            pSucc = _TreeMapSuccessor(pNull, pCurr);
+        if ((curr->left_ != null) && (curr->right_ != null)) {
+            TreeNode* succ = _TreeMapSuccessor(null, curr);
 
-            pChild = pSucc->pLeft;
-            if (pChild == pNull)
-                pChild = pSucc->pRight;
+            child = succ->left_;
+            if (child == null)
+                child = succ->right_;
 
-            pChild->pParent = pSucc->pParent;
+            child->parent_ = succ->parent_;
 
-            if (pSucc == pSucc->pParent->pLeft)
-                pSucc->pParent->pLeft = pChild;
+            if (succ == succ->parent_->left_)
+                succ->parent_->left_ = child;
             else
-                pSucc->pParent->pRight = pChild;
+                succ->parent_->right_ = child;
 
-            bColor = pSucc->bColor;
-            if (pData->pDestroy_)
-                pData->pDestroy_(pCurr->pPair);
-            pCurr->pPair = pSucc->pPair;
-            free(pSucc);
+            color = succ->color_;
+            if (data->func_clean_key_)
+                data->func_clean_key_(curr->pair_.key);
+            if (data->func_clean_val_)
+                data->func_clean_val_(curr->pair_.value);
+            curr->pair_.key = succ->pair_.key;
+            curr->pair_.value = succ->pair_.value;
+            free(succ);
         }
         /* The specified node has one child. */
         else {
-            pChild = pCurr->pLeft;
-            if (pChild == pNull)
-                pChild = pCurr->pRight;
+            child = curr->left_;
+            if (child == null)
+                child = curr->right_;
 
-            pChild->pParent = pCurr->pParent;
+            child->parent_ = curr->parent_;
 
-            if (pCurr->pParent != pNull) {
-                if (pCurr == pCurr->pParent->pLeft)
-                    pCurr->pParent->pLeft = pChild;
+            if (curr->parent_ != null) {
+                if (curr == curr->parent_->left_)
+                    curr->parent_->left_ = child;
                 else
-                    pCurr->pParent->pRight = pChild;
+                    curr->parent_->right_ = child;
             } else
-                pData->pRoot_ = pChild;
+                data->root_ = child;
 
-            bColor = pCurr->bColor;
-            if (pData->pDestroy_)
-                pData->pDestroy_(pCurr->pPair);
-            free(pCurr);
+            color = curr->color_;
+            if (data->func_clean_key_)
+                data->func_clean_key_(curr->pair_.key);
+            if (data->func_clean_val_)
+                data->func_clean_val_(curr->pair_.value);
+            free(curr);
         }
     }
 
     /* Decrease the size. */
-    pData->iSize_--;
+    data->size_--;
 
     /* Maintain the balanced tree structure. */
-    if (bColor == COLOR_BLACK)
-        _TreeMapDeleteFixup(pData, pChild);
+    if (color == COLOR_BLACK)
+        _TreeMapDeleteFixup(data, child);
 
-    return SUCC;
+    return true;
 }
 
-int32_t TreeMapSize(TreeMap *self)
+unsigned TreeMapSize(TreeMap* self)
 {
-    CHECK_INIT(self);
-    return self->pData->iSize_;
+    return self->data->size_;
 }
 
-int32_t TreeMapMinimum(TreeMap *self, Pair **ppPair)
+Pair* TreeMapMinimum(TreeMap* self)
 {
-    CHECK_INIT(self);
-    if (!ppPair)
-        return ERR_GET;
-
-    TreeMapData *pData = self->pData;
-    TreeNode *pFind = _TreeMapMinimal(pData->pNull_, pData->pRoot_);
-    if (pFind != pData->pNull_) {
-        *ppPair = pFind->pPair;
-        return SUCC;
-    }
-
-    *ppPair = NULL;
-    return ERR_IDX;
+    TreeNode* node = _TreeMapMinimal(self->data->null_, self->data->root_);
+    if (node != self->data->null_)
+        return &(node->pair_);
+    return NULL;
 }
 
-int32_t TreeMapMaximum(TreeMap *self, Pair **ppPair)
+Pair* TreeMapMaximum(TreeMap* self)
 {
-    CHECK_INIT(self);
-    if (!ppPair)
-        return ERR_GET;
-
-    TreeMapData *pData = self->pData;
-    TreeNode *pFind = _TreeMapMaximal(pData->pNull_, pData->pRoot_);
-    if (pFind != pData->pNull_) {
-        *ppPair = pFind->pPair;
-        return SUCC;
-    }
-
-    *ppPair = NULL;
-    return ERR_IDX;
+    TreeNode* node = _TreeMapMaximal(self->data->null_, self->data->root_);
+    if (node != self->data->null_)
+        return &(node->pair_);
+    return NULL;
 }
 
-int32_t TreeMapPredecessor(TreeMap *self, Key key, Pair **ppPair)
+Pair* TreeMapPredecessor(TreeMap* self, void* key)
 {
-    CHECK_INIT(self);
-    if (!ppPair)
-        return ERR_GET;
+    TreeNode* curr = _TreeMapSearch(self->data, key);
+    if (curr == self->data->null_)
+        return NULL;
 
-    TreeNode *pNull = self->pData->pNull_;
-    TreeNode *pCurr = _TreeMapSearch(self->pData, key);
-    if (pCurr == pNull)
-        return ERR_NODATA;
+    TreeNode* node = _TreeMapPredecessor(self->data->null_, curr);
+    if (node != self->data->null_)
+        return &(node->pair_);
 
-    TreeNode *pFind = _TreeMapPredecessor(pNull, pCurr);
-    if (pFind != pNull) {
-        *ppPair = pFind->pPair;
-        return SUCC;
-    }
-
-    *ppPair = NULL;
-    return ERR_NODATA;
+    return NULL;
 }
 
-int32_t TreeMapSuccessor(TreeMap *self, Key key, Pair **ppPair)
+Pair* TreeMapSuccessor(TreeMap* self, void* key)
 {
-    CHECK_INIT(self);
-    if (!ppPair)
-        return ERR_GET;
+    TreeNode* curr = _TreeMapSearch(self->data, key);
+    if (curr == self->data->null_)
+        return NULL;
 
-    TreeNode *pNull = self->pData->pNull_;
-    TreeNode *pCurr = _TreeMapSearch(self->pData, key);
-    if (pCurr == pNull)
-        return ERR_NODATA;
+    TreeNode* node = _TreeMapSuccessor(self->data->null_, curr);
+    if (node != self->data->null_)
+        return &(node->pair_);
 
-    TreeNode *pFind = _TreeMapSuccessor(pNull, pCurr);
-    if (pFind != pNull) {
-        *ppPair = pFind->pPair;
-        return SUCC;
-    }
-
-    *ppPair = NULL;
-    return ERR_NODATA;
+    return NULL;
 }
 
-int32_t TreeMapIterate(TreeMap *self, bool bReset, Pair **ppPair)
+void TreeMapFirst(TreeMap* self)
 {
-    CHECK_INIT(self);
+    self->data->iter_direct_ = DOWN_LEFT;
+    self->data->iter_node_ = self->data->root_;
+}
 
-    TreeMapData *pData = self->pData;
-    if (bReset) {
-        if (pData->pStack_)
-            free(pData->pStack_);
-        pData->pStack_ = (TreeNode**)malloc(sizeof(TreeNode*) * pData->iSize_);
-        if (!(pData->pStack_)) {
-            *ppPair = NULL;
-            return ERR_NOMEM;
-        }
-        pData->pIter_ = pData->pRoot_;
-        pData->iTop_ = 0;
-        pData->bEnd_ = false;
-        return SUCC;
-    }
+Pair* TreeMapNext(TreeMap* self)
+{
+    char direct = self->data->iter_direct_;
+    TreeNode* null = self->data->null_;
+    TreeNode* curr = self->data->iter_node_;
 
-    if (!ppPair)
-        return ERR_GET;
-
-    while (!(pData->bEnd_)) {
-        if (pData->pIter_ != pData->pNull_) {
-            if (pData->iTop_ == pData->iSize_) {
-                *ppPair = NULL;
-                return ERR_ITER;
+    while (curr != null) {
+        if (direct == DOWN_LEFT || direct == DOWN_RIGHT) {
+            if (curr->left_ != null) {
+                curr = curr->left_;
+                direct = DOWN_LEFT;
+                continue;
             }
-            pData->pStack_[pData->iTop_] = pData->pIter_;
-            pData->iTop_++;
-            pData->pIter_ = pData->pIter_->pLeft;
-        } else {
-            if (pData->iTop_ != 0) {
-                pData->iTop_--;
-                pData->pIter_ = pData->pStack_[pData->iTop_];
-                *ppPair = pData->pIter_->pPair;
-                pData->pIter_ = pData->pIter_->pRight;
-                return SUCC;
+
+            Pair* pair = &(curr->pair_);
+
+            if (curr->right_ != null) {
+                self->data->iter_node_ = curr->right_;
+                self->data->iter_direct_ = DOWN_RIGHT;
             } else {
-                pData->bEnd_ = true;
-                free(pData->pStack_);
-                pData->pStack_ = NULL;
+                TreeNode* temp = curr;
+                curr = curr->parent_;
+                self->data->iter_node_ = curr;
+                if (curr != null) {
+                    if (temp == curr->left_)
+                        self->data->iter_direct_ = UP_LEFT;
+                    else
+                        self->data->iter_direct_ = UP_RIGHT;
+                }
             }
+            return pair;
         }
-    }
 
-    *ppPair = NULL;
-    return END;
-}
+        if (direct == UP_LEFT) {
+            Pair* pair = &(curr->pair_);
 
-int32_t TreeMapReverseIterate(TreeMap *self, bool bReset, Pair **ppPair)
-{
-    CHECK_INIT(self);
-
-    TreeMapData *pData = self->pData;
-    if (bReset) {
-        if (pData->pStack_)
-            free(pData->pStack_);
-        pData->pStack_ = (TreeNode**)malloc(sizeof(TreeNode*) * pData->iSize_);
-        if (!(pData->pStack_)) {
-            *ppPair = NULL;
-            return END;
-        }
-        pData->pIter_ = pData->pRoot_;
-        pData->iTop_ = 0;
-        pData->bEnd_ = false;
-        return SUCC;
-    }
-
-    if (!ppPair)
-        return ERR_GET;
-
-    while (!(pData->bEnd_)) {
-        if (pData->pIter_ != pData->pNull_) {
-            if (pData->iTop_ == pData->iSize_) {
-                *ppPair = NULL;
-                return END;
-            }
-            pData->pStack_[pData->iTop_] = pData->pIter_;
-            pData->iTop_++;
-            pData->pIter_ = pData->pIter_->pRight;
-        } else {
-            if (pData->iTop_ != 0) {
-                pData->iTop_--;
-                pData->pIter_ = pData->pStack_[pData->iTop_];
-                *ppPair = pData->pIter_->pPair;
-                pData->pIter_ = pData->pIter_->pLeft;
-                return SUCC;
+            if (curr->right_ != null) {
+                self->data->iter_node_ = curr->right_;
+                self->data->iter_direct_ = DOWN_RIGHT;
             } else {
-                pData->bEnd_ = true;
-                free(pData->pStack_);
-                pData->pStack_ = NULL;
+                TreeNode* temp = curr;
+                curr = curr->parent_;
+                self->data->iter_node_ = curr;
+                if (curr != null) {
+                    if (temp == curr->left_)
+                        self->data->iter_direct_ = UP_LEFT;
+                    else
+                        self->data->iter_direct_ = UP_RIGHT;
+                }
             }
+            return pair;
+        }
+
+        TreeNode* temp = curr;
+        curr = curr->parent_;
+        if (curr != null) {
+            if (temp == curr->left_)
+                direct = UP_LEFT;
+            else
+                direct = UP_RIGHT;
         }
     }
 
-    *ppPair = NULL;
-    return END;
+    self->data->iter_node_ = null;
+    return NULL;
 }
 
-int32_t TreeMapSetCompare(TreeMap *self, int32_t (*pFunc) (Key, Key))
+Pair* TreeMapReverseNext(TreeMap* self)
 {
-    CHECK_INIT(self);
-    self->pData->pCompare_ = pFunc;
-    return SUCC;
+    char direct = self->data->iter_direct_;
+    TreeNode* null = self->data->null_;
+    TreeNode* curr = self->data->iter_node_;
+
+    while (curr != null) {
+        if (direct == DOWN_LEFT || direct == DOWN_RIGHT) {
+            if (curr->right_ != null) {
+                curr = curr->right_;
+                direct = DOWN_RIGHT;
+                continue;
+            }
+
+            Pair* pair = &(curr->pair_);
+
+            if (curr->left_ != null) {
+                self->data->iter_node_ = curr->left_;
+                self->data->iter_direct_ = DOWN_LEFT;
+            } else {
+                TreeNode* temp = curr;
+                curr = curr->parent_;
+                self->data->iter_node_ = curr;
+                if (curr != null) {
+                    if (temp == curr->left_)
+                        self->data->iter_direct_ = UP_LEFT;
+                    else
+                        self->data->iter_direct_ = UP_RIGHT;
+                }
+            }
+            return pair;
+        }
+
+        if (direct == UP_RIGHT) {
+            Pair* pair = &(curr->pair_);
+
+            if (curr->left_ != null) {
+                self->data->iter_node_ = curr->left_;
+                self->data->iter_direct_ = DOWN_LEFT;
+            } else {
+                TreeNode* temp = curr;
+                curr = curr->parent_;
+                self->data->iter_node_ = curr;
+                if (curr != null) {
+                    if (temp == curr->left_)
+                        self->data->iter_direct_ = UP_LEFT;
+                    else
+                        self->data->iter_direct_ = UP_RIGHT;
+                }
+            }
+            return pair;
+        }
+
+        TreeNode* temp = curr;
+        curr = curr->parent_;
+        if (curr != null) {
+            if (temp == curr->left_)
+                direct = UP_LEFT;
+            else
+                direct = UP_RIGHT;
+        }
+    }
+
+    self->data->iter_node_ = null;
+    return NULL;
 }
 
-int32_t TreeMapSetDestroy(TreeMap *self, void (*pFunc) (Pair*))
+void TreeMapSetCompare(TreeMap* self, TreeMapCompare func)
 {
-    CHECK_INIT(self);
-    self->pData->pDestroy_ = pFunc;
-    return SUCC;
+    self->data->func_cmp_ = func;
+}
+
+void TreeMapSetCleanKey(TreeMap* self, TreeMapCleanKey func)
+{
+    self->data->func_clean_key_ = func;
+}
+
+void TreeMapSetCleanValue(TreeMap* self, TreeMapCleanValue func)
+{
+    self->data->func_clean_val_ = func;
 }
 
 
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
-void _TreeMapDeinit(TreeMapData *pData)
+void _TreeMapDeinit(TreeMapData* data)
 {
-    TreeNode *pNull = pData->pNull_;
-    if (pData->pRoot_ == pNull)
+    TreeNode* null = data->null_;
+    if (data->root_ == null)
         return;
 
-    /* Simulate the stack and apply iterative post-order tree traversal. */
-    TreeNode ***stack = (TreeNode***)malloc(sizeof(TreeNode**) * pData->iSize_);
-    assert(stack != NULL);
+    TreeMapCleanKey func_clean_key = data->func_clean_key_;
+    TreeMapCleanValue func_clean_val = data->func_clean_val_;
 
-    int32_t iSize = 0;
-    stack[iSize++] = &(pData->pRoot_);
-    while (iSize > 0) {
-        TreeNode **ppCurr = stack[iSize - 1];
-        TreeNode *pCurr = *ppCurr;
-        if (pCurr->pLeft != pNull)
-            stack[iSize++] = &(pCurr->pLeft);
-        else if (pCurr->pRight != pNull)
-            stack[iSize++] = &(pCurr->pRight);
-        else {
-            if (pData->pDestroy_)
-                pData->pDestroy_(pCurr->pPair);
-            TreeNode *pParent = pCurr->pParent;
-            if (pCurr == pParent->pLeft)
-                pParent->pLeft = pNull;
+    char direct = DOWN_LEFT;
+    TreeNode* curr = data->root_;
+    while (direct != STOP) {
+        if (direct == DOWN_LEFT || direct == DOWN_RIGHT) {
+            if (curr->left_ != null) {
+                curr = curr->left_;
+                direct = DOWN_LEFT;
+                continue;
+            }
+            if (curr->right_ != null) {
+                curr = curr->right_;
+                direct = DOWN_RIGHT;
+                continue;
+            }
+
+            TreeNode* temp = curr;
+            curr = curr->parent_;
+            if (curr == null)
+                direct = STOP;
             else
-                pParent->pRight = pNull;
-            free(pCurr);
-            iSize--;
+                direct = (temp == curr->left_)? UP_LEFT : UP_RIGHT;
+
+            if (func_clean_key)
+                func_clean_key(temp->pair_.key);
+            if (func_clean_val)
+                func_clean_val(temp->pair_.value);
+            free(temp);
+            continue;
         }
+
+        if (direct == UP_LEFT) {
+            if (curr->right_ != null) {
+                curr = curr->right_;
+                direct = DOWN_RIGHT;
+                continue;
+            }
+
+            TreeNode* temp = curr;
+            curr = curr->parent_;
+            if (curr == null)
+                direct = STOP;
+            else
+                direct = (temp == curr->left_)? UP_LEFT : UP_RIGHT;
+
+            if (func_clean_key)
+                func_clean_key(temp->pair_.key);
+            if (func_clean_val)
+                func_clean_val(temp->pair_.value);
+            free(temp);
+            continue;
+        }
+
+        TreeNode* temp = curr;
+        curr = curr->parent_;
+        if (curr == null)
+            direct = STOP;
+        else
+            direct = (temp == curr->left_)? UP_LEFT : UP_RIGHT;
+
+        if (func_clean_key)
+            func_clean_key(temp->pair_.key);
+        if (func_clean_val)
+            func_clean_val(temp->pair_.value);
+        free(temp);
     }
 
-    free(stack);
     return;
 }
 
-TreeNode* _TreeMapMinimal(TreeNode *pNull, TreeNode *pCurr)
+TreeNode* _TreeMapMaximal(TreeNode* null, TreeNode* curr)
 {
-    TreeNode *pParent = pNull;
-    while (pCurr != pNull) {
-        pParent = pCurr;
-        pCurr = pCurr->pLeft;
+    TreeNode* parent = null;
+    while (curr != null) {
+        parent = curr;
+        curr = curr->right_;
     }
-    return pParent;
+    return parent;
 }
 
-TreeNode* _TreeMapMaximal(TreeNode *pNull, TreeNode *pCurr)
+TreeNode* _TreeMapMinimal(TreeNode* null, TreeNode* curr)
 {
-    TreeNode *pParent = pNull;
-    while (pCurr != pNull) {
-        pParent = pCurr;
-        pCurr = pCurr->pRight;
+    TreeNode* parent = null;
+    while (curr != null) {
+        parent = curr;
+        curr = curr->left_;
     }
-    return pParent;
+    return parent;
 }
 
-TreeNode* _TreeMapSuccessor(TreeNode *pNull, TreeNode *pCurr)
+TreeNode* _TreeMapSuccessor(TreeNode* null, TreeNode* curr)
 {
-    if (pCurr != pNull) {
+    if (curr != null) {
         /* Case 1: The minimal node in the non-null right subtree. */
-        if (pCurr->pRight != pNull)
-            pCurr = _TreeMapMinimal(pNull, pCurr->pRight);
+        if (curr->right_ != null)
+            curr = _TreeMapMinimal(null, curr->right_);
 
         /* Case 2: The ancestor which considers the designated node as the
            maximal node of its left subtree. */
         else {
-            while((pCurr->pParent != pNull) && (pCurr == pCurr->pParent->pRight))
-                pCurr = pCurr->pParent;
-            pCurr = pCurr->pParent;
+            while((curr->parent_ != null) && (curr == curr->parent_->right_))
+                curr = curr->parent_;
+            curr = curr->parent_;
         }
     }
-    return pCurr;
+    return curr;
 }
 
-TreeNode* _TreeMapPredecessor(TreeNode *pNull, TreeNode *pCurr)
+TreeNode* _TreeMapPredecessor(TreeNode* null, TreeNode* curr)
 {
-    if (pCurr != pNull) {
+    if (curr != null) {
         /* Case 1: The maximal node in the non-null left subtree. */
-        if (pCurr->pLeft != pNull)
-            pCurr = _TreeMapMaximal(pNull, pCurr->pLeft);
+        if (curr->left_ != null)
+            curr = _TreeMapMaximal(null, curr->left_);
 
         /* Case 2: The ancestor which considers the designated node as the
            minimal node of its right subtree. */
         else {
-            while((pCurr->pParent != pNull) && (pCurr == pCurr->pParent->pLeft))
-                pCurr = pCurr->pParent;
-            pCurr = pCurr->pParent;
+            while((curr->parent_ != null) && (curr == curr->parent_->left_))
+                curr = curr->parent_;
+            curr = curr->parent_;
         }
     }
-    return pCurr;
+    return curr;
 }
 
-void _TreeMapRightRotate(TreeMapData *pData, TreeNode *pCurr)
+void _TreeMapRightRotate(TreeMapData* data, TreeNode* curr)
 {
-    TreeNode *pNull = pData->pNull_;
-    TreeNode *pChild = pCurr->pLeft;
+    TreeNode* null = data->null_;
+    TreeNode* child = curr->left_;
     /**
      *  Right rotation for the current node denoted as y
      *     y          x
@@ -720,33 +766,33 @@ void _TreeMapRightRotate(TreeMapData *pData, TreeNode *pCurr)
 
     /* Let y link b as its left child.
        If b is not dummy node, let b link y as its parent. */
-    pCurr->pLeft = pChild->pRight;
-    if (pChild->pRight != pNull)
-        pChild->pRight->pParent = pCurr;
+    curr->left_ = child->right_;
+    if (child->right_ != null)
+        child->right_->parent_ = curr;
 
     /* Let x link y's parent as its parent.
        If y's parent is not dummy node, let it link x as its child. */
-    pChild->pParent = pCurr->pParent;
-    if (pCurr->pParent != pNull) {
-        if (pCurr == pCurr->pParent->pLeft)
-            pCurr->pParent->pLeft = pChild;
+    child->parent_ = curr->parent_;
+    if (curr->parent_ != null) {
+        if (curr == curr->parent_->left_)
+            curr->parent_->left_ = child;
         else
-            pCurr->pParent->pRight = pChild;
+            curr->parent_->right_ = child;
     } else
-        pData->pRoot_ = pChild;
+        data->root_ = child;
 
     /* Let y link x as its parent.
        And let x link y as its right child. */
-    pCurr->pParent = pChild;
-    pChild->pRight = pCurr;
+    curr->parent_ = child;
+    child->right_ = curr;
 
     return;
 }
 
-void _TreeMapLeftRotate(TreeMapData *pData, TreeNode *pCurr)
+void _TreeMapLeftRotate(TreeMapData* data, TreeNode* curr)
 {
-    TreeNode *pNull = pData->pNull_;
-    TreeNode *pChild = pCurr->pRight;
+    TreeNode* null = data->null_;
+    TreeNode* child = curr->right_;
     /**
      *  Left rotation for the current node denoted as x
      *     x          y
@@ -758,38 +804,38 @@ void _TreeMapLeftRotate(TreeMapData *pData, TreeNode *pCurr)
 
     /* Let x link b as its right child.
        If b is not dummy node, let b link x as its parent. */
-    pCurr->pRight = pChild->pLeft;
-    if (pChild->pLeft != pNull)
-        pChild->pLeft->pParent = pCurr;
+    curr->right_ = child->left_;
+    if (child->left_ != null)
+        child->left_->parent_ = curr;
 
     /* Let y link x's parent as its parent.
        If x's parent is not dummy node, let it link y as its child. */
-    pChild->pParent = pCurr->pParent;
-    if (pCurr->pParent != pNull) {
-        if (pCurr == pCurr->pParent->pLeft)
-            pCurr->pParent->pLeft = pChild;
+    child->parent_ = curr->parent_;
+    if (curr->parent_ != null) {
+        if (curr == curr->parent_->left_)
+            curr->parent_->left_ = child;
         else
-            pCurr->pParent->pRight = pChild;
+            curr->parent_->right_ = child;
     } else
-        pData->pRoot_ = pChild;
+        data->root_ = child;
 
     /* Let x link y as its parent.
        And let y link x as its left child. */
-    pCurr->pParent = pChild;
-    pChild->pLeft = pCurr;
+    curr->parent_ = child;
+    child->left_ = curr;
 
     return;
 }
 
-void _TreeMapInsertFixup(TreeMapData *pData, TreeNode *pCurr)
+void _TreeMapInsertFixup(TreeMapData* data, TreeNode* curr)
 {
-    TreeNode *pUncle;
+    TreeNode* uncle;
 
     /* Denote the current node as x. */
-    while (pCurr->pParent->bColor == COLOR_RED) {
+    while (curr->parent_->color_ == COLOR_RED) {
         /* x's parent is its grandparent's left child. */
-        if (pCurr->pParent == pCurr->pParent->pParent->pLeft) {
-            pUncle = pCurr->pParent->pParent->pRight;
+        if (curr->parent_ == curr->parent_->parent_->left_) {
+            uncle = curr->parent_->parent_->right_;
             /**
              * Case 1: The color of x's uncle is also red.
              * Set the colors of x's parent and x's uncle to black.
@@ -805,11 +851,11 @@ void _TreeMapInsertFixup(TreeMapData *pData, TreeNode *pCurr)
              *      / \                / \
              *     B   C              B   C
              */
-            if (pUncle->bColor == COLOR_RED) {
-                pCurr->pParent->bColor = COLOR_BLACK;
-                pUncle->bColor = COLOR_BLACK;
-                pCurr->pParent->pParent->bColor = COLOR_RED;
-                pCurr = pCurr->pParent->pParent;
+            if (uncle->color_ == COLOR_RED) {
+                curr->parent_->color_ = COLOR_BLACK;
+                uncle->color_ = COLOR_BLACK;
+                curr->parent_->parent_->color_ = COLOR_RED;
+                curr = curr->parent_->parent_;
             } else {
                 /**
                  * Case 2: The color of x's uncle is black, and x is its parent's
@@ -826,9 +872,9 @@ void _TreeMapInsertFixup(TreeMapData *pData, TreeNode *pCurr)
                  *       / \           / \
                  *      B   C         A   B
                  */
-                if (pCurr == pCurr->pParent->pRight) {
-                    pCurr = pCurr->pParent;
-                    _TreeMapLeftRotate(pData, pCurr);
+                if (curr == curr->parent_->right_) {
+                    curr = curr->parent_;
+                    _TreeMapLeftRotate(data, curr);
                 }
                 /**
                  * Case 3: The color of x's uncle is black, and x is its parent's
@@ -847,50 +893,50 @@ void _TreeMapInsertFixup(TreeMapData *pData, TreeNode *pCurr)
                  *   / \                            / \
                  *  A   B                          D   E
                  */
-                pCurr->pParent->bColor = COLOR_BLACK;
-                pCurr->pParent->pParent->bColor = COLOR_RED;
-                _TreeMapRightRotate(pData, pCurr->pParent->pParent);
+                curr->parent_->color_ = COLOR_BLACK;
+                curr->parent_->parent_->color_ = COLOR_RED;
+                _TreeMapRightRotate(data, curr->parent_->parent_);
             }
         }
         /* x's parent is its grandparent's right child. */
         else {
-            pUncle = pCurr->pParent->pParent->pLeft;
+            uncle = curr->parent_->parent_->left_;
 
             /* Case 1: The color of x's uncle is also red. */
-            if (pUncle->bColor == COLOR_RED) {
-                pCurr->pParent->bColor = COLOR_BLACK;
-                pUncle->bColor = COLOR_BLACK;
-                pCurr->pParent->pParent->bColor = COLOR_RED;
-                pCurr = pCurr->pParent->pParent;
+            if (uncle->color_ == COLOR_RED) {
+                curr->parent_->color_ = COLOR_BLACK;
+                uncle->color_ = COLOR_BLACK;
+                curr->parent_->parent_->color_ = COLOR_RED;
+                curr = curr->parent_->parent_;
             } else {
                 /* Case 2: The color of x's uncle is black, and x is its parent's
                    left child. */
-                if (pCurr == pCurr->pParent->pLeft) {
-                    pCurr = pCurr->pParent;
-                    _TreeMapRightRotate(pData, pCurr);
+                if (curr == curr->parent_->left_) {
+                    curr = curr->parent_;
+                    _TreeMapRightRotate(data, curr);
                 }
                 /* Case 3: The color of x's uncle is black, and x is its parent's
                    right child. */
-                pCurr->pParent->bColor = COLOR_BLACK;
-                pCurr->pParent->pParent->bColor = COLOR_RED;
-                _TreeMapLeftRotate(pData, pCurr->pParent->pParent);
+                curr->parent_->color_ = COLOR_BLACK;
+                curr->parent_->parent_->color_ = COLOR_RED;
+                _TreeMapLeftRotate(data, curr->parent_->parent_);
             }
         }
     }
 
-    pData->pRoot_->bColor = COLOR_BLACK;
+    data->root_->color_ = COLOR_BLACK;
     return;
 }
 
-void _TreeMapDeleteFixup(TreeMapData *pData, TreeNode *pCurr)
+void _TreeMapDeleteFixup(TreeMapData* data, TreeNode* curr)
 {
-    TreeNode *pBrother;
+    TreeNode* brother;
 
     /* Denote the current node as x. */
-    while ((pCurr != pData->pRoot_) && (pCurr->bColor == COLOR_BLACK)) {
+    while ((curr != data->root_) && (curr->color_ == COLOR_BLACK)) {
         /* x is its parent's left child. */
-        if (pCurr == pCurr->pParent->pLeft) {
-            pBrother = pCurr->pParent->pRight;
+        if (curr == curr->parent_->left_) {
+            brother = curr->parent_->right_;
             /**
              * Case 1: The color of x's brother is red.
              * Set the color of x's brother to black.
@@ -905,11 +951,11 @@ void _TreeMapDeleteFixup(TreeMapData *pData, TreeNode *pCurr)
              *                      / \
              *                     A  B
              */
-            if (pBrother->bColor == COLOR_RED) {
-                pBrother->bColor = COLOR_BLACK;
-                pCurr->pParent->bColor = COLOR_RED;
-                _TreeMapLeftRotate(pData, pCurr->pParent);
-                pBrother = pCurr->pParent->pRight;
+            if (brother->color_ == COLOR_RED) {
+                brother->color_ = COLOR_BLACK;
+                curr->parent_->color_ = COLOR_RED;
+                _TreeMapLeftRotate(data, curr->parent_);
+                brother = curr->parent_->right_;
             }
             /**
              * Case 2: The color of x's brother is black, and both of its
@@ -923,10 +969,10 @@ void _TreeMapDeleteFixup(TreeMapData *pData, TreeNode *pCurr)
              *    / \     / \        / \     / \
              *   A   B (B)y z(B)    A   B (B)y z(B)
              */
-            if ((pBrother->pLeft->bColor == COLOR_BLACK) &&
-                (pBrother->pRight->bColor == COLOR_BLACK)) {
-                pBrother->bColor = COLOR_RED;
-                pCurr = pCurr->pParent;
+            if ((brother->left_->color_ == COLOR_BLACK) &&
+                (brother->right_->color_ == COLOR_BLACK)) {
+                brother->color_ = COLOR_RED;
+                curr = curr->parent_;
             } else {
                 /**
                  * Case 3: The color of x's brother is black, and the colors of
@@ -944,11 +990,11 @@ void _TreeMapDeleteFixup(TreeMapData *pData, TreeNode *pCurr)
                  *           / \                      / \
                  *          C   D                    D   z(B)
                  */
-                if (pBrother->pRight->bColor == COLOR_BLACK) {
-                    pBrother->pLeft->bColor = COLOR_BLACK;
-                    pBrother->bColor = COLOR_RED;
-                    _TreeMapRightRotate(pData, pBrother);
-                    pBrother = pCurr->pParent->pRight;
+                if (brother->right_->color_ == COLOR_BLACK) {
+                    brother->left_->color_ = COLOR_BLACK;
+                    brother->color_ = COLOR_RED;
+                    _TreeMapRightRotate(data, brother);
+                    brother = curr->parent_->right_;
                 }
                 /**
                  * Case 4: The color of x's brother is black, and its right child
@@ -967,74 +1013,75 @@ void _TreeMapDeleteFixup(TreeMapData *pData, TreeNode *pCurr)
                  *                    / \
                  *                   A   B
                  */
-                pBrother->bColor = pCurr->pParent->bColor;
-                pCurr->pParent->bColor = COLOR_BLACK;
-                pBrother->pRight->bColor = COLOR_BLACK;
-                _TreeMapLeftRotate(pData, pCurr->pParent);
-                pCurr = pData->pRoot_;
+                brother->color_ = curr->parent_->color_;
+                curr->parent_->color_ = COLOR_BLACK;
+                brother->right_->color_ = COLOR_BLACK;
+                _TreeMapLeftRotate(data, curr->parent_);
+                curr = data->root_;
             }
         }
         /* x is its parent's right child */
         else {
-            pBrother = pCurr->pParent->pLeft;
+            brother = curr->parent_->left_;
             /* Case 1: The color of x's brother is red. */
-            if (pBrother->bColor == COLOR_RED) {
-                pBrother->bColor = COLOR_BLACK;
-                pCurr->pParent->bColor = COLOR_RED;
-                _TreeMapRightRotate(pData, pCurr->pParent);
-                pBrother = pCurr->pParent->pLeft;
+            if (brother->color_ == COLOR_RED) {
+                brother->color_ = COLOR_BLACK;
+                curr->parent_->color_ = COLOR_RED;
+                _TreeMapRightRotate(data, curr->parent_);
+                brother = curr->parent_->left_;
             }
             /* Case 2: The color of x's brother is black, and both of its
                children are also black. */
-            if ((pBrother->pLeft->bColor == COLOR_BLACK) &&
-                (pBrother->pRight->bColor == COLOR_BLACK)) {
-                pBrother->bColor = COLOR_RED;
-                pCurr = pCurr->pParent;
+            if ((brother->left_->color_ == COLOR_BLACK) &&
+                (brother->right_->color_ == COLOR_BLACK)) {
+                brother->color_ = COLOR_RED;
+                curr = curr->parent_;
             } else {
                 /* Case 3: The color of x's brother is black and the colors of its
                    right and left child are red and black respectively. */
-                if (pBrother->pLeft->bColor == COLOR_BLACK) {
-                    pBrother->pRight->bColor = COLOR_BLACK;
-                    pBrother->bColor = COLOR_RED;
-                    _TreeMapLeftRotate(pData, pBrother);
-                    pBrother = pCurr->pParent->pLeft;
+                if (brother->left_->color_ == COLOR_BLACK) {
+                    brother->right_->color_ = COLOR_BLACK;
+                    brother->color_ = COLOR_RED;
+                    _TreeMapLeftRotate(data, brother);
+                    brother = curr->parent_->left_;
                 }
                 /* Case 4: The color of x's brother is black, and its left child
                    is red. */
-                pBrother->bColor = pCurr->pParent->bColor;
-                pCurr->pParent->bColor = COLOR_BLACK;
-                pBrother->pLeft->bColor = COLOR_BLACK;
-                _TreeMapRightRotate(pData, pCurr->pParent);
-                pCurr = pData->pRoot_;
+                brother->color_ = curr->parent_->color_;
+                curr->parent_->color_ = COLOR_BLACK;
+                brother->left_->color_ = COLOR_BLACK;
+                _TreeMapRightRotate(data, curr->parent_);
+                curr = data->root_;
             }
         }
     }
 
-    pCurr->bColor = COLOR_BLACK;
+    curr->color_ = COLOR_BLACK;
     return;
 }
 
-TreeNode* _TreeMapSearch(TreeMapData *pData, Key key)
+TreeNode* _TreeMapSearch(TreeMapData* data, void* key)
 {
-    int32_t iOrder;
-    TreeNode *pCurr = pData->pRoot_;
-    while(pCurr != pData->pNull_) {
-        iOrder = pData->pCompare_(key, pCurr->pPair->key);
-        if (iOrder == 0)
+    TreeMapCompare func_cmp = data->func_cmp_;
+    TreeNode* null = data->null_;
+    TreeNode* curr = data->root_;
+    while(curr != null) {
+        int order = func_cmp(key, curr->pair_.key);
+        if (order == 0)
             break;
         else {
-            if (iOrder > 0)
-                pCurr = pCurr->pRight;
+            if (order > 0)
+                curr = curr->right_;
             else
-                pCurr = pCurr->pLeft;
+                curr = curr->left_;
         }
     }
-    return pCurr;
+    return curr;
 }
 
-int32_t _TreeMapCompare(Key keySrc, Key keyTge)
+int _TreeMapCompare(void* lhs, void* rhs)
 {
-    if (keySrc == keyTge)
+    if ((intptr_t)lhs == (intptr_t)rhs)
         return 0;
-    return (keySrc > keyTge)? 1 : (-1);
+    return ((intptr_t)lhs >= (intptr_t)rhs)? 1 : (-1);
 }

@@ -2,128 +2,182 @@
 
 
 typedef struct Employ_ {
-    int8_t cYear;
-    int8_t cLevel;
-    int32_t iId;
+    int year;
+    int level;
+    int id;
 } Employ;
 
 
-int32_t CompareKey(Key keySrc, Key keyTge)
+int CompareKey(void* lhs, void* rhs)
 {
-    char *nameSrc = (char*)keySrc;
-    char *nameTge = (char*)keyTge;
-
-    int32_t iOrder = strcmp(nameSrc, nameTge);
-    if (iOrder == 0)
-        return 0;
-    return (iOrder > 0)? 1 : (-1);
+    return strcmp((char*)lhs, (char*)rhs);
 }
 
-void DestroyPair(Pair *pPair)
+void CleanKey(void* key)
 {
-    free((Employ*)pPair->value);
-    free(pPair);
+    free(key);
+}
+
+void CleanValue(void* value)
+{
+    free(value);
+}
+
+
+void ManipulateNumerics()
+{
+    /* We should initialize the container before any operations. */
+    TreeMap* map = TreeMapInit();
+
+    /* Insert numerics into the map. */
+    TreeMapPut(map, (void*)(intptr_t)1, (void*)(intptr_t)9999);
+    TreeMapPut(map, (void*)(intptr_t)2, (void*)(intptr_t)999);
+    TreeMapPut(map, (void*)(intptr_t)3, (void*)(intptr_t)99);
+    TreeMapPut(map, (void*)(intptr_t)4, (void*)(intptr_t)9);
+
+    /* Retrieve the value with the designated key. */
+    int val = (int)(intptr_t)TreeMapGet(map, (void*)(intptr_t)1);
+    assert(val == 9999);
+
+    /* Iterate through the map. */
+    Pair* ptr_pair;
+    TreeMapFirst(map);
+    int first = 1, second = 9999;
+    while ((ptr_pair = TreeMapNext(map)) != NULL) {
+        int key = (int)(intptr_t)ptr_pair->key;
+        int val = (int)(intptr_t)ptr_pair->value;
+        assert(key == first);
+        assert(val == second);
+        ++first;
+        second /= 10;
+    }
+
+    first = 4;
+    second = 9;
+    while ((ptr_pair = TreeMapReverseNext(map)) != NULL) {
+        int key = (int)(intptr_t)ptr_pair->key;
+        int val = (int)(intptr_t)ptr_pair->value;
+        assert(key == first);
+        assert(val == second);
+        --first;
+        second *= 10;
+        second += 9;
+    }
+
+    /* Remove the key value pair with the designated key. */
+    TreeMapRemove(map, (void*)(intptr_t)2);
+
+    /* Check the map keys. */
+    assert(TreeMapFind(map, (void*)(intptr_t)1) == true);
+    assert(TreeMapFind(map, (void*)(intptr_t)2) == false);
+    assert(TreeMapFind(map, (void*)(intptr_t)3) == true);
+    assert(TreeMapFind(map, (void*)(intptr_t)4) == true);
+
+    /* Check the pair count in the map. */
+    unsigned size = TreeMapSize(map);
+    assert(size == 3);
+
+    /* We should deinitialize the container after all the relevant operations. */
+    TreeMapDeinit(map);
+}
+
+void ManipulateTexts()
+{
+    char* names[4] = {"Alice\0", "Bob\0", "Chris\0", "David\0"};
+
+    /* We should initialize the container before any operations. */
+    TreeMap* map = TreeMapInit();
+
+    /* Set the custom key comparison functions. */
+    TreeMapSetCompare(map, CompareKey);
+
+    /* If we plan to delegate the resource clean task to the container, set the
+       custom clean functions. */
+    TreeMapSetCleanKey(map, CleanKey);
+    TreeMapSetCleanValue(map, CleanValue);
+
+    /* Insert complex data payload into the map. */
+    char* key = strdup(names[0]);
+    Employ* employ = (Employ*)malloc(sizeof(Employ));
+    employ->id = 1;
+    employ->year = 25;
+    employ->level = 100;
+    TreeMapPut(map, (void*)key, (void*)employ);
+
+    key = strdup(names[1]);
+    employ = (Employ*)malloc(sizeof(Employ));
+    employ->id = 2;
+    employ->year = 25;
+    employ->level = 90;
+    TreeMapPut(map, (void*)key, (void*)employ);
+
+    key = strdup(names[2]);
+    employ = (Employ*)malloc(sizeof(Employ));
+    employ->id = 3;
+    employ->year = 25;
+    employ->level = 80;
+    TreeMapPut(map, (void*)key, (void*)employ);
+
+    key = strdup(names[3]);
+    employ = (Employ*)malloc(sizeof(Employ));
+    employ->id = 4;
+    employ->year = 25;
+    employ->level = 70;
+    TreeMapPut(map, (void*)key, (void*)employ);
+
+
+    /* Retrieve the value with the designated key. */
+    employ = (Employ*)TreeMapGet(map, (void*)names[0]);
+    assert(employ != NULL);
+    assert(employ->id == 1);
+    assert(employ->year == 25);
+    assert(employ->level == 100);
+
+    /* Iterate through the map. */
+    Pair* ptr_pair;
+    TreeMapFirst(map);
+    int first = 0, second = 1;
+    while ((ptr_pair = TreeMapNext(map)) != NULL) {
+        char* name = (char*)ptr_pair->key;
+        employ = (Employ*)ptr_pair->value;
+        assert(strcmp(name, names[first]) == 0);
+        assert(employ->id == second);
+        ++first;
+        ++second;
+    }
+
+    TreeMapFirst(map);
+    first = 3;
+    second = 4;
+    while ((ptr_pair = TreeMapReverseNext(map)) != NULL) {
+        char* name = (char*)ptr_pair->key;
+        employ = (Employ*)ptr_pair->value;
+        assert(strcmp(name, names[first]) == 0);
+        assert(employ->id == second);
+        --first;
+        --second;
+    }
+
+    /* Remove the key value pair with the designated key. */
+    TreeMapRemove(map, (void*)names[1]);
+
+    /* Check the map keys. */
+    assert(TreeMapFind(map, (void*)names[0]) == true);
+    assert(TreeMapFind(map, (void*)names[1]) == false);
+    assert(TreeMapFind(map, (void*)names[2]) == true);
+    assert(TreeMapFind(map, (void*)names[3]) == true);
+
+    /* Check the pair count in the map. */
+    unsigned size = TreeMapSize(map);
+    assert(size == 3);
+
+    /* We should deinitialize the container after all the relevant operations. */
+    TreeMapDeinit(map);
 }
 
 int main()
 {
-    char *aName[3] = {"Alice\0", "Bob\0", "Wesker\0"};
-    TreeMap *pMap;
-
-    /* You should initialize the DS before any operations. */
-    int32_t rc = TreeMapInit(&pMap);
-    if (rc != SUCC)
-        return rc;
-
-    /* You should specify how to compare your items. */
-    pMap->set_compare(pMap, CompareKey);
-
-    /* If you plan to delegate the resource clean task to the DS, please set the
-       custom clean method. */
-    pMap->set_destroy(pMap, DestroyPair);
-
-    /* Insert key value pairs into the map. */
-    Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 1;
-    pEmploy->cYear = 25;
-    pEmploy->cLevel = 100;
-    Pair *pPair = (Pair*)malloc(sizeof(Pair));
-    pPair->key = (Key)aName[0];
-    pPair->value = (Value)pEmploy;
-    pMap->put(pMap, pPair);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 2;
-    pEmploy->cYear = 25;
-    pEmploy->cLevel = 90;
-    pPair = (Pair*)malloc(sizeof(Pair));
-    pPair->key = (Key)aName[1];
-    pPair->value = (Value)pEmploy;
-    pMap->put(pMap, pPair);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 3;
-    pEmploy->cYear = 25;
-    pEmploy->cLevel = 80;
-    pPair = (Pair*)malloc(sizeof(Pair));
-    pPair->key = (Key)aName[2];
-    pPair->value = (Value)pEmploy;
-    pMap->put(pMap, pPair);
-
-    /* Retrieve the value with the designated key. */
-    Value value;
-    pMap->get(pMap, (Key)aName[0], &value);
-    assert(((Employ*)value)->iId == 1);
-    assert(((Employ*)value)->cYear == 25);
-    assert(((Employ*)value)->cLevel == 100);
-
-    /* Retrieve the pairs with minimum and maximum key orders from the map. */
-    pMap->minimum(pMap, &pPair);
-    assert(strcmp((char*)pPair->key, aName[0]) == 0);
-    assert(((Employ*)pPair->value)->cLevel == 100);
-    pMap->maximum(pMap, &pPair);
-    assert(strcmp((char*)pPair->key, aName[2]) == 0);
-    assert(((Employ*)pPair->value)->cLevel == 80);
-
-    /* Reference the predecessor and successor pairs with the designated key. */
-    pMap->predecessor(pMap, (Key)aName[1], &pPair);
-    assert(strcmp((char*)pPair->key, aName[0]) == 0);
-    assert(((Employ*)pPair->value)->iId == 1);
-    pMap->successor(pMap, (Key)aName[1], &pPair);
-    assert(strcmp((char*)pPair->key, aName[2]) == 0);
-    assert(((Employ*)pPair->value)->iId == 3);
-
-    /* Iterate through the map. */
-    int32_t idx = 0;
-    pMap->iterate(pMap, true, NULL);
-    while (pMap->iterate(pMap, false, &pPair) == CONTINUE) {
-        assert(strcmp((char*)pPair->key, aName[idx]) == 0);
-        idx++;
-    }
-
-    /* Reversely iterate through the map.*/
-    idx = 2;
-    pMap->reverse_iterate(pMap, true, NULL);
-    while (pMap->reverse_iterate(pMap, false, &pPair) == CONTINUE) {
-        assert(strcmp((char*)pPair->key, aName[idx]) == 0);
-        idx--;
-    }
-
-    /* Remove the key value pair with the designated key. */
-    pMap->remove(pMap, (Key)aName[1]);
-
-    /* Check the key existence. */
-    assert(pMap->find(pMap, (Key)aName[0]) == SUCC);
-    assert(pMap->find(pMap, (Key)aName[1]) == NOKEY);
-    assert(pMap->find(pMap, (Key)aName[2]) == SUCC);
-
-    /* Check the pair count in the map. */
-    int32_t iSize = pMap->size(pMap);
-    assert(iSize == 2);
-
-    /* You should deinitialize the DS after all the relevant tasks. */
-    TreeMapDeinit(&pMap);
-
-    return SUCC;
+    ManipulateNumerics();
+    ManipulateTexts();
+    return 0;
 }
-
