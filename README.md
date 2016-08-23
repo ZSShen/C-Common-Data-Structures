@@ -8,7 +8,7 @@
    + **Vector** --- The dynamically growable array (under API refinement)  
    + **LinkedList** --- The doubly linked list (under API refinement)  
  + Associative Container
-   + **TreeMap** --- The ordered map to store key value pairs (under API refinement)  
+   + **TreeMap** --- The ordered map to store key value pairs 
    + **HashMap** --- The unordered map to store key value pairs
    + **HashSet** --- The unordered set to store unique elements (under API refinement)  
    + **Trie** --- The string dictionary (under API refinement)  
