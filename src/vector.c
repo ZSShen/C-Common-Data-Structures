@@ -1,3 +1,26 @@
+/**
+ *   The MIT License (MIT)
+ *   Copyright (C) 2016 ZongXian Shen <andy.zsshen@gmail.com>
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *   IN THE SOFTWARE.
+ */
+
 #include "container/vector.h"
 
 
@@ -5,350 +28,297 @@
  *                        The container private data                         *
  *===========================================================================*/
 struct _VectorData {
-    int32_t iSize_;
-    int32_t iCapacity_;
-    int32_t iIter_;
-    Item *aItem_;
-    void (*pDestroy_) (Item);
-    bool bUserDestroy_;
+    unsigned size_;
+    unsigned capacity_;
+    unsigned iter_;
+    void** elements_;
+    VectorClean func_clean_;
 };
-
-#define DEFAULT_CAPACITY    (1)
 
 
 /*===========================================================================*
  *                  Definition for internal operations                       *
  *===========================================================================*/
-/**
- * @brief The default item clean method.
- *
- * @param item          The designated item
- */
-void _VectorItemDestroy(Item item);
+#define likely(x)       __builtin_expect(!!(x), 1)
+#define unlikely(x)     __builtin_expect(!!(x), 0)
 
 /**
- * @brief Change the capacity of the internal array.
+ * @brief Resize the internal array so that it can contain the specified number
+ *        of elements.
  *
- * This function resizes the internal array. If the new capacity is smaller than
- * the old one, the trailing items will be removed. Also, if user defined
- * destroy func is set , it also runs the resource clean method for the removed
- * items.
+ * This function resizes the internal array so that it can contain the specified
+ * number of elements. If the given element count is smaller than the old element
+ * count. The trailing elements are removed. Also, the cleanup function is triggered.
  *
- * @param pData         The pointer to the private data
- * @param iSizeNew      The designated size
+ * @param self          The pointer to Vector structure
+ * @param capacity      The specified element count
  *
- * @retval SUCC
- * @retval ERR_NOMEM    Insufficient memory for array expansion
- *
- * @note The designated capacity should greater than zero.
+ * @retval true         The vector is successfully resized
+ * @retval false        The vector cannot be resized due to invalid index (>=
+ *                      vector size) or insufficient memory
  */
-int32_t _VectorReisze(VectorData *pData, int32_t iSizeNew);
-
-
-#define CHECK_INIT(self)                                                        \
-            do {                                                                \
-                if (!self)                                                      \
-                    return ERR_NOINIT;                                          \
-                if (!(self->pData))                                             \
-                    return ERR_NOINIT;                                          \
-            } while (0);
+bool _VectorReisze(VectorData* data, unsigned capacity);
 
 
 /*===========================================================================*
- *         Implementation for the container supporting operations            *
+ *               Implementation for the exported operations                  *
  *===========================================================================*/
-
-int32_t VectorInit(Vector **ppObj, int32_t iCap)
+Vector* VectorInit(unsigned capacity)
 {
-    Vector *pObj;
-    *ppObj = (Vector*)malloc(sizeof(Vector));
-    if (!(*ppObj))
-        return ERR_NOMEM;
-    pObj = *ppObj;
+    Vector* obj = (Vector*)malloc(sizeof(Vector));
+    if (unlikely(!obj))
+        return NULL;
 
-    VectorData *pData;
-    pObj->pData = (VectorData*)malloc(sizeof(VectorData));
-    if (!(pObj->pData)) {
-        free(*ppObj);
-        *ppObj = NULL;
-        return ERR_NOMEM;
+    VectorData* data = (VectorData*)malloc(sizeof(VectorData));
+    if (unlikely(!data)) {
+        free(obj);
+        return NULL;
     }
-    pData = pObj->pData;
 
-    iCap = (iCap <= 0)? DEFAULT_CAPACITY : iCap;
-    pData->aItem_ = (Item*)malloc(sizeof(Item) * iCap);
-    if (!(pData->aItem_)) {
-        free(pObj->pData);
-        free(*ppObj);
-        *ppObj = NULL;
-        return ERR_NOMEM;
+    void** elements = (void**)malloc(sizeof(void*) * capacity);
+    if (unlikely(!elements)) {
+        free(data);
+        free(obj);
+        return NULL;
     }
-    pData->iSize_ = 0;
-    pData->iCapacity_ = iCap;
-    pData->iIter_ = 0;
-    pData->pDestroy_ = _VectorItemDestroy;
-    pData->bUserDestroy_ = false;
 
-    pObj->push_back = VectorPushBack;
-    pObj->pop_back = VectorPopBack;
-    pObj->insert = VectorInsert;
-    pObj->remove = VectorRemove;
-    pObj->resize = VectorResize;
-    pObj->size = VectorSize;
-    pObj->capacity = VectorCapacity;
-    pObj->set = VectorSet;
-    pObj->get = VectorGet;
-    pObj->sort = VectorSort;
-    pObj->iterate = VectorIterate;
-    pObj->reverse_iterate = VectorReverseIterate;
-    pObj->set_destroy = VectorSetDestroy;
+    data->size_ = 0;
+    data->capacity_ = capacity;
+    data->elements_ = elements;
+    data->func_clean_ = NULL;
 
-    return SUCC;
+    obj->data = data;
+    obj->push_back = VectorPushBack;
+    obj->insert = VectorInsert;
+    obj->pop_back = VectorPopBack;
+    obj->remove = VectorRemove;
+    obj->set = VectorSet;
+    obj->get = VectorGet;
+    obj->resize = VectorResize;
+    obj->size = VectorSize;
+    obj->capacity = VectorCapacity;
+    obj->sort = VectorSort;
+    obj->first = VectorFirst;
+    obj->next = VectorNext;
+    obj->reverse_next = VectorReverseNext;
+    obj->set_clean = VectorSetClean;
+
+    return obj;
 }
 
-void VectorDeinit(Vector **ppObj)
+void VectorDeinit(Vector *obj)
 {
-    if (!(*ppObj))
-        goto EXIT;
-    VectorData *pData = (*ppObj)->pData;
-    if (!pData)
-        goto FREE_VECTOR;
-    Item *aItem = pData->aItem_;
-    if (!aItem)
-        goto FREE_INTERNAL;
+    if (unlikely(!obj))
+        return;
 
-    int32_t iIdx;
-    for (iIdx = 0 ; iIdx < pData->iSize_ ; iIdx++)
-        if (pData->bUserDestroy_)
-            pData->pDestroy_(aItem[iIdx]);
+    VectorData* data = obj->data;
+    VectorClean func_clean = data->func_clean_;
+    void** elements = data->elements_;
+    unsigned size = data->size_;
 
-    free(pData->aItem_);
-FREE_INTERNAL:
-    free((*ppObj)->pData);
-FREE_VECTOR:
-    free(*ppObj);
-    *ppObj = NULL;
-EXIT:
+    unsigned i;
+    for (i = 0 ; i < size ; ++i) {
+        if (func_clean)
+            func_clean(elements[i]);
+    }
+
+    free(elements);
+    free(data);
+    free(obj);
     return;
 }
 
-int32_t VectorPushBack(Vector *self, Item item)
+bool VectorPushBack(Vector* self, void* element)
 {
-    CHECK_INIT(self);
-    VectorData *pData = self->pData;
+    VectorData* data = self->data;
+    unsigned size = data->size_;
+    unsigned capacity = data->capacity_;
 
     /* If the internal array is full, extend it to double capacity. */
-    if (pData->iSize_ == pData->iCapacity_) {
-        int iRtnCode = _VectorReisze(pData, pData->iCapacity_ * 2);
-        if (iRtnCode != SUCC)
-            return iRtnCode;
+    if (size == capacity) {
+        bool rtn = _VectorReisze(data, capacity << 1);
+        if (rtn == false)
+            return false;
     }
 
-    pData->aItem_[pData->iSize_] = item;
-    pData->iSize_++;
-    return SUCC;
+    data->elements_[size] = element;
+    data->size_++;
+    return true;
 }
 
-int32_t VectorInsert(Vector *self, Item item, int32_t iIdx)
+bool VectorInsert(Vector* self, unsigned idx, void* element)
 {
-    CHECK_INIT(self);
-    VectorData *pData = self->pData;
+    VectorData* data = self->data;
+    unsigned size = data->size_;
+    unsigned capacity = data->capacity_;
 
-    /* Check for illegal index. */
-    if ((iIdx < 0) || (iIdx > pData->iSize_))
-        return ERR_IDX;
+    if (unlikely(idx > size))
+        return false;
 
     /* If the internal array is full, extend it to double capacity. */
-    if (pData->iSize_ == pData->iCapacity_) {
-        int iRtnCode = _VectorReisze(pData, pData->iCapacity_ * 2);
-        if (iRtnCode != SUCC)
-            return iRtnCode;
+    if (size == capacity) {
+        bool rtn = _VectorReisze(data, capacity << 1);
+        if (rtn == false)
+            return false;
     }
+
+    /* Shift the trailing elements if necessary. */
+    void** elements = data->elements_;
+    unsigned num_shift = size - idx;
+    if (likely(num_shift > 0))
+        memmove(elements + idx + 1, elements + idx, sizeof(void*) * num_shift);
+
+    elements[idx] = element;
+    data->size_ = size + 1;
+    return true;
+}
+
+bool VectorPopBack(Vector* self)
+{
+    VectorData* data = self->data;
+    unsigned size = data->size_;
+    if (unlikely(size == 0))
+        return false;
+
+    --size;
+    data->size_ = size;
+    void* element = data->elements_[size];
+    VectorClean func_clean = data->func_clean_;
+    if (func_clean)
+        func_clean(element);
+
+    return true;
+}
+
+bool VectorRemove(Vector* self, unsigned idx)
+{
+    VectorData* data = self->data;
+    unsigned size = data->size_;
+    if (unlikely(idx >= size))
+        return false;
+
+    void** elements = data->elements_;
+    VectorClean func_clean = data->func_clean_;
+    if (func_clean)
+        func_clean(elements[idx]);
 
     /* Shift the trailing items if necessary. */
-    Item *aItem = pData->aItem_;
-    int32_t iShftSize = pData->iSize_ - iIdx;
-    if (iShftSize > 0)
-        memmove(aItem + iIdx + 1, aItem + iIdx, sizeof(Item) * iShftSize);
-    aItem[iIdx] = item;
-    pData->iSize_++;
+    unsigned num_shift = size - idx - 1;
+    if (likely(num_shift > 0))
+        memmove(elements + idx, elements + idx + 1, sizeof(void*) * num_shift);
 
-    return SUCC;
+    data->size_ = size - 1;
+    return true;
 }
 
-int32_t VectorPopBack(Vector *self)
+bool VectorSet(Vector* self, unsigned idx, void* element)
 {
-    CHECK_INIT(self);
-    VectorData *pData = self->pData;
+    VectorData* data = self->data;
+    if (unlikely(idx >= data->size_))
+        return false;
 
-    if (pData->iSize_ == 0)
-        return ERR_IDX;
-
-    pData->iSize_--;
-    Item item = pData->aItem_[pData->iSize_];
-    if (pData->bUserDestroy_)
-        pData->pDestroy_(item);
-    return SUCC;
+    void** elements = data->elements_;
+    VectorClean func_clean = data->func_clean_;
+    if (func_clean)
+        func_clean(elements[idx]);
+    elements[idx] = element;
+    return true;
 }
 
-int32_t VectorRemove(Vector *self, int32_t iIdx)
+bool VectorGet(Vector* self, unsigned idx, void** p_element)
 {
-    CHECK_INIT(self);
-    VectorData *pData = self->pData;
+    VectorData* data = self->data;
+    if (unlikely(idx >= data->size_))
+        return false;
 
-    /* Check for illegal index. */
-    if ((iIdx < 0) || (iIdx >= pData->iSize_))
-        return ERR_IDX;
-
-    Item *aItem = pData->aItem_;
-
-    if (pData->bUserDestroy_)
-        pData->pDestroy_(aItem[iIdx]);
-
-    /* Shift the trailing items if necessary. */
-    int32_t iShftSize = pData->iSize_ - iIdx - 1;
-    if (iShftSize > 0)
-        memmove(aItem + iIdx, aItem + iIdx + 1, sizeof(Item) *iShftSize);
-    pData->iSize_--;
-
-    return SUCC;
+    *p_element = data->elements_[idx];
+    return true;
 }
 
-int32_t VectorResize(Vector *self, int32_t iSize)
+bool VectorResize(Vector* self, unsigned capacity)
 {
-    CHECK_INIT(self);
-    return _VectorReisze(self->pData, iSize);
+    return _VectorReisze(self->data, capacity);
 }
 
-int32_t VectorSize(Vector *self)
+unsigned VectorSize(Vector* self)
 {
-    CHECK_INIT(self);
-    return self->pData->iSize_;
+    return self->data->size_;
 }
 
-int32_t VectorCapacity(Vector *self)
+unsigned VectorCapacity(Vector* self)
 {
-    CHECK_INIT(self);
-    return self->pData->iCapacity_;
+    return self->data->capacity_;
 }
 
-int32_t VectorSet(Vector *self, Item item, int32_t iIdx)
+void VectorSort(Vector* self, VectorCompare func)
 {
-    CHECK_INIT(self);
-    VectorData *pData = self->pData;
-
-    /* Check for illegal index. */
-    if ((iIdx < 0) || (iIdx >= pData->iSize_))
-        return ERR_IDX;
-
-    Item *aItem = pData->aItem_;
-    if (pData->bUserDestroy_)
-        pData->pDestroy_(aItem[iIdx]);
-
-    aItem[iIdx] = item;
-    return SUCC;
+    VectorData* data = self->data;
+    qsort(data->elements_, data->size_, sizeof(void*), func);
 }
 
-int32_t VectorGet(Vector *self, Item *pItem, int32_t iIdx)
+void VectorFirst(Vector* self, bool is_reverse)
 {
-    CHECK_INIT(self);
-    if (!pItem)
-        return ERR_GET;
-    *pItem = NULL;
-
-    VectorData *pData = self->pData;
-
-    /* Check for illegal index. */
-    if ((iIdx < 0) || (iIdx >= pData->iSize_))
-        return ERR_IDX;
-
-    *pItem = pData->aItem_[iIdx];
-    return SUCC;
+    self->data->iter_ = (is_reverse == false)? 0 : (self->data->size_ - 1);
 }
 
-int32_t VectorSort(Vector *self, int32_t (*pFunc) (const void*, const void*))
+bool VectorNext(Vector* self, void** p_element)
 {
-    CHECK_INIT(self);
-    VectorData *pData = self->pData;
-    qsort(pData->aItem_, pData->iSize_, sizeof(Item), pFunc);
-    return SUCC;
+    VectorData* data = self->data;
+    unsigned iter = data->iter_;
+    if (iter >= data->size_)
+        return false;
+
+    *p_element = data->elements_[iter];
+    data->iter_ = iter + 1;
+    return true;
 }
 
-int32_t VectorIterate(Vector *self, bool bReset, Item *pItem)
+bool VectorReverseNext(Vector* self, void** p_element)
 {
-    CHECK_INIT(self);
+    VectorData* data = self->data;
+    unsigned iter = data->iter_;
+    if (iter == UINT_MAX)
+        return false;
 
-    VectorData *pData = self->pData;
-    if (bReset) {
-        pData->iIter_ = 0;
-        return SUCC;
-    }
-    if (!pItem)
-        return ERR_GET;
-    if (pData->iIter_ == pData->iSize_) {
-        *pItem = NULL;
-        return END;
-    }
-
-    *pItem = pData->aItem_[pData->iIter_];
-    pData->iIter_++;
-    return SUCC;
+    *p_element = data->elements_[iter];
+    data->iter_ = iter - 1;
+    return true;
 }
 
-int32_t VectorReverseIterate(Vector *self, bool bReset, Item *pItem)
+void VectorSetClean(Vector* self, VectorClean func)
 {
-    CHECK_INIT(self);
-
-    VectorData *pData = self->pData;
-    if (bReset) {
-        pData->iIter_ = pData->iSize_ - 1;
-        return SUCC;
-    }
-    if (!pItem)
-        return ERR_GET;
-    if (pData->iIter_ == -1) {
-        *pItem = NULL;
-        return END;
-    }
-
-    *pItem = pData->aItem_[pData->iIter_];
-    pData->iIter_--;
-    return SUCC;
+    self->data->func_clean_ = func;
 }
-
-int32_t VectorSetDestroy(Vector *self, void (*pFunc) (Item))
-{
-    CHECK_INIT(self);
-    self->pData->pDestroy_ = pFunc;
-    self->pData->bUserDestroy_ = true;
-    return SUCC;
-}
-
 
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
-void _VectorItemDestroy(Item item) {}
-
-int32_t _VectorReisze(VectorData *pData, int32_t iSizeNew)
+bool _VectorReisze(VectorData* data, unsigned capacity)
 {
-    /* Remove the trailing items if the new capacity is smaller than the old size.
-       Clean the resource hold by the removed items if user defined destroy is
-       set. */
-    if ((iSizeNew < pData->iSize_)) {
-        int32_t iIdx = iSizeNew;
-        while (iIdx < pData->iSize_) {
-            if (pData->bUserDestroy_)
-                pData->pDestroy_(pData->aItem_[iIdx]);
-            iIdx++;
+    void** elements = data->elements_;
+    unsigned old_size = data->size_;
+
+    /* Remove the trailing items if the given element number is smaller than the
+       old element count. */
+    if (unlikely(capacity < old_size)) {
+        VectorClean func_clean = data->func_clean_;
+        unsigned idx = capacity;
+        while (idx < old_size) {
+            if (func_clean)
+                func_clean(elements[idx]);
+            ++idx;
         }
-        pData->iSize_ = iSizeNew;
+        data->size_ = capacity;
     }
 
-    Item *aItemNew = (Item*)realloc(pData->aItem_, iSizeNew * sizeof(Item));
-    if (aItemNew) {
-        pData->aItem_ = aItemNew;
-        pData->iCapacity_ = iSizeNew;
+    if (unlikely(capacity == old_size))
+        return true;
+
+    void** new_elements = (void**)realloc(elements, sizeof(void*) * capacity);
+    if (new_elements) {
+        data->elements_  = new_elements;
+        data->capacity_ = capacity;
     }
-    return (aItemNew)? SUCC : ERR_NOMEM;
+
+    return (new_elements)? true : false;
 }
