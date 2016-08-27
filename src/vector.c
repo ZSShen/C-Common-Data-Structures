@@ -265,7 +265,7 @@ bool VectorNext(Vector* self, void** p_element)
 {
     VectorData* data = self->data;
     unsigned iter = data->iter_;
-    if (iter >= data->size_)
+    if (unlikely(iter >= data->size_))
         return false;
 
     *p_element = data->elements_[iter];
@@ -277,7 +277,7 @@ bool VectorReverseNext(Vector* self, void** p_element)
 {
     VectorData* data = self->data;
     unsigned iter = data->iter_;
-    if (iter == UINT_MAX)
+    if (unlikely(iter == UINT_MAX))
         return false;
 
     *p_element = data->elements_[iter];

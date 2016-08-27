@@ -27,8 +27,8 @@ void CleanElement(void* element)
 
 int SortElement(const void* lhs, const void* rhs)
 {
-    Tuple* tpl_lhs = (Tuple*)lhs;
-    Tuple* tpl_rhs = (Tuple*)rhs;
+    Tuple* tpl_lhs = *((Tuple**)lhs);
+    Tuple* tpl_rhs = *((Tuple**)rhs);
     if (tpl_lhs->first == tpl_rhs->first)
         return 0;
     return (tpl_lhs->first > tpl_rhs->first)? 1 : -1;
