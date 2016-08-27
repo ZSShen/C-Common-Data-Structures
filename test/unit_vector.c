@@ -3,370 +3,356 @@
 #include "CUnit/Basic.h"
 
 
+/*------------------------------------------------------------*
+ *    Test Function Declaration for Structure Verification    *
+ *------------------------------------------------------------*/
+static const int DEFAULT_CAPACITY = 512;
+static const int SIZE_TNY_TEST = 128;
+static const int SIZE_SML_TEST = 512;
+static const int SIZE_MID_TEST = 2048;
+
 typedef struct Tuple_ {
-    int32_t iMajor;
-    int32_t iMinor;
+    int first;
+    int second;
 } Tuple;
 
 
-void TestPrimPushBack();
-void TestPrimInsert();
-void TestPrimSet();
-void TestPrimPopBack();
-void TestPrimDelete();
-void TestPrimResize();
-
-void DestroyObject(Item);
-int32_t CompareObject(const void*, const void*);
-void TestSort();
-void TestIterate();
-
-
-int32_t SuitePrimitive()
+/*-----------------------------------------------------------------------------*
+ *                      The utilities for resource clean                       *
+ *-----------------------------------------------------------------------------*/
+void CleanElement(void* element)
 {
-    CU_pSuite pSuite = CU_add_suite("Primitive Type Input", NULL, NULL);
-    if (!pSuite)
-        return ERR_NOMEM;
-
-    CU_pTest pTest = CU_add_test(pSuite, "Item insertion via push_back().",
-                     TestPrimPushBack);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Item insertion via insert().", TestPrimInsert);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Item replacement via set().", TestPrimSet);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Item deletion via pop_back().", TestPrimPopBack);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Item deletion via remove().", TestPrimDelete);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Storage reallocation.", TestPrimResize);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Item sorting.", TestSort);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Vector iteration.", TestIterate);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    return SUCC;
+    free(element);
 }
 
+int SortElement(const void* lhs, const void* rhs)
+{
+    Tuple* tpl_lhs = *((Tuple**)lhs);
+    Tuple* tpl_rhs = *((Tuple**)rhs);
+    if (tpl_lhs->first == tpl_rhs->first)
+        return 0;
+    return (tpl_lhs->first > tpl_rhs->first)? 1 : -1;
+}
+
+/*-----------------------------------------------------------------------------*
+ *            Unit tests relevant to basic structure verification              *
+ *-----------------------------------------------------------------------------*/
+void TestNewDelete()
+{
+    Vector* vector;
+    CU_ASSERT((vector = VectorInit(DEFAULT_CAPACITY)) != NULL);
+
+    /* Enlarge the vector size to test the destructor. */
+    unsigned i;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i)
+        CU_ASSERT(vector->push_back(vector, (void*)(intptr_t)i) == true);
+
+    VectorDeinit(vector);
+}
+
+void TestResize()
+{
+    Vector* vector = VectorInit(DEFAULT_CAPACITY);
+
+    /* Implicitly trigger the resize function. */
+    unsigned i;
+    for (i = 0 ; i < SIZE_MID_TEST ; ++i)
+       vector->push_back(vector, (void*)(intptr_t)i);
+
+    /* Explicitly trigger the resize function. */
+    CU_ASSERT(vector->resize(vector, SIZE_MID_TEST << 1) == true);
+    CU_ASSERT(vector->resize(vector, SIZE_TNY_TEST) == true);
+    VectorDeinit(vector);
+
+    /* Test the garbage collection of resize function. */
+    vector = VectorInit(DEFAULT_CAPACITY);
+    vector->set_clean(vector, CleanElement);
+    for (i = 0 ; i < SIZE_MID_TEST ; ++i) {
+        Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+        tuple->first = i;
+        tuple->second = i;
+        vector->push_back(vector, tuple);
+    }
+    CU_ASSERT(vector->resize(vector, SIZE_TNY_TEST) == true);
+    VectorDeinit(vector);
+}
+
+void TestPushAndInsert()
+{
+    Vector* vector = VectorInit(DEFAULT_CAPACITY);
+    vector->set_clean(vector, CleanElement);
+    void* dummy;
+
+    /* Push elements ranging from SML to (SML * 2) to the vector tail. */
+    unsigned num = SIZE_SML_TEST;
+    unsigned i;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i) {
+        Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+        tuple->first = num;
+        tuple->second = num;
+        CU_ASSERT(vector->push_back(vector, tuple) == true);
+        ++num;
+    }
+    num = SIZE_SML_TEST;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i) {
+        void* tuple;
+        CU_ASSERT(vector->get(vector, i, &tuple) == true);
+        CU_ASSERT_EQUAL(((Tuple*)tuple)->first, num);
+        ++num;
+    }
+    CU_ASSERT(vector->get(vector, SIZE_SML_TEST << 1, &dummy) == false);
+    CU_ASSERT(vector->get(vector, SIZE_MID_TEST, &dummy) == false);
+
+    /* Insert elements ranging from 0 to SML to the vector head. */
+    num = SIZE_SML_TEST - 1;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i) {
+        Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+        tuple->first = num;
+        tuple->second = num;
+        CU_ASSERT(vector->insert(vector, 0, tuple) == true);
+        --num;
+    }
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i) {
+        void* tuple;
+        CU_ASSERT(vector->get(vector, i, &tuple) == true);
+        CU_ASSERT_EQUAL(((Tuple*)tuple)->first, i);
+    }
+    CU_ASSERT(vector->insert(vector, SIZE_MID_TEST, dummy) == false);
+
+    /* Insert elements ranging from (SML * 2) to (SML * 3) to the vector tail. */
+    num = SIZE_SML_TEST << 1;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i) {
+        Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+        tuple->first = num;
+        tuple->second = num;
+        CU_ASSERT(vector->insert(vector, num, tuple) == true);
+        ++num;
+    }
+    for (i = 0 ; i < SIZE_SML_TEST * 3 ; ++i) {
+        void* tuple;
+        CU_ASSERT(vector->get(vector, i, &tuple) == true);
+        CU_ASSERT_EQUAL(((Tuple*)tuple)->first, i);
+    }
+
+    CU_ASSERT_EQUAL(vector->size(vector), SIZE_SML_TEST * 3);
+    CU_ASSERT_EQUAL(vector->capacity(vector), SIZE_MID_TEST);
+
+    VectorDeinit(vector);
+}
+
+void TestPopAndRemove()
+{
+    Vector* vector = VectorInit(DEFAULT_CAPACITY);
+    vector->set_clean(vector, CleanElement);
+    void* dummy;
+
+    CU_ASSERT(vector->pop_back(vector) == false);
+
+    unsigned i;
+    for (i = 0 ; i < SIZE_MID_TEST ; ++i) {
+        Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+        tuple->first = i;
+        tuple->second = i;
+        vector->push_back(vector, tuple);
+    }
+
+    /* Pop elements ranging from (SML * 3) to MID from the vector tail. */
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i)
+        CU_ASSERT(vector->pop_back(vector) == true);
+    CU_ASSERT(vector->get(vector, SIZE_SML_TEST * 3, &dummy) == false);
+    CU_ASSERT(vector->get(vector, SIZE_MID_TEST, &dummy) == false);
+
+    /* Remove elements ranging from (SML * 2) to (SML * 3) from the vector tail. */
+    for (i = SIZE_SML_TEST * 3 - 1 ; i >= SIZE_SML_TEST << 1 ; --i)
+        CU_ASSERT(vector->remove(vector, i) == true);
+    CU_ASSERT(vector->get(vector, SIZE_SML_TEST << 1, &dummy) == false);
+    CU_ASSERT(vector->remove(vector, SIZE_SML_TEST << 1) == false);
+    CU_ASSERT(vector->remove(vector, SIZE_MID_TEST) == false);
+
+    /* Remove elements ranging from 0 to SML from the vector head. */
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i)
+        CU_ASSERT(vector->remove(vector, 0) == true);
+    CU_ASSERT(vector->get(vector, SIZE_SML_TEST, &dummy) == false);
+
+    unsigned num = SIZE_SML_TEST;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i) {
+        void* tuple;
+        CU_ASSERT(vector->get(vector, i, &tuple) == true);
+        CU_ASSERT_EQUAL(((Tuple*)tuple)->first, num);
+        ++num;
+    }
+
+    CU_ASSERT_EQUAL(vector->size(vector), SIZE_SML_TEST);
+    CU_ASSERT_EQUAL(vector->capacity(vector), SIZE_MID_TEST);
+
+    VectorDeinit(vector);
+}
+
+void TestReplace()
+{
+    Vector* vector = VectorInit(DEFAULT_CAPACITY);
+    vector->set_clean(vector, CleanElement);
+    void* dummy;
+
+    unsigned i;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i) {
+        Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+        tuple->first = i;
+        tuple->second = i;
+        vector->push_back(vector, tuple);
+    }
+    CU_ASSERT(vector->set(vector, SIZE_SML_TEST, dummy) == false);
+
+    unsigned num = SIZE_SML_TEST;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i) {
+        Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+        tuple->first = num;
+        tuple->second = num;
+        CU_ASSERT(vector->set(vector, i, tuple) == true);
+        ++num;
+    }
+    num = SIZE_SML_TEST;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i) {
+        void* tuple;
+        vector->get(vector, i, &tuple);
+        CU_ASSERT_EQUAL(((Tuple*)tuple)->first, num);
+        ++num;
+    }
+
+    CU_ASSERT_EQUAL(vector->size(vector), SIZE_SML_TEST);
+    CU_ASSERT_EQUAL(vector->capacity(vector), SIZE_SML_TEST);
+
+    VectorDeinit(vector);
+}
+
+void TestIterator()
+{
+    Vector* vector = VectorInit(DEFAULT_CAPACITY);
+    vector->set_clean(vector, CleanElement);
+
+    unsigned i;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i) {
+        Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+        tuple->first = i;
+        tuple->second = i;
+        vector->push_back(vector, tuple);
+    }
+
+    void* tuple;
+    i = 0;
+    vector->first(vector, false);
+    while (vector->next(vector, &tuple)) {
+        CU_ASSERT_EQUAL(((Tuple*)tuple)->first, i);
+        ++i;
+    }
+
+    i = SIZE_SML_TEST - 1;
+    vector->first(vector, true);
+    while (vector->reverse_next(vector, &tuple)) {
+        CU_ASSERT_EQUAL(((Tuple*)tuple)->first, i);
+        --i;
+    }
+
+    VectorDeinit(vector);
+}
+
+void TestSort()
+{
+    srand(time(NULL));
+
+    void* tuples[SIZE_SML_TEST];
+    unsigned i;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i) {
+        Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+        tuple->first = i;
+        tuple->second = i;
+        tuples[i] = tuple;
+    }
+    for (i = 0 ; i < SIZE_MID_TEST ; ++i) {
+        int src = rand() % SIZE_SML_TEST;
+        int tge = rand() % SIZE_SML_TEST;
+        void* tuple = tuples[src];
+        tuples[src] = tuples[tge];
+        tuples[tge] = tuple;
+    }
+
+    Vector* vector = VectorInit(DEFAULT_CAPACITY);
+    vector->set_clean(vector, CleanElement);
+
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i)
+        vector->push_back(vector, tuples[i]);
+
+    vector->sort(vector, SortElement);
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i) {
+        void* tuple;
+        vector->get(vector, i, &tuple);
+        CU_ASSERT_EQUAL(((Tuple*)tuple)->first, i);
+    }
+
+    VectorDeinit(vector);
+}
+
+/*-----------------------------------------------------------------------------*
+ *                      The driver for Vector unit test                        *
+ *-----------------------------------------------------------------------------*/
+bool AddSuite()
+{
+    CU_pSuite suite = CU_add_suite("Structure Verification", NULL, NULL);
+    if (!suite)
+        return false;
+
+    CU_pTest unit = CU_add_test(suite, "New and Delete", TestNewDelete);
+    if (!unit)
+        return false;
+
+    unit = CU_add_test(suite, "Resize", TestResize);
+    if (!unit)
+        return false;
+
+    unit = CU_add_test(suite, "Element Push and Insert", TestPushAndInsert);
+    if (!unit)
+        return false;
+
+    unit = CU_add_test(suite, "Element Pop and Remove", TestPopAndRemove);
+    if (!unit)
+        return false;
+
+    unit = CU_add_test(suite, "Element Replace", TestReplace);
+    if (!unit)
+        return false;
+
+    unit = CU_add_test(suite, "Iterator", TestIterator);
+    if (!unit)
+        return false;
+
+    unit = CU_add_test(suite, "Sort", TestSort);
+    if (!unit)
+        return false;
+
+    return true;
+}
 
 int32_t main()
 {
-    if (CU_initialize_registry() != CUE_SUCCESS)
-        return CU_get_error();
-    assert(CU_get_registry() != NULL);
-    assert(!CU_is_test_running());
+    int rc = 0;
 
-    /* Prepare the test suite for primitive input. */
-    if (SuitePrimitive() != SUCC) {
-        CU_cleanup_registry();
-        return CU_get_error();
+    if (CU_initialize_registry() != CUE_SUCCESS) {
+        rc = CU_get_error();
+        goto EXIT;
+    }
+
+    /* Register the test suite for map structure verification. */
+    if (AddSuite() == false) {
+        rc = CU_get_error();
+        goto CLEAN;
     }
 
     /* Launch all the tests. */
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
 
+CLEAN:
     CU_cleanup_registry();
-    return SUCC;
-}
-
-
-void TestPrimPushBack()
-{
-    Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
-
-    /* Append the items. */
-    CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCC);
-    CU_ASSERT(pVec->push_back(pVec, (Item)2) == SUCC);
-    CU_ASSERT(pVec->push_back(pVec, (Item)3) == SUCC);
-    CU_ASSERT(pVec->push_back(pVec, (Item)4) == SUCC);
-
-    /* Check item insertion sequence. */
-    Item item;
-    CU_ASSERT(pVec->get(pVec, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pVec->get(pVec, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pVec->get(pVec, &item, 2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pVec->get(pVec, &item, 3) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    /* Check vector storage. */
-    CU_ASSERT_EQUAL(pVec->size(pVec), 4);
-    CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
-
-    /* Check illegal indexing. */
-    CU_ASSERT(pVec->get(pVec, &item, -1) == ERR_IDX);
-    CU_ASSERT(pVec->get(pVec, &item, 4) == ERR_IDX);
-
-    VectorDeinit(&pVec);
-}
-
-void TestPrimInsert()
-{
-    Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
-
-    /* Append the items. */
-    CU_ASSERT(pVec->insert(pVec, (Item)3, 0) == SUCC);
-    CU_ASSERT(pVec->insert(pVec, (Item)4, 1) == SUCC);
-
-    /* Trigger the shift of trailing items. */
-    CU_ASSERT(pVec->insert(pVec, (Item)1, 0) == SUCC);
-    CU_ASSERT(pVec->insert(pVec, (Item)2, 1) == SUCC);
-
-    /* Check item insertion sequence. */
-    Item item;
-    CU_ASSERT(pVec->get(pVec, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pVec->get(pVec, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pVec->get(pVec, &item, 2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pVec->get(pVec, &item, 3) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    /* Check vector storage. */
-    CU_ASSERT_EQUAL(pVec->size(pVec), 4);
-    CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
-
-    /* Check illegal indexing. */
-    CU_ASSERT(pVec->insert(pVec, (Item)-1, -1) == ERR_IDX);
-    CU_ASSERT(pVec->insert(pVec, (Item)-1, 5) == ERR_IDX);
-
-    VectorDeinit(&pVec);
-}
-
-void TestPrimSet()
-{
-    Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
-
-    CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCC);
-    CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCC);
-
-    /* Replace the existing items. */
-    CU_ASSERT(pVec->set(pVec, (Item)2, 0) == SUCC);
-    CU_ASSERT(pVec->set(pVec, (Item)3, 1) == SUCC);
-
-    Item item;
-    CU_ASSERT(pVec->get(pVec, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pVec->get(pVec, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-
-    /* Check illegal indexing. */
-    CU_ASSERT(pVec->set(pVec, (Item)-1, -1) == ERR_IDX);
-    CU_ASSERT(pVec->set(pVec, (Item)-1, 2) == ERR_IDX);
-
-    VectorDeinit(&pVec);
-}
-
-void TestPrimPopBack()
-{
-    Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
-
-    CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCC);
-    CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCC);
-
-    /* Pop all the items. */
-    CU_ASSERT(pVec->pop_back(pVec) == SUCC);
-    CU_ASSERT(pVec->pop_back(pVec) == SUCC);
-
-    /* Check vector storage. */
-    CU_ASSERT_EQUAL(pVec->size(pVec), 0);
-    CU_ASSERT_EQUAL(pVec->capacity(pVec), 2);
-
-    /* Check illegal pop. */
-    CU_ASSERT(pVec->pop_back(pVec) == ERR_IDX);
-
-    VectorDeinit(&pVec);
-}
-
-void TestPrimDelete()
-{
-    Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
-
-    CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCC);
-    CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCC);
-    CU_ASSERT(pVec->push_back(pVec, (Item)2) == SUCC);
-    CU_ASSERT(pVec->push_back(pVec, (Item)3) == SUCC);
-
-    /* Delete the head and tail. */
-    CU_ASSERT(pVec->remove(pVec, 3) == SUCC);
-    CU_ASSERT(pVec->remove(pVec, 0) == SUCC);
-
-    /* Check item shifting sequence. */
-    Item item;
-    CU_ASSERT(pVec->get(pVec, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pVec->get(pVec, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-
-    /* Check vector storage. */
-    CU_ASSERT_EQUAL(pVec->size(pVec), 2);
-    CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
-
-    /* Check illegal deletion. */
-    CU_ASSERT(pVec->remove(pVec, -1) == ERR_IDX);
-    CU_ASSERT(pVec->remove(pVec, 2) == ERR_IDX);
-
-    VectorDeinit(&pVec);
-}
-
-void TestPrimResize()
-{
-    Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
-
-    /* Expand the capacity. */
-    CU_ASSERT(pVec->resize(pVec, 4) == SUCC);
-    CU_ASSERT_EQUAL(pVec->size(pVec), 0);
-    CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
-
-    /* Fill the half of the storage. */
-    CU_ASSERT(pVec->push_back(pVec, (Item)0) == SUCC);
-    CU_ASSERT(pVec->push_back(pVec, (Item)1) == SUCC);
-    CU_ASSERT_EQUAL(pVec->size(pVec), 2);
-    CU_ASSERT_EQUAL(pVec->capacity(pVec), 4);
-
-    /* Shrink the storage. */
-    CU_ASSERT(pVec->resize(pVec, 3) == SUCC);
-    CU_ASSERT_EQUAL(pVec->size(pVec), 2);
-    CU_ASSERT_EQUAL(pVec->capacity(pVec), 3);
-
-    /* Shrink the storage again and trim the trailing items. */
-    CU_ASSERT(pVec->resize(pVec, 1) == SUCC);
-    Item item;
-    CU_ASSERT(pVec->get(pVec, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)0);
-    CU_ASSERT_EQUAL(pVec->size(pVec), 1);
-    CU_ASSERT_EQUAL(pVec->capacity(pVec), 1);
-
-    VectorDeinit(&pVec);
-}
-
-void DestroyObject(Item item)
-{
-    free((Tuple*)item);
-}
-
-int32_t CompareObject(const void *ppSrc, const void *ppTge)
-{
-    Tuple *TupleSrc = *((Tuple**)ppSrc);
-    Tuple *TupleTge = *((Tuple**)ppTge);
-    if (TupleSrc->iMajor == TupleTge->iMajor)
-        return 0;
-    return (TupleSrc->iMajor > TupleTge->iMajor)? 1 : (-1);
-}
-
-void TestSort()
-{
-    Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
-    CU_ASSERT(pVec->set_destroy(pVec, DestroyObject) == SUCC);
-
-    /* Push the initial items. */
-    Tuple *tuple = (Tuple*)malloc(sizeof(Tuple));
-    tuple->iMajor = 3; tuple->iMinor = 3;
-    CU_ASSERT(pVec->push_back(pVec, (Item)tuple) == SUCC);
-
-    tuple = (Tuple*)malloc(sizeof(Tuple));
-    tuple->iMajor = 1; tuple->iMinor = 1;
-    CU_ASSERT(pVec->push_back(pVec, (Item)tuple) == SUCC);
-
-    tuple = (Tuple*)malloc(sizeof(Tuple));
-    tuple->iMajor = 2; tuple->iMinor = 2;
-    CU_ASSERT(pVec->push_back(pVec, (Item)tuple) == SUCC);
-
-    /* Sort the items. */
-    CU_ASSERT(pVec->sort(pVec, CompareObject) == SUCC);
-
-    /* Check the item order. */
-    Item item;
-    CU_ASSERT(pVec->get(pVec, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(1, ((Tuple*)item)->iMajor);
-
-    CU_ASSERT(pVec->get(pVec, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(2, ((Tuple*)item)->iMajor);
-
-    CU_ASSERT(pVec->get(pVec, &item, 2) == SUCC);
-    CU_ASSERT_EQUAL(3, ((Tuple*)item)->iMajor);
-
-    VectorDeinit(&pVec);
-}
-
-void TestIterate()
-{
-    Vector *pVec;
-    CU_ASSERT(VectorInit(&pVec, 0) == SUCC);
-    CU_ASSERT(pVec->set_destroy(pVec, DestroyObject) == SUCC);
-
-    /* Iterate through empty vector. */
-    Item item;
-    CU_ASSERT(pVec->iterate(pVec, true, NULL) == SUCC);
-    while (pVec->iterate(pVec, false, &item) != END);
-    CU_ASSERT_EQUAL(item, NULL);
-    CU_ASSERT(pVec->reverse_iterate(pVec, true, NULL) == SUCC);
-    while (pVec->reverse_iterate(pVec, false, &item) != END);
-    CU_ASSERT_EQUAL(item, NULL);
-
-    /* Push the initial items. */
-    Tuple *tuple = (Tuple*)malloc(sizeof(Tuple));
-    tuple->iMajor = 3; tuple->iMinor = 3;
-    CU_ASSERT(pVec->push_back(pVec, (Item)tuple) == SUCC);
-
-    tuple = (Tuple*)malloc(sizeof(Tuple));
-    tuple->iMajor = 2; tuple->iMinor = 2;
-    CU_ASSERT(pVec->push_back(pVec, (Item)tuple) == SUCC);
-
-    tuple = (Tuple*)malloc(sizeof(Tuple));
-    tuple->iMajor = 1; tuple->iMinor = 1;
-    CU_ASSERT(pVec->push_back(pVec, (Item)tuple) == SUCC);
-
-    /* Iterate through the vector items. */
-    int32_t iSum = 0;
-    int32_t iIdx = 3;
-    CU_ASSERT(pVec->iterate(pVec, true, NULL) == SUCC);
-    while (pVec->iterate(pVec, false, &item) != END) {
-        int32_t iMajor = ((Tuple*)item)->iMajor;
-        CU_ASSERT_EQUAL(iIdx, iMajor);
-        iSum += iMajor;
-        iIdx--;
-    }
-    CU_ASSERT_EQUAL(iSum, 6);
-
-    /* Reversely iterate through the vector items. */
-    iSum = 0;
-    iIdx = 1;
-    CU_ASSERT(pVec->reverse_iterate(pVec, true, NULL) == SUCC);
-    while (pVec->reverse_iterate(pVec, false, &item) != END) {
-        int32_t iMajor = ((Tuple*)item)->iMajor;
-        CU_ASSERT_EQUAL(iIdx, iMajor);
-        iSum += iMajor;
-        iIdx++;
-    }
-    CU_ASSERT_EQUAL(iSum, 6);
-
-    VectorDeinit(&pVec);
+EXIT:
+    return rc;
 }

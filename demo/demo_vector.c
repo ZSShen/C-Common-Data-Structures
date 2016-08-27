@@ -1,153 +1,220 @@
 #include "cds.h"
 
 
-typedef struct Employ_ {
-    int8_t cYear;
-    int8_t cLevel;
-    int32_t iId;
-} Employ;
+static const int DEFAULT_CAPACITY = 32;
+
+typedef struct Tuple_ {
+    int first;
+    int second;
+} Tuple;
 
 
-void DestroyObject(Item item)
+int CompareNumber(const void* lhs, const void* rhs)
 {
-    free((Employ*)item);
-}
-
-int32_t CompareObject(const void *ppSrc, const void *ppTge)
-{
-    Employ *empSrc = *((Employ**)(Item*)ppSrc);
-    Employ *empTge = *((Employ**)(Item*)ppTge);
-    if (empSrc->iId == empTge->iId)
+    int num_lhs = *((int*)lhs);
+    int num_rhs = *((int*)rhs);
+    if (num_lhs == num_rhs)
         return 0;
-    return (empSrc->iId > empTge->iId)? 1 : (-1);
+    return (num_lhs > num_rhs)? 1 : -1;
+}
+
+int CompareObject(const void* lhs, const void* rhs)
+{
+    Tuple* tpl_lhs = *((Tuple**)lhs);
+    Tuple* tpl_rhs = *((Tuple**)rhs);
+    if (tpl_lhs->first == tpl_rhs->first)
+        return 0;
+    return (tpl_lhs->first > tpl_rhs->first)? 1 : -1;
+}
+
+void CleanObject(void* obj)
+{
+    free(obj);
 }
 
 
-int main()
+void ManipulateNumerics()
 {
-    Vector *pVec;
+    /* We should initialize the container before any operations. */
+    Vector* vector = VectorInit(DEFAULT_CAPACITY);
 
-    /* You should initialize the DS before any operations. */
-    int32_t rc = VectorInit(&pVec, 1);
-    if (rc != SUCC)
-        return rc;
+    /* Push the integer elements. */
+    VectorPushBack(vector, (void*)(intptr_t)3);
+    VectorPushBack(vector, (void*)(intptr_t)4);
 
-    /* If you plan to delegate the resource clean task to the DS, please set the
-       custom clean method. */
-    pVec->set_destroy(pVec, DestroyObject);
-
-    /* Push the items. */
-    Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 3;
-    pEmploy->cLevel = 3;
-    pEmploy->cYear = 3;
-    pVec->push_back(pVec, (Item)pEmploy);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 4;
-    pEmploy->cLevel = 4;
-    pEmploy->cYear = 4;
-    pVec->push_back(pVec, (Item)pEmploy);
-
-    /* Insert the items at the designated indexes. */
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 1;
-    pEmploy->cLevel = 1;
-    pEmploy->cYear = 1;
-    pVec->insert(pVec, (Item)pEmploy, 0);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 2;
-    pEmploy->cLevel = 2;
-    pEmploy->cYear = 2;
-    pVec->insert(pVec, (Item)pEmploy, 1);
+    /* Insert the elements at the specified indexes. */
+    VectorInsert(vector, 0, (void*)(intptr_t)1);
+    VectorInsert(vector, 1, (void*)(intptr_t)2);
 
     /*---------------------------------------------------------------*
      * Now the vector should be: [1] | [2] | [3] | [4]               *
      *---------------------------------------------------------------*/
 
     /* Iterate through the vector. */
-    Item item;
-    int32_t iId = 1;
-    pVec->iterate(pVec, true, NULL);
-    while (pVec->iterate(pVec, false, &item) != END) {
-        assert(((Employ*)item)->iId == iId);
-        iId++;
+    int num = 1;
+    void* elem;
+    VectorFirst(vector, false);
+    while (VectorNext(vector, &elem)) {
+        assert((intptr_t)(void*)elem == num);
+        ++num;
     }
 
     /* Reversely iterate through the vector. */
-    iId = 4;
-    pVec->reverse_iterate(pVec, true, NULL);
-    while (pVec->reverse_iterate(pVec, false, &item) != END) {
-        assert(((Employ*)item)->iId == iId);
-        iId--;
+    num = 4;
+    VectorFirst(vector, true);
+    while (VectorReverseNext(vector, &elem)) {
+        assert((intptr_t)(void*)elem == num);
+        --num;
     }
 
-    /* Retrieve the items with direct indexing. */
-    pVec->get(pVec, &item, 0);
-    assert(((Employ*)item)->iId == 1);
-    pVec->get(pVec, &item, 3);
-    assert(((Employ*)item)->iId == 4);
+    /* Get the elements from the specified indexes. */
+    VectorGet(vector, 0, &elem);
+    assert((intptr_t)(void*)elem == 1);
+    VectorGet(vector, 3, &elem);
+    assert((intptr_t)(void*)elem == 4);
 
-    /* Replace the item with direct indexing. */
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 10;
-    pEmploy->cLevel = 10;
-    pEmploy->cYear = 10;
-    pVec->set(pVec, (Item)pEmploy, 0);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 40;
-    pEmploy->cLevel = 40;
-    pEmploy->cYear = 40;
-    pVec->set(pVec, (Item)pEmploy, 3);
+    /* Replace the elements at the specified indexes. */
+    VectorSet(vector, 0, (void*)(intptr_t)10);
+    VectorSet(vector, 3, (void*)(intptr_t)40);
 
     /*---------------------------------------------------------------*
      * Now the vector should be: [10] | [2] | [3] | [40]             *
      *---------------------------------------------------------------*/
 
-    /* Check the number of stored items and the vector capacity. */
-    int32_t iSize = pVec->size(pVec);
-    assert(iSize == 4);
-    int32_t iCap = pVec->capacity(pVec);
-    assert(iCap == 4);
+    /* Get the number of stored elements. */
+    unsigned size = VectorSize(vector);
+    assert(size == 4);
 
-    /* Sort the items with the custom item comparison method. */
-    pVec->sort(pVec, CompareObject);
+    /* Sort the integer elements. */
+    VectorSort(vector, CompareNumber);
 
     /*---------------------------------------------------------------*
      * Now the vector should be: [2] | [3] | [10] | [40]             *
      *---------------------------------------------------------------*/
 
-    /* Delete the item at the designated index. */
-    pVec->remove(pVec, 3);
-    pVec->remove(pVec, 0);
+    /* Remove the elements at the specified indexes. */
+    VectorRemove(vector, 3);
+    VectorRemove(vector, 0);
 
     /*---------------------------------------------------------------*
      * Now the vector should be: [3] | [10]                          *
      *---------------------------------------------------------------*/
 
-    int32_t iNum = 0;
-    pVec->get(pVec, &item, 0);
-    iNum += ((Employ*)item)->iId;
-    pVec->get(pVec, &item, 1);
-    iNum += ((Employ*)item)->iId;
-    iNum *= 20;
+    VectorGet(vector, 0, &elem);
+    assert((int)(intptr_t)elem == 3);
+    VectorGet(vector, 1, &elem);
+    assert((int)(intptr_t)elem == 10);
 
-    /* Resize the vector storage. */
-    pVec->resize(pVec, iNum);
+    /* Pop the elements. */
+    VectorPopBack(vector);
+    VectorPopBack(vector);
+    assert(VectorSize(vector) == 0);
 
-    /* Pop the rest items. */
-    pVec->pop_back(pVec);
-    pVec->pop_back(pVec);
+    VectorDeinit(vector);
+}
 
-    iSize = pVec->size(pVec);
-    assert(iSize == 0);
-    iCap = pVec->capacity(pVec);
-    assert(iCap == 260);
+void ManipulateObjects()
+{
+    /* We should initialize the container before any operations. */
+    Vector* vector = VectorInit(DEFAULT_CAPACITY);
+    VectorSetClean(vector, CleanObject);
 
-    /* You should deinitialize the DS after all the relevant tasks. */
-    VectorDeinit(&pVec);
+    /* Push the object elements. */
+    Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 3;
+    tuple->second = -3;
+    VectorPushBack(vector, tuple);
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 4;
+    tuple->second = -4;
+    VectorPushBack(vector, tuple);
 
-    return SUCC;
+    /* Insert the elements at the specified indexes. */
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 1;
+    tuple->second = -1;
+    VectorInsert(vector, 0, tuple);
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 2;
+    tuple->second = -2;
+    VectorInsert(vector, 1, tuple);
+
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [1] | [2] | [3] | [4]               *
+     *---------------------------------------------------------------*/
+
+    /* Iterate through the vector. */
+    int num = 1;
+    void* elem;
+    VectorFirst(vector, false);
+    while (VectorNext(vector, &elem)) {
+        assert(((Tuple*)elem)->first == num);
+        ++num;
+    }
+
+    /* Reversely iterate through the vector. */
+    num = 4;
+    VectorFirst(vector, true);
+    while (VectorReverseNext(vector, &elem)) {
+        assert(((Tuple*)elem)->first == num);
+        --num;
+    }
+
+    /* Get the elements from the specified indexes. */
+    VectorGet(vector, 0, &elem);
+    assert(((Tuple*)elem)->first == 1);
+    VectorGet(vector, 3, &elem);
+    assert(((Tuple*)elem)->first == 4);
+
+    /* Replace the elements at the specified indexes. */
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 10;
+    tuple->second = -10;
+    VectorSet(vector, 0, tuple);
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 40;
+    tuple->second = -40;
+    VectorSet(vector, 3, tuple);
+
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [10] | [2] | [3] | [40]             *
+     *---------------------------------------------------------------*/
+
+    /* Get the number of stored elements. */
+    unsigned size = VectorSize(vector);
+    assert(size == 4);
+
+    /* Sort the integer elements. */
+    VectorSort(vector, CompareObject);
+
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [2] | [3] | [10] | [40]             *
+     *---------------------------------------------------------------*/
+
+    /* Remove the elements at the specified indexes. */
+    VectorRemove(vector, 3);
+    VectorRemove(vector, 0);
+
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [3] | [10]                          *
+     *---------------------------------------------------------------*/
+
+    VectorGet(vector, 0, &elem);
+    assert(((Tuple*)elem)->first == 3);
+    VectorGet(vector, 1, &elem);
+    assert(((Tuple*)elem)->first == 10);
+
+    /* Pop the elements. */
+    VectorPopBack(vector);
+    VectorPopBack(vector);
+    assert(VectorSize(vector) == 0);
+
+    VectorDeinit(vector);
+}
+
+int main()
+{
+    ManipulateNumerics();
+    ManipulateObjects();
+    return 0;
 }

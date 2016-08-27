@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdint.h>
+#include <limits.h>
 #include <assert.h>
 
 /** The function is finished gracefully. */
