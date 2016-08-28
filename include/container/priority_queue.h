@@ -1,4 +1,27 @@
 /**
+ *   The MIT License (MIT)
+ *   Copyright (C) 2016 ZongXian Shen <andy.zsshen@gmail.com>
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *   IN THE SOFTWARE.
+ */
+
+/**
  * @file priority_queue.h The priority queue implemented with binary heap.
  */
 
@@ -14,34 +37,41 @@ extern "C" {
 /** PriorityQueueData is the data type for the container private information. */
 typedef struct _PriorityQueueData PriorityQueueData;
 
+/** Order comparison function for the queue elements. */
+typedef int (*PriorityQueueCompare) (const void*, const void*);
+
+/** Element clean function called when an element is removed. */
+typedef void (*PriorityQueueClean) (void*);
+
+
 /** The implementation for priority queue. */
 typedef struct _PriorityQueue {
     /** The container private information */
-    PriorityQueueData *pData;
+    PriorityQueueData *data;
 
-    /** Push an item onto the queue.
+    /** Push an element to the queue.
         @see PriorityQueuePush */
-    int32_t (*push) (struct _PriorityQueue*, Item);
+    bool (*push) (struct _PriorityQueue*, void*);
 
-    /** Retrieve item from top of the queue.
+    /** Get element from top of the queue.
         @see PriorityQueueTop */
-    int32_t (*top) (struct _PriorityQueue*, Item*);
+    bool (*top) (struct _PriorityQueue*, void**);
 
-    /** Delete item from top of the queue.
+    /** Remove element from top of the queue.
         @see PriorityQueuePop */
-    int32_t (*pop) (struct _PriorityQueue*);
+    bool (*pop) (struct _PriorityQueue*);
 
-    /** Return the number of stored items.
+    /** Get the number of stored elements.
         @see PriorityQueueSize */
-    int32_t (*size) (struct _PriorityQueue*);
+    unsigned (*size) (struct _PriorityQueue*);
 
-    /** Set the custom item comparison method.
+    /** Set the custom element comparison function.
         @see PriorityQueueSetCompare */
-    int32_t (*set_compare) (struct _PriorityQueue*, int32_t (*) (Item, Item));
+    void (*set_compare) (struct _PriorityQueue*, PriorityQueueCompare func);
 
-    /** Set the custom item resource clean method.
-        @see PriorityQueueSetDestroy */
-    int32_t (*set_destroy) (struct _PriorityQueue*, void (*) (Item));
+    /** Set the custom element cleanup function.
+        @see PriorityQueueSetClean */
+    void (*set_clean) (struct _PriorityQueue*, PriorityQueueClean func);
 } PriorityQueue;
 
 
@@ -51,100 +81,77 @@ typedef struct _PriorityQueue {
 /**
  * @brief The constructor for PriorityQueue.
  *
- * @param ppObj         The double pointer to the to be constructed queue
- *
- * @retval SUCC
- * @retval ERR_NOMEM    Insufficient memory for queue construction
+ * @retval obj          The successfully constructed queue
+ * @retval NULL         Insufficient memory for queue construction
  */
-int32_t PriorityQueueInit(PriorityQueue **ppObj);
+PriorityQueue* PriorityQueueInit();
 
 /**
  * @brief The destructor for PriorityQueue.
  *
- * If the custom resource clean method is set, it also runs the clean method
- * for all the items.
- *
- * @param ppObj         The double pointer to the to be destructed queue
+ * @param obj           The pointer to the to be destructed queue
  */
-void PriorityQueueDeinit(PriorityQueue **ppObj);
+void PriorityQueueDeinit(PriorityQueue* obj);
 
 /**
- * @brief Push an item onto the queue.
- *
- * This function pushes an item onto the queue with the corresponding queue size
- * extension.
+ * @brief Push an element to the queue.
  *
  * @param self          The pointer to PriorityQueue structure
- * @param item          The designated item
+ * @param element       The specified element
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NOMEM    Insufficient memory for queue extension
+ * @retval true         The element is successfully pushed
+ * @retval false        The element cannot be pushed due to insufficient memory
  */
-int32_t PriorityQueuePush(PriorityQueue *self, Item item);
+bool PriorityQueuePush(PriorityQueue* self, void* element);
 
 /**
- * @brief Delete item from top of the queue.
+ * @brief Delete element from top of the queue.
  *
- * This function deletes item from top of the queue. If the custom resource clean
- * method is set, it also runs the clean method for the deleted item.
+ * This function removes element from top of the queue. Also, the cleanup
+ * function is invoked for the popped element.
  *
  * @param self          The pointer to PriorityQueue structure
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty queue
+ * @retval true         The top element is successfully popped
+ * @retval false        The queue is empty
  */
-int32_t PriorityQueuePop(PriorityQueue *self);
+bool PriorityQueuePop(PriorityQueue* self);
 
 /**
- * @brief Retrieve item from top of the queue.
- *
- * This function retrieves item from top of the queue. If the queue is not empty,
- * the item is returned by the second parameter. Otherwise, the error code is
- * returned and the second parameter is updated with NULL.
+ * @brief Get element from top of the queue.
  *
  * @param self          The pointer to PriorityQueue structure
- * @param pItem         The pointer to the returned item
+ * @param p_element     The pointer to the returned element
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty queue
- * @retval ERR_GET      Invalid parameter to store returned item
+ * @retval true         The top element is successfully retrieved
+ * @retval false        The queue is empty
  */
-int32_t PriorityQueueTop(PriorityQueue *self, Item *pItem);
+bool PriorityQueueTop(PriorityQueue* self, void** p_element);
 
 /**
  * @brief Return the number of stored items.
  *
  * @param self          The pointer to PriorityQueue structure
  *
- * @return              The number of items
- * @retval ERR_NOINIT   Uninitialized container
+ * @retval size         The number of stored elements
  */
-int32_t PriorityQueueSize(PriorityQueue *self);
+unsigned PriorityQueueSize(PriorityQueue* self);
 
 /**
- * @brief Set the custom item comparison method.
+ * @brief Set the custom element comparison function.
  *
  * @param self          The pointer to PriorityQueue structure
- * @param pFunc         The function pointer to the custom method
- *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
+ * @param func          The custom function
  */
-int32_t PriorityQueueSetCompare(PriorityQueue *self, int32_t (*pFunc) (Item, Item));
+void PriorityQueueSetCompare(PriorityQueue* self, PriorityQueueCompare func);
 
 /**
- * @brief Set the custom item resource clean method.
+ * @brief Set the custom element cleanup function.
  *
  * @param self          The pointer to PriorityQueue structure
- * @param pFunc         The function pointer to the custom method
- *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
+ * @param func          The custom function
  */
-int32_t PriorityQueueSetDestroy(PriorityQueue *self, void (*pFunc) (Item));
+void PriorityQueueSetClean(PriorityQueue* self, PriorityQueueClean func);
 
 #ifdef __cplusplus
 }

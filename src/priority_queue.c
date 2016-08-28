@@ -1,3 +1,26 @@
+/**
+ *   The MIT License (MIT)
+ *   Copyright (C) 2016 ZongXian Shen <andy.zsshen@gmail.com>
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *   IN THE SOFTWARE.
+ */
+
 #include "container/priority_queue.h"
 
 
@@ -5,236 +28,232 @@
  *                        The container private data                         *
  *===========================================================================*/
 struct _PriorityQueueData {
-    int32_t iSize_;
-    int32_t iCapacity_;
-    Item *aItem_;
-    int32_t (*pCompare_) (Item, Item);
-    void (*pDestroy_) (Item);
+    unsigned size_;
+    unsigned capacity_;
+    void** elements_;
+    PriorityQueueCompare func_cmp_;
+    PriorityQueueClean func_clean_;
 };
 
-#define DEFAULT_CAPACITY        (32)
-#define PARENT(idx)             (idx >> 1)
-#define LEFT(idx)               (idx << 1)
-#define RIGHT(idx)              ((idx << 1) + 1)
+static const unsigned DEFAULT_CAPACITY = 32;
 
 
 /*===========================================================================*
  *                  Definition for internal operations                       *
  *===========================================================================*/
+#define likely(x)       __builtin_expect(!!(x), 1)
+#define unlikely(x)     __builtin_expect(!!(x), 0)
+
+static inline unsigned PARENT(unsigned idx)
+{
+    return idx >> 1;
+}
+
+static inline unsigned LEFT(unsigned idx)
+{
+    return idx << 1;
+}
+
+static inline unsigned RIGHT(unsigned idx)
+{
+    return (idx << 1) + 1;
+}
+
 /**
- * @brief The default order comparison method for a pair of items.
+ * @brief The default element comparison function.
  *
- * @param itemSrc       The source item
- * @param itemTge       The target item
+ * @param lhs           The source element
+ * @param rhs           The target element
  *
- * @retval 1            The source item has the larger order
- * @retval 0            Both the items have the same order
- * @retval -1           The source item has the smaller order
+ * @retval  1           The source element should go after the target one.
+ * @retval  0           The source element is equal to the target one.
+ * @retval -1           The source element should go before the target one.
  */
-int32_t _PriorityQueueItemComp(Item itemSrc, Item itemTge);
-
-
-#define CHECK_INIT(self)                                                        \
-            do {                                                                \
-                if (!self)                                                      \
-                    return ERR_NOINIT;                                          \
-                if (!(self->pData))                                             \
-                    return ERR_NOINIT;                                          \
-            } while (0);
+static int _PriorityQueueCompare(const void* lhs, const void* rhs);
 
 
 /*===========================================================================*
  *               Implementation for the exported operations                  *
  *===========================================================================*/
-int32_t PriorityQueueInit(PriorityQueue **ppObj)
+PriorityQueue* PriorityQueueInit()
 {
-    *ppObj = (PriorityQueue*)malloc(sizeof(PriorityQueue));
-    if (!(*ppObj))
-        return ERR_NOMEM;
-    PriorityQueue *pObj = *ppObj;
+    PriorityQueue* obj = (PriorityQueue*)malloc(sizeof(PriorityQueue));
+    if (unlikely(!obj))
+        return NULL;
 
-    pObj->pData = (PriorityQueueData*)malloc(sizeof(PriorityQueueData));
-    if (!(pObj->pData)) {
-        free(*ppObj);
-        *ppObj = NULL;
-        return ERR_NOMEM;
+    PriorityQueueData* data = (PriorityQueueData*)malloc(sizeof(PriorityQueueData));
+    if (unlikely(!data)) {
+        free(obj);
+        return NULL;
     }
-    PriorityQueueData *pData = pObj->pData;
 
-    pData->aItem_ = (Item*)malloc(sizeof(Item) * DEFAULT_CAPACITY);
-    if (!(pData->aItem_)) {
-        free(pObj->pData);
-        free(*ppObj);
-        *ppObj = NULL;
-        return ERR_NOMEM;
+    void** elements = (void**)malloc(sizeof(void*) * DEFAULT_CAPACITY);
+    if (unlikely(!elements)) {
+        free(data);
+        free(obj);
+        return NULL;
     }
-    pData->iSize_ = 0;
-    pData->iCapacity_ = DEFAULT_CAPACITY;
-    pData->pCompare_ = _PriorityQueueItemComp;
-    pData->pDestroy_ = NULL;
 
-    pObj->push = PriorityQueuePush;
-    pObj->top = PriorityQueueTop;
-    pObj->pop = PriorityQueuePop;
-    pObj->size = PriorityQueueSize;
-    pObj->set_compare = PriorityQueueSetCompare;
-    pObj->set_destroy = PriorityQueueSetDestroy;
+    data->size_ = 0;
+    data->capacity_ = DEFAULT_CAPACITY;
+    data->elements_ = elements;
+    data->func_cmp_ = _PriorityQueueCompare;
+    data->func_clean_ = NULL;
 
-    return SUCC;
+    obj->data = data;
+    obj->push = PriorityQueuePush;
+    obj->top = PriorityQueueTop;
+    obj->pop = PriorityQueuePop;
+    obj->size = PriorityQueueSize;
+    obj->set_compare = PriorityQueueSetCompare;
+    obj->set_clean = PriorityQueueSetClean;
+
+    return obj;
 }
 
-void PriorityQueueDeinit(PriorityQueue **ppObj)
+void PriorityQueueDeinit(PriorityQueue* obj)
 {
-    if (!(*ppObj))
-        goto EXIT;
+    if (unlikely(!obj))
+        return;
 
-    PriorityQueue *pObj = *ppObj;
-    if (!(pObj->pData))
-        goto FREE_QUEUE;
+    PriorityQueueData* data = obj->data;
+    PriorityQueueClean func_clean = data->func_clean_;
+    void** elements = data->elements_;
+    unsigned size = data->size_;
 
-    PriorityQueueData *pData = pObj->pData;
-    if (!(pData->aItem_))
-        goto FREE_DATA;
+    unsigned i;
+    for (i = 0 ; i < size ; ++i) {
+        if (func_clean)
+            func_clean(elements[i]);
+    }
 
-    if (!(pData->pDestroy_))
-        goto FREE_ARRAY;
-
-    Item *aItem = pData->aItem_;
-    int iIdx;
-    for (iIdx = 0 ; iIdx < pData->iSize_ ; iIdx++)
-        pData->pDestroy_(aItem[iIdx]);
-
-FREE_ARRAY:
-    free(pData->aItem_);
-FREE_DATA:
-    free(pObj->pData);
-FREE_QUEUE:
-    free(*ppObj);
-EXIT:
+    free(elements);
+    free(data);
+    free(obj);
     return;
 }
 
-int32_t PriorityQueuePush(PriorityQueue *self, Item item)
+bool PriorityQueuePush(PriorityQueue* self, void* element)
 {
-    CHECK_INIT(self);
-    PriorityQueueData *pData = self->pData;
+    PriorityQueueData* data = self->data;
+    void** elements = data->elements_;
+    unsigned size = data->size_;
+    unsigned capacity = data->capacity_;
 
     /* If the heap is full, extend it to double capacity. */
-    Item *aItem = pData->aItem_;
-    if (pData->iSize_ == pData->iCapacity_) {
-        int32_t iCapaNew = pData->iCapacity_ << 1;
-        Item *aItemNew = (Item*)realloc(aItem, iCapaNew * sizeof(Item));
-        if (!aItemNew)
-            return ERR_NOMEM;
-        aItem = pData->aItem_ = aItemNew;
-        pData->iCapacity_ = iCapaNew;
+    if (size == capacity) {
+        unsigned new_capacity = capacity << 1;
+        void** new_elements = (void**)realloc(elements, new_capacity * sizeof(void*));
+        if (!new_elements)
+            return false;
+        elements = data->elements_ = new_elements;
+        data->capacity_ = new_capacity;
     }
 
-    /* Push the item to the bottom of the heap. */
-    aItem[pData->iSize_] = item;
-    pData->iSize_++;
+    /* Push the element to the bottom of the heap. */
+    elements[data->size_] = element;
+    data->size_ = size + 1;
 
     /* Adjust the heap structure. */
-    int32_t iIdxCurr = pData->iSize_;
-    int32_t iIdxParent;
-    int32_t iOrder;
-    while (iIdxCurr > 1) {
-        iIdxParent = PARENT(iIdxCurr);
-        iOrder = pData->pCompare_(aItem[iIdxCurr - 1], aItem[iIdxParent - 1]);
-        if (iOrder <= 0)
+    PriorityQueueCompare func_cmp = data->func_cmp_;
+    unsigned curr = data->size_;
+    unsigned parent;
+    int order;
+    while (curr > 1) {
+        parent = PARENT(curr);
+        order = func_cmp(elements[curr - 1], elements[parent - 1]);
+        if (order > 0)
             break;
-        item = aItem[iIdxCurr - 1];
-        aItem[iIdxCurr - 1] = aItem[iIdxParent - 1];
-        aItem[iIdxParent - 1] = item;
-        iIdxCurr = iIdxParent;
+        element = elements[curr - 1];
+        elements[curr - 1] = elements[parent - 1];
+        elements[parent - 1] = element;
+        curr = parent;
     }
 
-    return SUCC;
+    return true;
 }
 
-int32_t PriorityQueuePop(PriorityQueue *self)
+bool PriorityQueuePop(PriorityQueue* self)
 {
-    CHECK_INIT(self);
-    PriorityQueueData *pData = self->pData;
+    PriorityQueueData* data = self->data;
+    void** elements = data->elements_;
+    PriorityQueueCompare func_cmp = data->func_cmp_;
+    PriorityQueueClean func_clean = data->func_clean_;
+    unsigned size = data->size_;
+    if (unlikely(size == 0))
+        return false;
 
-    /* Remove the heap top item. */
-    if (pData->pDestroy_)
-        pData->pDestroy_(pData->aItem_[0]);
-    pData->aItem_[0] = pData->aItem_[pData->iSize_ - 1];
-    pData->iSize_--;
+    /* Remove the heap top element. */
+    if (func_clean)
+        func_clean(elements[0]);
+    --size;
+    elements[0] = elements[size];
+    data->size_ = size;
 
     /* Adjust the heap structure. */
-    Item *aItem = pData->aItem_;
-    int32_t iSize = pData->iSize_;
-    int32_t iIdxCurr = 1;
-    int32_t iIdxChildL, iIdxChildR, iIdxNext;
-    int32_t iOrder;
+    unsigned curr = 1;
+    unsigned child_l, child_r, next;
+    int order;
     do {
-        iIdxChildL = LEFT(iIdxCurr);
-        if (iIdxChildL > iSize)
+        child_l = LEFT(curr);
+        if (child_l > size)
             break;
 
-        iIdxNext = iIdxCurr;
-        iOrder = pData->pCompare_(aItem[iIdxChildL - 1], aItem[iIdxNext - 1]);
-        if (iOrder > 0)
-            iIdxNext = iIdxChildL;
+        next = curr;
+        order = func_cmp(elements[child_l - 1], elements[next - 1]);
+        if (order <= 0)
+            next = child_l;
 
-        iIdxChildR = RIGHT(iIdxCurr);
-        if (iIdxChildR <= iSize) {
-            iOrder = pData->pCompare_(aItem[iIdxChildR - 1], aItem[iIdxNext - 1]);
-            if (iOrder > 0)
-                iIdxNext = iIdxChildR;
+        child_r = RIGHT(curr);
+        if (child_r <= size) {
+            order = func_cmp(elements[child_r - 1], elements[next - 1]);
+            if (order <= 0)
+                next = child_r;
         }
 
-        if (iIdxNext == iIdxCurr)
+        if (next == curr)
             break;
-        Item item = aItem[iIdxNext - 1];
-        aItem[iIdxNext - 1] = aItem[iIdxCurr - 1];
-        aItem[iIdxCurr - 1] = item;
-        iIdxCurr = iIdxNext;
+
+        void* element = elements[next - 1];
+        elements[next - 1] = elements[curr - 1];
+        elements[curr - 1] = element;
+        curr = next;
     } while (true);
 
-    return SUCC;
+    return true;
 }
 
-int32_t PriorityQueueTop(PriorityQueue *self, Item *pItem)
+bool PriorityQueueTop(PriorityQueue* self, void** p_element)
 {
-    CHECK_INIT(self);
-    if (!pItem)
-        return ERR_GET;
-    if (self->pData->iSize_ == 0)
-        return ERR_IDX;
-    *pItem = self->pData->aItem_[0];
-    return SUCC;
+    PriorityQueueData* data = self->data;
+    if (unlikely(data->size_ == 0))
+        return false;
+    *p_element = data->elements_[0];
+    return true;
 }
 
-int32_t PriorityQueueSize(PriorityQueue *self)
+unsigned PriorityQueueSize(PriorityQueue* self)
 {
-    CHECK_INIT(self);
-    return self->pData->iSize_;
+    return self->data->size_;
 }
 
-int32_t PriorityQueueSetCompare(PriorityQueue *self, int32_t (*pFunc) (Item, Item))
+void PriorityQueueSetCompare(PriorityQueue* self, PriorityQueueCompare func)
 {
-    CHECK_INIT(self);
-    self->pData->pCompare_ = pFunc;
-    return SUCC;
+    self->data->func_cmp_ = func;
 }
 
-int32_t PriorityQueueSetDestroy(PriorityQueue *self, void (*pFunc) (Item))
+void PriorityQueueSetClean(PriorityQueue* self, PriorityQueueClean func)
 {
-    CHECK_INIT(self);
-    self->pData->pDestroy_ = pFunc;
-    return SUCC;
+    self->data->func_clean_ = func;
 }
 
 
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
-int32_t _PriorityQueueItemComp(Item itemSrc, Item itemTge)
+int _PriorityQueueCompare(const void* lhs, const void* rhs)
 {
-    if (itemSrc == itemTge)
+    if ((intptr_t)lhs == (intptr_t)rhs)
         return 0;
-    return (itemSrc > itemTge)? 1 : (-1);
+    return ((intptr_t)lhs >= (intptr_t)rhs)? 1 : (-1);
 }
