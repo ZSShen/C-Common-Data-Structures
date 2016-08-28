@@ -1,92 +1,121 @@
 #include "cds.h"
 
 
-typedef struct Employ_ {
-    int8_t cYear;
-    int8_t cLevel;
-    int32_t iId;
-} Employ;
+typedef struct Tuple_ {
+    int first;
+    int second;
+} Tuple;
 
 
-/* This comparator will cause the item with the smallest level to appear at the
-   top of the queue. And the queue can be analogy to minimum priority queue.*/
-int32_t CompareObject(Item itemSrc, Item itemTge)
+/* Let the integer with minimum value reside at the top position. */
+int CompareNumerics(const void* lhs, const void* rhs)
 {
-    Employ *empSrc = (Employ*)itemSrc;
-    Employ *empTge = (Employ*)itemTge;
-
-    if (empSrc->cLevel == empTge->cLevel)
+    if ((intptr_t)lhs == (intptr_t)rhs)
         return 0;
-    return (empSrc->cLevel < empTge->cLevel)? 1 : (-1);
+    return ((intptr_t)lhs >= (intptr_t)rhs)? 1 : (-1);
 }
 
-void DestroyObject(Item item)
+/* Let the object with maximum value reside at the top position. */
+int CompareObjects(const void* lhs, const void* rhs)
 {
-    free((Employ*)item);
+    Tuple* tpl_lhs = (Tuple*)lhs;
+    Tuple* tpl_rhs = (Tuple*)rhs;
+    if (tpl_lhs->first == tpl_rhs->first)
+        return 0;
+    return (tpl_lhs->first > tpl_rhs->first)? (-1) : 1;
 }
 
+void CleanObject(void* element)
+{
+    free(element);
+}
+
+
+void ManipulateNumerics()
+{
+    /* We should initialize the container before any operations. */
+    PriorityQueue* queue = PriorityQueueInit();
+    queue->set_compare(queue, CompareNumerics);
+
+    /* Push integer elements to the queue. */
+    queue->push(queue, (void*)(intptr_t)4);
+    queue->push(queue, (void*)(intptr_t)3);
+    queue->push(queue, (void*)(intptr_t)2);
+    queue->push(queue, (void*)(intptr_t)1);
+
+    /* Pop elements from the queue and check the top elements. */
+    void* elem;
+    queue->top(queue, &elem);
+    assert((int)(intptr_t)elem == 1);
+    queue->pop(queue);
+
+    queue->top(queue, &elem);
+    assert((int)(intptr_t)elem == 2);
+    queue->pop(queue);
+
+    queue->top(queue, &elem);
+    assert((int)(intptr_t)elem == 3);
+    queue->pop(queue);
+
+    /* Check the number of stored elements. */
+    unsigned size = queue->size(queue);
+    assert(size == 1);
+
+    PriorityQueueDeinit(queue);
+}
+
+void ManipulateObjects()
+{
+    /* We should initialize the container before any operations. */
+    PriorityQueue* queue = PriorityQueueInit();
+    queue->set_compare(queue, CompareObjects);
+    queue->set_clean(queue, CleanObject);
+
+    /* Push integer elements to the queue. */
+    Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 4;
+    tuple->second = -4;
+    queue->push(queue, tuple);
+
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 3;
+    tuple->second = -3;
+    queue->push(queue, tuple);
+
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 2;
+    tuple->second = -2;
+    queue->push(queue, tuple);
+
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 1;
+    tuple->second = -1;
+    queue->push(queue, tuple);
+
+    /* Pop elements from the queue and check the top elements. */
+    void* elem;
+    queue->top(queue, &elem);
+    assert(((Tuple*)elem)->first == 4);
+    queue->pop(queue);
+
+    queue->top(queue, &elem);
+    assert(((Tuple*)elem)->first == 3);
+    queue->pop(queue);
+
+    queue->top(queue, &elem);
+    assert(((Tuple*)elem)->first == 2);
+    queue->pop(queue);
+
+    /* Check the number of stored elements. */
+    unsigned size = queue->size(queue);
+    assert(size == 1);
+
+    PriorityQueueDeinit(queue);
+}
 
 int main()
 {
-    PriorityQueue *pQueue;
-
-    /* You should initialize the DS before any operations. */
-    int32_t iRtnCode = PriorityQueueInit(&pQueue);
-    if (iRtnCode != SUCC)
-        return iRtnCode;
-
-    /* You should specify how to compare your items. */
-    pQueue->set_compare(pQueue, CompareObject);
-
-    /* If you plan to delegate the resource clean task to the DS, please set the
-       custom clean method. */
-    pQueue->set_destroy(pQueue, DestroyObject);
-
-    /* Push items onto the queue. */
-    Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 4;
-    pEmploy->cLevel = 4;
-    pEmploy->cYear = 4;
-    pQueue->push(pQueue, (Item)pEmploy);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 3;
-    pEmploy->cLevel = 3;
-    pEmploy->cYear = 3;
-    pQueue->push(pQueue, (Item)pEmploy);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 2;
-    pEmploy->cLevel = 2;
-    pEmploy->cYear = 2;
-    pQueue->push(pQueue, (Item)pEmploy);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 1;
-    pEmploy->cLevel = 1;
-    pEmploy->cYear = 1;
-    pQueue->push(pQueue, (Item)pEmploy);
-
-    /* Pop items from the queue and check the top items. */
-    Item item;
-    pQueue->top(pQueue, &item);
-    assert(((Employ*)item)->cLevel == 1);
-    pQueue->pop(pQueue);
-
-    pQueue->top(pQueue, &item);
-    assert(((Employ*)item)->cLevel == 2);
-    pQueue->pop(pQueue);
-
-    pQueue->top(pQueue, &item);
-    assert(((Employ*)item)->cLevel == 3);
-    pQueue->pop(pQueue);
-
-    /* Check the number of stored items. */
-    int32_t iSize = pQueue->size(pQueue);
-    assert(iSize == 1);
-
-    /* You should deinitialize the DS after all the relevant tasks. */
-    PriorityQueueDeinit(&pQueue);
-
-    return SUCC;
+    ManipulateNumerics();
+    ManipulateObjects();
+    return 0;
 }
