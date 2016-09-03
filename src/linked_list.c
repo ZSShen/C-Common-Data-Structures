@@ -1,3 +1,26 @@
+/**
+ *   The MIT License (MIT)
+ *   Copyright (C) 2016 ZongXian Shen <andy.zsshen@gmail.com>
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *   IN THE SOFTWARE.
+ */
+
 #include "container/linked_list.h"
 
 
@@ -5,591 +28,411 @@
  *                        The container private data                         *
  *===========================================================================*/
 typedef struct _ListNode {
-   Item item;
-   struct _ListNode *pPrev;
-   struct _ListNode *pNext;
+   void* element_;
+   struct _ListNode* pred_;
+   struct _ListNode* succ_;
 } ListNode;
 
-struct _LinkedListData {
-    int32_t iSize_;
-    ListNode *pHead_;
-    ListNode *pIter_, *pPred_;
-    void (*pDestroy_) (Item);
+struct _ListData {
+    unsigned size_;
+    unsigned iter_round_;
+    ListNode* head_;
+    ListNode* iter_node_;
+    ListClean func_clean_;
 };
 
 
 /*===========================================================================*
  *                  Definition for internal operations                       *
  *===========================================================================*/
-/**
- * @brief Traverse all the nodes and clean the allocated resource.
- *
- * If the custom resource clean method is set, it also runs the resource clean
- * method for all the items.
- *
- * @param pData         The pointer to the list private data
- */
- void _LinkedListDeinit(LinkedListData *pData);
-
-/**
- * @brief The default item resource clean method.
- *
- * @param item          The designated item
- */
-void _LinkedListItemDestroy(Item item);
-
-
-#define CHECK_INIT(self)                                                        \
-            do {                                                                \
-                if (!self)                                                      \
-                    return ERR_NOINIT;                                          \
-                if (!(self->pData))                                             \
-                    return ERR_NOINIT;                                          \
-            } while (0);
-
-#define NEW_NODE(pNew, item)                                                    \
-            do {                                                                \
-                pNew = (ListNode*)malloc(sizeof(ListNode));                     \
-                if (!pNew)                                                      \
-                    return ERR_NOMEM;                                           \
-                pNew->item = item;                                              \
-            } while (0);
-
-#define PUSH_NODE(pNew, pHead)                                                  \
-            do {                                                                \
-                pNew->pNext = pHead;                                            \
-                pNew->pPrev = pHead->pPrev;                                     \
-                pHead->pPrev->pNext = pNew;                                     \
-                pHead->pPrev = pNew;                                            \
-            } while (0);
-
-#define INSERT_NODE(pNew, pTrack)                                               \
-            do {                                                                \
-                pNew->pNext = pTrack;                                           \
-                pNew->pPrev = pTrack->pPrev;                                    \
-                pTrack->pPrev->pNext = pNew;                                    \
-                pTrack->pPrev = pNew;                                           \
-            } while (0);
-
-#define LINK_NEIGHBOR(pTrack)                                                   \
-            do {                                                                \
-                pPred = pTrack->pPrev;                                          \
-                pSucc = pTrack->pNext;                                          \
-                pPred->pNext = pSucc;                                           \
-                pSucc->pPrev = pPred;                                           \
-            } while (0);
+#define likely(x)       __builtin_expect(!!(x), 1)
+#define unlikely(x)     __builtin_expect(!!(x), 0)
 
 
 /*===========================================================================*
  *               Implementation for the exported operations                  *
  *===========================================================================*/
-int32_t LinkedListInit(LinkedList **ppObj)
+List* ListInit()
 {
-    *ppObj = (LinkedList*)malloc(sizeof(LinkedList));
-    if (!(*ppObj))
-        return ERR_NOMEM;
-    LinkedList *pObj = *ppObj;
+    List* obj = (List*)malloc(sizeof(List));
+    if (unlikely(!obj))
+        return NULL;
 
-    pObj->pData = (LinkedListData*)malloc(sizeof(LinkedListData));
-    if (!(pObj->pData)) {
-        free(*ppObj);
-        *ppObj = NULL;
-        return ERR_NOMEM;
-    }
-    LinkedListData *pData = pObj->pData;
-
-    pData->iSize_ = 0;
-    pData->pHead_ = NULL;
-    pData->pIter_ = NULL;
-    pData->pPred_ = NULL;
-    pData->pDestroy_ = NULL;
-
-    pObj->push_front = LinkedListPushFront;
-    pObj->push_back = LinkedListPushBack;
-    pObj->insert = LinkedListInsert;
-
-    pObj->pop_front = LinkedListPopFront;
-    pObj->pop_back = LinkedListPopBack;
-    pObj->remove = LinkedListRemove;
-
-    pObj->set_front = LinkedListSetFront;
-    pObj->set_back = LinkedListSetBack;
-    pObj->set_at = LinkedListSetAt;
-
-    pObj->get_front = LinkedListGetFront;
-    pObj->get_back = LinkedListGetBack;
-    pObj->get_at = LinkedListGetAt;
-
-    pObj->size = LinkedListSize;
-    pObj->reverse = LinkedListReverse;
-
-    pObj->iterate = LinkedListIterate;
-    pObj->reverse_iterate = LinkedListReverseIterate;
-    pObj->replace = LinkedListReplace;
-
-    pObj->set_destroy = LinkedListSetDestroy;
-
-    return SUCC;
-}
-
-void LinkedListDeinit(LinkedList **ppObj)
-{
-    if (!(*ppObj))
-        goto EXIT;
-
-    LinkedListData *pData = (*ppObj)->pData;
-    if (!pData)
-        goto FREE_LIST;
-
-    _LinkedListDeinit(pData);
-    free(pData);
-
-FREE_LIST:
-    free(*ppObj);
-    *ppObj = NULL;
-EXIT:
-    return;
-}
-
-int32_t LinkedListPushFront(LinkedList *self, Item item)
-{
-    CHECK_INIT(self);
-
-    ListNode *pNew;
-    NEW_NODE(pNew, item);
-
-    LinkedListData *pData = self->pData;
-    if (!pData->pHead_)
-        pNew->pPrev = pNew->pNext = pNew;
-    else
-        PUSH_NODE(pNew, pData->pHead_);
-
-    pData->pHead_ = pNew;
-    pData->iSize_++;
-
-    return SUCC;
-}
-
-int32_t LinkedListPushBack(LinkedList *self, Item item)
-{
-    CHECK_INIT(self);
-
-    ListNode *pNew;
-    NEW_NODE(pNew, item);
-
-    LinkedListData *pData = self->pData;
-    if (!pData->pHead_) {
-        pNew->pPrev = pNew->pNext = pNew;
-        pData->pHead_ = pNew;
-    } else
-        PUSH_NODE(pNew, pData->pHead_);
-
-    pData->iSize_++;
-
-    return SUCC;
-}
-
-int32_t LinkedListInsert(LinkedList *self, Item item, int32_t iIdx)
-{
-    CHECK_INIT(self);
-
-    LinkedListData *pData = self->pData;
-    if (abs(iIdx) > pData->iSize_)
-        return ERR_IDX;
-
-    ListNode *pNew;
-    NEW_NODE(pNew, item);
-    if (!pData->pHead_) {
-        pNew->pPrev = pNew->pNext = pNew;
-        pData->pHead_ = pNew;
-    } else {
-        int32_t i;
-        ListNode *pTrack = pData->pHead_;
-
-        /* Insert node to the proper position with forward indexing. */
-        if (iIdx >= 0) {
-            for (i = iIdx ; i > 0 ; i--)
-                pTrack = pTrack->pNext;
-            INSERT_NODE(pNew, pTrack);
-            if (iIdx == 0)
-                pData->pHead_ = pNew;
-        }
-        /* Insert node to the proper position with backward indexing. */
-        else {
-            for (i = 0 ; i > iIdx ; i--)
-                pTrack = pTrack->pPrev;
-            INSERT_NODE(pNew, pTrack);
-            if (-iIdx == pData->iSize_)
-                pData->pHead_ = pNew;
-        }
+    ListData* data = (ListData*)malloc(sizeof(ListData));
+    if (unlikely(!data)) {
+        free(obj);
+        return NULL;
     }
 
-    pData->iSize_++;
+    data->size_ = 0;
+    data->head_ = NULL;
+    data->iter_node_ = NULL;
+    data->func_clean_ = NULL;
 
-    return SUCC;
+    obj->data = data;
+    obj->push_front = ListPushFront;
+    obj->push_back = ListPushBack;
+    obj->insert = ListInsert;
+    obj->pop_front = ListPopFront;
+    obj->pop_back = ListPopBack;
+    obj->remove = ListRemove;
+    obj->set_front = ListSetFront;
+    obj->set_back = ListSetBack;
+    obj->set_at = ListSetAt;
+    obj->get_front = ListGetFront;
+    obj->get_back = ListGetBack;
+    obj->get_at = ListGetAt;
+    obj->size = ListSize;
+    obj->reverse = ListReverse;
+    obj->first = ListFirst;
+    obj->next = ListNext;
+    obj->reverse_next = ListReverseNext;
+    obj->set_clean = ListSetClean;
+
+    return obj;
 }
 
-int32_t LinkedListPopFront(LinkedList *self)
+void ListDeinit(List* obj)
 {
-    CHECK_INIT(self);
+    if (unlikely(!obj))
+        return;
 
-    LinkedListData *pData = self->pData;
-    if (!pData->pHead_)
-        return ERR_IDX;
-
-    ListNode *pHead = pData->pHead_;
-    if (pHead == pHead->pPrev) {
-        if (pData->pDestroy_)
-            pData->pDestroy_(pHead->item);
-        free(pHead);
-        pData->pHead_ = NULL;
-    } else {
-        pHead->pPrev->pNext = pHead->pNext;
-        pHead->pNext->pPrev = pHead->pPrev;
-        pData->pHead_ = pHead->pNext;
-        if (pData->pDestroy_)
-            pData->pDestroy_(pHead->item);
-        free(pHead);
-    }
-
-    pData->iSize_--;
-
-    return SUCC;
-}
-
-int32_t LinkedListPopBack(LinkedList *self)
-{
-    CHECK_INIT(self);
-
-    LinkedListData *pData = self->pData;
-    if (!pData->pHead_)
-        return ERR_IDX;
-
-    ListNode *pHead = pData->pHead_;
-    if (pHead == pHead->pNext) {
-        if (pData->pDestroy_)
-            pData->pDestroy_(pHead->item);
-        free(pHead);
-        pData->pHead_ = NULL;
-    } else {
-        ListNode *pTail = pHead->pPrev;
-        pTail->pPrev->pNext = pHead;
-        pHead->pPrev = pTail->pPrev;
-        if (pData->pDestroy_)
-            pData->pDestroy_(pTail->item);
-        free(pTail);
-    }
-
-    pData->iSize_--;
-
-    return SUCC;
-}
-
-int32_t LinkedListRemove(LinkedList *self, int32_t iIdx)
-{
-    CHECK_INIT(self);
-
-    LinkedListData *pData = self->pData;
-    ListNode *pTrack, *pPred, *pSucc;
-
-    /* Delete node from the designated index with forward indexing. */
-    if (iIdx >= 0) {
-        if (iIdx >= pData->iSize_)
-            return ERR_IDX;
-        pTrack = pData->pHead_;
-        while (iIdx > 0) {
-            pTrack = pTrack->pNext;
-            iIdx--;
-        }
-        LINK_NEIGHBOR(pTrack);
-    }
-    /* Delete node from the designated index with backward indexing. */
-    else {
-        if (-iIdx > pData->iSize_)
-            return ERR_IDX;
-        pTrack = pData->pHead_;
-        while (iIdx < 0) {
-            pTrack = pTrack->pPrev;
-            iIdx++;
-        }
-        LINK_NEIGHBOR(pTrack);
-    }
-
-    if (pData->iSize_ == 1)
-        pData->pHead_ = NULL;
-    else {
-        if (pTrack == pData->pHead_)
-            pData->pHead_ = pSucc;
-    }
-
-    if (pData->pDestroy_)
-        pData->pDestroy_(pTrack->item);
-    free(pTrack);
-
-    pData->iSize_--;
-
-    return SUCC;
-}
-
-int32_t LinkedListSetFront(LinkedList *self, Item item)
-{
-    CHECK_INIT(self);
-
-    LinkedListData *pData = self->pData;
-    if (!pData->pHead_)
-        return ERR_IDX;
-
-    if (pData->pDestroy_)
-        pData->pDestroy_(pData->pHead_->item);
-    pData->pHead_->item = item;
-
-    return SUCC;
-}
-
-int32_t LinkedListSetBack(LinkedList *self, Item item)
-{
-    CHECK_INIT(self);
-
-    LinkedListData *pData = self->pData;
-    if (!pData->pHead_)
-        return ERR_IDX;
-
-    ListNode *pTail = pData->pHead_->pPrev;
-    if (pData->pDestroy_)
-        pData->pDestroy_(pTail->item);
-    pTail->item = item;
-
-    return SUCC;
-}
-
-int32_t LinkedListSetAt(LinkedList *self, Item item, int32_t iIdx)
-{
-    CHECK_INIT(self);
-
-    /* Replace item at the designated index with forward indexing. */
-    LinkedListData *pData = self->pData;
-    if (iIdx >= 0) {
-        if (iIdx >= pData->iSize_)
-            return ERR_IDX;
-
-        ListNode *pTrack = pData->pHead_;
-        while (iIdx > 0) {
-            pTrack = pTrack->pNext;
-            iIdx--;
-        }
-        if (pData->pDestroy_)
-            pData->pDestroy_(pTrack->item);
-        pTrack->item = item;
-    }
-    /* Replace item at the designated index with backward indexing. */
-    if (iIdx < 0) {
-        if (-iIdx > pData->iSize_)
-            return ERR_IDX;
-
-        ListNode *pTrack = pData->pHead_;
-        while (iIdx < 0) {
-            pTrack = pTrack->pPrev;
-            iIdx++;
-        }
-        if (pData->pDestroy_)
-            pData->pDestroy_(pTrack->item);
-        pTrack->item = item;
-    }
-
-    return SUCC;
-}
-
-int32_t LinkedListGetFront(LinkedList *self, Item *pItem)
-{
-    CHECK_INIT(self);
-    if (!pItem)
-        return ERR_GET;
-
-    LinkedListData *pData = self->pData;
-    if (!pData->pHead_) {
-        *pItem = NULL;
-        return ERR_IDX;
-    }
-
-    *pItem = pData->pHead_->item;
-    return SUCC;
-}
-
-int32_t LinkedListGetBack(LinkedList *self, Item *pItem)
-{
-    CHECK_INIT(self);
-    if (!pItem)
-        return ERR_GET;
-
-    LinkedListData *pData = self->pData;
-    if (!pData->pHead_) {
-        *pItem = NULL;
-        return ERR_IDX;
-    }
-
-    *pItem = pData->pHead_->pPrev->item;
-    return SUCC;
-}
-
-int32_t LinkedListGetAt(LinkedList *self, Item *pItem, int32_t iIdx)
-{
-    CHECK_INIT(self);
-    if (!pItem)
-        return ERR_GET;
-
-    /* Forward indexing to the target node. */
-    LinkedListData *pData = self->pData;
-    if (iIdx >= 0) {
-        if (iIdx >= pData->iSize_) {
-            *pItem = NULL;
-            return ERR_IDX;
-        }
-        int i;
-        ListNode *pTrack = pData->pHead_;
-        for (i = 0 ; i < iIdx ; i++)
-            pTrack = pTrack->pNext;
-        *pItem = pTrack->item;
-    }
-    /* Backward indexing to the target node. */
-    else {
-        if (-iIdx > pData->iSize_) {
-            *pItem = NULL;
-            return ERR_IDX;
-        }
-        int i;
-        ListNode *pTrack = pData->pHead_;
-        for (i = 0 ; i < -iIdx ; i++)
-            pTrack = pTrack->pPrev;
-        *pItem = pTrack->item;
-    }
-
-    return SUCC;
-}
-
-int32_t LinkedListSize(LinkedList *self)
-{
-    CHECK_INIT(self);
-    return self->pData->iSize_;
-}
-
-int32_t LinkedListReverse(LinkedList *self)
-{
-    CHECK_INIT(self);
-
-    LinkedListData *pData = self->pData;
-    ListNode *pHead = pData->pHead_;
-    ListNode *pTail = pData->pHead_->pPrev;
-
-    int32_t iRge = pData->iSize_;
-    while (iRge > 1) {
-        Item itemHead = pHead->item;
-        Item itemTail = pTail->item;
-        pHead->item = itemTail;
-        pTail->item = itemHead;
-        pHead = pHead->pNext;
-        pTail = pTail->pPrev;
-        iRge -= 2;
-    }
-
-    return SUCC;
-}
-
-int32_t LinkedListIterate(LinkedList *self, bool bReset, Item *pItem)
-{
-    CHECK_INIT(self);
-    LinkedListData *pData = self->pData;
-
-    if (bReset) {
-        pData->pIter_ = pData->pHead_;
-        pData->pPred_ = NULL;
-        return SUCC;
-    }
-
-    if (!pItem)
-        return ERR_GET;
-
-    if (!pData->pIter_) {
-        *pItem = NULL;
-        return END;
-    }
-
-    ListNode *pCurr = pData->pIter_;
-    *pItem = pCurr->item;
-    pData->pPred_ = pCurr;
-    pData->pIter_ = pCurr->pNext;
-    if (pData->pIter_ == pData->pHead_)
-        pData->pIter_ = NULL;
-
-    return SUCC;
-}
-
-int32_t LinkedListReverseIterate(LinkedList *self, bool bReset, Item *pItem)
-{
-    CHECK_INIT(self);
-    LinkedListData *pData = self->pData;
-
-    if (bReset) {
-        pData->pIter_ = (pData->pHead_)? pData->pHead_->pPrev : NULL;
-        pData->pPred_ = NULL;
-        return SUCC;
-    }
-
-    if (!pItem)
-        return ERR_GET;
-
-    if (!pData->pIter_) {
-        *pItem = NULL;
-        return END;
-    }
-
-    ListNode *pCurr = pData->pIter_;
-    *pItem = pCurr->item;
-    pData->pPred_ = pCurr;
-    pData->pIter_ = pCurr->pPrev;
-    if (pData->pIter_ == pData->pHead_->pPrev)
-        pData->pIter_ = NULL;
-
-    return SUCC;
-}
-
-int32_t LinkedListReplace(LinkedList *self, Item item)
-{
-    CHECK_INIT(self);
-    LinkedListData *pData = self->pData;
-
-    if (!pData->pPred_)
-        return ERR_IDX;
-
-    if (pData->pDestroy_) {
-        pData->pDestroy_(pData->pPred_->item);
-        pData->pPred_->item = item;
-    }
-
-    return SUCC;
-}
-
-int32_t LinkedListSetDestroy(LinkedList *self, void (*pFunc) (Item))
-{
-    CHECK_INIT(self);
-    self->pData->pDestroy_ = pFunc;
-    return SUCC;
-}
-
-
-/*===========================================================================*
- *               Implementation for internal operations                      *
- *===========================================================================*/
-void _LinkedListDeinit(LinkedListData *pData)
-{
-    ListNode *pCurr = pData->pHead_;
-    if (pCurr) {
+    ListData* data = obj->data;
+    ListNode* curr = data->head_;
+    if (curr) {
+        ListNode* head = data->head_;
+        ListClean func_clean = data->func_clean_;
         do {
-            ListNode *pPred = pCurr;
-            pCurr = pCurr->pNext;
-            if (pData->pDestroy_)
-                pData->pDestroy_(pPred->item);
-            free(pPred);
-        } while (pCurr != pData->pHead_);
+            ListNode* pred = curr;
+            curr = curr->succ_;
+            if (func_clean)
+                func_clean(pred->element_);
+            free(pred);
+        } while (curr != head);
+    }
+
+    free(data);
+    free(obj);
+    return;
+}
+
+bool ListPushFront(List* self, void* element)
+{
+    ListNode* new_node = (ListNode*)malloc(sizeof(ListNode));
+    if (unlikely(!new_node))
+        return false;
+    new_node->element_ = element;
+
+    ListData* data = self->data;
+    ListNode* head = data->head_;
+    if (unlikely(!head))
+        new_node->pred_ = new_node->succ_ = new_node;
+    else {
+        new_node->succ_ = head;
+        new_node->pred_ = head->pred_;
+        head->pred_->succ_ = new_node;
+        head->pred_ = new_node;
+    }
+
+    data->head_ = new_node;
+    data->size_++;
+    return true;
+}
+
+bool ListPushBack(List* self, void* element)
+{
+    ListNode* new_node = (ListNode*)malloc(sizeof(ListNode));
+    if (unlikely(!new_node))
+        return false;
+    new_node->element_ = element;
+
+    ListData* data = self->data;
+    ListNode* head = data->head_;
+    if (unlikely(!head)) {
+        new_node->pred_ = new_node->succ_ = new_node;
+        data->head_ = new_node;
+    } else {
+        new_node->succ_ = head;
+        new_node->pred_ = head->pred_;
+        head->pred_->succ_ = new_node;
+        head->pred_ = new_node;
+    }
+
+    data->size_++;
+    return true;
+}
+
+bool ListInsert(List* self, unsigned idx, void* element)
+{
+    ListData* data = self->data;
+    unsigned size = data->size_;
+    if (unlikely(idx > size))
+        return false;
+
+    ListNode* new_node = (ListNode*)malloc(sizeof(ListNode));
+    if (unlikely(!new_node))
+        return false;
+    new_node->element_ = element;
+
+    ListNode* head = data->head_;
+    if (unlikely(!head)) {
+        new_node->pred_ = new_node->succ_ = new_node;
+        data->head_ = new_node;
+    } else {
+        if (idx == 0)
+            data->head_ = new_node;
+
+        ListNode* track = head;
+        while (idx > 0) {
+            track = track->succ_;
+            --idx;
+        }
+        new_node->succ_ = track;
+        new_node->pred_ = track->pred_;
+        track->pred_->succ_ = new_node;
+        track->pred_ = new_node;
+    }
+
+    data->size_++;
+    return true;
+}
+
+bool ListPopFront(List* self)
+{
+    ListData* data = self->data;
+    ListNode* head = data->head_;
+    if (unlikely(!head))
+        return false;
+
+    ListClean func_clean = data->func_clean_;
+    if (unlikely(head == head->pred_)) {
+        if (func_clean)
+            func_clean(head->element_);
+        free(head);
+        data->head_ = NULL;
+    } else {
+        head->pred_->succ_ = head->succ_;
+        head->succ_->pred_ = head->pred_;
+        data->head_ = head->succ_;
+        if (func_clean)
+            func_clean(head->element_);
+        free(head);
+    }
+
+    data->size_--;
+    return true;
+}
+
+bool ListPopBack(List* self)
+{
+    ListData* data = self->data;
+    ListNode* head = data->head_;
+    if (unlikely(!head))
+        return false;
+
+    ListClean func_clean = data->func_clean_;
+    if (unlikely(head == head->succ_)) {
+        if (func_clean)
+            func_clean(head->element_);
+        free(head);
+        data->head_ = NULL;
+    } else {
+        ListNode* tail = head->pred_;
+        tail->pred_->succ_ = head;
+        head->pred_ = tail->pred_;
+        if (func_clean)
+            func_clean(tail->element_);
+        free(tail);
+    }
+
+    data->size_--;
+    return true;
+}
+
+bool ListRemove(List* self, unsigned idx)
+{
+    ListData* data = self->data;
+    unsigned size = data->size_;
+    if (unlikely(idx >= size))
+        return false;
+
+    ListNode* head = data->head_;
+    ListNode* track = head;
+    while (idx > 0) {
+        track = track->succ_;
+        --idx;
+    }
+
+    ListNode* pred = track->pred_;
+    ListNode* succ = track->succ_;
+    pred->succ_ = succ;
+    succ->pred_ = pred;
+
+    if (unlikely(size == 1))
+        data->head_ = NULL;
+    else {
+        if (track == head)
+            data->head_ = succ;
+    }
+
+    ListClean func_clean = data->func_clean_;
+    if (func_clean)
+        func_clean(track->element_);
+    free(track);
+
+    data->size_ = size - 1;
+    return true;
+}
+
+bool ListSetFront(List* self, void* element)
+{
+    ListData* data = self->data;
+    ListNode* head = data->head_;
+    if (unlikely(!head))
+        return false;
+
+    ListClean func_clean = data->func_clean_;
+    if (func_clean)
+        func_clean(head->element_);
+    head->element_ = element;
+    return true;
+}
+
+bool ListSetBack(List* self, void* element)
+{
+    ListData* data = self->data;
+    ListNode* head = data->head_;
+    if (unlikely(!head))
+        return false;
+
+    ListNode* tail = head->pred_;
+    ListClean func_clean = data->func_clean_;
+    if (func_clean)
+        func_clean(tail->element_);
+    tail->element_ = element;
+    return true;
+}
+
+bool ListSetAt(List* self, unsigned idx, void* element)
+{
+    ListData* data = self->data;
+    if (unlikely(idx >= data->size_))
+        return false;
+
+    ListNode* track = data->head_;
+    while (idx > 0) {
+        track = track->succ_;
+        --idx;
+    }
+
+    ListClean func_clean = data->func_clean_;
+    if (func_clean)
+        func_clean(track->element_);
+    track->element_ = element;
+    return true;
+}
+
+bool ListGetFront(List* self, void** p_element)
+{
+    ListData* data = self->data;
+    ListNode* head = data->head_;
+    if (unlikely(!head))
+        return false;
+
+    *p_element = head->element_;
+    return true;
+}
+
+bool ListGetBack(List* self, void** p_element)
+{
+    ListData* data = self->data;
+    ListNode* head = data->head_;
+    if (unlikely(!head))
+        return false;
+
+    *p_element = head->pred_->element_;
+    return true;
+}
+
+bool ListGetAt(List* self, unsigned idx, void** p_element)
+{
+    ListData* data = self->data;
+    if (unlikely(idx >= data->size_))
+        return false;
+
+    ListNode* track = data->head_;
+    while (idx > 0) {
+        track = track->succ_;
+        --idx;
+    }
+
+    *p_element = track->element_;
+    return true;
+}
+
+unsigned ListSize(List* self)
+{
+    return self->data->size_;
+}
+
+void ListReverse(List* self)
+{
+    ListData* data = self->data;
+    ListNode* head = data->head_;
+    ListNode* tail = data->head_->pred_;
+
+    unsigned range = data->size_;
+    while (range > 1) {
+        void* element_head = head->element_;
+        void* element_tail = tail->element_;
+        head->element_ = element_tail;
+        tail->element_ = element_head;
+        head = head->succ_;
+        tail = tail->pred_;
+        range -= 2;
     }
     return;
+}
+
+void ListFirst(List* self, bool is_reverse)
+{
+    ListData* data = self->data;
+    ListNode* head = data->head_;
+    if (unlikely(!head))
+        return;
+    data->iter_round_ = 0;
+    data->iter_node_ = (is_reverse == false)? head : head->pred_;
+}
+
+bool ListNext(List* self, void** p_element)
+{
+    ListData* data = self->data;
+    unsigned iter_round = data->iter_round_;
+    if (unlikely(iter_round == data->size_))
+        return false;
+
+    ListNode* iter_node = data->iter_node_;
+    *p_element = iter_node->element_;
+    data->iter_node_ = iter_node->succ_;
+    data->iter_round_ = iter_round + 1;
+    return true;
+}
+
+bool ListReverseNext(List* self, void** p_element)
+{
+    ListData* data = self->data;
+    unsigned iter_round = data->iter_round_;
+    if (unlikely(iter_round == data->size_))
+        return false;
+
+    ListNode* iter_node = data->iter_node_;
+    *p_element = iter_node->element_;
+    data->iter_node_ = iter_node->pred_;
+    data->iter_round_ = iter_round + 1;
+    return true;
+}
+
+void ListSetClean(List* self, ListClean func)
+{
+    self->data->func_clean_ = func;
 }

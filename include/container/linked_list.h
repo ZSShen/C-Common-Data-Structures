@@ -1,9 +1,32 @@
 /**
- * @file linked_list.h The doubly linked list.
+ *   The MIT License (MIT)
+ *   Copyright (C) 2016 ZongXian Shen <andy.zsshen@gmail.com>
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *   IN THE SOFTWARE.
  */
 
-#ifndef _LINKED_LIST_H_
-#define _LINKED_LIST_H_
+/**
+ * @file list.h The doubly linked list.
+ */
+
+#ifndef _LIST_H_
+#define _LIST_H_
 
 #include "../util.h"
 
@@ -11,407 +34,325 @@
 extern "C" {
 #endif
 
-/** LinkedListData is the data type for the container private information. */
-typedef struct _LinkedListData LinkedListData;
+/** ListData is the data type for the container private information. */
+typedef struct _ListData ListData;
+
+/** Element clean function called when an element is removed. */
+typedef void (*ListClean) (void*);
+
 
 /** The implementation for doubly linked list. */
-typedef struct _LinkedList {
+typedef struct _List {
     /** The container private information */
-    LinkedListData *pData;
+    ListData *data;
 
-    /** Push an item to the head of the list.
-        @see LinkedListPushFront */
-    int32_t (*push_front) (struct _LinkedList*, Item);
+    /** Push an element to the head of the list.
+        @see ListPushFront */
+    bool (*push_front) (struct _List*, void*);
 
-    /** Push an item to the tail of the list.
-        @see LinkedListPushBack */
-    int32_t (*push_back) (struct _LinkedList*, Item);
+    /** Push an element to the tail of the list.
+        @see ListPushBack */
+    bool (*push_back) (struct _List*, void*);
 
-    /** Insert an item to the designated index of the list.
-        @see LinkedListInsert */
-    int32_t (*insert) (struct _LinkedList*, Item, int32_t);
+    /** Insert an element to the specified index of the list.
+        @see ListInsert */
+    bool (*insert) (struct _List*, unsigned, void*);
 
-    /** Pop an item from the head of the list.
-        @see LinkedListPopFront */
-    int32_t (*pop_front) (struct _LinkedList*);
+    /** Pop an element from the head of the list.
+        @see ListPopFront */
+    bool (*pop_front) (struct _List*);
 
-    /** Pop an item from the tail of the list.
-        @see LinkedListPopBack */
-    int32_t (*pop_back) (struct _LinkedList*);
+    /** Pop an element from the tail of the list.
+        @see ListPopBack */
+    bool (*pop_back) (struct _List*);
 
-    /** Remove an item from the designated index of the list
-        @see LinkedListRemove */
-    int32_t (*remove) (struct _LinkedList*, int32_t);
+    /** Remove an element from the specified index of the list
+        @see ListRemove */
+    bool (*remove) (struct _List*, unsigned);
 
-    /** Replace an item at the head of the list.
-        @see LinkedListSetFront */
-    int32_t (*set_front) (struct _LinkedList*, Item);
+    /** Replace an element at the head of the list.
+        @see ListSetFront */
+    bool (*set_front) (struct _List*, void*);
 
-    /** Replace an item at the tail of the list.
-        @see LinkedListSetBack */
-    int32_t (*set_back) (struct _LinkedList*, Item);
+    /** Replace an element at the tail of the list.
+        @see ListSetBack */
+    bool (*set_back) (struct _List*, void*);
 
-    /** Replace an item at the designated index of the list.
-        @see LinkedListSetAt */
-    int32_t (*set_at) (struct _LinkedList*, Item, int32_t);
+    /** Replace an element at the specified index of the list.
+        @see ListSetAt */
+    bool (*set_at) (struct _List*, unsigned, void*);
 
-    /** Get an item from the head of the list.
-        @see LinkedListGetFront */
-    int32_t (*get_front) (struct _LinkedList*, Item*);
+    /** Get an element from the head of the list.
+        @see ListGetFront */
+    bool (*get_front) (struct _List*, void**);
 
-    /** Get an item from the tail of the list.
-        @see LinkedListGetBack */
-    int32_t (*get_back) (struct _LinkedList*, Item*);
+    /** Get an element from the tail of the list.
+        @see ListGetBack */
+    bool (*get_back) (struct _List*, void**);
 
-    /** Get an item from the designated index of the list.
-        @see LinkedListGetAt */
-    int32_t (*get_at) (struct _LinkedList*, Item*, int32_t);
+    /** Get an element from the specified index of the list.
+        @see ListGetAt */
+    bool (*get_at) (struct _List*, unsigned, void**);
 
-    /** Return the number of stored items.
-        @see LinkedListSize */
-    int32_t (*size) (struct _LinkedList*);
+    /** Return the number of stored elements.
+        @see ListSize */
+    unsigned (*size) (struct _List*);
 
     /** Reverse the list.
-        @see LinkedListReverse */
-    int32_t (*reverse) (struct _LinkedList*);
+        @see ListReverse */
+    void (*reverse) (struct _List*);
 
-    /** Iterate through the list till the tail end.
-        @see LinkedListIterate */
-    int32_t (*iterate) (struct _LinkedList*, bool, Item*);
+    /** Initialize the list iterator.
+        @see ListFirst */
+    void (*first) (struct _List*, bool);
 
-    /** Reversely iterate through the list till the head end.
-        @see LinkedListReverseIterate */
-    int32_t (*reverse_iterate) (struct _LinkedList*, bool, Item*);
+    /** Get the element pointed by the iterator and advance the iterator.
+        @see ListNext */
+    bool (*next) (struct _List*, void**);
 
-    /** Immediately replace the item at a specific iteration.
-        @see LinkedListReplace */
-    int32_t (*replace) (struct _LinkedList*, Item);
+    /** Get the element pointed by the iterator and advance the iterator
+        in the reverse order.
+        @see ListReverseNext */
+    bool (*reverse_next) (struct _List*, void**);
 
-    /** Set the custom item resource clean method.
-        @see LinkedListSetDestroy */
-    int32_t (*set_destroy) (struct _LinkedList*, void (*) (Item));
-} LinkedList;
+    /** Set the custom element cleanup function.
+        @see ListSetClean */
+    void (*set_clean) (struct _List*, ListClean);
+} List;
 
 
 /*===========================================================================*
  *             Definition for the exported member operations                 *
  *===========================================================================*/
 /**
- * @brief The constructor for LinkedList.
+ * @brief The constructor for List.
  *
- * @param ppObj         The double pointer to the to be constructed list
- *
- * @retval SUCC
- * @retval ERR_NOMEM    Insufficient memory for list construction
+ * @retval obj          The successfully constructed list
+ * @retval NULL         Insufficient memory for list construction
  */
-int32_t LinkedListInit(LinkedList **ppObj);
+List* ListInit();
 
 /**
- * @brief The destructor for LinkedList.
+ * @brief The destructor for List.
  *
- * If the custom resource clean method is set, it also runs the resource clean
- * method for all the items.
- *
- * @param ppObj         The double pointer to the to be destructed list
+ * @param obj           The pointer to the to be destructed list
  */
-void LinkedListDeinit(LinkedList **ppObj);
+void ListDeinit(List* obj);
+
 
 /**
- * @brief Push an item to the head of the list.
+ * @brief Push an element to the head of the list.
  *
- * @param self          The pointer to the LinkedList structure
- * @param item          The designated item
+ * @param self          The pointer to the List structure
+ * @param element       The specified element
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NOMEM    Insufficient memory for list extension
+ * @retval true         The element is successfully pushed
+ * @retval false        The element cannot be pushed due to insufficient memory
  */
-int32_t LinkedListPushFront(LinkedList *self, Item item);
+bool ListPushFront(List* self, void* element);
 
 /**
- * @brief Push an item to the tail of the list.
+ * @brief Push an element to the tail of the list.
  *
- * @param self          The pointer to the LinkedList structure
- * @param item          The designated item
+ * @param self          The pointer to the List structure
+ * @param element       The specified element
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NOMEM    Insufficient memory for list extension
+ * @retval true         The element is successfully pushed
+ * @retval false        The element cannot be pushed due to insufficient memory
  */
-int32_t LinkedListPushBack(LinkedList *self, Item item);
+bool ListPushBack(List* self, void* element);
 
 /**
- * @brief Insert an item to the designated index of the list.
+ * @brief Insert an element to the specified index of the list.
  *
- * This function inserts an item to the designated index of the list and shifts
- * the trailing items one position to the tail. The index can be positive or
- * negative, but its absolute value should be smaller than or equal to the list
- * size.
- * The operation supports both forward and backward indexing. For the former one,
- * the list is traversed from the head to the tail. And for the later one, the
- * direction is reversed.
- * To illustrate the behavior, let N denote the list size. Thus for forward indexing
- * , index (0) and index (N-1) point to the head and tail. And for backward indexing,
- * index (-1) and index (-N) point to the list tail and head.
- * But no matter which indexing method is applied, the list always grows from the
- * head to the tail.
+ * This function inserts an element to the specified index of the list and
+ * shifts the trailing elements one position to the tail.
  *
- * @param self          The pointer to the LinkedList structure
- * @param item          The designated item
- * @param iIdx          The designated index
+ * @param self          The pointer to List structure
+ * @param idx           The specified index
+ * @param element       The specified element
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NOMEM    Insufficient memory for list extension
- * @retval ERR_IDX      Out of range indexing
- *
- * @note The absolute value of the index should be smaller than or equal to the
- * list size.
+ * @retval true         The element is successfully inserted
+ * @retval false        The element cannot be inserted due to invalid index
+ *                      (> list size) or insufficient memory
  */
-int32_t LinkedListInsert(LinkedList *self, Item item, int32_t iIdx);
+bool ListInsert(List* self, unsigned idx, void* element);
 
 /**
- * @brief Pop an item from the head of the list.
+ * @brief Pop an element from the head of the list.
  *
- * This function removes an item from the head of the list. If the custom
- * resource clean method is set, it also runs the resource clean method for the
- * removed item.
+ * This function removes an element from the head of the list. Also, the cleanup
+ * function is invoked for the popped element.
  *
- * @param self          The pointer to the LinkedList structure
+ * @param self          The pointer to List structure
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty list
+ * @retval true         The head element is successfully popped
+ * @retval false        The list is empty
  */
-int32_t LinkedListPopFront(LinkedList *self);
+bool ListPopFront(List* self);
 
 /**
- * @brief Pop an item from the tail of the list.
+ * @brief Pop an element from the tail of the list.
  *
- * This function removes an item from the tail of the list. If the custom
- * resource clean method is set, it also runs the resource clean method for the
- * removed item.
+ * This function removes an element from the tail of the list. Also, the cleanup
+ * function is invoked for the popped element.
  *
- * @param self          The pointer to the LinkedList structure
+ * @param self          The pointer to List structure
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty list
+ * @retval true         The tail element is successfully popped
+ * @retval false        The list is empty
  */
-int32_t LinkedListPopBack(LinkedList *self);
+bool ListPopBack(List* self);
 
 /**
- * @brief Remove an item from the designated index of the list.
+ * @brief Remove an element from the specified index of the list.
  *
- * This function removes an item from the designated index of the list and shifts
- * the trailing items one position to the head. If the custom resource clean
- * method is set, it also runs the resource clean method for the removed item.
- * The operation supports both forward and backward indexing. Let N denote the
- * list size and i denote the index.
- * For forward indexing, inequality 0 <= i < N must be fitted.
- * For backward indexing, inequality 0 < i <= -N must be fitted.
+ * This function removes an element from the specified index of the list and
+ * shifts the trailing elements one position to the head. Also, the cleanup
+ * function is invoked for the removed element.
  *
- * @param self          The pointer to the LinkedList structure
- * @param iIdx          The designated index
+ * @param self          The pointer to List structure
+ * @param idx           The specified index
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Out of range indexing
+ * @retval true         The specified element is successfully removed.
+ * @retval false        Invalid index (>= list size) or empty list
  */
-int32_t LinkedListRemove(LinkedList *self, int32_t iIdx);
+bool ListRemove(List* self, unsigned idx);
 
 /**
- * @brief Replace an item at the head of the list.
+ * @brief Replace an element at the head of the list.
  *
- * This function replaces the head item with the designated one. If the custom
- * resource clean method is set, it also runs the resource clean method for the
- * replaced item.
+ * This function replaces the head element of the list. Also, the cleanup
+ * function is invoked for the replaced element.
  *
- * @param self          The pointer to the LinkedList structure
- * @param item          The designated item
+ * @param self          The pointer to the List structure
+ * @param element       The specified element
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty list
+ * @retval true         The specified element is successfully set.
+ * @retval false        The list is empty
  */
-int32_t LinkedListSetFront(LinkedList *self, Item item);
+bool ListSetFront(List* self, void* element);
 
 /**
- * @brief Replace an item at the tail of the list.
+ * @brief Replace an element at the tail of the list.
  *
- * This function replaces the tail item with the designated one. If the custom
- * resource clean method is set, it also runs the resource clean method for the
- * replaced item.
+ * This function replaces the tail element of the list. Also, the cleanup
+ * function is invoked for the replaced element.
  *
- * @param self          The pointer to the LinkedList structure
- * @param item          The designated item
+ * @param self          The pointer to the List structure
+ * @param element       The specified element
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty list
+ * @retval true         The specified element is successfully set.
+ * @retval false        The list is empty
  */
-int32_t LinkedListSetBack(LinkedList *self, Item item);
+bool ListSetBack(List* self, void* element);
 
 /**
- * @brief Replace an item at the designated index of the list.
+ * @brief Replace an element at the specified index of the list.
  *
- * This function replaces the item at the designated index with the designated
- * one. If the custom resource clean method is set, it also runs the resource
- * clean method for the replaced item.
- * The operation supports both forward and backward indexing. Let N denote the
- * list size and i denote the index.
- * For forward indexing, inequality 0 <= i < N must be fitted.
- * For backward indexing, inequality 0 < i <= -N must be fitted.
+ * This function sets an element at the specified index of the list. Also, the
+ * cleanup function is invoked for the replaced element.
  *
- * @param self          The pointer to the LinkedList structure
- * @param item          The designated item
- * @param iIdx          The designated index
+ * @param self          The pointer to List structure
+ * @param idx           The specified index
+ * @param element       The specified element
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Out of range index
+ * @retval true         The specified element is successfully set.
+ * @retval false        Invalid index (>= list size)
  */
-int32_t LinkedListSetAt(LinkedList *self, Item item, int32_t iIdx);
+bool ListSetAt(List* self, unsigned idx, void* element);
 
 /**
- * @brief Get an item from the head of the list.
+ * @brief Get an element from the head of the list.
  *
- * @param self          The pointer to the LinkedList structure
- * @param pItem         The pointer to the returned item
+ * @param self          The pointer to List structure
+ * @param p_element     The pointer to the returned element
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty list
- * @retval ERR_GET      Invalid parameter to store returned item
- *
- * @note If the exception occurs, the second parameter will be updated with NULL.
+ * @retval true         The specified element is successfully retrieved
+ * @retval false        The list is empty
  */
-int32_t LinkedListGetFront(LinkedList *self, Item *pItem);
+bool ListGetFront(List* self, void** p_element);
 
 /**
- * @brief Get an item from the tail of the list.
+ * @brief Get an element from the tail of the list.
  *
- * @param self          The pointer to the LinkedList structure
- * @param pItem         The pointer to the returned item
+ * @param self          The pointer to List structure
+ * @param p_element     The pointer to the returned element
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty list
- * @retval ERR_GET      Invalid parameter to store returned item
- *
- * @note If the exception occurs, the second parameter will be updated with NULL.
+ * @retval true         The specified element is successfully retrieved
+ * @retval false        The list is empty
  */
-int32_t LinkedListGetBack(LinkedList *self, Item *pItem);
+bool ListGetBack(List* self, void** p_element);
 
 /**
- * @brief Get an item from the designated index of the list.
+ * @brief Get an element from the specified index of the list.
  *
- * The operation supports both forward and backward indexing. Let N denote the
- * list size and i denote the index.
- * For forward indexing, inequality 0 <= i < N must be fitted.
- * For backward indexing, inequality 0 < i <= -N must be fitted.
+ * @param self          The pointer to List structure
+ * @param idx           The specified index
+ * @param p_element     The pointer to the returned element
  *
- * @param self          The pointer to the LinkedList structure
- * @param pItem         The pointer to the returned item
- * @param iIdx          The designated index
- *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Out of range index
- * @retval ERR_GET      Invalid parameter to store returned item
- *
- * @note If the exception occurs, the second parameter will be updated with NULL.
+ * @retval true         The specified element is successfully retrieved
+ * @retval false        Invalid index (>= list size)
  */
-int32_t LinkedListGetAt(LinkedList *self, Item *pItem, int32_t iIdx);
+bool ListGetAt(List* self, unsigned idx, void** p_element);
 
 /**
- * @brief Return the number of stored items.
+ * @brief Return the number of stored elements.
  *
- * @param self          The pointer to the LinkedList structure
+ * @param self          The pointer to List structure
  *
- * @return              The number of stored item
- * @retval ERR_NOINIT   Uninitialized container
+ * @retval size         The number of stored elements
  */
-int32_t LinkedListSize(LinkedList *self);
+unsigned ListSize(List* self);
 
 /**
  * @brief Reverse the list.
  *
- * @param self          The pointer to the LinkedList structure
+ * @param self          The pointer to the List structure
  *
  * @retval SUCC
  * @retval ERR_NOINIT   Uninitialized container
  */
-int32_t LinkedListReverse(LinkedList *self);
+void ListReverse(List* self);
 
 /**
- * @brief Iterate through the list till the tail end.
+ * @brief Initialize the vector iterator.
  *
- * Before iterating through the list, it is necessary to pass bReset := true and
- * pItem := NULL for iterator initialization.
- * After initialization, you can pass bReset := false and pItem := the relevant
- * pointer to get the returned item at each iteration.
- *
- * @param self          The pointer to the LinkedList structure
- * @param bReset        The knob to reset the iteration
- * @param pItem         The pointer to the returned item
- *
- * @retval SUCC
- * @retval END          Beyond the tail end
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_GET      Invalid parameter to store returned item
+ * @param self          The pointer to List structure
+ * @param is_reverse    Whether to apply the reversed traversal
  */
-int32_t LinkedListIterate(LinkedList *self, bool bReset, Item *pItem);
+void ListFirst(List* self, bool is_reverse);
 
 /**
- * @brief Reversely iterate through the list till the head end.
+ * @brief Get the element pointed by the iterator and advance the iterator.
  *
- * Before reversely iterating through the list, it is necessary to pass
- * bReset := true and pItem := NULL for iterator initialization.
- * After initialization, you can pass bReset := false and pItem := the relevant
- * pointer to get the returned item at each iteration.
+ * @param self          The pointer to List structure
+ * @param p_element     The pointer to the returned element
  *
- * @param self          The pointer to the LinkedList structure
- * @param bReset        The knob to reset the iteration
- * @param pItem         The pointer to the returned item
- *
- * @retval SUCC
- * @retval END          Beyond the head end
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_GET      Invalid parameter to store returned item
+ * @retval true         The tail end is not reached
+ * @retval false        The tail end is reached
  */
-int32_t LinkedListReverseIterate(LinkedList *self, bool bReset, Item *pItem);
+bool ListNext(List* self, void** p_element);
 
 /**
- * @brief Immediately replace the item at a specific iteration.
+ * @brief Get the element pointed by the iterator and advance the iterator
+ * in the reverse order.
  *
- * This operator should be applied within the scope of iterate() or
- * reverse_iterate() iterators. If the custom resource clean method is set, it
- * also runs the resource clean method for the replaced item
+ * @param self          The pointer to List structure
+ * @param p_element     The pointer to the returned element
  *
- * @param self          The pointer to the LinkedList structure
- * @param item          The item which intends to take position
- *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Out of range indexing
- *
- * @note  If you intend to use the operator outside of the iterators, the behavior
- * is undefined. Which is, the operator may successfully replace the item or it
- * may return an error code.
+ * @retval true         The head end is not reached
+ * @retval false        The head end is reached
  */
-int32_t LinkedListReplace(LinkedList *self, Item item);
+bool ListReverseNext(List* self, void** p_element);
 
 /**
- * @brief Set the custom item resource clean method.
+ * @brief Set the custom element cleanup function
  *
- * @param self          The pointer to the LinkedList structure
- * @param pFunc         The function pointer to the custom method
- *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
+ * @param self          The pointer to List structure
+ * @param func          The custom function
  */
-int32_t LinkedListSetDestroy(LinkedList *self, void (*pFunc) (Item));
+void ListSetClean(List* self, ListClean func);
 
 #ifdef __cplusplus
 }

@@ -3,1094 +3,508 @@
 #include "CUnit/Basic.h"
 
 
-typedef struct Employ_ {
-    int32_t iId;
-    char *szName;
-} Employ;
+static const int SIZE_TNY_TEST = 128;
+static const int SIZE_SML_TEST = 512;
+static const int SIZE_MID_TEST = 2048;
 
-#define SIZE_NAME_BUF (4)
-
-
-/* The function to register primitive test suites for algorithm verification. */
-void TestPrimPushFront();
-void TestPrimPushBack();
-void TestPrimInsertForward();
-void TestPrimInsertBackward();
-void TestPrimPopFront();
-void TestPrimPopBack();
-void TestPrimDeleteForward();
-void TestPrimDeleteBackward();
-void TestPrimSet();
-void TestIterate();
-
-/* The function to register non-primitive test suites for resource management
-   verification. */
-void TestNonPrimPop();
-void TestNonPrimDelete();
-void TestNonPrimSet();
-void NonPrimDestroy(Item);
-
-/* The function to register common test suites. */
-void TestBoundary();
-void TestReverse();
-void TestReplace();
+/*-----------------------------------------------------------------------------*
+ *                      The utilities for resource clean                       *
+ *-----------------------------------------------------------------------------*/
 
 
-int32_t SuitePrimitive()
+/*-----------------------------------------------------------------------------*
+ *            Unit tests relevant to basic structure verification              *
+ *-----------------------------------------------------------------------------*/
+void TestNewDelete()
 {
-    CU_pSuite pSuite = CU_add_suite("Primitive Type Input", NULL, NULL);
-    if (!pSuite)
-        return ERR_NOMEM;
+    List* list;
+    CU_ASSERT((list = ListInit()) != NULL);
 
-    CU_pTest pTest = CU_add_test(pSuite, "Item insertion via push_front()", TestPrimPushFront);
-    if (!pTest)
-        return ERR_NOMEM;
+    /* Enlarge the list size to test the destructor. */
+    unsigned i;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i)
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)i) == true);
 
-    pTest = CU_add_test(pSuite, "Item insertion via push_back()", TestPrimPushBack);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Item insertion via insert() with forward indexing",
-            TestPrimInsertForward);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Item insertion via insert() with backward indexing",
-            TestPrimInsertBackward);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Item removal via pop_front()", TestPrimPopFront);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Item removal via pop_back()", TestPrimPopBack);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Item removal via remove() with forward indexing",
-            TestPrimDeleteForward);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Item removal via remove() with backward indexing",
-            TestPrimDeleteBackward);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Item replacement", TestPrimSet);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "List reversing", TestReverse);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "List Iteration", TestIterate);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    pTest = CU_add_test(pSuite, "Boundary test", TestBoundary);
-    if (!pTest)
-        return ERR_NOMEM;
-
-    return SUCC;
+    ListDeinit(list);
 }
 
-int32_t SuiteNonPrimitive()
+void TestPushFrontAndBack()
 {
-    CU_pSuite pSuite = CU_add_suite("NonPrimitive Type Input", NULL, NULL);
-    if (!pSuite)
-        return ERR_NOMEM;
+    {
+        List* list = ListInit();
 
-    char *szMsg = "Item removal via sequence of pop_front() and pop_back().";
-    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestNonPrimPop);
-    if (!pTest)
-        return ERR_NOMEM;
+        void* element;
+        CU_ASSERT(list->get_front(list, &element) == false);
+        CU_ASSERT(list->get_back(list, &element) == false);
+        CU_ASSERT(list->get_at(list, 0, &element) == false);
 
-    szMsg = "Item removal via sequence of remove().";
-    pTest = CU_add_test(pSuite, szMsg, TestNonPrimDelete);
-    if (!pTest)
-        return ERR_NOMEM;
+        /* Push elements to the list head. */
+        CU_ASSERT(list->push_front(list, (void*)(intptr_t)4) == true);
+        CU_ASSERT(list->push_front(list, (void*)(intptr_t)3) == true);
+        CU_ASSERT(list->push_front(list, (void*)(intptr_t)2) == true);
+        CU_ASSERT(list->push_front(list, (void*)(intptr_t)1) == true);
 
-    szMsg = "Item replacement via sequence of set_at(), set_front(), and set_back().";
-    pTest = CU_add_test(pSuite, szMsg, TestNonPrimSet);
-    if (!pTest)
-        return ERR_NOMEM;
+        /* Check element insertion sequence. */
+        CU_ASSERT(list->get_front(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)1);
+        CU_ASSERT(list->get_back(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
 
-    szMsg = "Item replacement within the scope of iterate() and reverse_iterate().";
-    pTest = CU_add_test(pSuite, szMsg, TestReplace);
-    if (!pTest)
-        return ERR_NOMEM;
+        CU_ASSERT(list->get_at(list, 0, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)1);
+        CU_ASSERT(list->get_at(list, 1, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+        CU_ASSERT(list->get_at(list, 2, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)3);
+        CU_ASSERT(list->get_at(list, 3, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
 
-    return SUCC;
+        CU_ASSERT_EQUAL(list->size(list), 4);
+        ListDeinit(list);
+    }
+    {
+        List* list = ListInit();
+
+        /* Push elements to the list tail. */
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)1) == true);
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)2) == true);
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)3) == true);
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)4) == true);
+
+        void* element;
+        CU_ASSERT(list->get_front(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)1);
+        CU_ASSERT(list->get_back(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+
+        CU_ASSERT(list->get_at(list, 0, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)1);
+        CU_ASSERT(list->get_at(list, 1, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+        CU_ASSERT(list->get_at(list, 2, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)3);
+        CU_ASSERT(list->get_at(list, 3, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+
+        CU_ASSERT_EQUAL(list->size(list), 4);
+        ListDeinit(list);
+    }
 }
 
-int32_t main()
+void TestInsert()
 {
-    if (CU_initialize_registry() != CUE_SUCCESS)
-        return CU_get_error();
-    assert(CU_get_registry() != NULL);
-    assert(!CU_is_test_running());
+    List* list = ListInit();
 
-    /* Prepare the test suite for primitive input. */
-    if (SuitePrimitive() != SUCC) {
-        CU_cleanup_registry();
-        return CU_get_error();
+    /* Insert elements to the specified indexes. */
+    CU_ASSERT(list->insert(list, 1, (void*)(intptr_t)1) == false);
+
+    CU_ASSERT(list->insert(list, 0, (void*)(intptr_t)1) == true);
+    CU_ASSERT(list->insert(list, 1, (void*)(intptr_t)4) == true);
+    CU_ASSERT(list->insert(list, 1, (void*)(intptr_t)2) == true);
+    CU_ASSERT(list->insert(list, 2, (void*)(intptr_t)3) == true);
+    CU_ASSERT(list->insert(list, 0, (void*)(intptr_t)0) == true);
+
+    /* Check element insertion sequence. */
+    void* element;
+    CU_ASSERT(list->get_front(list, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)0);
+    CU_ASSERT(list->get_back(list, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+
+    CU_ASSERT(list->get_at(list, 0, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)0);
+    CU_ASSERT(list->get_at(list, 1, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)1);
+    CU_ASSERT(list->get_at(list, 2, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+    CU_ASSERT(list->get_at(list, 3, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)3);
+    CU_ASSERT(list->get_at(list, 4, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+
+    CU_ASSERT_EQUAL(list->size(list), 5);
+    ListDeinit(list);
+}
+
+void TestPopFrontAndBack()
+{
+    {
+        List* list = ListInit();
+
+        CU_ASSERT(list->pop_front(list) == false);
+
+        /* Prepare the initial elements. */
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)1) == true);
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)2) == true);
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)3) == true);
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)4) == true);
+
+        /* Pop elements from the list head and check the remaining element sequence. */
+        void* element;
+        CU_ASSERT(list->pop_front(list) == true);
+        CU_ASSERT(list->get_front(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+        CU_ASSERT(list->get_back(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+        CU_ASSERT(list->get_at(list, 0, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+        CU_ASSERT(list->get_at(list, 1, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)3);
+        CU_ASSERT(list->get_at(list, 2, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+
+        CU_ASSERT(list->pop_front(list) == true);
+        CU_ASSERT(list->get_front(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)3);
+        CU_ASSERT(list->get_back(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+        CU_ASSERT(list->get_at(list, 0, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)3);
+        CU_ASSERT(list->get_at(list, 1, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+
+        CU_ASSERT(list->pop_front(list) == true);
+        CU_ASSERT(list->get_front(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+        CU_ASSERT(list->get_back(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+        CU_ASSERT(list->get_at(list, 0, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+
+        CU_ASSERT_EQUAL(list->size(list), 1);
+
+        CU_ASSERT(list->pop_front(list) == true);
+        CU_ASSERT(list->get_front(list, &element) == false);
+        CU_ASSERT(list->get_back(list, &element) == false);
+        CU_ASSERT(list->get_at(list, 0, &element) == false);
+
+        CU_ASSERT(list->pop_front(list) == false);
+
+        /* Insert the element again to check if the list is well handled in
+           the previous test. */
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)777) == true);
+        CU_ASSERT(list->get_front(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)777);
+        CU_ASSERT(list->get_back(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)777);
+        CU_ASSERT_EQUAL(list->size(list), 1);
+
+        ListDeinit(list);
+    }
+    {
+        List* list = ListInit();
+
+        CU_ASSERT(list->pop_back(list) == false);
+
+        /* Prepare the initial elements. */
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)1) == true);
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)2) == true);
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)3) == true);
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)4) == true);
+
+        /* Pop elements from the list tail and check the remaining element sequence. */
+        void* element;
+        CU_ASSERT(list->pop_back(list) == true);
+        CU_ASSERT(list->get_front(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)1);
+        CU_ASSERT(list->get_back(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)3);
+        CU_ASSERT(list->get_at(list, 0, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)1);
+        CU_ASSERT(list->get_at(list, 1, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+        CU_ASSERT(list->get_at(list, 2, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)3);
+
+        CU_ASSERT(list->pop_back(list) == true);
+        CU_ASSERT(list->get_front(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)1);
+        CU_ASSERT(list->get_back(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+        CU_ASSERT(list->get_at(list, 0, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)1);
+        CU_ASSERT(list->get_at(list, 1, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+
+        CU_ASSERT(list->pop_back(list) == true);
+        CU_ASSERT(list->get_front(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)1);
+        CU_ASSERT(list->get_back(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)1);
+        CU_ASSERT(list->get_at(list, 0, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)1);
+
+        CU_ASSERT_EQUAL(list->size(list), 1);
+
+        CU_ASSERT(list->pop_back(list) == true);
+        CU_ASSERT(list->get_front(list, &element) == false);
+        CU_ASSERT(list->get_back(list, &element) == false);
+        CU_ASSERT(list->get_at(list, 0, &element) == false);
+
+        CU_ASSERT(list->pop_back(list) == false);
+
+        /* Insert the element again to check if the list is well handled in
+           the previous test. */
+        CU_ASSERT(list->push_back(list, (void*)(intptr_t)777) == true);
+        CU_ASSERT(list->get_front(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)777);
+        CU_ASSERT(list->get_back(list, &element) == true);
+        CU_ASSERT_EQUAL(element, (void*)(intptr_t)777);
+        CU_ASSERT_EQUAL(list->size(list), 1);
+
+        ListDeinit(list);
+    }
+}
+
+void TestRemove()
+{
+    List* list = ListInit();
+
+    /* Prepare the initial elements. */
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)1) == true);
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)2) == true);
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)3) == true);
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)4) == true);
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)5) == true);
+
+    /* Remove elements from the specified index and check the remaining
+       element sequence. */
+    void* element;
+    CU_ASSERT(list->remove(list, 0) == true);
+    CU_ASSERT(list->get_front(list, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+    CU_ASSERT(list->get_back(list, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)5);
+    CU_ASSERT(list->get_at(list, 0, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+    CU_ASSERT(list->get_at(list, 1, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)3);
+    CU_ASSERT(list->get_at(list, 2, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+    CU_ASSERT(list->get_at(list, 3, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)5);
+
+    CU_ASSERT(list->remove(list, 1) == true);
+    CU_ASSERT(list->get_front(list, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+    CU_ASSERT(list->get_back(list, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)5);
+    CU_ASSERT(list->get_at(list, 0, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+    CU_ASSERT(list->get_at(list, 1, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+    CU_ASSERT(list->get_at(list, 2, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)5);
+
+    CU_ASSERT(list->remove(list, 2) == true);
+    CU_ASSERT(list->get_front(list, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+    CU_ASSERT(list->get_back(list, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+    CU_ASSERT(list->get_at(list, 0, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+    CU_ASSERT(list->get_at(list, 1, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+
+    CU_ASSERT(list->remove(list, 1) == true);
+    CU_ASSERT(list->get_front(list, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+    CU_ASSERT(list->get_back(list, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+    CU_ASSERT(list->get_at(list, 0, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+
+    CU_ASSERT_EQUAL(list->size(list), 1);
+
+    CU_ASSERT(list->remove(list, 0) == true);
+    CU_ASSERT(list->remove(list, 0) == false);
+    CU_ASSERT(list->get_front(list, &element) == false);
+    CU_ASSERT(list->get_back(list, &element) == false);
+    CU_ASSERT(list->get_at(list, 0, &element) == false);
+
+    /* Insert the element again to check if the list is well handled in
+       the previous test. */
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)777) == true);
+    CU_ASSERT(list->get_front(list, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)777);
+    CU_ASSERT(list->get_back(list, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)777);
+    CU_ASSERT_EQUAL(list->size(list), 1);
+
+    ListDeinit(list);
+}
+
+void TestReplace()
+{
+    List* list = ListInit();
+
+    CU_ASSERT(list->set_front(list, (void*)(intptr_t)0) == false);
+    CU_ASSERT(list->set_back(list, (void*)(intptr_t)0) == false);
+    CU_ASSERT(list->set_at(list, 0, (void*)(intptr_t)0) == false);
+
+    /* Prepare the initial elements. */
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)1) == true);
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)2) == true);
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)3) == true);
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)4) == true);
+
+    /* Replace the element residing at the list head and check the result. */
+    void* element;
+    CU_ASSERT(list->set_front(list, (void*)(intptr_t)-1) == true);
+    CU_ASSERT(list->get_front(list, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)-1);
+
+    /* Replace the element residing at the list tail and check the result. */
+    CU_ASSERT(list->set_back(list, (void*)(intptr_t)-3) == true);
+    CU_ASSERT(list->get_back(list, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)-3);
+
+    /* Replace the elements residing at the specified indexes and check the result. */
+    CU_ASSERT(list->set_at(list, 0, (void*)(intptr_t)10) == true);
+    CU_ASSERT(list->get_at(list, 0, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)10);
+
+    CU_ASSERT(list->set_at(list, 1, (void*)(intptr_t)20) == true);
+    CU_ASSERT(list->get_at(list, 1, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)20);
+
+    CU_ASSERT(list->set_at(list, 2, (void*)(intptr_t)30) == true);
+    CU_ASSERT(list->get_at(list, 2, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)30);
+
+    CU_ASSERT(list->set_at(list, 3, (void*)(intptr_t)40) == true);
+    CU_ASSERT(list->get_at(list, 3, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)40);
+
+    CU_ASSERT(list->set_at(list, 4, (void*)(intptr_t)0) == false);
+
+    ListDeinit(list);
+}
+
+void TestReverse()
+{
+    List* list = ListInit();
+
+    /* Prepare the initial elements. */
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)1) == true);
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)2) == true);
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)3) == true);
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)4) == true);
+
+    list->reverse(list);
+
+    /* Check the reversed element sequence. */
+    void* element;
+    CU_ASSERT(list->get_at(list, 0, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)4);
+    CU_ASSERT(list->get_at(list, 1, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)3);
+    CU_ASSERT(list->get_at(list, 2, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)2);
+    CU_ASSERT(list->get_at(list, 3, &element) == true);
+    CU_ASSERT_EQUAL(element, (void*)(intptr_t)1);
+
+    ListDeinit(list);
+}
+
+void TestIterator()
+{
+    List* list = ListInit();
+
+    /* Prepare the initial elements. */
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)1) == true);
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)2) == true);
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)3) == true);
+    CU_ASSERT(list->push_back(list, (void*)(intptr_t)4) == true);
+
+    /* Iterate through the list. */
+    void* element;
+    int check = 1;
+
+    list->first(list, false);
+    while (list->next(list, &element)) {
+        CU_ASSERT_EQUAL((int)(intptr_t)element, check);
+        ++check;
     }
 
-    /* Prepare the test suite for non-primitive input. */
-    if (SuiteNonPrimitive() != SUCC) {
-        CU_cleanup_registry();
-        return CU_get_error();
+    /* Iterate through the list in reversed order. */
+    check = 4;
+    list->first(list, true);
+    while (list->reverse_next(list, &element)) {
+        CU_ASSERT_EQUAL((int)(intptr_t)element, check);
+        --check;
+    }
+
+    ListDeinit(list);
+}
+
+/*-----------------------------------------------------------------------------*
+ *                      The driver for List unit test                        *
+ *-----------------------------------------------------------------------------*/
+bool AddSuite()
+{
+    {
+        CU_pSuite suite = CU_add_suite("Structure Verification", NULL, NULL);
+        if (!suite)
+            return false;
+
+        CU_pTest unit = CU_add_test(suite, "List New and Delete", TestNewDelete);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Element Push Front and Back", TestPushFrontAndBack);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Element Insert", TestInsert);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Element Pop Front and Back", TestPopFrontAndBack);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Element Remove", TestRemove);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Element Replace", TestReplace);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "List Reverse", TestReverse);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "List Iterator", TestIterator);
+        if (!unit)
+            return false;
+    }
+
+    return true;
+}
+
+int main()
+{
+    int rc = 0;
+
+    if (CU_initialize_registry() != CUE_SUCCESS) {
+        rc = CU_get_error();
+        goto EXIT;
+    }
+
+    /* Register the test suites to verify List functionalities. */
+    if (AddSuite() == false) {
+        rc = CU_get_error();
+        goto CLEAN;
     }
 
     /* Launch all the tests. */
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
 
+CLEAN:
     CU_cleanup_registry();
-    return SUCC;
-}
-
-
-/*===========================================================================*
- *      Implementation for the test cases of the primitive input suite       *
- *===========================================================================*/
-void TestPrimPushFront()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-
-    /* Prepend items. */
-    CU_ASSERT(pList->push_front(pList, (Item)4) == SUCC);
-    CU_ASSERT(pList->push_front(pList, (Item)3) == SUCC);
-    CU_ASSERT(pList->push_front(pList, (Item)2) == SUCC);
-    CU_ASSERT(pList->push_front(pList, (Item)1) == SUCC);
-
-    /* Check item insertion sequence. */
-    Item item;
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->get_at(pList, &item, 3) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    CU_ASSERT(pList->get_at(pList, &item, -4) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, -2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    /* Check list size. */
-    CU_ASSERT_EQUAL(pList->size(pList), 4);
-
-    LinkedListDeinit(&pList);
-}
-
-void TestPrimPushBack()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-
-    /* Prepend items. */
-    CU_ASSERT(pList->push_back(pList, (Item)1) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)2) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)3) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)4) == SUCC);
-
-    /* Check item insertion sequence. */
-    Item item;
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->get_at(pList, &item, 3) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    CU_ASSERT(pList->get_at(pList, &item, -4) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, -2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    /* Check list size. */
-    CU_ASSERT_EQUAL(pList->size(pList), 4);
-
-    LinkedListDeinit(&pList);
-}
-
-void TestPrimInsertForward()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-
-    /* Insert items. */
-    CU_ASSERT(pList->insert(pList, (Item)1, 0) == SUCC);
-    CU_ASSERT(pList->insert(pList, (Item)4, 1) == SUCC);
-    CU_ASSERT(pList->insert(pList, (Item)2, 1) == SUCC);
-    CU_ASSERT(pList->insert(pList, (Item)3, 2) == SUCC);
-    CU_ASSERT(pList->insert(pList, (Item)0, 0) == SUCC);
-
-    /* Check item insertion sequence. */
-    Item item;
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)0);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)0);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, 3) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->get_at(pList, &item, 4) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    CU_ASSERT(pList->get_at(pList, &item, -5) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)0);
-    CU_ASSERT(pList->get_at(pList, &item, -4) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, -2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    /* Check list size. */
-    CU_ASSERT_EQUAL(pList->size(pList), 5);
-
-    LinkedListDeinit(&pList);
-}
-
-void TestPrimInsertBackward()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-
-    /* Insert items. */
-    CU_ASSERT(pList->insert(pList, (Item)4, 0) == SUCC);
-    CU_ASSERT(pList->insert(pList, (Item)1, -1) == SUCC);
-    CU_ASSERT(pList->insert(pList, (Item)3, -1) == SUCC);
-    CU_ASSERT(pList->insert(pList, (Item)2, -2) == SUCC);
-    CU_ASSERT(pList->insert(pList, (Item)0, -4) == SUCC);
-
-    /* Check item insertion sequence. */
-    Item item;
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)0);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)0);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, 3) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->get_at(pList, &item, 4) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    CU_ASSERT(pList->get_at(pList, &item, -5) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)0);
-    CU_ASSERT(pList->get_at(pList, &item, -4) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, -2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    /* Check list size. */
-    CU_ASSERT_EQUAL(pList->size(pList), 5);
-
-    LinkedListDeinit(&pList);
-}
-
-void TestPrimPopFront()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-
-    /* Prepare initial items. */
-    CU_ASSERT(pList->push_back(pList, (Item)1) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)2) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)3) == SUCC);
-
-    /* Pop items from the head and check the remaining item sequence. */
-    Item item;
-    CU_ASSERT(pList->pop_front(pList) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-
-    CU_ASSERT(pList->pop_front(pList) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-
-    CU_ASSERT(pList->pop_front(pList) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == ERR_IDX);
-    CU_ASSERT(pList->get_back(pList, &item) == ERR_IDX);
-
-    /* Re-insert the item again to check if the list is well handled in
-       the previous test. */
-    CU_ASSERT(pList->push_back(pList, (Item)777) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)777);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)777);
-    CU_ASSERT_EQUAL(pList->size(pList), 1);
-
-    LinkedListDeinit(&pList);
-}
-
-void TestPrimPopBack()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-
-    /* Prepare initial items. */
-    CU_ASSERT(pList->push_back(pList, (Item)1) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)2) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)3) == SUCC);
-
-    /* Pop items from the tail and check the remaining item sequence. */
-    Item item;
-    CU_ASSERT(pList->pop_back(pList) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-
-    CU_ASSERT(pList->pop_back(pList) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-
-    CU_ASSERT(pList->pop_front(pList) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == ERR_IDX);
-    CU_ASSERT(pList->get_back(pList, &item) == ERR_IDX);
-
-    /* Re-insert the item again to check if the list is well handled in
-       the previous test. */
-    CU_ASSERT(pList->push_back(pList, (Item)777) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)777);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)777);
-    CU_ASSERT_EQUAL(pList->size(pList), 1);
-
-    LinkedListDeinit(&pList);
-}
-
-void TestPrimDeleteForward()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-
-    /* Prepare initial items. */
-    CU_ASSERT(pList->push_back(pList, (Item)1) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)2) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)3) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)4) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)5) == SUCC);
-
-    /* Remove items from the designated index and check the remaining
-       item sequence. */
-    Item item;
-    CU_ASSERT(pList->remove(pList, 0) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)5);
-
-    CU_ASSERT(pList->remove(pList, 1) == SUCC);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-    CU_ASSERT(pList->get_at(pList, &item, -2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-    CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-
-    CU_ASSERT(pList->remove(pList, 2) == SUCC);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    CU_ASSERT(pList->remove(pList, 0) == SUCC);
-    CU_ASSERT(pList->remove(pList, 0) == SUCC);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == ERR_IDX);
-
-    /* Re-insert the item again to check if the list is well handled in
-       the previous test. */
-    CU_ASSERT(pList->push_back(pList, (Item)777) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)777);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)777);
-    CU_ASSERT_EQUAL(pList->size(pList), 1);
-
-    LinkedListDeinit(&pList);
-}
-
-void TestPrimDeleteBackward()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-
-    /* Prepare initial items. */
-    CU_ASSERT(pList->push_back(pList, (Item)1) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)2) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)3) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)4) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)5) == SUCC);
-
-    /* Remove items from the designated index and check the remaining
-       item sequence. */
-    Item item;
-    CU_ASSERT(pList->remove(pList, -5) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)5);
-
-    CU_ASSERT(pList->remove(pList, -3) == SUCC);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-    CU_ASSERT(pList->get_at(pList, &item, -2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-    CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-
-    CU_ASSERT(pList->remove(pList, -1) == SUCC);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-
-    CU_ASSERT(pList->remove(pList, 0) == SUCC);
-    CU_ASSERT(pList->remove(pList, 0) == SUCC);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == ERR_IDX);
-
-    /* Re-insert the item again to check if the list is well handled in
-       the previous test. */
-    CU_ASSERT(pList->push_back(pList, (Item)777) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)777);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)777);
-    CU_ASSERT_EQUAL(pList->size(pList), 1);
-
-    LinkedListDeinit(&pList);
-}
-
-void TestPrimSet()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-
-    /* Prepare the initial items. */
-    CU_ASSERT(pList->push_back(pList, (Item)1) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)2) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)3) == SUCC);
-
-    /* Replace item at the head and check the result. */
-    Item item;
-    CU_ASSERT(pList->set_front(pList, (Item)-1) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)-1);
-
-    /* Replace item at the tail and check the result. */
-    CU_ASSERT(pList->set_back(pList, (Item)-3) == SUCC);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)-3);
-
-    /* Replace item at the designated index and check the result. */
-    CU_ASSERT(pList->set_at(pList, (Item)1, 0) == SUCC);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->set_at(pList, (Item)-1, -3) == SUCC);
-    CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)-1);
-    CU_ASSERT(pList->set_at(pList, (Item)3, 2) == SUCC);
-    CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->set_at(pList, (Item)-3, -1) == SUCC);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)-3);
-    CU_ASSERT(pList->set_at(pList, (Item)-2, 1) == SUCC);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)-2);
-    CU_ASSERT(pList->set_at(pList, (Item)2, -2) == SUCC);
-    CU_ASSERT(pList->get_at(pList, &item, -2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-
-    LinkedListDeinit(&pList);
-}
-
-void TestIterate()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-
-    /* Iterate the empty list. */
-    Item item;
-    CU_ASSERT(pList->iterate(pList, true, NULL) == SUCC);
-    while (pList->iterate(pList, false, &item) != END);
-    CU_ASSERT_EQUAL(item, NULL);
-    CU_ASSERT(pList->reverse_iterate(pList, true, NULL) == SUCC);
-    while (pList->reverse_iterate(pList, false, &item) != END);
-    CU_ASSERT_EQUAL(item, NULL);
-
-    /* Push the initial items. */
-    CU_ASSERT(pList->push_back(pList, (Item)1) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)2) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)3) == SUCC);
-    CU_ASSERT(pList->push_back(pList, (Item)4) == SUCC);
-
-    /* Iterate through the list items. */
-    int32_t iSum = 0;
-    int32_t iIdx = 1;
-    CU_ASSERT(pList->iterate(pList, true, NULL) == SUCC);
-    while (pList->iterate(pList, false, &item) != END) {
-        CU_ASSERT_EQUAL(iIdx, (int32_t)(long)item);
-        iSum += (int32_t)(long)item;
-        iIdx++;
-    }
-    CU_ASSERT_EQUAL(iSum, 10);
-
-    /* Reversely iterate through the list items. */
-    iSum = 0;
-    iIdx = 4;
-    CU_ASSERT(pList->reverse_iterate(pList, true, NULL) == SUCC);
-    while (pList->reverse_iterate(pList, false, &item) != END) {
-        CU_ASSERT_EQUAL(iIdx, (int32_t)(long)item);
-        iSum += (int32_t)(long)item;
-        iIdx--;
-    }
-    CU_ASSERT_EQUAL(iSum, 10);
-
-    LinkedListDeinit(&pList);
-}
-
-void NonPrimDestroy(Item item)
-{
-    Employ *pEmploy = (Employ*)item;
-    free(pEmploy->szName);
-    free(pEmploy);
-}
-
-void TestNonPrimPop()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-    CU_ASSERT(pList->set_destroy(pList, NonPrimDestroy) == SUCC);
-
-    /* Prepare initial items. */
-    Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 1;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'a';
-    pEmploy->szName[1] = 'b';
-    pEmploy->szName[2] = 'c';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 2;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'd';
-    pEmploy->szName[1] = 'e';
-    pEmploy->szName[2] = 'f';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 3;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'g';
-    pEmploy->szName[1] = 'h';
-    pEmploy->szName[2] = 'i';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 4;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'j';
-    pEmploy->szName[1] = 'k';
-    pEmploy->szName[2] = 'l';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    /* Pop item from the head and check the remaining item sequence. */
-    Item item;
-    CU_ASSERT(pList->pop_front(pList) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
-
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "jkl") == 0);
-
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
-
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "jkl") == 0) ;
-
-    /* Pop item from the tail and check the remaining item sequence. */
-    CU_ASSERT(pList->pop_back(pList) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
-
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "ghi") == 0);
-
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
-
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "ghi") == 0) ;
-
-    /* Check the resource management at list head. */
-    CU_ASSERT(pList->pop_front(pList) == SUCC);
-    CU_ASSERT(pList->pop_front(pList) == SUCC);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 1;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'a';
-    pEmploy->szName[1] = 'b';
-    pEmploy->szName[2] = 'c';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    CU_ASSERT(pList->pop_back(pList) == SUCC);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 1;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'a';
-    pEmploy->szName[1] = 'b';
-    pEmploy->szName[2] = 'c';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    LinkedListDeinit(&pList);
-}
-
-void TestNonPrimDelete()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-    CU_ASSERT(pList->set_destroy(pList, NonPrimDestroy) == SUCC);
-
-    /* Prepare initial items. */
-    Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 1;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'a';
-    pEmploy->szName[1] = 'b';
-    pEmploy->szName[2] = 'c';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 2;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'd';
-    pEmploy->szName[1] = 'e';
-    pEmploy->szName[2] = 'f';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 3;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'g';
-    pEmploy->szName[1] = 'h';
-    pEmploy->szName[2] = 'i';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 4;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'j';
-    pEmploy->szName[1] = 'k';
-    pEmploy->szName[2] = 'l';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 5;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'm';
-    pEmploy->szName[1] = 'n';
-    pEmploy->szName[2] = 'o';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    /* Remove items from the designated index and check the remaining
-       item sequence. */
-    Item item;
-    CU_ASSERT(pList->remove(pList, 0) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "mno") == 0);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "mno") == 0);
-
-    CU_ASSERT(pList->remove(pList, 1) == SUCC);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "jkl") == 0);
-    CU_ASSERT(pList->get_at(pList, &item, -2) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "jkl") == 0);
-    CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
-
-    CU_ASSERT(pList->remove(pList, 2) == SUCC);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "def") == 0);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "jkl") == 0);
-
-    LinkedListDeinit(&pList);
-}
-
-void TestNonPrimSet()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-    CU_ASSERT(pList->set_destroy(pList, NonPrimDestroy) == SUCC);
-
-    /* Prepare initial items. */
-    Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 1;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'a';
-    pEmploy->szName[1] = 'b';
-    pEmploy->szName[2] = 'c';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 2;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'd';
-    pEmploy->szName[1] = 'e';
-    pEmploy->szName[2] = 'f';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 3;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'g';
-    pEmploy->szName[1] = 'h';
-    pEmploy->szName[2] = 'i';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    /* Replace item at the head and check the result. */
-    Item item;
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 4;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'j';
-    pEmploy->szName[1] = 'k';
-    pEmploy->szName[2] = 'l';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->set_front(pList, (Item)pEmploy) == SUCC);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "jkl") == 0);
-
-    /* Replace item at the tail and check the result. */
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 5;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'm';
-    pEmploy->szName[1] = 'n';
-    pEmploy->szName[2] = 'o';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->set_back(pList, (Item)pEmploy) == SUCC);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "mno") == 0);
-
-    /* Replace item at the designated index and check the result. */
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 6;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'p';
-    pEmploy->szName[1] = 'q';
-    pEmploy->szName[2] = 'r';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->set_at(pList, (Item)pEmploy, 0) == SUCC);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "pqr") == 0);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 7;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 's';
-    pEmploy->szName[1] = 't';
-    pEmploy->szName[2] = 'u';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->set_at(pList, (Item)pEmploy, -3) == SUCC);
-    CU_ASSERT(pList->get_at(pList, &item, -3) == SUCC);
-    CU_ASSERT(strcmp(((Employ*)item)->szName, "stu") == 0);
-
-    LinkedListDeinit(&pList);
-}
-
-void TestReverse()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-
-    /* Prepare initial list. (1) */
-    CU_ASSERT(pList->push_back(pList, (Item)1) == SUCC);
-
-    /* Reverse and check the item sequence. */
-    Item item;
-    pList->reverse(pList);
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_back(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-
-    /* Extend the list. (1)<-->(2) */
-    CU_ASSERT(pList->push_back(pList, (Item)2) == SUCC);
-    pList->reverse(pList);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-
-    /* Extend the list. (3)<-->(2)<-->(1) */
-    CU_ASSERT(pList->push_front(pList, (Item)3) == SUCC);
-    pList->reverse(pList);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-
-    /* Extend the list. (1)<-->(2)<-->(3)<-->(4) */
-    CU_ASSERT(pList->push_back(pList, (Item)4) == SUCC);
-    pList->reverse(pList);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)4);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)3);
-    CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)2);
-    CU_ASSERT(pList->get_at(pList, &item, 3) == SUCC);
-    CU_ASSERT_EQUAL(item, (Item)1);
-
-    LinkedListDeinit(&pList);
-}
-
-void TestBoundary()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-
-    /* Initial boundary test. */
-    CU_ASSERT(pList->pop_front(pList) == ERR_IDX);
-    CU_ASSERT(pList->pop_back(pList) == ERR_IDX);
-
-    CU_ASSERT(pList->remove(pList, 0) == ERR_IDX);
-    CU_ASSERT(pList->remove(pList, -1) == ERR_IDX);
-    CU_ASSERT(pList->insert(pList, (Item)1, 1) == ERR_IDX);
-    CU_ASSERT(pList->insert(pList, (Item)1, -1) == ERR_IDX);
-
-    CU_ASSERT(pList->set_front(pList, (Item)1) == ERR_IDX);
-    CU_ASSERT(pList->set_back(pList, (Item)1) == ERR_IDX);
-    CU_ASSERT(pList->set_at(pList, (Item)1, 0) == ERR_IDX);
-    CU_ASSERT(pList->set_at(pList, (Item)1, -1) == ERR_IDX);
-
-    Item item;
-    CU_ASSERT(pList->get_front(pList, &item) == ERR_IDX);
-    CU_ASSERT_EQUAL(item, NULL);
-    CU_ASSERT(pList->get_back(pList, &item) == ERR_IDX);
-    CU_ASSERT_EQUAL(item, NULL);
-    CU_ASSERT(pList->get_at(pList, &item, 0) == ERR_IDX);
-    CU_ASSERT_EQUAL(item, NULL);
-    CU_ASSERT(pList->get_at(pList, &item, -1) == ERR_IDX);
-    CU_ASSERT_EQUAL(item, NULL);
-
-    LinkedListDeinit(&pList);
-}
-
-void TestReplace()
-{
-    LinkedList *pList;
-    CU_ASSERT(LinkedListInit(&pList) == SUCC);
-    CU_ASSERT(pList->set_destroy(pList, NonPrimDestroy) == SUCC);
-
-    Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 1;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'a';
-    pEmploy->szName[1] = 'b';
-    pEmploy->szName[2] = 'c';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    Item item;
-    CU_ASSERT(pList->iterate(pList, true, NULL) == SUCC);
-    while (pList->iterate(pList, false, &item) != END) {
-        pEmploy = (Employ*)malloc(sizeof(Employ));
-        pEmploy->iId = 10;
-        pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-        pEmploy->szName[0] = 'a';
-        pEmploy->szName[1] = 'b';
-        pEmploy->szName[2] = 'c';
-        pEmploy->szName[3] = 0;
-        CU_ASSERT(pList->replace(pList, (Item)pEmploy) == SUCC);
-    }
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(((Employ*)item)->iId, 10);
-
-    CU_ASSERT(pList->reverse_iterate(pList, true, NULL) == SUCC);
-    while (pList->reverse_iterate(pList, false, &item) != END) {
-        pEmploy = (Employ*)malloc(sizeof(Employ));
-        pEmploy->iId = 1;
-        pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-        pEmploy->szName[0] = 'a';
-        pEmploy->szName[1] = 'b';
-        pEmploy->szName[2] = 'c';
-        pEmploy->szName[3] = 0;
-        CU_ASSERT(pList->replace(pList, (Item)pEmploy) == SUCC);
-    }
-    CU_ASSERT(pList->get_front(pList, &item) == SUCC);
-    CU_ASSERT_EQUAL(((Employ*)item)->iId, 1);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 2;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'a';
-    pEmploy->szName[1] = 'b';
-    pEmploy->szName[2] = 'c';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 3;
-    pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-    pEmploy->szName[0] = 'a';
-    pEmploy->szName[1] = 'b';
-    pEmploy->szName[2] = 'c';
-    pEmploy->szName[3] = 0;
-    CU_ASSERT(pList->push_back(pList, (Item)pEmploy) == SUCC);
-
-    int iId = 10;
-    CU_ASSERT(pList->iterate(pList, true, NULL) == SUCC);
-    while (pList->iterate(pList, false, &item) != END) {
-        pEmploy = (Employ*)malloc(sizeof(Employ));
-        pEmploy->iId = iId;
-        pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-        pEmploy->szName[0] = 'a';
-        pEmploy->szName[1] = 'b';
-        pEmploy->szName[2] = 'c';
-        pEmploy->szName[3] = 0;
-        CU_ASSERT(pList->replace(pList, (Item)pEmploy) == SUCC);
-        iId += 10;
-    }
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(((Employ*)item)->iId, 10);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(((Employ*)item)->iId, 20);
-    CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
-    CU_ASSERT_EQUAL(((Employ*)item)->iId, 30);
-
-    iId = 3;
-    CU_ASSERT(pList->reverse_iterate(pList, true, NULL) == SUCC);
-    while (pList->reverse_iterate(pList, false, &item) != END) {
-        pEmploy = (Employ*)malloc(sizeof(Employ));
-        pEmploy->iId = iId;
-        pEmploy->szName = (char*)malloc(sizeof(char) * SIZE_NAME_BUF);
-        pEmploy->szName[0] = 'a';
-        pEmploy->szName[1] = 'b';
-        pEmploy->szName[2] = 'c';
-        pEmploy->szName[3] = 0;
-        CU_ASSERT(pList->replace(pList, (Item)pEmploy) == SUCC);
-        iId -= 1;
-    }
-    CU_ASSERT(pList->get_at(pList, &item, 0) == SUCC);
-    CU_ASSERT_EQUAL(((Employ*)item)->iId, 1);
-    CU_ASSERT(pList->get_at(pList, &item, 1) == SUCC);
-    CU_ASSERT_EQUAL(((Employ*)item)->iId, 2);
-    CU_ASSERT(pList->get_at(pList, &item, 2) == SUCC);
-    CU_ASSERT_EQUAL(((Employ*)item)->iId, 3);
-
-    LinkedListDeinit(&pList);
+EXIT:
+    return rc;
 }
