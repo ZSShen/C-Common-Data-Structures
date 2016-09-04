@@ -21,7 +21,7 @@
  *   IN THE SOFTWARE.
  */
 
-#include "container/linked_list.h"
+#include "container/list.h"
 
 
 /*===========================================================================*

@@ -1,6 +1,6 @@
 #include "util.h"
 #include "container/vector.h"
-#include "container/linked_list.h"
+#include "container/list.h"
 #include "container/tree_map.h"
 #include "container/hash_map.h"
 #include "container/hash_set.h"
