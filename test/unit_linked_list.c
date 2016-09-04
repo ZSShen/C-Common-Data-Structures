@@ -3,13 +3,19 @@
 #include "CUnit/Basic.h"
 
 
+static const int SIZE_TXT_BUFF = 32;
 static const int SIZE_TNY_TEST = 128;
 static const int SIZE_SML_TEST = 512;
 static const int SIZE_MID_TEST = 2048;
 
+
 /*-----------------------------------------------------------------------------*
  *                      The utilities for resource clean                       *
  *-----------------------------------------------------------------------------*/
+void CleanElement(void* element)
+{
+    free(element);
+}
 
 
 /*-----------------------------------------------------------------------------*
@@ -438,6 +444,185 @@ void TestIterator()
     ListDeinit(list);
 }
 
+
+/*-----------------------------------------------------------------------------*
+ *              Unit tests relevant to complex data maintenance                *
+ *-----------------------------------------------------------------------------*/
+void TestObjectInsert()
+{
+    char* nums[SIZE_MID_TEST];
+    char buf[SIZE_TXT_BUFF];
+    int idx = 0;
+    while (idx < SIZE_MID_TEST) {
+        snprintf(buf, SIZE_TXT_BUFF, "%d", idx);
+        nums[idx] = strdup((const char*)buf);
+        ++idx;
+    }
+
+    List* list = ListInit();
+    list->set_clean(list, CleanElement);
+
+    /* Push the elements ranging from 1536 to 2047 to the list tail. */
+    idx = SIZE_MID_TEST - SIZE_SML_TEST;
+    while (idx < SIZE_MID_TEST) {
+        CU_ASSERT(list->push_back(list, strdup(nums[idx])) == true);
+        ++idx;
+    }
+
+    /* Push the elements ranging from 0 to 511 to the list head. */
+    idx = SIZE_SML_TEST - 1;
+    while (idx >= 0) {
+        CU_ASSERT(list->push_front(list, strdup(nums[idx])) == true);
+        --idx;
+    }
+
+    /* Insert the elements ranging from 512 to 1535. */
+    idx = SIZE_SML_TEST;
+    int bnd = SIZE_MID_TEST - SIZE_SML_TEST;
+    while (idx < bnd) {
+        CU_ASSERT(list->insert(list, idx, strdup(nums[idx])) == true);
+        ++idx;
+    }
+
+    /* Check the element sequence. */
+    void* element;
+    CU_ASSERT(list->get_front(list, &element) == true);
+    CU_ASSERT(strcmp((char*)element, nums[0]) == 0);
+
+    CU_ASSERT(list->get_back(list, &element) == true);
+    CU_ASSERT(strcmp((char*)element, nums[SIZE_MID_TEST - 1]) == 0);
+
+    idx = 0;
+    while (idx < SIZE_MID_TEST) {
+        CU_ASSERT(list->get_at(list, idx, &element) == true);
+        CU_ASSERT(strcmp((char*)element, nums[idx]) == 0);
+        ++idx;
+    }
+
+    ListDeinit(list);
+
+    idx = 0;
+    while (idx < SIZE_MID_TEST) {
+        free(nums[idx]);
+        ++idx;
+    }
+}
+
+void TestObjectRemove()
+{
+    char* nums[SIZE_MID_TEST];
+    char buf[SIZE_TXT_BUFF];
+    int idx = 0;
+    while (idx < SIZE_MID_TEST) {
+        snprintf(buf, SIZE_TXT_BUFF, "%d", idx);
+        nums[idx] = strdup((const char*)buf);
+        ++idx;
+    }
+
+    List* list = ListInit();
+    list->set_clean(list, CleanElement);
+
+    /* Push the elements ranging from 0 to 2047. */
+    idx = 0;
+    while (idx < SIZE_MID_TEST) {
+        CU_ASSERT(list->push_back(list, strdup(nums[idx])) == true);
+        ++idx;
+    }
+
+    /* Pop the elements ranging from 0 to 511 at the list head. */
+    idx = 0;
+    while (idx < SIZE_SML_TEST) {
+        CU_ASSERT(list->pop_front(list) == true);
+        ++idx;
+    }
+
+    /* Pop the elements ranging from 1536 to 2047 at the list tail. */
+    idx = 0;
+    while (idx < SIZE_SML_TEST) {
+        CU_ASSERT(list->pop_back(list) == true);
+        ++idx;
+    }
+
+    /* Remove the elements ranging from 1024 to 1535. */
+    idx = 0;
+    while (idx < SIZE_SML_TEST) {
+        CU_ASSERT(list->remove(list, SIZE_SML_TEST) == true);
+        ++idx;
+    }
+
+    /* Check the element sequence. */
+    void* element;
+    CU_ASSERT(list->get_front(list, &element) == true);
+    CU_ASSERT(strcmp((char*)element, nums[SIZE_SML_TEST]) == 0);
+
+    CU_ASSERT(list->get_back(list, &element) == true);
+    CU_ASSERT(strcmp((char*)element, nums[(SIZE_SML_TEST << 1) - 1]) == 0);
+
+    idx = 0;
+    while (idx < SIZE_SML_TEST) {
+        CU_ASSERT(list->get_at(list, idx, &element) == true);
+        CU_ASSERT(strcmp((char*)element, nums[idx + SIZE_SML_TEST]) == 0);
+        ++idx;
+    }
+
+    ListDeinit(list);
+
+    idx = 0;
+    while (idx < SIZE_MID_TEST) {
+        free(nums[idx]);
+        ++idx;
+    }
+}
+
+void TestObjectReplace()
+{
+    char* nums[SIZE_SML_TEST];
+    char buf[SIZE_TXT_BUFF];
+    int idx = 0;
+    while (idx < SIZE_SML_TEST) {
+        snprintf(buf, SIZE_TXT_BUFF, "%d", idx);
+        nums[idx] = strdup((const char*)buf);
+        ++idx;
+    }
+
+    List* list = ListInit();
+    list->set_clean(list, CleanElement);
+
+    /* Push the elements ranging from 0 to 511. */
+    idx = 0;
+    while (idx < SIZE_SML_TEST) {
+        CU_ASSERT(list->push_back(list, strdup(nums[idx])) == true);
+        ++idx;
+    }
+
+    /* Reverse the list via element replacement. */
+    CU_ASSERT(list->set_front(list, strdup(nums[SIZE_SML_TEST - 1])) == true);
+    CU_ASSERT(list->set_back(list, strdup((nums[0]))) == true);
+    idx = 1;
+    while (idx < SIZE_SML_TEST - 1) {
+        CU_ASSERT(list->set_at(list, idx, strdup(nums[SIZE_SML_TEST - 1 - idx])) == true);
+        ++idx;
+    }
+
+    /* Check the element sequence. */
+    void* element;
+    idx = 0;
+    while (idx < SIZE_SML_TEST) {
+        CU_ASSERT(list->get_at(list, idx, &element) == true);
+        CU_ASSERT(strcmp((char*)element, nums[SIZE_SML_TEST - 1 - idx]) == 0);
+        ++idx;
+    }
+
+    ListDeinit(list);
+
+    idx = 0;
+    while (idx < SIZE_SML_TEST) {
+        free(nums[idx]);
+        ++idx;
+    }
+}
+
+
 /*-----------------------------------------------------------------------------*
  *                      The driver for List unit test                        *
  *-----------------------------------------------------------------------------*/
@@ -477,6 +662,23 @@ bool AddSuite()
             return false;
 
         unit = CU_add_test(suite, "List Iterator", TestIterator);
+        if (!unit)
+            return false;
+    }
+    {
+        CU_pSuite suite = CU_add_suite("Complex Data Maintenance", NULL, NULL);
+        if (!suite)
+            return false;
+
+        CU_pTest unit = CU_add_test(suite, "Object Push and Insert", TestObjectInsert);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Object Pop and Remove", TestObjectRemove);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Object Replace", TestObjectReplace);
         if (!unit)
             return false;
     }
