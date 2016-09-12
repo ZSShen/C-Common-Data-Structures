@@ -1,4 +1,27 @@
 /**
+ *   The MIT License (MIT)
+ *   Copyright (C) 2016 ZongXian Shen <andy.zsshen@gmail.com>
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *   IN THE SOFTWARE.
+ */
+
+/**
  * @file trie.h The string dictionary container
  */
 #ifndef _TRIE_H_
@@ -16,35 +39,35 @@ typedef struct TrieData_ TrieData;
 /** The implementation for trie. */
 typedef struct _Trie {
     /** The container private information. */
-    TrieData *pData;
+    TrieData *data;
 
     /** Insert a string into the trie.
         @see TrieInsert */
-    int32_t (*insert) (struct _Trie*, char*);
+    bool (*insert) (struct _Trie*, const char*);
 
     /** Insert an array of strings into the trie.
         @see TrieBulkInsert */
-    int32_t (*bulk_insert) (struct _Trie*, char**, int);
+    bool (*bulk_insert) (struct _Trie*, const char**, unsigned);
 
-    /** Check if the trie contains the designated string.
+    /** Check if the trie contains the specified string.
         @see TrieHasExact */
-    int32_t (*has_exact) (struct _Trie*, char*);
+    bool (*has_exact) (struct _Trie*, const char*);
 
-    /** Check if the trie contains the strings matching the designated prefix.
+    /** Check if the trie contains the strings matching the specified prefix.
         @see TrieHasPrefixAs */
-    int32_t (*has_prefix_as) (struct _Trie*, char*);
+    bool (*has_prefix_as) (struct _Trie*, const char*);
 
-    /** Retrieve the strings from the trie matching the designated prefix.
+    /** Retrieve the strings from the trie matching the specified prefix.
         @see TrieGetPrefixAs */
-    int32_t (*get_prefix_as) (struct _Trie*, char*, char***, int*);
+    bool (*get_prefix_as) (struct _Trie*, const char*, const char***, unsigned*);
 
     /** Remove a string from the trie.
         @see TrieRemove */
-    int32_t (*remove) (struct _Trie*, char*);
+    bool (*remove) (struct _Trie*, const char*);
 
     /** Return the number of strings stored in the trie.
         @see TrieSize */
-    int32_t (*size) (struct _Trie*);
+    unsigned (*size) (struct _Trie*);
 } Trie;
 
 
@@ -54,119 +77,98 @@ typedef struct _Trie {
 /**
  * @brief The constructor for Trie.
  *
- * @param ppObj         The double pointer to the to be constructed trie
- *
- * @retval SUCC
- * @retval ERR_NOMEM    Insufficient memory for trie construction
+ * @retval obj          The successfully constructed trie
+ * @retval NULL         Insufficient memory for trie construction
  */
-int32_t TrieInit(Trie **ppObj);
+Trie* TrieInit();
 
 /**
  * @brief The destructor for Trie.
  *
- * @param ppObj         The double pointer to the to be destructed trie
+ * @param obj           The pointer to the to be destructed trie
  */
-void TrieDeinit(Trie **ppObj);
+void TrieDeinit(Trie* obj);
 
 /**
  * @brief Insert a string into the trie.
  *
  * @param self          The pointer to Trie structure
- * @param str           The designated string
+ * @param str           The specified string
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NOMEM    Insufficient memory for trie extension
+ * @retval true         The string is successfully inserted
+ * @retval false        The string cannot be inserted due to insufficient memory
  */
-int32_t TrieInsert(Trie *self, char *str);
+bool TrieInsert(Trie* self, const char* str);
 
 /**
  * @brief Insert an array of strings into the trie.
  *
  * @param self          The pointer to Trie structure
- * @param aStr          Array of to be inserted strings
- * @param iNum          The array size
+ * @param strs          Array of to be inserted strings
+ * @param size          The array size
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NOMEM    Insufficient memory for trie extension
+ * @retval true         The strings are successfully inserted
+ * @retval false        The strings cannot be inserted due to insufficient memory
  */
-int32_t TrieBulkInsert(Trie *self, char **aStr, int iNum);
+bool TrieBulkInsert(Trie* self, const char** strs, unsigned size);
 
 /**
- * @brief Check if the trie contains the designated string.
+ * @brief Check if the trie contains the specified string.
  *
  * @param self          The pointer to Trie structure
- * @param str           The designated string
+ * @param str           The specified string
  *
- * @retval SUCC
- * @retval NOKEY
- * @retval ERR_NOINIT   Uninitialized container
+ * @retval true         The trie contains the given string
+ * @retval false        No such string
  */
-int32_t TrieHasExact(Trie *self, char *str);
+bool TrieHasExact(Trie* self, const char* str);
 
 /**
- * @brief Check if the trie contains the strings matching the designated prefix.
+ * @brief Check if the trie contains the strings matching the specified prefix.
  *
  * @param self          The pointer to Trie structure
- * @param str           The designated prefix
+ * @param prefix        The specified prefix
  *
- * @retval SUCC
- * @retval NOKEY
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NOMEM    Insufficient memory to prepare trie traversal
+ * @retval true         The trie contains the given prefix
+ * @retval false        No such prefix
  */
-int32_t TrieHasPrefixAs(Trie *self, char *str);
+bool TrieHasPrefixAs(Trie* self, const char* prefix);
 
 /**
- * @brief Retrieve the strings from the trie matching the designated prefix.
- *
- * To retrieve the strings, you need to pass:
- *   - The pointer to the string array to store the returned strings.
- *   - The pointer to the integer for the returned array size.
- *
- * And this function will allocate the memory to store the returned strings.
- * But if no string can be resolved, the string array will be returned as NULL
- * and the array size will be returned as 0.
+ * @brief Retrieve the strings from the trie matching the specified prefix.
  *
  * @param self          The pointer to Trie structure
- * @param str           The designated prefix
- * @param paStr         The pointer to the returned array of strings
- * @param piNum         The pointer to the returned array size
+ * @param prefix        The specified prefix
+ * @param p_strs        The pointer to the returned array of strings
+ * @param p_size        The pointer to the returned array size
  *
- * @retval SUCC
- * @retval NOKEY
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_GET      Invalid parameter to store returned data
- * @retval ERR_NOMEM    Insufficient memory to store the resolved strings
+ * @retval true         The strings matching the given prefix are returned
+ * @retval false        No string matching the given prefix or insufficient
+ *                      memory to store the matched strings
  *
- * @note Please remember to free the following resource:
- *       - Each returned string
- *       - The array to store returned strings
+ * @note Please remember to free the returned array of strings.
  */
-int32_t TrieGetPrefixAs(Trie *self, char* str, char ***paStr, int *piNum);
+bool TrieGetPrefixAs(Trie* self, const char* prefix, const char*** p_strs, unsigned* p_size);
 
 /**
- * @brief Delete a string from the trie.
+ * @brief Remove a string from the trie.
  *
  * @param self          The pointer to Trie structure
- * @param str           The designated string
+ * @param str           The specified string
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NODATA   Non-existent string
+ * @retval true         The specified string is successfully removed
+ * @retval false        No such string
  */
-int32_t TrieRemove(Trie *self, char *str);
+bool TrieRemove(Trie* self, const char* str);
 
 /**
- * @brief Return the number of strings stored in the trie.
+ * @brief Return the number of stored strings.
  *
  * @param self          The pointer to Trie structure
  *
- * @return              The number of strings
- * @retval ERR_NOINIT   Uninitialized container
+ * @retval size         The number of stored strings
  */
-int32_t TrieSize(Trie *self);
+unsigned TrieSize(Trie* self);
 
 #ifdef __cplusplus
 }
