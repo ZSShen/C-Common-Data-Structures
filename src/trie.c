@@ -1,614 +1,713 @@
+/**
+ *   The MIT License (MIT)
+ *   Copyright (C) 2016 ZongXian Shen <andy.zsshen@gmail.com>
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *   IN THE SOFTWARE.
+ */
+
 #include "container/trie.h"
 
 
 /*===========================================================================*
  *                        The container private data                         *
  *===========================================================================*/
+static const char DIRECT_LEFT = 0;
+static const char DIRECT_MIDDLE = 1;
+static const char DIRECT_RIGHT = 2;
+
+static const char STOP = 0;
+static const char DOWN_LEFT = 1;
+static const char DOWN_RIGHT = 2;
+static const char DOWN_MIDDLE = 3;
+static const char UP_LEFT = 4;
+static const char UP_RIGHT = 5;
+static const char UP_MIDDLE = 6;
+
+
 typedef struct TrieNode_ {
-    bool bEndStr_;
-    char cToken_;
-    struct TrieNode_ *pLeft_;
-    struct TrieNode_ *pMiddle_;
-    struct TrieNode_ *pRight_;
-    struct TrieNode_ *pParent_;
+    bool endstr_;
+    char token_;
+    struct TrieNode_* left_;
+    struct TrieNode_* middle_;
+    struct TrieNode_* right_;
+    struct TrieNode_* parent_;
 } TrieNode;
 
 struct TrieData_ {
-    int32_t iSize_;
-    int32_t iCountNode_;
-    TrieNode *pRoot_;
+    unsigned size_;
+    unsigned count_node_;
+    unsigned depth_;
+    TrieNode* root_;
 };
-
-typedef struct StackFrame_ {
-    bool bVisit_;
-    int32_t iDepth_;
-    TrieNode *pTrieNode_;
-} StackFrame;
 
 
 /*===========================================================================*
  *                  Definition for internal operations                       *
  *===========================================================================*/
+#define likely(x)       __builtin_expect(!!(x), 1)
+#define unlikely(x)     __builtin_expect(!!(x), 0)
+
 /**
  * @brief Traverse all the trie nodes and clean the allocated resource.
  *
- * @param pData         The pointer to the trie private data
+ * @param data          The pointer to the trie private data
  */
-void _TrieDeinit(TrieData *pData);
+void _TrieDeinit(TrieData* data);
 
+static inline
+char DECIDE_BACKWARD_DIRECTION(TrieNode** p_curr)
+{
+    TrieNode* curr = *p_curr;
+    TrieNode* temp = curr;
+    curr = curr->parent_;
+    *p_curr = curr;
+    if (!curr)
+        return STOP;
+    return (temp == curr->left_)? UP_LEFT :
+           ((temp == curr->middle_)? UP_MIDDLE : UP_RIGHT);
+}
 
-#define DIRECT_LEFT             (0)
-#define DIRECT_MIDDLE           (1)
-#define DIRECT_RIGHT            (2)
-
-#define CHECK_INIT(self)                                                        \
-            do {                                                                \
-                if (!self)                                                      \
-                    return ERR_NOINIT;                                          \
-                if (!(self->pData))                                             \
-                    return ERR_NOINIT;                                          \
-            } while (0);
-
-#define ESTIMATE_STORAGE_SIZE(_size_blk, _size_trie, _cap_trie)                 \
-            do {                                                                \
-                _size_blk = ((_size_trie << 2) >= _cap_trie)?                   \
-                             (_size_trie >> 2) : (_cap_trie >> 3);              \
-            } while (0);
-
-#define LONGEST_PREFIX_MATCH(_str, _node_pred, _node_curr)                      \
-            do {                                                                \
-                char _ch;                                                       \
-                while (_node_curr && ((_ch = *_str) != 0)) {                    \
-                    _node_pred = _node_curr;                                    \
-                    if (_ch == _node_curr->cToken_) {                           \
-                        _node_curr = _node_curr->pMiddle_;                      \
-                        ++_str;                                                 \
-                    } else {                                                    \
-                        if (_ch < _node_curr->cToken_)                          \
-                            _node_curr = _node_curr->pLeft_;                    \
-                        else                                                    \
-                            _node_curr = _node_curr->pRight_;                   \
-                    }                                                           \
-                }                                                               \
-            } while (0);
-
-#define LONGEST_PREFIX_MATCH_TRACK_FLOW(_str, _node_pred, _node_curr, _direct)  \
-            do {                                                                \
-                char _ch;                                                       \
-                while (_node_curr && ((_ch = *_str) != 0)) {                    \
-                    _node_pred = _node_curr;                                    \
-                    if (_ch == _node_curr->cToken_) {                           \
-                        _node_curr = _node_curr->pMiddle_;                      \
-                        _direct = DIRECT_MIDDLE;                                \
-                        ++_str;                                                 \
-                    } else {                                                    \
-                        if (_ch < _node_curr->cToken_) {                        \
-                            _node_curr = _node_curr->pLeft_;                    \
-                            _direct = DIRECT_LEFT;                              \
-                        } else {                                                \
-                            _node_curr = _node_curr->pRight_;                   \
-                            _direct = DIRECT_RIGHT;                             \
-                        }                                                       \
-                    }                                                           \
-                }                                                               \
-            } while (0);
-
-#define MALLOC_DATA_ARRAY(_ptr_arr, _cap_arr, _rtn, _label_exit)                \
-            do {                                                                \
-                *_ptr_arr = (char**)malloc(sizeof(char*) * _cap_arr);           \
-                if (!(*_ptr_arr)) {                                             \
-                    _rtn = ERR_NOMEM;                                           \
-                    goto _label_exit;                                           \
-                }                                                               \
-            } while (0);
-
-#define MALLOC_BLOCK(_ptr_blk, _cap_blk, TYPE, _rtn, _label_exit, ...)          \
-            do {                                                                \
-                _ptr_blk = (TYPE*)malloc(sizeof(TYPE) * _cap_blk);              \
-                if (!(_ptr_blk)) {                                              \
-                    _rtn = ERR_NOMEM;                                           \
-                    __VA_ARGS__;                                                \
-                    goto _label_exit;                                           \
-                }                                                               \
-            } while (0);
-
-#define REALLOC_BLOCK(_ptr_blk, _cap_blk, TYPE, _rtn, _label_exit, ...)         \
-            do {                                                                \
-                TYPE *_ptr_blk_new = (TYPE*)realloc(_ptr_blk,                   \
-                                     sizeof(TYPE) *_cap_blk);                   \
-                if (!_ptr_blk_new) {                                            \
-                    _rtn = ERR_NOMEM;                                           \
-                    __VA_ARGS__;                                                \
-                    goto _label_exit;                                           \
-                }                                                               \
-                _ptr_blk = _ptr_blk_new;                                        \
-            } while (0);
-
-#define FREE_BLOCK(_ptr_blk, _size_blk)                                         \
-            do {                                                                \
-                int32_t _idx;                                                   \
-                for (_idx = 0 ; _idx < _size_blk ; ++_idx)                      \
-                    free((_ptr_blk)[_idx]);                                     \
-                free(_ptr_blk);                                                 \
-                _ptr_blk = NULL;                                                \
-            } while (0);
-
-#define COLLECT_PREFIX(_prefix, _len, _ptr_arr, _size_arr, _cap_arr, _rtn,      \
-                       _label_exit)                                             \
-            do {                                                                \
-                char *_cand;                                                    \
-                MALLOC_BLOCK(_cand, (_len + 1), char, _rtn, _label_exit,        \
-                            FREE_BLOCK(*_ptr_arr, _size_arr));                  \
-                strncpy(_cand, _prefix, _len);                                  \
-                _cand[_len] = 0;                                                \
-                                                                                \
-                if (_size_arr < _cap_arr) {                                     \
-                    (*_ptr_arr)[_size_arr++] = _cand;                           \
-                    break;                                                      \
-                }                                                               \
-                                                                                \
-                int32_t _cap_arr_new = _cap_arr << 1;                           \
-                REALLOC_BLOCK(*_ptr_arr, _cap_arr_new, char*, _rtn,             \
-                             _label_exit, FREE_BLOCK(*_ptr_arr, _size_arr));    \
-                _cap_arr = _cap_arr_new;                                        \
-                (*_ptr_arr)[_size_arr++] = _cand;                               \
-            } while (0);
+static inline
+void FREE_LOCAL_RESOURCE(const char** strs, unsigned size, char* record)
+{
+    unsigned i;
+    for (i = 0 ; i < size ; ++i)
+        free((char*)strs[i]);
+    free(strs);
+    free(record);
+}
 
 
 /*===========================================================================*
  *               Implementation for the exported operations                  *
  *===========================================================================*/
-int32_t TrieInit(Trie **ppObj)
+Trie* TrieInit()
 {
-    *ppObj = (Trie*)malloc(sizeof(Trie));
-    if (!(*ppObj)) {
-        *ppObj = NULL;
-        return ERR_NOINIT;
+    Trie* obj = (Trie*)malloc(sizeof(Trie));
+    if (unlikely(!obj))
+        return NULL;
+
+    TrieData* data = (TrieData*)malloc(sizeof(TrieData));
+    if (unlikely(!data)) {
+        free(obj);
+        return NULL;
     }
 
-    Trie *pObj = *ppObj;
-    pObj->pData = (TrieData*)malloc(sizeof(TrieData));
-    if (!(pObj->pData)) {
-        free(*ppObj);
-        *ppObj = NULL;
-        return ERR_NOINIT;
-    }
+    data->size_ = 0;
+    data->count_node_ = 0;
+    data->depth_ = 0;
+    data->root_ = NULL;
 
-    TrieData *pData = pObj->pData;
-    pData->iSize_ = pData->iCountNode_ = 0;
-    pData->pRoot_ = NULL;
-
-    pObj->insert = TrieInsert;
-    pObj->bulk_insert = TrieBulkInsert;
-    pObj->has_exact = TrieHasExact;
-    pObj->has_prefix_as = TrieHasPrefixAs;
-    pObj->get_prefix_as = TrieGetPrefixAs;
-    pObj->remove = TrieRemove;
-    pObj->size = TrieSize;
-
-    return SUCC;
+    obj->data = data;
+    obj->insert = TrieInsert;
+    obj->bulk_insert = TrieBulkInsert;
+    obj->has_exact = TrieHasExact;
+    obj->has_prefix_as = TrieHasPrefixAs;
+    obj->get_prefix_as = TrieGetPrefixAs;
+    obj->remove = TrieRemove;
+    obj->size = TrieSize;
+    return obj;
 }
 
-void TrieDeinit(Trie **ppObj)
+void TrieDeinit(Trie* obj)
 {
-    if (!ppObj)
-        goto EXIT;
+    if (unlikely(!obj))
+        return;
 
-    Trie *pObj = *ppObj;
-    if (!(pObj->pData))
-        goto FREE_TRIE;
+    TrieData* data = obj->data;
+    _TrieDeinit(data);
 
-    TrieData *pData = pObj->pData;
-    if (!(pData->pRoot_))
-        goto FREE_DATA;
-
-    _TrieDeinit(pData);
-
-FREE_DATA:
-    free(pObj->pData);
-FREE_TRIE:
-    free(*ppObj);
-EXIT:
+    free(data);
+    free(obj);
     return;
 }
 
-int32_t TrieInsert(Trie *self, char *str)
+bool TrieInsert(Trie* self, const char* str)
 {
-    CHECK_INIT(self);
-    if (!str)
-        return SUCC;
-    if (*str == 0)
-        return SUCC;
+    if (unlikely(!str))
+        return true;
+    if (unlikely(*str == 0))
+        return true;
 
-    int32_t iRtn = SUCC;
-    TrieData *pData = self->pData;
-    TrieNode *pCurr = pData->pRoot_;
-    TrieNode *pPred = NULL;
-    char cDirect;
-    LONGEST_PREFIX_MATCH_TRACK_FLOW(str, pPred, pCurr, cDirect);
+    TrieData* data = self->data;
+    TrieNode* curr = data->root_;
+    TrieNode* pred = NULL;
+    unsigned depth = 0;
 
-    while (*str) {
-        TrieNode *pNew;
-        MALLOC_BLOCK(pNew, 1, TrieNode, iRtn, EXIT);
-        pNew->pMiddle_ = pNew->pLeft_ = pNew->pRight_ = NULL;
-        pNew->pParent_ = pPred;
-        pNew->cToken_ = *str;
-        pNew->bEndStr_ = false;
-
-        if (!pPred)
-            pData->pRoot_ = pNew;
-        else {
-            switch (cDirect) {
-                case DIRECT_LEFT:
-                    pPred->pLeft_ = pNew;
-                    break;
-                case DIRECT_MIDDLE:
-                    pPred->pMiddle_ = pNew;
-                    break;
-                case DIRECT_RIGHT:
-                    pPred->pRight_ = pNew;
+    /* Longest prefix matching. */
+    char ch, direct;
+    while (curr && ((ch = *str) != 0)) {
+        pred = curr;
+        char token = curr->token_;
+        if (ch == token) {
+            curr = curr->middle_;
+            direct = DIRECT_MIDDLE;
+            ++str;
+            ++depth;
+        } else {
+            if (ch < token) {
+                curr = curr->left_;
+                direct = DIRECT_LEFT;
+            } else {
+                curr = curr->right_;
+                direct = DIRECT_RIGHT;
             }
         }
-        pPred = pNew;
-        cDirect = DIRECT_MIDDLE;
-        pData->iCountNode_++;
+    }
+
+    /* Cascade the trie node for the remaining suffix. */
+    while ((ch = *str) != 0) {
+        TrieNode* new_node = (TrieNode*)malloc(sizeof(TrieNode));
+        if (unlikely(!new_node))
+            return false;
+        new_node->middle_ = new_node->left_ = new_node->right_ = NULL;
+        new_node->parent_ = pred;
+        new_node->token_ = ch;
+        new_node->endstr_ = false;
+
+        if (unlikely(!pred))
+            data->root_ = new_node;
+        else {
+            if (likely(direct == DIRECT_MIDDLE))
+                pred->middle_ = new_node;
+            else {
+                if (direct == DIRECT_LEFT)
+                    pred->left_ = new_node;
+                else
+                    pred->right_ = new_node;
+            }
+        }
+
+        pred = new_node;
+        direct = DIRECT_MIDDLE;
+        data->count_node_++;
         ++str;
+        ++depth;
     }
 
-    if (!(pPred->bEndStr_)) {
-        pPred->bEndStr_ = true;
-        pData->iSize_++;
+    if (!(pred->endstr_)) {
+        pred->endstr_ = true;
+        data->size_++;
     }
+    if (depth > data->depth_)
+        data->depth_ = depth;
 
-EXIT:
-    return iRtn;
+    return true;
 }
 
-int32_t TrieBulkInsert(Trie *self, char **aStr, int iNum)
+bool TrieBulkInsert(Trie* self, const char** strs, unsigned size)
 {
-    CHECK_INIT(self);
-    TrieData *pData = self->pData;
+    TrieData* data = self->data;
 
-    int iRtn = SUCC, iIdx;
-    for (iIdx = 0 ; iIdx < iNum ; ++iIdx) {
-        char *str = aStr[iIdx];
+    unsigned i;
+    for (i = 0 ; i < size ; ++i) {
+        const char* str = strs[i];
         if (!str)
             continue;
         if (*str == 0)
             continue;
 
-        TrieNode *pCurr = pData->pRoot_;
-        TrieNode *pPred = NULL;
-        char cDirect;
-        LONGEST_PREFIX_MATCH_TRACK_FLOW(str, pPred, pCurr, cDirect);
+        TrieNode* curr = data->root_;
+        TrieNode* pred = NULL;
+        unsigned depth = 0;
 
-        while (*str) {
-            TrieNode *pNew;
-            MALLOC_BLOCK(pNew, 1, TrieNode, iRtn, EXIT);
-            pNew->pMiddle_ = pNew->pLeft_ = pNew->pRight_ = NULL;
-            pNew->pParent_ = pPred;
-            pNew->cToken_ = *str;
-            pNew->bEndStr_ = false;
-
-            if (!pPred)
-                pData->pRoot_ = pNew;
-            else {
-                switch (cDirect) {
-                    case DIRECT_LEFT:
-                        pPred->pLeft_ = pNew;
-                        break;
-                    case DIRECT_MIDDLE:
-                        pPred->pMiddle_ = pNew;
-                        break;
-                    case DIRECT_RIGHT:
-                        pPred->pRight_ = pNew;
+        /* Longest prefix matching. */
+        char ch, direct;
+        while (curr && ((ch = *str) != 0)) {
+            pred = curr;
+            char token = curr->token_;
+            if (ch == token) {
+                curr = curr->middle_;
+                direct = DIRECT_MIDDLE;
+                ++str;
+                ++depth;
+            } else {
+                if (ch < token) {
+                    curr = curr->left_;
+                    direct = DIRECT_LEFT;
+                } else {
+                    curr = curr->right_;
+                    direct = DIRECT_RIGHT;
                 }
             }
-            pPred = pNew;
-            cDirect = DIRECT_MIDDLE;
-            pData->iCountNode_++;
-            ++str;
         }
 
-        if (!(pPred->bEndStr_)) {
-            pPred->bEndStr_ = true;
-            pData->iSize_++;
+        /* Cascade the trie node for the remaining suffix. */
+        while ((ch = *str) != 0) {
+            TrieNode* new_node = (TrieNode*)malloc(sizeof(TrieNode));
+            if (unlikely(!new_node))
+                return false;
+            new_node->middle_ = new_node->left_ = new_node->right_ = NULL;
+            new_node->parent_ = pred;
+            new_node->token_ = ch;
+            new_node->endstr_ = false;
+
+            if (unlikely(!pred))
+                data->root_ = new_node;
+            else {
+                if (likely(direct == DIRECT_MIDDLE))
+                    pred->middle_ = new_node;
+                else {
+                    if (direct == DIRECT_LEFT)
+                        pred->left_ = new_node;
+                    else
+                        pred->right_ = new_node;
+                }
+            }
+
+            pred = new_node;
+            direct = DIRECT_MIDDLE;
+            data->count_node_++;
+            ++str;
+            ++depth;
         }
+
+        if (!(pred->endstr_)) {
+            pred->endstr_ = true;
+            data->size_++;
+        }
+        if (depth > data->depth_)
+            data->depth_ = depth;
     }
 
-EXIT:
-    return iRtn;
+    return true;
 }
 
-int32_t TrieHasExact(Trie *self, char *str)
+bool TrieHasExact(Trie* self, const char* str)
 {
-    CHECK_INIT(self);
-    if (!str)
-        return NOKEY;
-    if (*str == 0)
-        return NOKEY;
+    if (unlikely(!str))
+        return false;
+    if (unlikely(*str == 0))
+        return false;
 
-    TrieData *pData = self->pData;
-    TrieNode *pCurr = pData->pRoot_;
-    TrieNode *pPred = NULL;
-    LONGEST_PREFIX_MATCH(str, pPred, pCurr);
+    TrieData* data = self->data;
+    TrieNode* curr = data->root_;
+    TrieNode* pred = NULL;
+
+    /* Longest prefix matching. */
+    char ch;
+    while (curr && ((ch = *str) != 0)) {
+        pred = curr;
+        char token = curr->token_;
+        if (ch == token) {
+            curr = curr->middle_;
+            ++str;
+        } else {
+            if (ch < token)
+                curr = curr->left_;
+            else
+                curr = curr->right_;
+        }
+    }
 
     /* At the tail of a certain string. */
-    return (pPred && pPred->bEndStr_ && *str == 0)? SUCC : NOKEY;
+    return (pred && pred->endstr_ && *str == 0)? true : false;
 }
 
-int32_t TrieHasPrefixAs(Trie *self, char *str)
+bool TrieHasPrefixAs(Trie* self, const char* prefix)
 {
-    CHECK_INIT(self);
-    if (!str)
-        return NOKEY;
-    if (*str == 0)
-        return NOKEY;
+    if (unlikely(!prefix))
+        return false;
+    if (unlikely(*prefix == 0))
+        return false;
 
-    TrieData *pData = self->pData;
-    TrieNode *pCurr = pData->pRoot_;
-    TrieNode *pPred = NULL;
-    LONGEST_PREFIX_MATCH(str, pPred, pCurr);
+    TrieData* data = self->data;
+    TrieNode* curr = data->root_;
+    TrieNode* pred = NULL;
 
-    /* The designated prefix is legal. */
-    if (*str == 0) {
-        if (!pCurr)
-            return (pPred && pPred->bEndStr_)? SUCC : NOKEY;
-        /* Short cut if this prefix is a certain string stored in the trie. */
-        if (pCurr && pPred && pPred->bEndStr_)
-            return SUCC;
-    } else
-        return NOKEY;
-
-    /* The slow trie traversal to find any node marked as string tail. */
-    int32_t iRtn, iCap;
-    ESTIMATE_STORAGE_SIZE(iCap, pData->iSize_, pData->iCountNode_);
-    TrieNode **stack;
-    MALLOC_BLOCK(stack, iCap, TrieNode*, iRtn, EXIT);
-
-    iRtn = NOKEY;
-    int32_t iTop = 0;
-    stack[iTop++] = pCurr;
-    while (iTop > 0) {
-        pCurr = stack[--iTop];
-        if (pCurr->bEndStr_) {
-            iRtn = SUCC;
-            break;
+    /* Longest prefix matching. */
+    char ch;
+    while (curr && ((ch = *prefix) != 0)) {
+        pred = curr;
+        char token = curr->token_;
+        if (ch == token) {
+            curr = curr->middle_;
+            ++prefix;
+        } else {
+            if (ch < token)
+                curr = curr->left_;
+            else
+                curr = curr->right_;
         }
-
-        if (iTop == iCap) {
-            iCap <<= 1;
-            REALLOC_BLOCK(stack, iCap, TrieNode*, iRtn, FREE_STACK);
-        }
-
-        if (pCurr->pRight_)
-            stack[iTop++] = pCurr->pRight_;
-        if (pCurr->pMiddle_)
-            stack[iTop++] = pCurr->pMiddle_;
-        if (pCurr->pLeft_)
-            stack[iTop++] = pCurr->pLeft_;
     }
 
-FREE_STACK:
-    free(stack);
-EXIT:
-    return iRtn;
-}
+    /* No such prefix and early return. */
+    if (*prefix != 0)
+        return false;
 
-int32_t TrieGetPrefixAs(Trie *self, char* str, char ***paStr, int *piNum)
-{
-    CHECK_INIT(self);
-    if (!paStr || !piNum)
-        return ERR_GET;
+    /* Short cut if this prefix is a specific string stored in the trie. */
+    if (!curr)
+        return (pred && pred->endstr_)? true : false;
+    if (curr && pred && pred->endstr_)
+        return true;
 
-    *paStr = NULL;
-    *piNum = 0;
-    if (!str)
-        return NOKEY;
-    if (*str == 0)
-        return NOKEY;
+    /* The slow trie traversal to find any node marked as string end. */
+    char direct = DOWN_LEFT;
+    while (direct != STOP) {
+        if (direct == DOWN_LEFT || direct == DOWN_MIDDLE || direct == DOWN_RIGHT) {
+            if (curr->endstr_)
+                return true;
 
-    /* Prepare the prefix path record which is extended or shrunk during trie
-       traversal to represent a certain string stored in the trie. */
-    int32_t iRtn;
-    int32_t iLenPrefix = strlen(str);
-    int32_t iCapPrefix = iLenPrefix << 1;
-    char *szPrefix;
-    MALLOC_BLOCK(szPrefix, iCapPrefix, char, iRtn, EXIT);
-    memset(szPrefix, 0, sizeof(char) * iCapPrefix);
-    strcpy(szPrefix, str);
-
-    TrieData *pData = self->pData;
-    TrieNode *pCurr = pData->pRoot_;
-    TrieNode *pPred = NULL;
-    LONGEST_PREFIX_MATCH(str, pPred, pCurr);
-
-    int32_t iSizeArr = 0, iCapArr;
-    if (*str == 0) {
-        /* The designated prefix is legal, and we try to search for the strings
-           matching it. */
-        if (!pCurr && !(pPred->bEndStr_)) {
-            iRtn = NOKEY;
-            goto FREE_PREFIX;
-        }
-
-        ESTIMATE_STORAGE_SIZE(iCapArr, pData->iSize_, pData->iCountNode_);
-        MALLOC_BLOCK(*paStr, iCapArr, char*, iRtn, FREE_PREFIX);
-
-        if (pPred->bEndStr_)
-            COLLECT_PREFIX(szPrefix, iLenPrefix, paStr, iSizeArr, iCapArr, \
-                           iRtn, FREE_PREFIX);
-    } else {
-        iRtn = NOKEY;
-        goto FREE_PREFIX;
-    }
-
-    /* Prepare the stack for DFS-like traversal. */
-    int32_t iTop = 0, iCapStack;
-    ESTIMATE_STORAGE_SIZE(iCapStack, pData->iSize_, pData->iCountNode_);
-    StackFrame *stack;
-    MALLOC_BLOCK(stack, iCapStack, StackFrame, iRtn, FREE_PREFIX, \
-                 FREE_BLOCK(*paStr, iSizeArr));
-
-    if (pCurr) {
-        stack[iTop].bVisit_ = false;
-        stack[iTop].iDepth_ = iLenPrefix;
-        stack[iTop++].pTrieNode_ = pCurr;
-    }
-
-    while (iTop > 0) {
-        StackFrame frame = stack[--iTop];
-        int32_t iDepth = frame.iDepth_;
-        TrieNode *pCurr = frame.pTrieNode_;
-
-        /* Update the prefix path record only when a certain node is visited in
-           the second time. And also collect the record if it represents a certain
-           string stored in the trie. */
-        if (frame.bVisit_) {
-            if (iDepth == iCapPrefix) {
-                int32_t iCapPrefixNew = iCapPrefix << 1;
-                REALLOC_BLOCK(szPrefix, iCapPrefixNew, char, iRtn, FREE_STACK, \
-                              FREE_BLOCK(*paStr, iSizeArr));
-                iCapPrefix = iCapPrefixNew;
+            if (curr->left_) {
+                curr = curr->left_;
+                direct = DOWN_LEFT;
+                continue;
             }
-            szPrefix[iDepth] = pCurr->cToken_;
-            if (pCurr->bEndStr_)
-                COLLECT_PREFIX(szPrefix, iDepth + 1, paStr, iSizeArr, iCapArr, \
-                               iRtn, FREE_STACK);
+            if (curr->middle_) {
+                curr = curr->middle_;
+                direct = DOWN_MIDDLE;
+                continue;
+            }
+            if (curr->right_) {
+                curr = curr->right_;
+                direct = DOWN_RIGHT;
+                continue;
+            }
+
+            direct = DECIDE_BACKWARD_DIRECTION(&curr);
             continue;
         }
 
-        if (iTop == iCapStack) {
-            int32_t iCapStackNew = iCapStack << 1;
-            REALLOC_BLOCK(stack, iCapStackNew, StackFrame, iRtn, FREE_STACK, \
-                          FREE_BLOCK(*paStr, iSizeArr));
-            iCapStack = iCapStackNew;
+        if (direct == UP_LEFT) {
+            if (curr->middle_) {
+                curr = curr->middle_;
+                direct = DOWN_MIDDLE;
+                continue;
+            }
+            if (curr->right_) {
+                curr = curr->right_;
+                direct = DOWN_RIGHT;
+                continue;
+            }
+
+            direct = DECIDE_BACKWARD_DIRECTION(&curr);
+            continue;
         }
 
-        /*--------------------------------------------------------------------*
-         * Given the prefix "01":                                             *
-         *                    The traversal order should be:                  *
-         *          0         (a) The sub-trie rooted by the node containing  *
-         *          |             character #1.                               *
-         *          1         (b) The node containing character #5.           *
-         *          |         (c) The sub-trie rooted by the node containing  *
-         *          5             character #2.                               *
-         *      __/ | \__     (d) The sub-trie rooted by the node containing  *
-         *     /    2    \        character #9.                               *
-         *    1    / \    9                                                   *
-         *   / \  /___\  / \  Thus the stack pushing order should be:         *
-         *  /___\       /___\     (d) -> (c) -> (b) -> (a)                    *
-         *--------------------------------------------------------------------*/
-        if (pCurr->pRight_) {
-            stack[iTop].bVisit_ = false;
-            stack[iTop].iDepth_ = iDepth;
-            stack[iTop++].pTrieNode_ = pCurr->pRight_;
+        if (direct == UP_MIDDLE) {
+            if (curr->right_) {
+                curr = curr->right_;
+                direct = DOWN_RIGHT;
+                continue;
+            }
+
+            direct = DECIDE_BACKWARD_DIRECTION(&curr);
+            continue;
         }
 
-        if (pCurr->pMiddle_) {
-            stack[iTop].bVisit_ = false;
-            stack[iTop].iDepth_ = iDepth + 1;
-            stack[iTop++].pTrieNode_ = pCurr->pMiddle_;
-        }
+        direct = DECIDE_BACKWARD_DIRECTION(&curr);
+    }
 
-        stack[iTop].bVisit_ = true;
-        stack[iTop].iDepth_ = iDepth;
-        stack[iTop++].pTrieNode_ = pCurr;
+    return false;
+}
 
-        if (pCurr->pLeft_) {
-            stack[iTop].bVisit_ = false;
-            stack[iTop].iDepth_ = iDepth;
-            stack[iTop++].pTrieNode_ = pCurr->pLeft_;
+bool TrieGetPrefixAs(Trie* self, const char* prefix, const char*** p_strs, unsigned *p_size)
+{
+    *p_strs = NULL;
+    *p_size = 0;
+
+    if (unlikely(!prefix))
+        return false;
+    if (unlikely(*prefix == 0))
+        return false;
+
+    TrieData* data = self->data;
+    TrieNode* curr = data->root_;
+    TrieNode* pred = NULL;
+
+    /* Longest prefix matching. */
+    const char* dup = prefix;
+    char ch;
+    while (curr && ((ch = *dup) != 0)) {
+        pred = curr;
+        char token = curr->token_;
+        if (ch == token) {
+            curr = curr->middle_;
+            ++dup;
+        } else {
+            if (ch < token)
+                curr = curr->left_;
+            else
+                curr = curr->right_;
         }
     }
 
-    /* Arrange the returned data. */
-    if (iSizeArr > 0) {
-        REALLOC_BLOCK(*paStr, iSizeArr, char*, iRtn, FREE_STACK, \
-                      FREE_BLOCK(*paStr, iSizeArr));
-        iRtn = SUCC;
+    /* No such prefix and early return. */
+    if (*dup != 0)
+        return false;
+    if (!curr && !(pred->endstr_))
+        return false;
+
+    /* Prepare the prefix record. */
+    unsigned depth = data->depth_;
+    unsigned length = strlen(prefix);
+    unsigned sum = depth + length + 1;
+    char* record = (char*)malloc(sizeof(char) * sum);
+    if (unlikely(!record))
+        return false;
+    memset(record, 0, sizeof(char) * sum);
+    strncpy(record, prefix, length);
+
+    /* Prepare the to be returned array of strings. */
+    unsigned capacity = depth;
+    unsigned size = 0;
+    const char** strs = (const char**)malloc(sizeof(const char*) * capacity);
+    if (unlikely(!strs)) {
+        free(record);
+        return false;
+    }
+
+    /* The given prefix is exactly a stored string. */
+    if (pred->endstr_) {
+        dup = strdup(record);
+        strs[size++] = dup;
+    }
+
+    /* The full trie traversal to find any node marked as string end. */
+    char direct = DOWN_LEFT;
+    while (curr && (curr != pred)) {
+        if (direct == DOWN_LEFT || direct == DOWN_MIDDLE || direct == DOWN_RIGHT) {
+            if (curr->left_) {
+                curr = curr->left_;
+                record[length] = curr->token_;
+                direct = DOWN_LEFT;
+                continue;
+            }
+
+            record[length] = curr->token_;
+            if (curr->endstr_) {
+                if (size == capacity) {
+                    capacity <<= 1;
+                    const char** new_strs = (const char**)realloc(strs,
+                                                sizeof(const char*) * capacity);
+                    if (unlikely(!new_strs))
+                        FREE_LOCAL_RESOURCE(strs, size, record);
+                    strs = new_strs;
+                }
+                strs[size++] = strdup(record);
+            }
+
+            if (curr->middle_) {
+                curr = curr->middle_;
+                record[++length] = curr->token_;
+                direct = DOWN_MIDDLE;
+                continue;
+            }
+            if (curr->right_) {
+                curr = curr->right_;
+                record[length] = curr->token_;
+                direct = DOWN_RIGHT;
+                continue;
+            }
+
+            direct = DECIDE_BACKWARD_DIRECTION(&curr);
+            if (direct == UP_MIDDLE)
+                record[length--] = 0;
+            continue;
+        }
+
+        if (direct == UP_LEFT) {
+            record[length] = curr->token_;
+            if (curr->endstr_) {
+                if (size == capacity) {
+                    capacity <<= 1;
+                    const char** new_strs = (const char**)realloc(strs,
+                                                sizeof(const char*) * capacity);
+                    if (unlikely(!new_strs))
+                        FREE_LOCAL_RESOURCE(strs, size, record);
+                    strs = new_strs;
+                }
+                strs[size++] = strdup(record);
+            }
+
+            if (curr->middle_) {
+                curr = curr->middle_;
+                record[++length] = curr->token_;
+                direct = DOWN_MIDDLE;
+                continue;
+            }
+            if (curr->right_) {
+                curr = curr->right_;
+                record[length] = curr->token_;
+                direct = DOWN_RIGHT;
+                continue;
+            }
+
+            direct = DECIDE_BACKWARD_DIRECTION(&curr);
+            if (direct == UP_MIDDLE)
+                record[length--] = 0;
+            continue;
+        }
+
+        if (direct == UP_MIDDLE) {
+            if (curr->right_) {
+                curr = curr->right_;
+                record[length] = curr->token_;
+                direct = DOWN_RIGHT;
+                continue;
+            }
+
+            direct = DECIDE_BACKWARD_DIRECTION(&curr);
+            if (direct == UP_MIDDLE)
+                record[length--] = 0;
+            continue;
+        }
+
+        direct = DECIDE_BACKWARD_DIRECTION(&curr);
+        if (direct == UP_MIDDLE)
+            record[length--] = 0;
+        continue;
+    }
+
+    bool ever_found;
+    if (size > 0) {
+        const char** new_strs = (const char**)realloc(strs, sizeof(const char**) * size);
+        if (unlikely(!new_strs)) {
+            FREE_LOCAL_RESOURCE(strs, size, record);
+            ever_found = false;
+        }
+        strs = new_strs;
+        ever_found = true;
     } else {
-        free(*paStr);
-        *paStr = NULL;
-        iRtn = NOKEY;
+        FREE_LOCAL_RESOURCE(strs, size, record);
+        ever_found = false;
     }
-    *piNum = iSizeArr;
 
-FREE_STACK:
-    free(stack);
-FREE_PREFIX:
-    free(szPrefix);
-EXIT:
-    return iRtn;
+    if (ever_found) {
+        *p_strs = strs;
+        *p_size = size;
+        free(record);
+    }
+    return ever_found;
 }
 
-int32_t TrieRemove(Trie *self, char *str)
+bool TrieRemove(Trie* self, const char* str)
 {
-    CHECK_INIT(self);
-    if (!str)
-        return NOKEY;
-    if (*str == 0)
-        return NOKEY;
+    if (unlikely(!str))
+        return false;
+    if (unlikely(*str == 0))
+        return false;
 
-    TrieData *pData = self->pData;
-    TrieNode *pCurr = pData->pRoot_;
-    TrieNode *pPred = NULL;
-    LONGEST_PREFIX_MATCH(str, pPred, pCurr);
+    TrieData* data = self->data;
+    TrieNode* curr = data->root_;
+    TrieNode* pred = NULL;
 
-    /* At the tail of a certain string. */
-    if (pPred && pPred->bEndStr_ && *str == 0) {
-        pPred->bEndStr_ = false;
-        pData->iSize_--;
-        return SUCC;
+    /* Longest prefix matching. */
+    char ch;
+    while (curr && ((ch = *str) != 0)) {
+        pred = curr;
+        char token = curr->token_;
+        if (ch == token) {
+            curr = curr->middle_;
+            ++str;
+        } else {
+            if (ch < token)
+                curr = curr->left_;
+            else
+                curr = curr->right_;
+        }
     }
-    return NOKEY;
+
+    /* At the end of a specific string. */
+    if (pred && pred->endstr_ && *str == 0) {
+        pred->endstr_ = false;
+        data->size_--;
+        return true;
+    }
+    return false;
 }
 
-int32_t TrieSize(Trie *self)
+unsigned TrieSize(Trie* self)
 {
-    CHECK_INIT(self);
-    return self->pData->iSize_;
+    return self->data->size_;
 }
 
 
 /*===========================================================================*
  *               Implementation for internal operations                      *
  *===========================================================================*/
-void _TrieDeinit(TrieData *pData)
+void _TrieDeinit(TrieData* data)
 {
-    if (pData->pRoot_ == NULL)
+    TrieNode* curr = data->root_;
+    if (!curr)
         return;
 
-    /* Simulate the stack and apply iterative postorder trie traversal. */
-    TrieNode ***stack = (TrieNode***)malloc(sizeof(TrieNode**) * pData->iCountNode_);
-    assert(stack != NULL);
-
-    int32_t iSize = 0;
-    stack[iSize++] = &(pData->pRoot_);
-    while (iSize > 0) {
-        TrieNode **ppCurr = stack[iSize - 1];
-        TrieNode *pCurr = *ppCurr;
-        if (pCurr->pLeft_)
-            stack[iSize++] = &(pCurr->pLeft_);
-        else if (pCurr->pMiddle_)
-            stack[iSize++] = &(pCurr->pMiddle_);
-        else if (pCurr->pRight_)
-            stack[iSize++] = &(pCurr->pRight_);
-        else {
-            TrieNode *pParent = pCurr->pParent_;
-            if (pParent) {
-                if (pCurr == pParent->pLeft_)
-                    pParent->pLeft_ = NULL;
-                else if (pCurr == pParent->pMiddle_)
-                    pParent->pMiddle_ = NULL;
-                else
-                    pParent->pRight_ = NULL;
+    char direct = DOWN_LEFT;
+    while (direct != STOP) {
+        if (direct == DOWN_LEFT || direct == DOWN_MIDDLE || direct == DOWN_RIGHT) {
+            if (curr->left_) {
+                curr = curr->left_;
+                direct = DOWN_LEFT;
+                continue;
             }
-            free(pCurr);
-            iSize--;
+            if (curr->middle_) {
+                curr = curr->middle_;
+                direct = DOWN_MIDDLE;
+                continue;
+            }
+            if (curr->right_) {
+                curr = curr->right_;
+                direct = DOWN_RIGHT;
+                continue;
+            }
+
+            TrieNode* temp = curr;
+            direct = DECIDE_BACKWARD_DIRECTION(&curr);
+            free(temp);
+            continue;
         }
+
+        if (direct == UP_LEFT) {
+            if (curr->middle_) {
+                curr = curr->middle_;
+                direct = DOWN_MIDDLE;
+                continue;
+            }
+            if (curr->right_) {
+                curr = curr->right_;
+                direct = DOWN_RIGHT;
+                continue;
+            }
+
+            TrieNode* temp = curr;
+            direct = DECIDE_BACKWARD_DIRECTION(&curr);
+            free(temp);
+            continue;
+        }
+
+        if (direct == UP_MIDDLE) {
+            if (curr->right_) {
+                curr = curr->right_;
+                direct = DOWN_RIGHT;
+                continue;
+            }
+
+            TrieNode* temp = curr;
+            direct = DECIDE_BACKWARD_DIRECTION(&curr);
+            free(temp);
+            continue;
+        }
+
+        TrieNode* temp = curr;
+        direct = DECIDE_BACKWARD_DIRECTION(&curr);
+        free(temp);
     }
 
-    free(stack);
     return;
 }
