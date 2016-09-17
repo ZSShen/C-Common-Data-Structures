@@ -4,10 +4,6 @@
 #include "CUnit/Basic.h"
 
 
-/*------------------------------------------------------------*
- *    Test Function Declaration for Structure Verification    *
- *------------------------------------------------------------*/
-static const int COUNT_ITER = 1000;
 static const int SIZE_TNY_TEST = 128;
 static const int SIZE_SML_TEST = 512;
 static const int SIZE_MID_TEST = 1024;
@@ -213,7 +209,7 @@ void TestRemoveTxt()
     HashMapDeinit(map);
 }
 
-void TestPutDupText()
+void TestPutDupTxt()
 {
     char buf[SIZE_TNY_TEST];
     char* keys[SIZE_TNY_TEST];
@@ -307,19 +303,19 @@ bool AddSuite()
         if (!suite)
             return false;
 
-        CU_pTest unit = CU_add_test(suite, "New and Delete", TestNewDelete);
+        CU_pTest unit = CU_add_test(suite, "Map New and Delete", TestNewDelete);
         if (!unit)
             return false;
 
-        unit = CU_add_test(suite, "Numerics Put and Get", TestPutGetNum);
+        unit = CU_add_test(suite, "Numeric Key Put and Get", TestPutGetNum);
         if (!unit)
             return false;
 
-        unit = CU_add_test(suite, "Numerics Remove", TestRemoveNum);
+        unit = CU_add_test(suite, "Numeric Key Remove", TestRemoveNum);
         if (!unit)
             return false;
 
-        unit = CU_add_test(suite, "Iterator", TestIterateNum);
+        unit = CU_add_test(suite, "Map Iterator", TestIterateNum);
         if (!unit)
             return false;
     }
@@ -329,19 +325,19 @@ bool AddSuite()
         if (!suite)
             return false;
 
-        CU_pTest unit = CU_add_test(suite, "Text Put and Get", TestPutGetTxt);
+        CU_pTest unit = CU_add_test(suite, "Object Key Put and Get", TestPutGetTxt);
         if (!unit)
             return false;
 
-        unit = CU_add_test(suite, "Pair Replacement", TestPutDupText);
+        unit = CU_add_test(suite, "Pair Replacement", TestPutDupTxt);
         if (!unit)
             return false;
 
-        unit = CU_add_test(suite, "Text Remove and Garbage Collection", TestRemoveTxt);
+        unit = CU_add_test(suite, "Object Key Remove and Garbage Collection", TestRemoveTxt);
         if (!unit)
             return false;
 
-        unit = CU_add_test(suite, "Bulk Text Maintenance", TestBulkTxt);
+        unit = CU_add_test(suite, "Large Amount Pair Maintenance", TestBulkTxt);
         if (!unit)
             return false;
     }

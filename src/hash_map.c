@@ -1,3 +1,26 @@
+/**
+ *   The MIT License (MIT)
+ *   Copyright (C) 2016 ZongXian Shen <andy.zsshen@gmail.com>
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *   IN THE SOFTWARE.
+ */
+
 #include "container/hash_map.h"
 #include "math/hash.h"
 
@@ -90,7 +113,7 @@ HashMap* HashMapInit()
         free(obj);
         return NULL;
     }
-    int i;
+    unsigned i;
     for (i = 0 ; i < magic_primes[0] ; ++i)
         arr_slot[i] = NULL;
 
@@ -123,11 +146,7 @@ HashMap* HashMapInit()
 void HashMapDeinit(HashMap* obj)
 {
     if (unlikely(!obj))
-        goto EXIT;
-    if (unlikely(!(obj->data)))
-        goto FREE_MAP;
-    if (unlikely(!(obj->data->arr_slot_)))
-        goto FREE_DATA;
+        return;
 
     HashMapData* data = obj->data;
     SlotNode** arr_slot = data->arr_slot_;
@@ -137,8 +156,8 @@ void HashMapDeinit(HashMap* obj)
     unsigned num_slot = data->num_slot_;
     unsigned i;
     for (i = 0 ; i < num_slot ; ++i) {
-        SlotNode *pred;
-        SlotNode *curr = arr_slot[i];
+        SlotNode* pred;
+        SlotNode* curr = arr_slot[i];
         while (curr) {
             pred = curr;
             curr = curr->next_;
@@ -151,11 +170,8 @@ void HashMapDeinit(HashMap* obj)
     }
 
     free(arr_slot);
-FREE_DATA:
     free(data);
-FREE_MAP:
     free(obj);
-EXIT:
     return;
 }
 
@@ -202,7 +218,7 @@ bool HashMapPut(HashMap* self, void* key, void* value)
         node->next_ = arr_slot[hash];
         arr_slot[hash] = node;
     }
-    data->size_++;
+    ++(data->size_);
 
     return true;
 }
@@ -275,7 +291,7 @@ bool HashMapRemove(HashMap* self, void* key)
                 pred->next_ = curr->next_;
 
             free(curr);
-            data->size_--;
+            --(data->size_);
             return true;
         }
         pred = curr;
@@ -309,7 +325,7 @@ Pair* HashMapNext(HashMap* self)
             data->iter_node_ = data->iter_node_->next_;
             return ptr_pair;
         }
-        data->iter_slot_++;
+        ++(data->iter_slot_);
         if (data->iter_slot_ == data->num_slot_)
             break;
         data->iter_node_ = arr_slot[data->iter_slot_];
@@ -350,16 +366,16 @@ int _HashMapCompare(void* lhs, void* rhs)
 {
     if ((intptr_t)lhs == (intptr_t)rhs)
         return 0;
-    return ((intptr_t)lhs >= (intptr_t)rhs)? 1 : (-1);
+    return ((intptr_t)lhs > (intptr_t)rhs)? 1 : (-1);
 }
 
-void _HashMapReHash(HashMapData *data)
+void _HashMapReHash(HashMapData* data)
 {
     unsigned num_slot_new;
 
     /* Consume the next prime for slot array extension. */
     if (likely(data->idx_prime_ < (num_prime - 1))) {
-        data->idx_prime_++;
+        ++(data->idx_prime_);
         num_slot_new = magic_primes[data->idx_prime_];
     }
     /* If the prime list is completely consumed, we simply extend the slot array
@@ -374,7 +390,7 @@ void _HashMapReHash(HashMapData *data)
     SlotNode** arr_slot_new = (SlotNode**)malloc(sizeof(SlotNode*) * num_slot_new);
     if (unlikely(!arr_slot_new)) {
         if (data->idx_prime_ < num_prime)
-            data->idx_prime_--;
+            --(data->idx_prime_);
         return;
     }
 
@@ -386,8 +402,8 @@ void _HashMapReHash(HashMapData *data)
     SlotNode** arr_slot = data->arr_slot_;
     unsigned num_slot = data->num_slot_;
     for (i = 0 ; i < num_slot ; ++i) {
-        SlotNode *pred;
-        SlotNode *curr = arr_slot[i];
+        SlotNode* pred;
+        SlotNode* curr = arr_slot[i];
         while (curr) {
             pred = curr;
             curr = curr->next_;
