@@ -1,4 +1,28 @@
 /**
+ *   The MIT License (MIT)
+ *   Copyright (C) 2016 ZongXian Shen <andy.zsshen@gmail.com>
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *   IN THE SOFTWARE.
+ */
+
+
+/**
  * @file hash_set.h The unordered set to store unique keys.
  */
 
@@ -14,38 +38,56 @@ extern "C" {
 /** HashSetData is the data type for the container private information. */
 typedef struct _HashSetData HashSetData;
 
+/** Calculate the hash of the given key. */
+typedef unsigned (*HashSetHash) (void*);
+
+/** Compare the equality of two keys. */
+typedef int (*HashSetCompare) (void*, void*);
+
+/** void* cleanup function called whenever a live entry is removed. */
+typedef void (*HashSetCleanKey) (void*);
+
+
 /** The implementation for hash set. */
 typedef struct _HashSet {
     /** The container private information */
-    HashSetData *pData;
+    HashSetData* data;
 
     /** Insert a key into the set.
         @see HashSetAdd */
-    int32_t (*add) (struct _HashSet*, Key, size_t);
+    bool (*add) (struct _HashSet*, void*);
 
-    /** Check if the set contains the designated key.
+    /** Check if the set contains the specified key.
         @see HashSetFind */
-    int32_t (*find) (struct _HashSet*, Key, size_t);
+    bool (*find) (struct _HashSet*, void*);
 
-    /** Delete the designated key from the set.
+    /** Remove the specified key from the set.
         @see HashSetRemove */
-    int32_t (*remove) (struct _HashSet*, Key, size_t);
+    bool (*remove) (struct _HashSet*, void*);
 
     /** Return the number of stored unique keys.
         @see HashSetSize */
-    int32_t (*size) (struct _HashSet*);
+    unsigned (*size) (struct _HashSet*);
 
-    /** Iterate through the set to retrieve each key.
-        @see HashSetIterate */
-    int32_t (*iterate) (struct _HashSet*, bool, Key*);
+    /** Initialize the set iterator.
+        @see HashSetFirst */
+    void (*first) (struct _HashSet*);
 
-    /** Set the custom key resource clean method.
-        @see HashSetSetDestroy */
-    int32_t (*set_destroy) (struct _HashSet*, void (*) (Key));
+    /** Get the key pointed by the iterator and advance the iterator.
+        @see HashSetNext */
+    void* (*next) (struct _HashSet*);
 
     /** Set the custom hash function.
         @see HashSetSetHash */
-    int32_t (*set_hash) (struct _HashSet*, uint32_t (*) (Key, size_t));
+    void (*set_hash) (struct _HashSet*, HashSetHash);
+
+    /** Set the custom key comparison function.
+        @see HashSetSetCompare */
+    void (*set_compare) (struct _HashSet*, HashSetCompare);
+
+    /** Set the custom key cleanup function.
+        @see HashSetSetCleanKey */
+    void (*set_clean_key) (struct _HashSet*, HashSetCleanKey);
 } HashSet;
 
 
@@ -55,198 +97,152 @@ typedef struct _HashSet {
 /**
  * @brief The constructor for HashSet.
  *
- * @param ppObj         The double pointer to the to be constructed set
- *
- * @retval SUCC
- * @retval ERR_NOMEM    Insufficient memory for set construction
+ * @retval obj          The successfully constructed set
+ * @retval NULL         Insufficient memory for set construction
  */
-int32_t HashSetInit(HashSet **ppObj);
+HashSet* HashSetInit();
 
 /**
  * @brief The destructor for HashSet.
  *
- * If the custom resource clean method is set, it also runs the clean method
- * for each pair.
- *
- * @param ppObj         The double pointer to the to be destructed set
+ * @param obj           The pointer to the to be destructed set
  */
-void HashSetDeinit(HashSet **ppObj);
+void HashSetDeinit(HashSet* obj);
 
 /**
  * @brief Insert a key into the set.
  *
- * This function inserts a key into the set. If the designated key is the same
- * with a certain one stored in the set, that key will be replaced to maintain
- * the element uniqueness. Also, if the custom resource clean method is set, it
- * runs the resource clean method for the replaced key.
- *
  * @param self          The pointer to HashSet structure
- * @param key           The designated key
- * @param size          Key size in bytes
+ * @param key           The specified key
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NOMEM    Insufficient memory for set extension
- * @retval ERR_KEYSIZE  Invalid key size
- *
- * @note The key should be the pointer to the data you plan to hash for.
+ * @retval true         The key is successfully inserted
+ * @retval false        The key cannot be inserted due to insufficient memory
  */
-int32_t HashSetAdd(HashSet *self, Key key, size_t size);
+bool HashSetAdd(HashSet* self, void* key);
 
 /**
- * @brief Check if the set contains the designated key.
+ * @brief Check if the set contains the specified key.
  *
  * @param self          The pointer to HashSet structure
- * @param key           The designated key
- * @param size          Key size in bytes
+ * @param key           The specified key
  *
- * @retval SUCC         The key can be found
- * @retval NOKEY        The key cannot be found
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_KEYSIZE  Invalid key size
- *
- * @note The key should be the pointer to the data you plan to hash for.
+ * @retval true         The key can be found
+ * @retval false        The key cannot be found
  */
-int32_t HashSetFind(HashSet *self, Key key, size_t size);
+bool HashSetFind(HashSet* self, void* key);
 
 /**
- * @brief Delete the designated key from the set.
- *
- * This function deletes the designated key from the set. If the custom resource
- * clean method is set, it also runs the clean method for the deleted key.
+ * @brief Remove the specified key from the set.
  *
  * @param self          The pointer to HashSet structure
- * @param key           The designated key
- * @param size          Key size in bytes
+ * @param key           The specified key
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NODATA   No set entry can be found
- * @retval ERR_KEYSIZE  Invalid key size
- *
- * @note The key should be the pointer to the data you plan to hash for.
+ * @retval true         The key is successfully removed
+ * @retval false        The key cannot be found
  */
-int32_t HashSetRemove(HashSet *self, Key key, size_t size);
+bool HashSetRemove(HashSet* self, void* key);
 
 /**
- * @brief Return the number of stored unique keys.
+ * @brief Return the number of stored keys.
  *
  * @param self          The pointer to HashSet structure
  *
- * @return              The number of stored pairs
- * @retval ERR_NOINIT   Uninitialized container
+ * @retval size         The number of stored keys
  */
-int32_t HashSetSize(HashSet *self);
+unsigned HashSetSize(HashSet* self);
 
 /**
- * @brief Iterate through the set to retrieve each key.
- *
- * Before iterating through the set, it is necessary to pass:
- *  - bReset = true
- *  - pKey = NULL
- * for iterator initialization.
- *
- * After initialization, you can pass:
- *  - bReset = false
- *  - pKey = the pointer to get the returned key at each iteration.
+ * @brief Initialize the set iterator.
  *
  * @param self          The pointer to HashSet structure
- * @param bReset        The knob to restart the iteration
- * @param pKey          The pointer to the returned key
- *
- * @retval SUCC         Iterator initialized successfully
- * @retval CONTINUE     Iteration in progress
- * @retval END          Iteration terminated
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_GET      Invalid parameter to store returned key
- *
- * @note Please do not insert or delete keys during set traversal
  */
-int32_t HashSetIterate(HashSet *self, bool bReset, Key *pKey);
+void HashSetFirst(HashSet* self);
 
 /**
- * @brief Set the custom key resource clean method.
+ * @brief Get the current key pointed by the iterator and advance the iterator.
  *
  * @param self          The pointer to HashSet structure
- * @param pFunc         The function pointer to the custom method
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
+ * @retval key          The current key
+ * @retval NULL         The set end is reached
  */
-int32_t HashSetSetDestroy(HashSet *self, void (*pFunc) (Key));
+void* HashSetNext(HashSet* self);
 
 /**
  * @brief Set the custom hash function.
  *
- * The default hash function is HashMurMur32.
+ * @param self          The pointer to HashSet structure
+ * @param func          The custom function
+ */
+void HashSetSetHash(HashSet* self, HashSetHash func);
+
+/**
+ * @brief Set the custom key comparison function.
+ *
+ * By default, key is treated as signed integer.
  *
  * @param self          The pointer to HashSet structure
- * @param pFunc         The function pointer to the custom method
- *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
+ * @param func          The custom function
  */
-int32_t HashSetSetHash(HashSet *self, uint32_t (*pFunc) (Key, size_t));
+void HashSetSetCompare(HashSet* self, HashSetCompare func);
 
 /**
- * @brief Perform union operation for the designated two sets and create the
- *  result set.
+ * @brief Set the custom key cleanup function.
  *
- * @param pFst          The pointer to the first source set
- * @param pSnd          The pointer to the second source set
- * @param ppDst         The double pointer to the to be created result set
+ * By default, no cleanup operation for key.
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized source sets
- * @retval ERR_NOMEM    Insufficient memory for new set creation
- *
- * @note The newly created set will not delegate any key resource clean methods
- *  from two source sets. You can still set the clean method for it. However, to
- *  avoid the "double-free" problem, it is better to let the source sets handle
- *  the resource clean issue and treat the new set as the pure result from the
- *  union operation.
+ * @param self          The pointer to HashSet structure
+ * @param func          The custom function
  */
-int32_t HashSetUnion(HashSet *pFst, HashSet *pSnd, HashSet **ppDst);
+void HashSetSetCleanKey(HashSet* self, HashSetCleanKey func);
 
 /**
- * @brief Perform intersection operation for the designated two sets and create
- *  the result set.
+ * @brief Perform union operation for the specified two sets.
  *
- * @param pFst          The pointer to the first source set
- * @param pSnd          The pointer to the second source set
- * @param ppDst         The double pointer to the to be created result set
+ * @param lhs           The first source set
+ * @param rhs           The second source set
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized source sets
- * @retval ERR_NOMEM    Insufficient memory for new set creation
+ * @retval result       The result set of union operation
+ * @retval NULL         Insufficient memory for result set
  *
- * @note The newly created set will not delegate any key resource clean methods
- *  from two source sets. You can still set the clean method for it. However, to
- *  avoid the "double-free" problem, it is better to let the source sets handle
- *  the resource clean issue and treat the new set as the pure result from the
- *  intersection operation.
+ * @note The result set will not delegate any key clean functions from two source
+ *  sets. You can still put the clean function for it. However, to avoid the
+ *  "double-free" problem, it is better to let the source sets handle the key
+ *  clean issue and treat the result set as the pure key collection.
  */
-int32_t HashSetIntersect(HashSet *pFst, HashSet *pSnd, HashSet **ppDst);
+HashSet* HashSetUnion(HashSet* lhs, HashSet* rhs);
 
 /**
- * @brief Perform difference operation for the first source set against the
- *  second source set and create the result set.
+ * @brief Perform intersection operation for the specified two sets.
  *
- * @param pFst          The pointer to the first source set
- * @param pSnd          The pointer to the second source set
- * @param ppDst         The double pointer to the to be created result set
+ * @param lhs           The first source set
+ * @param rhs           The second source set
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized source sets
- * @retval ERR_NOMEM    Insufficient memory for new set creation
+ * @retval result       The result set of intersection operation
+ * @retval NULL         Insufficient memory for result set
  *
- * @note The newly created set will not delegate any key resource clean methods
- *  from two source sets. You can still set the clean method for it. However, to
- *  avoid the "double-free" problem, it is better to let the source sets handle
- *  the resource clean issue and treat the new set as the pure result from the
- *  difference operation.
+ * @note The result set will not delegate any key clean functions from two source
+ *  sets. You can still put the clean function for it. However, to avoid the
+ *  "double-free" problem, it is better to let the source sets handle the key
+ *  clean issue and treat the result set as the pure key collection.
  */
-int32_t HashSetDifference(HashSet *pFst, HashSet *pSnd, HashSet **ppDst);
+HashSet* HashSetIntersect(HashSet* lhs, HashSet* rhs);
+
+/**
+ * @brief Perform difference operation for the specified two sets.
+ *
+ * @param lhs           The first source set
+ * @param rhs           The second source set
+ *
+ * @retval result       The result set of difference operation
+ * @retval NULL         Insufficient memory for result set
+ *
+ * @note The result set will not delegate any key clean functions from two source
+ *  sets. You can still put the clean function for it. However, to avoid the
+ *  "double-free" problem, it is better to let the source sets handle the key
+ *  clean issue and treat the result set as the pure key collection.
+ */
+HashSet* HashSetDifference(HashSet* lhs, HashSet* rhs);
 
 #ifdef __cplusplus
 }
