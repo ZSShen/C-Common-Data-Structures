@@ -17,6 +17,8 @@ function(SUB_BUILD_SPECIFIC DS)
     set(SRC_DEP_DS "")
     if (DS STREQUAL "hash_map")
         set(SRC_DEP_DS "hash.c")
+    elseif (DS STREQUAL "hash_set")
+        set(SRC_DEP_DS "hash.c")
     endif()
 
     add_library(${TGE_DS} ${LIB_TYPE} ${SRC_DS} ${SRC_DEP_DS})
