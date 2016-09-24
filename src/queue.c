@@ -1,3 +1,26 @@
+/**
+ *   The MIT License (MIT)
+ *   Copyright (C) 2016 ZongXian Shen <andy.zsshen@gmail.com>
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *   IN THE SOFTWARE.
+ */
+
 #include "container/queue.h"
 
 
@@ -5,201 +28,180 @@
  *                        The container private data                         *
  *===========================================================================*/
 struct _QueueData {
-    int32_t iFront_;
-    int32_t iBack_;
-    int32_t iSize_;
-    int32_t iCapacity_;
-    Item *aItem_;
-    void (*pDestroy_) (Item);
+    unsigned front_;
+    unsigned back_;
+    unsigned size_;
+    unsigned capacity_;
+    void** elements_;
+    QueueClean func_clean_;
 };
 
-#define DEFAULT_CAPACITY        (32)
+static const unsigned DEFAULT_CAPACITY = 32;
 
-#define CHECK_INIT(self)                                                        \
-            do {                                                                \
-                if (!self)                                                      \
-                    return ERR_NOINIT;                                          \
-                if (!(self->pData))                                             \
-                    return ERR_NOINIT;                                          \
-                if (!(self->pData->aItem_))                                     \
-                    return ERR_NOINIT;                                          \
-            } while (0);
+
+/*===========================================================================*
+ *                  Definition for internal operations                       *
+ *===========================================================================*/
+#define likely(x)       __builtin_expect(!!(x), 1)
+#define unlikely(x)     __builtin_expect(!!(x), 0)
 
 
 /*===========================================================================*
  *               Implementation for the exported operations                  *
  *===========================================================================*/
-int32_t QueueInit(Queue **ppObj)
+Queue* QueueInit()
 {
-    *ppObj = (Queue*)malloc(sizeof(Queue));
-    if (!(*ppObj))
-        return ERR_NOMEM;
-    Queue *pObj = *ppObj;
+    Queue* obj = (Queue*)malloc(sizeof(Queue));
+    if (unlikely(!obj))
+        return NULL;
 
-    pObj->pData = (QueueData*)malloc(sizeof(QueueData));
-    if (!(pObj->pData)) {
-        free(*ppObj);
-        *ppObj = NULL;
-        return ERR_NOMEM;
+    QueueData* data = (QueueData*)malloc(sizeof(QueueData));
+    if (unlikely(!data)) {
+        free(obj);
+        return NULL;
     }
-    QueueData *pData = pObj->pData;
 
-    pData->aItem_ = (Item*)malloc(sizeof(Item) * DEFAULT_CAPACITY);
-    if (!(pData->aItem_)) {
-        free(pObj->pData);
-        free(*ppObj);
-        *ppObj = NULL;
-        return ERR_NOMEM;
+    void** elements = (void**)malloc(sizeof(void*) * DEFAULT_CAPACITY);
+    if (unlikely(!elements)) {
+        free(data);
+        free(obj);
+        return NULL;
     }
-    pData->iFront_ = 0;
-    pData->iBack_ = 0;
-    pData->iSize_ = 0;
-    pData->iCapacity_ = DEFAULT_CAPACITY;
-    pData->pDestroy_ = NULL;
 
-    pObj->push = QueuePush;
-    pObj->pop = QueuePop;
-    pObj->front = QueueFront;
-    pObj->back = QueueBack;
-    pObj->size = QueueSize;
-    pObj->set_destroy = QueueSetDestroy;
+    data->front_ = 0;
+    data->back_ = 0;
+    data->size_ = 0;
+    data->capacity_ = DEFAULT_CAPACITY;
+    data->elements_ = elements;
+    data->func_clean_ = NULL;
 
-    return SUCC;
+    obj->data = data;
+    obj->push = QueuePush;
+    obj->front = QueueFront;
+    obj->back = QueueBack;
+    obj->pop = QueuePop;
+    obj->size = QueueSize;
+    obj->set_clean = QueueSetClean;
+
+    return obj;
 }
 
-void QueueDeinit(Queue **ppObj)
+void QueueDeinit(Queue* obj)
 {
-    if (!(*ppObj))
-        goto EXIT;
+    if (unlikely(!obj))
+        return;
 
-    Queue *pObj = *ppObj;
-    if (!(pObj->pData))
-        goto FREE_QUEUE;
+    QueueData* data = obj->data;
+    QueueClean func_clean = data->func_clean_;
+    void** elements = data->elements_;
+    unsigned front = data->front_;
+    unsigned size = data->size_;
+    unsigned capacity = data->capacity_;
 
-    QueueData *pData = pObj->pData;
-    if (!(pData->aItem_))
-        goto FREE_DATA;
-
-    if (!(pData->pDestroy_))
-        goto FREE_ARRAY;
-
-    Item *aItem = pData->aItem_;
-    int32_t iSize = pData->iSize_;
-    int32_t iCapacity = pData->iCapacity_;
-    int32_t iFront = pData->iFront_;
-    while (iSize > 0) {
-        if (iFront == iCapacity)
-            iFront = 0;
-        pData->pDestroy_(aItem[iFront]);
-        iFront++;
-        iSize--;
+    while (size > 0) {
+        if (unlikely(front == capacity))
+            front = 0;
+        if (func_clean)
+            func_clean(elements[front]);
+        ++front;
+        --size;
     }
 
-FREE_ARRAY:
-    free(pData->aItem_);
-FREE_DATA:
-    free(pObj->pData);
-FREE_QUEUE:
-    free(*ppObj);
-EXIT:
+    free(elements);
+    free(data);
+    free(obj);
     return;
 }
 
-int32_t QueuePush(Queue *self, Item item)
-{
-    CHECK_INIT(self);
-    QueueData *pData = self->pData;
 
-    /* If the array is full, extend it to double capacity. */
-    if (pData->iSize_ == pData->iCapacity_) {
-        int32_t iCapaNew = pData->iCapacity_ << 1;
-        Item *aItemNew = (Item*)realloc(pData->aItem_, iCapaNew * sizeof(Item));
-        if (!aItemNew)
-            return ERR_NOMEM;
-        pData->aItem_ = aItemNew;
-        pData->iCapacity_ = iCapaNew;
+bool QueuePush(Queue* self, void* element)
+{
+    QueueData* data = self->data;
+    void** elements = data->elements_;
+    unsigned size = data->size_;
+    unsigned capacity = data->capacity_;
+
+    /* If the internal array is full, extend it to double capacity. */
+    if (unlikely(size == capacity)) {
+        unsigned new_capacity = capacity << 1;
+        void** new_elements = (void**)realloc(elements, new_capacity * sizeof(void*));
+        if (unlikely(!new_elements))
+            return false;
+        elements = data->elements_ = new_elements;
+        capacity = data->capacity_ = new_capacity;
 
         /* If back index is smaller than front index, we should migrate the
-           circularly pushed items to the newly allocated space. */
-        if (pData->iBack_ <= pData->iFront_) {
-            memmove(pData->aItem_ + pData->iSize_, pData->aItem_,
-                    sizeof(Item) * pData->iBack_);
-            pData->iBack_ += pData->iSize_;
+           circularly pushed elements to the newly allocated space. */
+        unsigned back = data->back_;
+        if (back <= data->front_) {
+            memmove(elements + size, elements, sizeof(void*) * back);
+            data->back_ += size;
         }
     }
 
-    /* Insert the item to the tail of the array. */
-    pData->aItem_[pData->iBack_] = item;
-    pData->iBack_++;
-    if (pData->iBack_ == pData->iCapacity_)
-        pData->iBack_ = 0;
-    pData->iSize_++;
+    /* Insert the element to the tail of the array. */
+    unsigned back = data->back_;
+    elements[back++] = element;
+    if (unlikely(back == capacity))
+        back = 0;
+    data->back_ = back;
+    data->size_ = size + 1;
 
-    return SUCC;
+    return true;
 }
 
-int32_t QueuePop(Queue *self)
+bool QueueFront(Queue* self, void** p_element)
 {
-    CHECK_INIT(self);
-    QueueData *pData = self->pData;
-    if (pData->iSize_ == 0)
-        return ERR_IDX;
+    QueueData* data = self->data;
+    if (unlikely(data->size_ == 0))
+        return false;
 
-    /* Delete the item from the head of the array. */
-    if (pData->pDestroy_)
-        pData->pDestroy_(pData->aItem_[pData->iFront_]);
-    pData->iFront_++;
-    if (pData->iFront_ == pData->iCapacity_)
-        pData->iFront_ = 0;
-    pData->iSize_--;
-
-    return SUCC;
+    *p_element = data->elements_[data->front_];
+    return true;
 }
 
-int32_t QueueFront(Queue *self, Item *pItem)
+bool QueueBack(Queue* self, void** p_element)
 {
-    CHECK_INIT(self);
-    if (!pItem)
-        return ERR_GET;
+    QueueData* data = self->data;
+    if (unlikely(data->size_ == 0))
+        return false;
 
-    QueueData *pData = self->pData;
-    if (pData->iSize_ == 0) {
-        *pItem = NULL;
-        return ERR_IDX;
-    }
-
-    *pItem = pData->aItem_[pData->iFront_];
-    return SUCC;
-}
-
-int32_t QueueBack(Queue *self, Item *pItem)
-{
-    CHECK_INIT(self);
-    if (!pItem)
-        return ERR_GET;
-
-    QueueData *pData = self->pData;
-    if (pData->iSize_ == 0) {
-        *pItem = NULL;
-        return ERR_IDX;
-    }
-
-    if (pData->iBack_ == 0)
-        *pItem = pData->aItem_[pData->iCapacity_ - 1];
+    unsigned back = data->back_;
+    if (unlikely(back == 0))
+        *p_element = data->elements_[data->capacity_ - 1];
     else
-        *pItem = pData->aItem_[pData->iBack_ - 1];
-    return SUCC;
+        *p_element = data->elements_[back - 1];
+    return true;
 }
 
-int32_t QueueSize(Queue *self)
+bool QueuePop(Queue* self)
 {
-    CHECK_INIT(self);
-    return self->pData->iSize_;
+    QueueData* data = self->data;
+    void** elements = data->elements_;
+    QueueClean func_clean = data->func_clean_;
+    unsigned size = data->size_;
+    if (unlikely(size == 0))
+        return false;
+
+    /* Remove the element from the head of the array. */
+    unsigned front = data->front_;
+    if (func_clean)
+        func_clean(elements[front]);
+    ++front;
+    if (unlikely(front == data->capacity_))
+        front = 0;
+    data->front_ = front;
+    data->size_ = size - 1;
+
+    return true;
 }
 
-int32_t QueueSetDestroy(Queue *self, void (*pFunc) (Item))
+unsigned QueueSize(Queue* self)
 {
-    CHECK_INIT(self);
-    self->pData->pDestroy_ = pFunc;
-    return SUCC;
+    return self->data->size_;
+}
+
+void QueueSetClean(Queue* self, QueueClean func)
+{
+    self->data->func_clean_ = func;
 }

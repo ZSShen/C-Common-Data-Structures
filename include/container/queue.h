@@ -1,4 +1,28 @@
 /**
+ *   The MIT License (MIT)
+ *   Copyright (C) 2016 ZongXian Shen <andy.zsshen@gmail.com>
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *   IN THE SOFTWARE.
+ */
+
+
+/**
  * @file queue.h The FIFO queue.
  */
 
@@ -14,34 +38,38 @@ extern "C" {
 /** QueueData is the data type for the container private information. */
 typedef struct _QueueData QueueData;
 
+/** Element clean function called when an element is removed. */
+typedef void (*QueueClean) (void*);
+
+
 /** The implementation for queue. */
 typedef struct _Queue {
     /** The container private information */
-    QueueData *pData;
+    QueueData *data;
 
-    /** Insert an item to the tail of the queue.
+    /** Push an element to the tail of the queue.
         @see QueuePush */
-    int32_t (*push) (struct _Queue*, Item);
+    bool (*push) (struct _Queue*, void*);
 
-    /** Retrieve item from the head of the queue.
+    /** Retrieve an element from the head of the queue.
         @see QueueFront */
-    int32_t (*front) (struct _Queue*, Item*);
+    bool (*front) (struct _Queue*, void**);
 
-    /** Retrieve item from the tail of the queue.
+    /** Retrieve an element from the tail of the queue.
         @see QueueBack */
-    int32_t (*back) (struct _Queue*, Item*);
+    bool (*back) (struct _Queue*, void**);
 
-    /** Delete an item from the head of the queue.
+    /** Remove an element from the head of the queue.
         @see QueuePop */
-    int32_t (*pop) (struct _Queue*);
+    bool (*pop) (struct _Queue*);
 
-    /** Return the number of stored items.
+    /** Return the number of stored elements.
         @see QueueSize */
-    int32_t (*size) (struct _Queue*);
+    unsigned (*size) (struct _Queue*);
 
-    /** Set the custom item resource clean method.
+    /** Set the custom element cleanup function.
         @see QueueSetDestroy */
-    int32_t (*set_destroy) (struct _Queue*, void (*) (Item));
+    void (*set_clean) (struct _Queue*, QueueClean func);
 } Queue;
 
 
@@ -51,107 +79,80 @@ typedef struct _Queue {
 /**
  * @brief The constructor for Queue.
  *
- * @param ppObj         The double pointer to the to be constructed queue
- *
- * @retval SUCC
- * @retval ERR_NOMEM    Insufficient memory for queue construction
+ * @retval obj          The successfully constructed queue
+ * @retval NULL         Insufficient memory for queue construction
  */
-int32_t QueueInit(Queue **ppObj);
+Queue* QueueInit();
 
 /**
  * @brief The destructor for Queue.
  *
- * If the custom resource clean method is set, it also runs the clean method
- * for all the items.
- *
- * @param ppObj         The double pointer to the to be destructed queue
+ * @param obj           The pointer to the to be destructed queue
  */
-void QueueDeinit(Queue **ppObj);
+void QueueDeinit(Queue* obj);
 
 /**
- * @brief Insert an item to the tail of the queue.
- *
- * This function inserts an item to the tail of the queue with the corresponding
- * queue size extension.
+ * @brief Push an element to the tail of the queue.
  *
  * @param self          The pointer to Queue structure
- * @param item          The designated item
+ * @param element       The specified element
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NOMEM    Insufficient memory for queue extension
+ * @retval true         The element is successfully pushed
+ * @retval false        The element cannot be pushed due to insufficient memory
  */
-int32_t QueuePush(Queue *self, Item item);
+bool QueuePush(Queue* self, void* element);
 
 /**
- * @brief Delete item from top of the queue.
+ * @brief Retrieve an element from the head of the queue.
  *
- * This function deletes item from top of the queue. If the custom resource clean
- * method is set, it also runs the clean method for the deleted item.
+ * @param self          The pointer to PriorityQueue structure
+ * @param p_element     The pointer to the returned element
  *
- * @param self          The pointer to Queue structure
- *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty queue
+ * @retval true         The head element is successfully retrieved
+ * @retval false        The queue is empty
  */
-int32_t QueuePop(Queue *self);
+bool QueueFront(Queue* self, void** p_element);
 
 /**
- * @brief Retrieve item from the head of the queue.
+ * @brief Retrieve an element from the tail of the queue.
  *
- * This function retrieves item from the head of the queue. If the queue is not
- * empty, the item is returned by the second parameter. Otherwise, the error
- * code is returned and the second parameter is updated with NULL.
+ * @param self          The pointer to PriorityQueue structure
+ * @param p_element     The pointer to the returned element
  *
- * @param self          The pointer to Queue structure
- * @param pItem         The pointer to the returned item
- *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty queue
- * @retval ERR_GET      Invalid parameter to store returned item
+ * @retval true         The tail element is successfully retrieved
+ * @retval false        The queue is empty
  */
-int32_t QueueFront(Queue *self, Item *pItem);
+bool QueueBack(Queue* self, void** p_element);
 
 /**
- * @brief Retrieve item from the tail of the queue.
+ * @brief Remove an element from the head of the queue.
  *
- * This function retrieves item from the tail of the queue. If the queue is not
- * empty, the item is returned by the second parameter. Otherwise, the error
- * code is returned and the second parameter is updated with NULL.
- *
- * @param self          The pointer to Queue structure
- * @param pItem         The pointer to the returned item
- *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty queue
- * @retval ERR_GET      Invalid parameter to store returned item
- */
-int32_t QueueBack(Queue *self, Item *pItem);
-
-
-/**
- * @brief Return the number of stored items.
+ * This function removes an element from the head of the queue. Also, the cleanup
+ * function is invoked for the removed element.
  *
  * @param self          The pointer to Queue structure
  *
- * @return              The number of items
- * @retval ERR_NOINIT   Uninitialized container
+ * @retval true         The top element is successfully removed
+ * @retval false        The queue is empty
  */
-int32_t QueueSize(Queue *self);
+bool QueuePop(Queue* self);
 
 /**
- * @brief Set the custom item resource clean method.
+ * @brief Return the number of stored elements.
  *
  * @param self          The pointer to Queue structure
- * @param pFunc         The function pointer to the custom method
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
+ * @retval size         The number of stored elements
  */
-int32_t QueueSetDestroy(Queue *self, void (*pFunc) (Item));
+unsigned QueueSize(Queue* self);
+
+/**
+ * @brief Set the custom element cleanup function.
+ *
+ * @param self          The pointer to Queue structure
+ * @param func          The custom function
+ */
+void QueueSetClean(Queue* self, QueueClean func);
 
 #ifdef __cplusplus
 }
