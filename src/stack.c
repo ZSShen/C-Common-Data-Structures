@@ -1,3 +1,27 @@
+/**
+ *   The MIT License (MIT)
+ *   Copyright (C) 2016 ZongXian Shen <andy.zsshen@gmail.com>
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *   IN THE SOFTWARE.
+ */
+
+
 #include "container/stack.h"
 
 
@@ -5,156 +29,141 @@
  *                        The container private data                         *
  *===========================================================================*/
 struct _StackData {
-    int32_t iSize_;
-    int32_t iCapacity_;
-    Item *aItem_;
-    void (*pDestroy_) (Item);
+    unsigned size_;
+    unsigned capacity_;
+    void** elements_;
+    StackClean func_clean_;
 };
 
-#define DEFAULT_CAPACITY        (32)
+static const unsigned DEFAULT_CAPACITY = 32;
 
-#define CHECK_INIT(self)                                                        \
-            do {                                                                \
-                if (!self)                                                      \
-                    return ERR_NOINIT;                                          \
-                if (!(self->pData))                                             \
-                    return ERR_NOINIT;                                          \
-                if (!(self->pData->aItem_))                                     \
-                    return ERR_NOINIT;                                          \
-            } while (0);
+
+/*===========================================================================*
+ *                  Definition for internal operations                       *
+ *===========================================================================*/
+#define likely(x)       __builtin_expect(!!(x), 1)
+#define unlikely(x)     __builtin_expect(!!(x), 0)
 
 
 /*===========================================================================*
  *               Implementation for the exported operations                  *
  *===========================================================================*/
-int32_t StackInit(Stack **ppObj)
+Stack* StackInit()
 {
-    *ppObj = (Stack*)malloc(sizeof(Stack));
-    if (!(*ppObj))
-        return ERR_NOMEM;
-    Stack *pObj = *ppObj;
+    Stack* obj = (Stack*)malloc(sizeof(Stack));
+    if (unlikely(!obj))
+        return NULL;
 
-    pObj->pData = (StackData*)malloc(sizeof(StackData));
-    if (!(pObj->pData)) {
-        free(*ppObj);
-        *ppObj = NULL;
-        return ERR_NOMEM;
+    StackData* data = (StackData*)malloc(sizeof(StackData));
+    if (unlikely(!data)) {
+        free(obj);
+        return NULL;
     }
-    StackData *pData = pObj->pData;
 
-    pData->aItem_ = (Item*)malloc(sizeof(Item) * DEFAULT_CAPACITY);
-    if (!(pData->aItem_)) {
-        free(pObj->pData);
-        free(*ppObj);
-        *ppObj = NULL;
-        return ERR_NOMEM;
+    void** elements = (void**)malloc(sizeof(void*) * DEFAULT_CAPACITY);
+    if (unlikely(!elements)) {
+        free(data);
+        free(obj);
+        return NULL;
     }
-    pData->iSize_ = 0;
-    pData->iCapacity_ = DEFAULT_CAPACITY;
-    pData->pDestroy_ = NULL;
 
-    pObj->push = StackPush;
-    pObj->pop = StackPop;
-    pObj->top = StackTop;
-    pObj->size = StackSize;
-    pObj->set_destroy = StackSetDestroy;
+    data->size_ = 0;
+    data->capacity_ = DEFAULT_CAPACITY;
+    data->elements_ = elements;
+    data->func_clean_ = NULL;
 
-    return SUCC;
+    obj->data = data;
+    obj->push = StackPush;
+    obj->top = StackTop;
+    obj->pop = StackPop;
+    obj->size = StackSize;
+    obj->set_clean = StackSetClean;
+
+    return obj;
 }
 
-void StackDeinit(Stack **ppObj)
+void StackDeinit(Stack* obj)
 {
-    if (!(*ppObj))
-        goto EXIT;
+    if (unlikely(!obj))
+        return;
 
-    Stack *pObj = *ppObj;
-    if (!(pObj->pData))
-        goto FREE_QUEUE;
+    StackData* data = obj->data;
+    StackClean func_clean = data->func_clean_;
+    void** elements = data->elements_;
+    unsigned size = data->size_;
 
-    StackData *pData = pObj->pData;
-    if (!(pData->aItem_))
-        goto FREE_DATA;
-
-    if (!(pData->pDestroy_))
-        goto FREE_ARRAY;
-
-    int32_t iIdx = 0;
-    while (iIdx < pData->iSize_) {
-        pData->pDestroy_(pData->aItem_[iIdx]);
-        iIdx++;
+    unsigned i;
+    if (func_clean) {
+        for (i = 0 ; i < size ; ++i)
+            func_clean(elements[i]);
     }
 
-FREE_ARRAY:
-    free(pData->aItem_);
-FREE_DATA:
-    free(pObj->pData);
-FREE_QUEUE:
-    free(*ppObj);
-EXIT:
+    free(elements);
+    free(data);
+    free(obj);
     return;
 }
 
-int32_t StackPush(Stack *self, Item item)
+bool StackPush(Stack *self, void* element)
 {
-    CHECK_INIT(self);
-    StackData *pData = self->pData;
+    StackData* data = self->data;
+    void** elements = data->elements_;
+    unsigned size = data->size_;
+    unsigned capacity = data->capacity_;
 
-    /* If the array is full, extend it to double capacity. */
-    if (pData->iSize_ == pData->iCapacity_) {
-        int32_t iCapaNew = pData->iCapacity_ << 1;
-        Item *aItemNew = (Item*)realloc(pData->aItem_, iCapaNew * sizeof(Item));
-        if (!aItemNew)
-            return ERR_NOMEM;
-        pData->aItem_ = aItemNew;
-        pData->iCapacity_ = iCapaNew;
+    /* If the internal array is full, extend it to double capacity. */
+    if (unlikely(size == capacity)) {
+        unsigned new_capacity = capacity << 1;
+        void** new_elements = (void**)realloc(elements, new_capacity * sizeof(void*));
+        if (unlikely(!new_elements))
+            return false;
+        elements = data->elements_ = new_elements;
+        data->capacity_ = new_capacity;
     }
 
-    /* Insert the item to the tail of the array. */
-    pData->aItem_[pData->iSize_++] = item;
+    /* Insert the element to the tail of the array. */
+    elements[size] = element;
+    data->size_ = size + 1;
 
-    return SUCC;
+    return true;
 }
 
-int32_t StackPop(Stack *self)
+bool StackPop(Stack *self)
 {
-    CHECK_INIT(self);
-    StackData *pData = self->pData;
-    if (pData->iSize_ == 0)
-        return ERR_IDX;
+    StackData* data = self->data;
+    void** elements = data->elements_;
+    unsigned size = data->size_;
+    if (unlikely(size == 0))
+        return false;
 
-    /* Delete the item from the tail of the array. */
-    if (pData->pDestroy_)
-        pData->pDestroy_(pData->aItem_[pData->iSize_ - 1]);
-    pData->iSize_--;
+    /* Remove the element from the tail of the array. */
+    --size;
+    StackClean func_clean = data->func_clean_;
+    if (func_clean)
+        func_clean(elements[size]);
+    data->size_ = size;
 
-    return SUCC;
+    return true;
 }
 
-int32_t StackTop(Stack *self, Item *pItem)
+bool StackTop(Stack *self, void** p_elements)
 {
-    CHECK_INIT(self);
-    if (!pItem)
-        return ERR_GET;
+    StackData* data = self->data;
+    void** elements = data->elements_;
+    unsigned size = data->size_;
+    if (unlikely(size == 0))
+        return false;
 
-    StackData *pData = self->pData;
-    if (pData->iSize_ == 0) {
-        *pItem = NULL;
-        return ERR_IDX;
-    }
-
-    *pItem = pData->aItem_[pData->iSize_ - 1];
-    return SUCC;
+    *p_elements = elements[size - 1];
+    return true;
 }
 
-int32_t StackSize(Stack *self)
+unsigned StackSize(Stack *self)
 {
-    CHECK_INIT(self);
-    return self->pData->iSize_;
+    return self->data->size_;
 }
 
-int32_t StackSetDestroy(Stack *self, void (*pFunc) (Item))
+void StackSetClean(Stack* self, StackClean func)
 {
-    CHECK_INIT(self);
-    self->pData->pDestroy_ = pFunc;
-    return SUCC;
+    self->data->func_clean_ = func;
 }

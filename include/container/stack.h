@@ -1,4 +1,28 @@
 /**
+ *   The MIT License (MIT)
+ *   Copyright (C) 2016 ZongXian Shen <andy.zsshen@gmail.com>
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *   IN THE SOFTWARE.
+ */
+
+
+/**
  * @file stack.h The LIFO stack.
  */
 
@@ -14,30 +38,34 @@ extern "C" {
 /** StackData is the data type for the container private information. */
 typedef struct _StackData StackData;
 
+/** Element clean function called when an element is removed. */
+typedef void (*StackClean) (void*);
+
+
 /** The implementation for stack. */
 typedef struct _Stack {
     /** The container private information */
-    StackData *pData;
+    StackData *data;
 
-    /** Insert an item to the top of the stack.
+    /** Push an element to the top of the stack.
         @see StackPush */
-    int32_t (*push) (struct _Stack*, Item);
+    bool (*push) (struct _Stack*, void*);
 
-    /** Retrieve item from the top of the stack.
+    /** Retrieve an element from the top of the stack.
         @see StackTop */
-    int32_t (*top) (struct _Stack*, Item*);
+    bool (*top) (struct _Stack*, void**);
 
-    /** Delete item from the top of the stack.
+    /** Remove an element from the top of the stack.
         @see StackPop */
-    int32_t (*pop) (struct _Stack*);
+    bool (*pop) (struct _Stack*);
 
-    /** Return the number of stored items.
+    /** Return the number of stored elements.
         @see StackSize */
-    int32_t (*size) (struct _Stack*);
+    unsigned (*size) (struct _Stack*);
 
-    /** Set the custom item resource clean method.
-        @see StackSetDestroy */
-    int32_t (*set_destroy) (struct _Stack*, void (*) (Item));
+    /** Set the custom element cleanup function.
+        @see SetClean */
+    void (*set_clean) (struct _Stack*, StackClean func);
 } Stack;
 
 
@@ -47,89 +75,69 @@ typedef struct _Stack {
 /**
  * @brief The constructor for Stack.
  *
- * @param ppObj         The double pointer to the to be constructed stack
- *
- * @retval SUCC
- * @retval ERR_NOMEM    Insufficient memory for stack construction
+ * @retval obj          The successfully constructed stack
+ * @retval NULL         Insufficient memory for stack construction
  */
-int32_t StackInit(Stack **ppObj);
+Stack* StackInit();
 
 /**
  * @brief The destructor for Stack.
  *
- * If the custom resource clean method is set, it also runs the clean method
- * for all the items.
- *
- * @param ppObj         The double pointer to the to be destructed stack
+ * @param obj           The pointer to the to be destructed stack
  */
-void StackDeinit(Stack **ppObj);
+void StackDeinit(Stack* obj);
 
 /**
- * @brief Insert an item to the top of the stack.
- *
- * This function inserts an item to the top of the stack with the corresponding
- * stack size extension.
+ * @brief Push an element to the top of the stack.
  *
  * @param self          The pointer to Stack structure
- * @param item          The designated item
+ * @param element       The specified element
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_NOMEM    Insufficient memory for stack extension
+ * @retval true         The element is successfully pushed
+ * @retval false        The element cannot be pushed due to insufficient memory
  */
-int32_t StackPush(Stack *self, Item item);
+bool StackPush(Stack* self, void* element);
 
 /**
- * @brief Delete item from top of the stack.
- *
- * This function deletes item from the top of the stack. If the custom resource
- * clean method is set, it also runs the clean method for the deleted item.
+ * @brief Retrieve an element from the top of the stack.
  *
  * @param self          The pointer to Stack structure
+ * @param p_element     The pointer to the returned element
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty stack
+ * @retval true         The element is successfully retrieved
+ * @retval false        The stack is empty
  */
-int32_t StackPop(Stack *self);
+bool StackTop(Stack* self, void** p_element);
 
 /**
- * @brief Retrieve item from top of the stack.
+ * @brief Remove an element from the top of the stack.
  *
- * This function retrieves item from the top of the stack. If the stack is not
- * empty, the item is returned by the second parameter. Otherwise, the error
- * code is returned and the second parameter is updated with NULL.
- *
- * @param self          The pointer to Stack structure
- * @param pItem         The pointer to the returned item
- *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
- * @retval ERR_IDX      Empty stack
- * @retval ERR_GET      Invalid parameter to store returned item
- */
-int32_t StackTop(Stack *self, Item *pItem);
-
-/**
- * @brief Return the number of stored items.
+ * This function removes an element from the top of the stack. Also, the cleanup
+ * function is invoked for the removed element.
  *
  * @param self          The pointer to Stack structure
  *
- * @return              The number of items
- * @retval ERR_NOINIT   Uninitialized container
+ * @retval true         The top element is successfully removed
+ * @retval false        The stack is empty
  */
-int32_t StackSize(Stack *self);
+bool StackPop(Stack* self);
 
 /**
- * @brief Set the custom item resource clean method.
+ * @brief Return the number of stored elements.
  *
  * @param self          The pointer to Stack structure
- * @param pFunc         The function pointer to the custom method
  *
- * @retval SUCC
- * @retval ERR_NOINIT   Uninitialized container
+ * @retval size         The number of stored elements
  */
-int32_t StackSetDestroy(Stack *self, void (*pFunc) (Item));
+unsigned StackSize(Stack* self);
+
+/**
+ * @brief Set the custom element cleanup function.
+ *
+ * @param self          The pointer to Stack structure
+ * @param func          The custom function
+ */
+void StackSetClean(Stack* self, StackClean func);
 
 #ifdef __cplusplus
 }
