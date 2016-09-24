@@ -5,32 +5,29 @@
 
 ## **Container Category**
  + Sequential Container
-   + **Vector** --- The dynamically growable array (under API refinement)  
-   + **LinkedList** --- The doubly linked list (under API refinement)  
+   + **Vector** --- The dynamically growable array  
+   + **LinkedList** --- The doubly linked list  
  + Associative Container
    + **TreeMap** --- The ordered map to store key value pairs 
    + **HashMap** --- The unordered map to store key value pairs
-   + **HashSet** --- The unordered set to store unique elements (under API refinement)  
-   + **Trie** --- The string dictionary (under API refinement)  
+   + **HashSet** --- The unordered set to store unique elements  
+   + **Trie** --- The string dictionary  
  + Simple Collection Container
-   + **Queue** --- The FIFO queue (under API refinement)  
-   + **Stack** --- The LIFO stack (under API refinement)  
-   + **PriorityQueue** --- The queue to maintain priority ordering for elements (under API refinement)  
+   + **Queue** --- The FIFO queue  
+   + **Stack** --- The LIFO stack  
+   + **PriorityQueue** --- The queue to maintain priority ordering for elements  
 
 ## **Installation**
 **This section illustrates how to install LibCDS to your working directory.**
 
-First of all, we need to prepare the following utilities:
+First of all, we need to prepare the CMake build tool:  
 + [CMake] - A cross platform build system.
-+ [Valgrind] - An instrumentation framework help for memory debug.
-+ [CUnit] - An unit test framework for C.
 
-For Ubuntu 12.04 and above, it should be easy:
+For Ubuntu 12.04 and above, it should be easy:  
 ``` sh
 $ sudo apt-get install -qq cmake
-$ sudo apt-get install -qq valgrind
-$ sudo apt-get install -qq libcunit1-dev
 ```
+
 Now we can build the entire source tree under the package root folder:
 ``` sh
 $ ./clean.py --rebuild
@@ -39,9 +36,10 @@ $ cmake .. -DCMAKE_INSTALL_PREFIX=/path/to/your/destination
 $ make
 $ make install
 ```
-Upon finishing, the public header should locate at  
+
+Upon finishing, the public header should locate at:  
 `/path/to/your/destination/include/`  
-And the shared library should locate at  
+And the shared library should locate at:  
 `/path/to/your/destination/lib/`  
 
 If you plan for debug build, you can specify the CMake argument list like this:
