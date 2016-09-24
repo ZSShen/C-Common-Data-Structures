@@ -34,7 +34,7 @@ if(BUILD_OBJECT)
     endif()
 else()
     set(KNOB_DS_LIB " ")
-    set(KNOB_DS_UNIT " ")
+    # set(KNOB_DS_UNIT " ")
     set(KNOB_DS_DEMO " ")
 endif()
 

@@ -7,25 +7,25 @@
  *       Test Function Declaration for hash calculation       *
  *------------------------------------------------------------*/
 typedef struct _Employ {
-    int8_t cYear;
-    int8_t cLevel;
-    int32_t iId;
+    char year;
+    char level;
+    int id;
 } Employ;
 
-int32_t AddBasicSuite();
+bool AddBasicSuite();
 void TestMurMur32();
 
 
-int32_t main()
+int main()
 {
-    int32_t rc = SUCC;
+    int rc = 0;
 
     if (CU_initialize_registry() != CUE_SUCCESS) {
         rc = CU_get_error();
         goto EXIT;
     }
 
-    if (AddBasicSuite() != SUCC) {
+    if (AddBasicSuite() == false) {
         rc = CU_get_error();
         goto CLEAN;
     }
@@ -44,54 +44,54 @@ EXIT:
 /*------------------------------------------------------------*
  *      Test Function implementation for hash calculation     *
  *------------------------------------------------------------*/
-int32_t AddBasicSuite()
+bool AddBasicSuite()
 {
-    CU_pSuite pSuite = CU_add_suite("Hash Value Calculation", NULL, NULL);
-    if (!pSuite)
-        return ERR_REG;
+    CU_pSuite suite = CU_add_suite("Hash Value Calculation", NULL, NULL);
+    if (!suite)
+        return false;
 
-    CU_pTest pTest = CU_add_test(pSuite, "MurMur hash V3", TestMurMur32);
-    if (!pTest)
-        return ERR_REG;
+    CU_pTest test = CU_add_test(suite, "MurMur hash V3", TestMurMur32);
+    if (!test)
+        return false;
 
-    return SUCC;
+    return true;
 }
 
 void TestMurMur32()
 {
-    uint32_t value = HashMurMur32(NULL, 32);
+    unsigned value = HashMurMur32(NULL, 32);
     CU_ASSERT_EQUAL(value, 0);
 
     value = HashMurMur32("NULL", 0);
     CU_ASSERT_EQUAL(value, 0);
 
     /* Test string key. */
-    value = HashMurMur32((Key)"1", 1);
-    value = HashMurMur32((Key)"12", 2);
-    value = HashMurMur32((Key)"123", 3);
-    value = HashMurMur32((Key)"1234", 4);
-    value = HashMurMur32((Key)"12345", 5);
+    value = HashMurMur32((void*)"1", 1);
+    value = HashMurMur32((void*)"12", 2);
+    value = HashMurMur32((void*)"123", 3);
+    value = HashMurMur32((void*)"1234", 4);
+    value = HashMurMur32((void*)"12345", 5);
 
     /* Test integer key. */
-    int32_t iKey = 32767;
-    value = HashMurMur32((Key)&iKey, sizeof(int32_t));
-    int64_t lKey = 32767;
-    value = HashMurMur32((Key)&lKey, sizeof(int64_t));
+    int key_int = 32767;
+    value = HashMurMur32((void*)&key_int, sizeof(int));
+    long long key_long = 32767;
+    value = HashMurMur32((void*)&key_long, sizeof(long long));
 
     /* Test Floating point key. */
-    float fKey = 32767.0;
-    value = HashMurMur32((Key)&fKey, sizeof(float));
-    double dKey = 32767.0;
-    value = HashMurMur32((Key)&dKey, sizeof(double));
+    float key_float = 32767.0;
+    value = HashMurMur32((void*)&key_float, sizeof(float));
+    double key_double = 32767.0;
+    value = HashMurMur32((void*)&key_double, sizeof(double));
 
     /* Test structure key. */
-    Employ *pEmp = (Employ*)malloc(sizeof(Employ));
-    memset(pEmp, 0, sizeof(Employ));
-    pEmp->cYear = 1;
-    pEmp->cLevel = 10;
-    pEmp->iId = 25692;
-    value = HashMurMur32((Key)pEmp, sizeof(Employ));
-    free(pEmp);
+    Employ* employ = (Employ*)malloc(sizeof(Employ));
+    memset(employ, 0, sizeof(Employ));
+    employ->year = 1;
+    employ->level = 10;
+    employ->id = 25692;
+    value = HashMurMur32((void*)employ, sizeof(Employ));
+    free(employ);
 
     return;
 }

@@ -17,7 +17,7 @@ install:
 script:
     - ./clean.py --rebuild
     - cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=Debug
+    - cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_OBJECT=Library:Unit:Demo
     - make
     - make run
 
