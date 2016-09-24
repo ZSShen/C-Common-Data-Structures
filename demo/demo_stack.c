@@ -1,71 +1,93 @@
 #include "cds.h"
 
 
-typedef struct Employ_ {
-    int8_t cYear;
-    int8_t cLevel;
-    int32_t iId;
-} Employ;
+typedef struct Tuple_ {
+    int first;
+    int second;
+} Tuple;
 
 
-void DestroyObject(Item item)
+void CleanObject(void* element)
 {
-    free((Employ*)item);
+    free(element);
 }
 
 
+void ManipulateNumerics()
+{
+    /* We should initialize the container before any operations. */
+    Stack* stack = StackInit();
+
+    /* Push elements to the stack. */
+    StackPush(stack, (void*)(intptr_t)3);
+    StackPush(stack, (void*)(intptr_t)2);
+    StackPush(stack, (void*)(intptr_t)1);
+
+    /* Check the number of stored elements. */
+    assert(StackSize(stack) == 3);
+
+    /* Retrieve the stack top element and remove it. */
+    void* element;
+    StackTop(stack, &element);
+    assert((int)(intptr_t)element == 1);
+    StackPop(stack);
+
+    StackTop(stack, &element);
+    assert((int)(intptr_t)element == 2);
+    StackPop(stack);
+
+    StackTop(stack, &element);
+    assert((int)(intptr_t)element == 3);
+    StackPop(stack);
+
+    StackDeinit(stack);
+}
+
+void ManipulateObjects()
+{
+    /* We should initialize the container before any operations. */
+    Stack* stack = StackInit();
+    StackSetClean(stack, CleanObject);
+
+    /* Push elements to the stack. */
+    Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 3;
+    tuple->second = -3;
+    StackPush(stack, tuple);
+
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 2;
+    tuple->second = -2;
+    StackPush(stack, tuple);
+
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 1;
+    tuple->second = -1;
+    StackPush(stack, tuple);
+
+    /* Check the number of stored elements. */
+    assert(StackSize(stack) == 3);
+
+    /* Retrieve the stack top element and remove it. */
+    void* element;
+    StackTop(stack, &element);
+    assert(((Tuple*)element)->first == 1);
+    StackPop(stack);
+
+    StackTop(stack, &element);
+    assert(((Tuple*)element)->first == 2);
+    StackPop(stack);
+
+    StackTop(stack, &element);
+    assert(((Tuple*)element)->first == 3);
+    StackPop(stack);
+
+    StackDeinit(stack);
+}
+
 int main()
 {
-    Stack *pStack;
-
-    /* You should initialize the DS before any operations. */
-    int32_t rc = StackInit(&pStack);
-    if (rc != SUCC)
-        return rc;
-
-    /* If you plan to delegate the resource clean task to the DS, please set the
-       custom clean method. */
-    pStack->set_destroy(pStack, DestroyObject);
-
-    /* Push items onto the queue. */
-    Employ* pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 3;
-    pEmploy->cLevel = 3;
-    pEmploy->cYear = 3;
-    pStack->push(pStack, (Item)pEmploy);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 2;
-    pEmploy->cLevel = 2;
-    pEmploy->cYear = 2;
-    pStack->push(pStack, (Item)pEmploy);
-
-    pEmploy = (Employ*)malloc(sizeof(Employ));
-    pEmploy->iId = 1;
-    pEmploy->cLevel = 1;
-    pEmploy->cYear = 1;
-    pStack->push(pStack, (Item)pEmploy);
-
-    /* Check the number of stored items. */
-    int32_t iSize = pStack->size(pStack);
-    assert(iSize == 3);
-
-    /* Retrieve the stack top item and delete it. */
-    Item item;
-    pStack->top(pStack, &item);
-    assert(((Employ*)item)->cLevel == 1);
-    pStack->pop(pStack);
-
-    pStack->top(pStack, &item);
-    assert(((Employ*)item)->cLevel == 2);
-    pStack->pop(pStack);
-
-    pStack->top(pStack, &item);
-    assert(((Employ*)item)->cLevel == 3);
-    pStack->pop(pStack);
-
-    /* You should deinitialize the DS after all the relevant tasks. */
-    StackDeinit(&pStack);
-
-    return SUCC;
+    ManipulateNumerics();
+    ManipulateObjects();
+    return 0;
 }

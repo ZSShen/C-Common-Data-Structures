@@ -3,34 +3,145 @@
 #include "CUnit/Basic.h"
 
 
-#define SIZE_DATA           (100)
-#define MASK_YEAR           (100)
-#define MASK_LEVEL          (200)
+static const int SIZE_SML_TEST = 64;
 
-typedef struct Employ_ {
-    int8_t cYear;
-    int8_t cLevel;
-    int32_t iId;
-} Employ;
+typedef struct Tuple_ {
+    int first;
+    int second;
+} Tuple;
 
 
-int32_t AddSuite();
-void TestManipulate();
-void TestBoundary();
-void DestroyItem(Item);
-
-
-int32_t main()
+/*-----------------------------------------------------------------------------*
+ *                  The utilities for element resource clean                   *
+ *-----------------------------------------------------------------------------*/
+void CleanObject(void* element)
 {
-    int32_t rc = SUCC;
+    free(element);
+}
+
+
+/*-----------------------------------------------------------------------------*
+ *            Unit tests relevant to basic structure verification              *
+ *-----------------------------------------------------------------------------*/
+void TestNewDelete()
+{
+    Stack* stack;
+    CU_ASSERT((stack = StackInit()) != NULL);
+
+    /* Enlarge the stack size to test the destructor. */
+    int i;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i)
+        CU_ASSERT(stack->push(stack, (void*)(intptr_t)i) == true);
+
+    StackDeinit(stack);
+}
+
+void TestOrderNumerics()
+{
+    Stack* stack = StackInit();
+
+    /* Boundary check. */
+    void *element;
+    CU_ASSERT(stack->pop(stack) == false);
+    CU_ASSERT(stack->top(stack, &element) == false);
+
+    int i;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i)
+        CU_ASSERT(stack->push(stack, (void*)(intptr_t)i) == true);
+    CU_ASSERT_EQUAL(stack->size(stack), SIZE_SML_TEST);
+
+    /* Sequentially retrieve the stack top element and remove it. */
+    for (i = SIZE_SML_TEST - 1 ; i >= 0 ; --i) {
+        CU_ASSERT(stack->top(stack, &element) == true);
+        CU_ASSERT_EQUAL((int)(intptr_t)element, i);
+        CU_ASSERT(stack->pop(stack) == true);
+    }
+    CU_ASSERT(stack->pop(stack) == false);
+    CU_ASSERT_EQUAL(stack->size(stack), 0);
+
+    StackDeinit(stack);
+}
+
+
+/*-----------------------------------------------------------------------------*
+ *              Unit tests relevant to complex data maintenance                *
+ *-----------------------------------------------------------------------------*/
+void TestOrderObjects()
+{
+    Stack* stack = StackInit();
+    stack->set_clean(stack, CleanObject);
+
+    int i;
+    for (i = 0 ; i < SIZE_SML_TEST ; ++i) {
+        Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+        tuple->first = i;
+        tuple->second = -i;
+        CU_ASSERT(stack->push(stack, tuple) == true);
+    }
+    CU_ASSERT_EQUAL(stack->size(stack), SIZE_SML_TEST);
+
+    /* Sequentially retrieve the stack top element and remove it. */
+    for (i = SIZE_SML_TEST - 1 ; i >= 0 ; --i) {
+        void* element;
+        CU_ASSERT(stack->top(stack, &element) == true);
+        CU_ASSERT_EQUAL(((Tuple*)element)->first, i);
+        CU_ASSERT(stack->pop(stack) == true);
+    }
+    CU_ASSERT(stack->pop(stack) == false);
+    CU_ASSERT_EQUAL(stack->size(stack), 0);
+
+    for (i = 0 ; i < SIZE_SML_TEST >> 1 ; ++i) {
+        Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+        tuple->first = i;
+        tuple->second = -i;
+        CU_ASSERT(stack->push(stack, tuple) == true);
+    }
+
+    StackDeinit(stack);
+}
+
+
+/*-----------------------------------------------------------------------------*
+ *                       The driver for Stack unit test                        *
+ *-----------------------------------------------------------------------------*/
+bool AddSuite()
+{
+    {
+        CU_pSuite suite = CU_add_suite("Structure Verification", NULL, NULL);
+        if (!suite)
+            return false;
+
+        CU_pTest unit = CU_add_test(suite, "Stack New and Delete", TestNewDelete);
+        if (!unit)
+            return false;
+
+        unit = CU_add_test(suite, "Numerics Push, Pop, and Get", TestOrderNumerics);
+        if (!unit)
+            return false;
+    }
+    {
+        CU_pSuite suite = CU_add_suite("Complex Data Maintenance", NULL, NULL);
+        if (!suite)
+            return false;
+
+        CU_pTest unit = CU_add_test(suite, "Objects Push, Pop, and Get", TestOrderObjects);
+        if (!unit)
+            return false;
+    }
+    return true;
+}
+
+int main()
+{
+    int rc = 0;
 
     if (CU_initialize_registry() != CUE_SUCCESS) {
         rc = CU_get_error();
         goto EXIT;
     }
 
-    /* Register the test suite for stack structure verification. */
-    if (AddSuite() != SUCC) {
+    /* Register the test suite for Stack structure verification. */
+    if (AddSuite() == false) {
         rc = CU_get_error();
         goto CLEAN;
     }
@@ -43,101 +154,4 @@ CLEAN:
     CU_cleanup_registry();
 EXIT:
     return rc;
-}
-
-int32_t AddSuite()
-{
-    int32_t rc = SUCC;
-
-    CU_pSuite pSuite = CU_add_suite("Structure Verification", NULL, NULL);
-    if (!pSuite) {
-        rc = ERR_REG;
-        goto EXIT;
-    }
-
-    char *szMsg = "Combination with insertion, deletion, and order checking.";
-    CU_pTest pTest = CU_add_test(pSuite, szMsg, TestManipulate);
-    if (!pTest)
-        rc = ERR_REG;
-
-    pTest = CU_add_test(pSuite, "Boundary Testing", TestBoundary);
-    if (!pTest)
-        rc = ERR_REG;
-
-EXIT:
-    return rc;
-}
-
-void DestroyItem(Item item)
-{
-    free((Employ*)item);
-}
-
-void TestManipulate()
-{
-    Stack *pStack;
-    CU_ASSERT(StackInit(&pStack) == SUCC);
-    CU_ASSERT(pStack->set_destroy(pStack, DestroyItem) == SUCC);
-
-    /* Insert the initial data set. */
-    int32_t iIdx;
-    for (iIdx = 0 ; iIdx < SIZE_DATA ; iIdx++) {
-        Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
-        pEmploy->cYear = iIdx % MASK_YEAR;
-        pEmploy->cLevel = iIdx % MASK_LEVEL;
-        pEmploy->iId = iIdx;
-        CU_ASSERT(pStack->push(pStack, (Item)pEmploy) == SUCC);
-    }
-    CU_ASSERT_EQUAL(pStack->size(pStack), SIZE_DATA);
-
-    /* Sequentially retrieve the stack top data and delete it. */
-    for (iIdx = SIZE_DATA - 1 ; iIdx >= SIZE_DATA >> 1 ; iIdx--) {
-        Item item;
-        CU_ASSERT(pStack->top(pStack, &item) == SUCC);
-        CU_ASSERT_EQUAL(((Employ*)item)->iId, iIdx);
-        CU_ASSERT(pStack->pop(pStack) == SUCC);
-    }
-    CU_ASSERT_EQUAL(pStack->size(pStack), 0);
-
-    /* The rest data will be cleaned by the destructor. */
-    StackDeinit(&pStack);
-}
-
-void TestBoundary()
-{
-    Stack *pStack;
-    CU_ASSERT(StackInit(&pStack) == SUCC);
-    CU_ASSERT(pStack->set_destroy(pStack, DestroyItem) == SUCC);
-
-    /* Pop the empty stack. */
-    CU_ASSERT(pStack->pop(pStack) == ERR_IDX);
-
-    /* Retrieve the items from the empty stack. */
-    Item item;
-    CU_ASSERT(pStack->top(pStack, &item) == ERR_IDX);
-    CU_ASSERT_EQUAL(item, NULL);
-
-    /* Insert the initial data set. */
-    int iIdx;
-    for (iIdx = 0 ; iIdx < SIZE_DATA ; iIdx++) {
-        Employ *pEmploy = (Employ*)malloc(sizeof(Employ));
-        pEmploy->cYear = iIdx % MASK_YEAR;
-        pEmploy->cLevel = iIdx % MASK_LEVEL;
-        pEmploy->iId = iIdx;
-        CU_ASSERT(pStack->push(pStack, (Item)pEmploy) == SUCC);
-    }
-
-    /* Delete all the data. */
-    for (iIdx = 0 ; iIdx < SIZE_DATA ; iIdx++)
-        CU_ASSERT(pStack->pop(pStack) == SUCC);
-
-    CU_ASSERT(pStack->pop(pStack) == ERR_IDX);
-    CU_ASSERT(pStack->top(pStack, &item) == ERR_IDX);
-    CU_ASSERT_EQUAL(item, NULL);
-    CU_ASSERT_EQUAL(pStack->size(pStack), 0);
-
-    /* Invalid parameter to retrieve stack data. */
-    CU_ASSERT(pStack->top(pStack, NULL) == ERR_GET);
-
-    StackDeinit(&pStack);
 }
