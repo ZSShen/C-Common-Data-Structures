@@ -55,9 +55,9 @@ void ManipulateNumerics()
     HashMapRemove(map, (void*)(intptr_t)2);
 
     /* Check the map keys. */
-    assert(HashMapFind(map, (void*)(intptr_t)1) == true);
-    assert(HashMapFind(map, (void*)(intptr_t)2) == false);
-    assert(HashMapFind(map, (void*)(intptr_t)3) == true);
+    assert(HashMapContain(map, (void*)(intptr_t)1) == true);
+    assert(HashMapContain(map, (void*)(intptr_t)2) == false);
+    assert(HashMapContain(map, (void*)(intptr_t)3) == true);
 
     /* Check the pair count in the map. */
     unsigned size = HashMapSize(map);
@@ -124,9 +124,9 @@ void ManipulateTexts()
     HashMapRemove(map, (void*)names[1]);
 
     /* Check the map keys. */
-    assert(HashMapFind(map, (void*)names[0]) == true);
-    assert(HashMapFind(map, (void*)names[1]) == false);
-    assert(HashMapFind(map, (void*)names[2]) == true);
+    assert(HashMapContain(map, (void*)names[0]) == true);
+    assert(HashMapContain(map, (void*)names[1]) == false);
+    assert(HashMapContain(map, (void*)names[2]) == true);
 
     /* Check the pair count in the map. */
     unsigned size = HashMapSize(map);

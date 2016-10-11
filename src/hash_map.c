@@ -130,7 +130,7 @@ HashMap* HashMapInit()
     obj->data = data;
     obj->put = HashMapPut;
     obj->get = HashMapGet;
-    obj->find = HashMapFind;
+    obj->contain = HashMapContain;
     obj->remove = HashMapRemove;
     obj->size = HashMapSize;
     obj->first = HashMapFirst;
@@ -244,7 +244,7 @@ void* HashMapGet(HashMap* self, void* key)
     return NULL;
 }
 
-bool HashMapFind(HashMap* self, void* key)
+bool HashMapContain(HashMap* self, void* key)
 {
     HashMapData* data = self->data;
 

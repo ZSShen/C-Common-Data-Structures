@@ -81,7 +81,7 @@ void TestPutGetNum()
         map->put(map, (void*)(intptr_t)i, (void*)(intptr_t)i);
 
     for (i = 0 ; i < SIZE_TNY_TEST ; ++i) {
-        CU_ASSERT(map->find(map, (void*)(intptr_t)i) == true);
+        CU_ASSERT(map->contain(map, (void*)(intptr_t)i) == true);
         int val = (int)(intptr_t)map->get(map, (void*)(intptr_t)i);
         CU_ASSERT_EQUAL(i, val);
     }
@@ -103,12 +103,12 @@ void TestRemoveNum()
     /* Querying for the keys that are already removed should fail. */
     for (i = 0 ; i < SIZE_TNY_TEST >> 1 ; ++i) {
         CU_ASSERT(map->remove(map, (void*)(intptr_t)i) == false);
-        CU_ASSERT(map->find(map, (void*)(intptr_t)i) == false);
+        CU_ASSERT(map->contain(map, (void*)(intptr_t)i) == false);
     }
 
     /* Querying for the keys that still exist should success. */
     for (i = SIZE_TNY_TEST >> 1 ; i < SIZE_TNY_TEST ; ++i)
-        CU_ASSERT(map->find(map, (void*)(intptr_t)i) == true);
+        CU_ASSERT(map->contain(map, (void*)(intptr_t)i) == true);
 
     CU_ASSERT_EQUAL(map->size(map), SIZE_TNY_TEST >> 1);
 
@@ -161,7 +161,7 @@ void TestPutGetTxt()
     }
 
     for (i = 0 ; i < SIZE_TNY_TEST ; ++i) {
-        CU_ASSERT(map->find(map, (void*)keys[i]) == true);
+        CU_ASSERT(map->contain(map, (void*)keys[i]) == true);
         int val = (int)(intptr_t)map->get(map, (void*)keys[i]);
         CU_ASSERT_EQUAL(i, val);
         free(keys[i]);
@@ -199,12 +199,12 @@ void TestRemoveTxt()
     for (i = 0 ; i < SIZE_TNY_TEST >> 1 ; ++i) {
         snprintf(buf, SIZE_TNY_TEST, "key -> %d", i);
         CU_ASSERT(map->remove(map, (void*)buf) == false);
-        CU_ASSERT(map->find(map, (void*)buf) == false);
+        CU_ASSERT(map->contain(map, (void*)buf) == false);
     }
 
     /* Querying for the keys that still exist should success. */
     for (i = SIZE_TNY_TEST >> 1 ; i < SIZE_TNY_TEST ; ++i)
-        CU_ASSERT(map->find(map, (void*)keys[i]) == true);
+        CU_ASSERT(map->contain(map, (void*)keys[i]) == true);
 
     HashMapDeinit(map);
 }
@@ -281,12 +281,12 @@ void TestBulkTxt()
     for (i = 0 ; i < SIZE_MID_TEST >> 1 ; ++i) {
         snprintf(buf, SIZE_MID_TEST, "key -> %d", i);
         CU_ASSERT(map->remove(map, (void*)buf) == false);
-        CU_ASSERT(map->find(map, (void*)buf) == false);
+        CU_ASSERT(map->contain(map, (void*)buf) == false);
     }
 
     /* Querying for the keys that still exist should success. */
     for (i = SIZE_MID_TEST >> 1 ; i < SIZE_MID_TEST ; ++i)
-        CU_ASSERT(map->find(map, (void*)keys[i]) == true);
+        CU_ASSERT(map->contain(map, (void*)keys[i]) == true);
 
     HashMapDeinit(map);
 }

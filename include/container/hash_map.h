@@ -60,15 +60,15 @@ typedef struct _HashMap {
         @see HashMapPut */
     bool (*put) (struct _HashMap*, void*, void*);
 
-    /** Retrieve the value corresponding to the designated key.
+    /** Retrieve the value corresponding to the specified key.
         @see HashMapGet */
     void* (*get) (struct _HashMap*, void*);
 
-    /** Check if the map contains the designated key.
-        @see HashMapFind */
-    bool (*find) (struct _HashMap*, void*);
+    /** Check if the map contains the specified key.
+        @see HashMapContain */
+    bool (*contain) (struct _HashMap*, void*);
 
-    /** Remove the key value pair corresponding to the designated key.
+    /** Remove the key value pair corresponding to the specified key.
         @see HashMapRemove */
     bool (*remove) (struct _HashMap*, void*);
 
@@ -123,13 +123,13 @@ void HashMapDeinit(HashMap* obj);
 /**
  * @brief Insert a key value pair into the map.
  *
- * This function inserts a key value pair into the map. If the designated key is
+ * This function inserts a key value pair into the map. If the specified key is
  * equal to a certain one stored in the map, the existing pair will be replaced.
  * Also, the cleanup functions are invoked for that replaced pair.
  *
  * @param self          The pointer to HashMap structure
- * @param key           The designated key
- * @param value         The designated value
+ * @param key           The specified key
+ * @param value         The specified value
  *
  * @retval true         The pair is successfully inserted
  * @retval false        The pair cannot be inserted due to insufficient memory
@@ -137,10 +137,10 @@ void HashMapDeinit(HashMap* obj);
 bool HashMapPut(HashMap* self, void* key, void* value);
 
 /**
- * @brief Retrieve the value corresponding to the designated key.
+ * @brief Retrieve the value corresponding to the specified key.
  *
  * @param self          The pointer to HashMap structure
- * @param key           The designated key
+ * @param key           The specified key
  *
  * @retval value        The corresponding value
  * @retval NULL         The key cannot be found
@@ -148,24 +148,24 @@ bool HashMapPut(HashMap* self, void* key, void* value);
 void* HashMapGet(HashMap* self, void* key);
 
 /**
- * @brief Check if the map contains the designated key.
+ * @brief Check if the map contains the specified key.
  *
  * @param self          The pointer to HashMap structure
- * @param key           The designated key
+ * @param key           The specified key
  *
  * @retval true         The key can be found
  * @retval false        The key cannot be found
  */
-bool HashMapFind(HashMap* self, void* key);
+bool HashMapContain(HashMap* self, void* key);
 
 /**
- * @brief Remove the key value pair corresponding to the designated key.
+ * @brief Remove the key value pair corresponding to the specified key.
  *
- * This function removes the key value pair corresponding to the designated key.
+ * This function removes the key value pair corresponding to the specified key.
  * Also, the cleanup functions are invoked for that removed pair.
  *
  * @param self          The pointer to HashMap structure
- * @param key           The designated key
+ * @param key           The specified key
  *
  * @retval true         The pair is successfully removed
  * @retval false        The key cannot be found
