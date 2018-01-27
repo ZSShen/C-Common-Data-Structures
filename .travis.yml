@@ -26,3 +26,4 @@ after_success:
     - lcov --compat-libtool --directory build --capture --output-file coverage.info
     - coveralls-lcov coverage.info
 
+
