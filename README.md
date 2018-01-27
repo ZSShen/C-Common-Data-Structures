@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)  [![Coverage Status](https://coveralls.io/repos/ZSShen/C-Common-Data-Structures/badge.svg?branch=master&service=github)](https://coveralls.io/github/ZSShen/C-Common-Data-Structures?branch=master) 
-
+[![Build Status](https://travis-ci.org/ZSShen/C-Common-Data-Structures.svg?branch=master)](https://travis-ci.org/ZSShen/C-Common-Data-Structures)  [![Coverage Status](https://coveralls.io/repos/github/ZSShen/C-Common-Data-Structures/badge.svg?branch=master)](https://coveralls.io/github/ZSShen/C-Common-Data-Structures?branch=master)
 
 ## **Container Category**
  + Sequential Container
