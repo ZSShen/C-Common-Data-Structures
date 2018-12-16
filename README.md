@@ -36,7 +36,7 @@ $ make install
 
 Upon finishing, the public header should locate at:  
 `/path/to/your/destination/include/`  
-And the shared library should locate at:  
+Plus, the shared library should locate at:  
 `/path/to/your/destination/lib/`  
 
 If you plan for debug build, you can specify the CMake argument list like this:
@@ -58,7 +58,7 @@ Assume that you apply gcc for compilation, then you need the following options:
 -lcds
 ```
 Now you successfully link LibCDS with your project!
-But wait, to run your project, you need to tell the dynamic linker where to find LibCDS:
+But wait, to run your project, you need to tell the dynamic linker how to find LibCDS:
 ```
 LD_LIBRARY_PATH=/path/to/your/destination/lib/
 ```
@@ -66,7 +66,7 @@ For detailed API usage, you can refer to the manual or check the `demo programs`
 
 ## **Benchmark**
 
-Thanks for the **HashMap** benchmark with abundant key value pair manipulation provided by [kbench]. The results are compared with other 49 similar C data structure libraries.
+Thanks for the **HashMap** benchmark with various key-value pair manipulations provided by [kbench]. The results are compared with the other 49 similar C data structure libraries.
 
 + **Criteria** - C style string as hash key
 + **Platform** - Linux nuc 3.2.0-4-amd64 #1 SMP Debian 3.2.81-1 x86_64 GNU/Linux
