@@ -48,8 +48,8 @@ static const unsigned DEFAULT_CAPACITY = 32;
 /*===========================================================================*
  *               Implementation for the exported operations                  *
  *===========================================================================*/
-Stack* StackInit()
-{
+Stack* StackInit() {
+
     Stack* obj = (Stack*)malloc(sizeof(Stack));
     if (unlikely(!obj))
         return NULL;
@@ -82,8 +82,8 @@ Stack* StackInit()
     return obj;
 }
 
-void StackDeinit(Stack* obj)
-{
+void StackDeinit(Stack* obj) {
+
     if (unlikely(!obj))
         return;
 
@@ -104,8 +104,8 @@ void StackDeinit(Stack* obj)
     return;
 }
 
-bool StackPush(Stack *self, void* element)
-{
+bool StackPush(Stack *self, void* element) {
+
     StackData* data = self->data;
     void** elements = data->elements_;
     unsigned size = data->size_;
@@ -128,8 +128,8 @@ bool StackPush(Stack *self, void* element)
     return true;
 }
 
-bool StackPop(Stack *self)
-{
+bool StackPop(Stack *self) {
+
     StackData* data = self->data;
     void** elements = data->elements_;
     unsigned size = data->size_;
@@ -146,8 +146,8 @@ bool StackPop(Stack *self)
     return true;
 }
 
-bool StackTop(Stack *self, void** p_elements)
-{
+bool StackTop(Stack *self, void** p_elements) {
+
     StackData* data = self->data;
     void** elements = data->elements_;
     unsigned size = data->size_;
@@ -158,12 +158,10 @@ bool StackTop(Stack *self, void** p_elements)
     return true;
 }
 
-unsigned StackSize(Stack *self)
-{
+unsigned StackSize(Stack *self) {
     return self->data->size_;
 }
 
-void StackSetClean(Stack* self, StackClean func)
-{
+void StackSetClean(Stack* self, StackClean func) {
     self->data->func_clean_ = func;
 }
