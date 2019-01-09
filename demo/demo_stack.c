@@ -125,7 +125,6 @@ void ManipulateObjectsCppStyle()
     Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
     tuple->first = 3;
     tuple->second = -3;
-    // StackPush(stack, tuple);
     stack->push(stack, tuple);
 
     tuple = (Tuple*)malloc(sizeof(Tuple));
@@ -143,10 +142,8 @@ void ManipulateObjectsCppStyle()
 
     /* Retrieve the stack top element and remove it. */
     void* element;
-    // StackTop(stack, &element);
     stack->top(stack, &element);
     assert(((Tuple*)element)->first == 1);
-    // StackPop(stack);
     stack->pop(stack);
 
     stack->top(stack, &element);
