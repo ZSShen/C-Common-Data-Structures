@@ -224,10 +224,222 @@ void ManipulateObjects()
     ListDeinit(list);
 }
 
+void ManipulateNumericsCppStyle()
+{
+    /* We should initialize the container before any operations. */
+    List* list = ListInit();
+
+    /* Push the integer elements. */
+    list->push_front(list, (void*)(intptr_t)20);
+    list->push_back(list, (void*)(intptr_t)40);
+
+    /* Insert the elements with the specified indexes. */
+    list->insert(list, 0, (void*)(intptr_t)10);
+    list->insert(list, 3, (void*)(intptr_t)50);
+    list->insert(list, 2, (void*)(intptr_t)30);
+
+    /*---------------------------------------------------------------*
+     * Now the list should be: (10)<-->(20)<-->(30)<-->(40)<-->(50)  *
+     *---------------------------------------------------------------*/
+
+    /* Iterate through the list. */
+    void* element;
+    int num = 10;
+    list->first(list, false);
+    while (list->next(list, &element)) {
+        assert((int)(intptr_t)element == num);
+        num += 10;
+    }
+
+    /* Iterate through the list in the reversed order. */
+    num = 50;
+    ListFirst(list, true);
+    while (list->reverse_next(list, &element)) {
+        assert((int)(intptr_t)element == num);
+        num -= 10;
+    }
+
+    /* Get the element from the list head. */
+    list->get_front(list, &element);
+    assert((int)(intptr_t)element == 10);
+
+    /* Get the element from the list tail. */
+    list->get_back(list, &element);
+    assert((int)(intptr_t)element == 50);
+
+    /* Get the elements from the specified indexes. */
+    list->get_at(list, 2, &element);
+    assert((int)(intptr_t)element == 30);
+    list->get_at(list, 3, &element);
+    assert((int)(intptr_t)element == 40);
+
+    /* Replace the element residing at the list head. */
+    list->set_front(list, (void*)(intptr_t)-1);
+
+    /* Replace the element residing at the list tail. */
+    list->set_back(list, (void*)(intptr_t)-5);
+
+    /* Replace the elements residing at the specified indexes. */
+    list->set_at(list, 1, (void*)(intptr_t)-2);
+    list->set_at(list, 2, (void*)(intptr_t)-3);
+    list->set_at(list, 3, (void*)(intptr_t)-4);
+
+    /* Reverse the list. */
+    list->reverse(list);
+
+    /*---------------------------------------------------------------*
+     * Now the list should be: (-5)<-->(-4)<-->(-3)<-->(-2)<-->(-1)  *
+     *---------------------------------------------------------------*/
+
+    /* Remove the element from the list head. */
+    list->pop_front(list);
+
+    /* Remove the element from the list tail. */
+    list->pop_back(list);
+
+    /* Remove the elements from the specified indexes. */
+    list->remove(list, 1);
+    list->remove(list, 1);
+
+    /* Get the list size. And the remaining element should be (-4). */
+    unsigned size = list->size(list);
+    assert(size == 1);
+
+    list->get_front(list, &element);
+    assert((int)(intptr_t)element == -4);
+
+    ListDeinit(list);
+}
+
+
+void ManipulateObjectsCppStyle()
+{
+    /* We should initialize the container before any operations. */
+    List* list = ListInit();
+    ListSetClean(list, CleanObject);
+
+    /* Push the object elements. */
+    Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 20;
+    tuple->second = -20;
+    list->push_front(list, tuple);
+
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 40;
+    tuple->second = -40;
+    list->push_back(list, tuple);
+
+    /* Insert the elements with the specified indexes. */
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 10;
+    tuple->second = -10;
+    list->insert(list, 0, tuple);
+
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 50;
+    tuple->second = -50;
+    list->insert(list, 3, tuple);
+
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 30;
+    tuple->second = -30;
+    list->insert(list, 2, tuple);
+
+    /*---------------------------------------------------------------*
+     * Now the list should be: (10)<-->(20)<-->(30)<-->(40)<-->(50)  *
+     *---------------------------------------------------------------*/
+
+    /* Iterate through the list. */
+    void* element;
+    int num = 10;
+    list->first(list, false);
+    while (list->next(list, &element)) {
+        assert(((Tuple*)element)->first == num);
+        num += 10;
+    }
+
+    /* Iterate through the list in the reversed order. */
+    num = 50;
+    list->first(list, true);
+    while (list->reverse_next(list, &element)) {
+        assert(((Tuple*)element)->first == num);
+        num -= 10;
+    }
+
+    /* Get the element from the list head. */
+    list->get_front(list, &element);
+    assert(((Tuple*)element)->first == 10);
+
+    /* Get the element from the list tail. */
+    list->get_back(list, &element);
+    assert(((Tuple*)element)->first == 50);
+
+    /* Get the elements from the specified indexes. */
+    list->get_at(list, 2, &element);
+    assert(((Tuple*)element)->first == 30);
+    list->get_at(list, 3, &element);
+    assert(((Tuple*)element)->first == 40);
+
+    /* Replace the element residing at the list head. */
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = -1;
+    tuple->second = 1;
+    list->set_front(list, tuple);
+
+    /* Replace the element residing at the list tail. */
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = -5;
+    tuple->second = 5;
+    list->set_back(list, tuple);
+
+    /* Replace the elements residing at the specified indexes. */
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = -2;
+    tuple->second = 2;
+    list->set_at(list, 1, tuple);
+
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = -3;
+    tuple->second = 3;
+    list->set_at(list, 2, tuple);
+
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = -4;
+    tuple->second = 4;
+    list->set_at(list, 3, tuple);
+
+    /* Reverse the list. */
+    list->reverse(list);
+
+    /*---------------------------------------------------------------*
+     * Now the list should be: (-5)<-->(-4)<-->(-3)<-->(-2)<-->(-1)  *
+     *---------------------------------------------------------------*/
+
+    /* Remove the element from the list head. */
+    list->pop_front(list);
+
+    /* Remove the element from the list tail. */
+    list->pop_back(list);
+
+    /* Remove the elements from the specified indexes. */
+    list->remove(list, 1);
+    list->remove(list, 1);
+
+    /* Get the list size. And the remaining element should be (-4). */
+    unsigned size = list->size(list);
+    assert(size == 1);
+
+    list->get_front(list, &element);
+    assert(((Tuple*)element)->first == -4);
+
+    ListDeinit(list);
+}
 
 int main()
 {
     ManipulateNumerics();
     ManipulateObjects();
+    ManipulateNumericsCppStyle();
+    ManipulateObjectsCppStyle();
     return 0;
 }
