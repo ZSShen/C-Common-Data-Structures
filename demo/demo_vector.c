@@ -212,9 +212,191 @@ void ManipulateObjects()
     VectorDeinit(vector);
 }
 
+void ManipulateNumericsCppStyle()
+{
+    /* We should initialize the container before any operations. */
+    Vector* vector = VectorInit(DEFAULT_CAPACITY);
+
+    /* Push the integer elements. */
+    vector->push_back(vector, (void*)3);
+    vector->push_back(vector, (void*)4);
+
+    /* Insert the elements at the specified indexes. */
+    vector->insert(vector, 0, (void*)1);
+    vector->insert(vector, 1, (void*)2);
+
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [1] | [2] | [3] | [4]               *
+     *---------------------------------------------------------------*/
+
+    /* Iterate through the vector. */
+    int num = 1;
+    void* elem;
+    vector->first(vector, false);
+    while (vector->next(vector, &elem)) {
+        assert((intptr_t)(void*)elem == num);
+        ++num;
+    }
+
+    /* Reversely iterate through the vector. */
+    num = 4;
+    vector->first(vector, true);
+    while (vector->reverse_next(vector, &elem)) {
+        assert((intptr_t)(void*)elem == num);
+        --num;
+    }
+
+    /* Get the elements from the specified indexes. */
+    vector->get(vector, 0, &elem);
+    assert((intptr_t)(void*)elem == 1);
+    vector->get(vector, 3, &elem);
+    assert((intptr_t)(void*)elem == 4);
+
+    /* Replace the elements at the specified indexes. */
+    vector->set(vector, 0, (void*)10);
+    vector->set(vector, 3, (void*)40);
+
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [10] | [2] | [3] | [40]             *
+     *---------------------------------------------------------------*/
+
+    /* Get the number of stored elements. */
+    unsigned size = vector->size(vector);
+    assert(size == 4);
+
+    /* Sort the integer elements. */
+    vector->sort(vector, CompareNumber);
+
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [2] | [3] | [10] | [40]             *
+     *---------------------------------------------------------------*/
+
+    /* Remove the elements at the specified indexes. */
+    vector->remove(vector, 3);
+    vector->remove(vector, 0);
+
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [3] | [10]                          *
+     *---------------------------------------------------------------*/
+
+    // VectorGet(vector, 0, &elem);
+    vector->get(vector, 0, &elem);
+    assert((int)(intptr_t)elem == 3);
+    vector->get(vector, 1, &elem);
+    assert((int)(intptr_t)elem == 10);
+
+    /* Pop the elements. */
+    vector->pop_back(vector);
+    vector->pop_back(vector);
+    assert(VectorSize(vector) == 0);
+
+    VectorDeinit(vector);
+}
+
+void ManipulateObjectsCppStyle()
+{
+    /* We should initialize the container before any operations. */
+    Vector* vector = VectorInit(DEFAULT_CAPACITY);
+    VectorSetClean(vector, CleanObject);
+
+    /* Push the object elements. */
+    Tuple* tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 3;
+    tuple->second = -3;
+    vector->push_back(vector, tuple);
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 4;
+    tuple->second = -4;
+    vector->push_back(vector, tuple);
+
+    /* Insert the elements at the specified indexes. */
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 1;
+    tuple->second = -1;
+    vector->insert(vector, 0, tuple);
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 2;
+    tuple->second = -2;
+    vector->insert(vector, 1, tuple);
+
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [1] | [2] | [3] | [4]               *
+     *---------------------------------------------------------------*/
+
+    /* Iterate through the vector. */
+    int num = 1;
+    void* elem;
+    vector->first(vector, false);
+    while (vector->next(vector, &elem)) {
+        assert(((Tuple*)elem)->first == num);
+        ++num;
+    }
+
+    /* Reversely iterate through the vector. */
+    num = 4;
+    vector->first(vector, true);
+    while (vector->reverse_next(vector, &elem)) {
+        assert(((Tuple*)elem)->first == num);
+        --num;
+    }
+
+    /* Get the elements from the specified indexes. */
+    vector->get(vector, 0, &elem);
+    assert(((Tuple*)elem)->first == 1);
+    vector->get(vector, 3, &elem);
+    assert(((Tuple*)elem)->first == 4);
+
+    /* Replace the elements at the specified indexes. */
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 10;
+    tuple->second = -10;
+    vector->set(vector, 0, tuple);
+    tuple = (Tuple*)malloc(sizeof(Tuple));
+    tuple->first = 40;
+    tuple->second = -40;
+    vector->set(vector, 3, tuple);
+
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [10] | [2] | [3] | [40]             *
+     *---------------------------------------------------------------*/
+
+    /* Get the number of stored elements. */
+    unsigned size = vector->size(vector);
+    assert(size == 4);
+
+    /* Sort the integer elements. */
+    vector->sort(vector, CompareObject);
+
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [2] | [3] | [10] | [40]             *
+     *---------------------------------------------------------------*/
+
+    /* Remove the elements at the specified indexes. */
+    vector->remove(vector, 3);
+    vector->remove(vector, 0);
+
+    /*---------------------------------------------------------------*
+     * Now the vector should be: [3] | [10]                          *
+     *---------------------------------------------------------------*/
+
+    vector->get(vector, 0, &elem);
+    assert(((Tuple*)elem)->first == 3);
+    vector->get(vector, 1, &elem);
+    assert(((Tuple*)elem)->first == 10);
+
+    /* Pop the elements. */
+    vector->pop_back(vector);
+    vector->pop_back(vector);
+    assert(VectorSize(vector) == 0);
+
+    VectorDeinit(vector);
+}
+
 int main()
 {
     ManipulateNumerics();
     ManipulateObjects();
+    ManipulateNumericsCppStyle();
+    ManipulateObjectsCppStyle();
     return 0;
 }
