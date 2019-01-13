@@ -136,9 +136,118 @@ void ManipulateTexts()
     HashMapDeinit(map);
 }
 
+void ManipulateNumericsCppStyle()
+{
+    /* We should initialize the container before any operations. */
+    HashMap* map = HashMapInit();
+
+    /* Insert numerics into the map. */
+    map->put(map, (void*)1, (void*)999);
+    map->put(map, (void*)2, (void*)99);
+    map->put(map, (void*)3, (void*)9);
+
+    /* Retrieve the value with the designated key. */
+    int val = (int)(intptr_t)map->get(map, (void*)1);
+    assert(val == 999);
+
+    /* Iterate through the map. */
+    Pair* ptr_pair;
+    map->first(map);
+    while ((ptr_pair = map->next(map)) != NULL) {
+        int key = (int)(intptr_t)ptr_pair->key;
+        int val = (int)(intptr_t)ptr_pair->value;
+    }
+
+    /* Remove the key value pair with the designated key. */
+    map->remove(map, (void*)2);
+
+    /* Check the map keys. */
+    assert(map->contain(map, (void*)1) == true);
+    assert(map->contain(map, (void*)2) == false);
+    assert(map->contain(map, (void*)3) == true);
+
+    /* Check the pair count in the map. */
+    unsigned size = map->size(map);
+    assert(size == 2);
+
+    /* We should deinitialize the container after all the relevant operations. */
+    HashMapDeinit(map);
+}
+
+void ManipulateTextsCppStyle()
+{
+    char* names[3] = {"Alice\0", "Bob\0", "Chris\0"};
+
+    /* We should initialize the container before any operations. */
+    HashMap* map = HashMapInit();
+
+    /* Set the custom hash value generator and key comparison functions. */
+    HashMapSetHash(map, HashKey);
+    HashMapSetCompare(map, CompareKey);
+
+    /* If we plan to delegate the resource clean task to the container, set the
+       custom clean functions. */
+    HashMapSetCleanKey(map, CleanKey);
+    HashMapSetCleanValue(map, CleanValue);
+
+    /* Insert complex data payload into the map. */
+    char* key = strdup(names[0]);
+    Employ* employ = (Employ*)malloc(sizeof(Employ));
+    employ->id = 1;
+    employ->year = 25;
+    employ->level = 100;
+    map->put(map, (void*)key, (void*)employ);
+
+    key = strdup(names[1]);
+    employ = (Employ*)malloc(sizeof(Employ));
+    employ->id = 2;
+    employ->year = 25;
+    employ->level = 90;
+    map->put(map, (void*)key, (void*)employ);
+
+    key = strdup(names[2]);
+    employ = (Employ*)malloc(sizeof(Employ));
+    employ->id = 3;
+    employ->year = 25;
+    employ->level = 80;
+    map->put(map, (void*)key, (void*)employ);
+
+    /* Retrieve the value with the designated key. */
+    employ = (Employ*)map->get(map, (void*)names[0]);
+    assert(employ != NULL);
+    assert(employ->id == 1);
+    assert(employ->year == 25);
+    assert(employ->level == 100);
+
+    /* Iterate through the map. */
+    Pair* ptr_pair;
+    HashMapFirst(map);
+    while ((ptr_pair = map->next(map)) != NULL) {
+        char* name = (char*)ptr_pair->key;
+        employ = (Employ*)ptr_pair->value;
+    }
+
+    /* Remove the key value pair with the designated key. */
+    map->remove(map, (void*)names[1]);
+
+    /* Check the map keys. */
+    assert(map->contain(map, (void*)names[0]) == true);
+    assert(map->contain(map, (void*)names[1]) == false);
+    assert(map->contain(map, (void*)names[2]) == true);
+
+    /* Check the pair count in the map. */
+    unsigned size = map->size(map);
+    assert(size == 2);
+
+    /* We should deinitialize the container after all the relevant operations. */
+    HashMapDeinit(map);
+}
+
 int main()
 {
     ManipulateNumerics();
     ManipulateTexts();
+    ManipulateNumericsCppStyle();
+    ManipulateTextsCppStyle();
     return 0;
 }
